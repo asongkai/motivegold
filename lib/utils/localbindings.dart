@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class LocalStorageBindings {
-  final storage = new FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<void> writeValue({required String key, dynamic value}) {
     return storage.write(key: key, value: value);
@@ -29,7 +29,7 @@ class LocalStorageBindings {
 
 class LocalStorage {
   //singleton instance
-  static LocalStorage sharedInstance = new LocalStorage._internal();
+  static LocalStorage sharedInstance = LocalStorage._internal();
 
   factory LocalStorage() {
     return sharedInstance;

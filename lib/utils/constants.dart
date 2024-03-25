@@ -110,7 +110,7 @@ class Constants {
   static Color textPrimaryColor = Colors.black87;
 
   //Validations REGEX
-  static final String PATTERN_EMAIL = "^([0-9a-zA-Z]([-.+\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})\$";
+  static const String PATTERN_EMAIL = "^([0-9a-zA-Z]([-.+\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})\$";
 
   //DEV
   // static const String BACKEND_URL = "http://motivegold.test/api";
@@ -122,5 +122,5 @@ class Constants {
 
   static const String STORAGE_URL = "gs://app-name.appspot.com";
 
-  static final kGoogleApiKey = "AIzaSyBeTEo6O-FqFeEtrrCqjpcKnBo8iipVnBc";
+  static const kGoogleApiKey = "AIzaSyBeTEo6O-FqFeEtrrCqjpcKnBo8iipVnBc";
 }

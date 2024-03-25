@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:motivegold/screen/auth/login_screen.dart';
 import 'package:motivegold/screen/auth/signin_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/localbindings.dart';

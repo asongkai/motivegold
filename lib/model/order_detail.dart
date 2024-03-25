@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:motivegold/utils/global.dart';
 
 List<OrderDetailModel> orderDetailListModelFromJson(String str) => List<OrderDetailModel>.from(json.decode(str).map((x) => OrderDetailModel.fromJson(x)));
 

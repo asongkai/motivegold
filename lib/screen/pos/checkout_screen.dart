@@ -5,7 +5,6 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/pos/customer_entry_screen.dart';
 import 'package:motivegold/screen/pos/order_success_screen.dart';
-import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -286,7 +285,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => OrderSuccessScreen()));
+                          builder: (context) => const OrderSuccessScreen()));
                 });
               },
               child: Row(

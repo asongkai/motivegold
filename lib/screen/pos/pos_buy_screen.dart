@@ -1,20 +1,15 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/order.dart';
-import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/checkout_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/product_code_autocomplete.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
-import 'package:motivegold/widget/product_type_autocomplete.dart';
-import 'package:select_dialog/select_dialog.dart';
 
 import '../../model/order_detail.dart';
 

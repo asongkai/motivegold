@@ -5,6 +5,8 @@ import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 
 class LanguageIntro extends StatefulWidget {
+  const LanguageIntro({super.key});
+
   @override
   State<LanguageIntro> createState() => _LanguageIntroState();
 }

@@ -8,9 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/order_detail.dart';
-import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/localbindings.dart';
-import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/util.dart';
 
 import '../model/order.dart';
@@ -178,11 +176,9 @@ class Global {
     double amount = 0;
     double buy = 0;
     double sell = 0;
-    double total = 0;
     for (int i = 0; i < order!.length; i++) {
       for (int j = 0; j < order![i].detail!.length; j++) {
         double price = order![i].detail![j].price!;
-        total += price;
         String type = order![i].type!;
         if (type == 'buy') {
           buy += -price;
@@ -261,7 +257,7 @@ class Global {
   }
 
   static String prettyPrint(Map json) {
-    JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
     String pretty = encoder.convert(json);
     return pretty;
   }

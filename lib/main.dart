@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/landing_screen.dart';
 import 'package:motivegold/utils/custom_theme.dart';

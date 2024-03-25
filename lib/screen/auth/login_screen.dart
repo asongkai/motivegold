@@ -5,7 +5,7 @@ import 'package:motivegold/screen/tab_screen.dart';
 import 'package:motivegold/widget/languageIntro.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          LanguageIntro(),
+          const LanguageIntro(),
         ],
       ),
     );

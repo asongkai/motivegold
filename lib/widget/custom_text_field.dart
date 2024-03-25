@@ -3,7 +3,7 @@ import '../constants/colors.dart';
 import '../utils/screen_utils.dart';
 
 class CustomTextField extends StatelessWidget {
-  const CustomTextField({
+  const CustomTextField({super.key, 
     this.hint,
     this.icon,
     this.maxLine,

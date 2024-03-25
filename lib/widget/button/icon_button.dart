@@ -88,9 +88,7 @@ class SimpleRoundIconButton extends StatelessWidget {
                           ),
                           child: Icon(
                             icon.icon,
-                            color: iconColor == null
-                                ? backgroundColor
-                                : iconColor,
+                            color: iconColor ?? backgroundColor,
                           ),
                           onPressed: () => {},
                         ),

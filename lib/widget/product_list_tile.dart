@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 
 class ProductListTileData extends StatelessWidget {

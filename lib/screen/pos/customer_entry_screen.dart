@@ -6,14 +6,10 @@ import 'package:flutter_modal_dialog/flutter_modal_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
-import 'package:motivegold/screen/pos/mainmenu_screen.dart';
-import 'package:motivegold/screen/pos/pos_sell_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:ripple_button/ripple_button.dart';
-import 'package:select_dialog/select_dialog.dart';
 
 import '../../utils/global.dart';
 

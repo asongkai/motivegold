@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:motivegold/utils/global.dart';
 
 import 'order_detail.dart';
 

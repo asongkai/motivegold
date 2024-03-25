@@ -6,8 +6,6 @@ import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/custom_text_field.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 import 'package:select_dialog/select_dialog.dart';
 
@@ -356,12 +354,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: ListView.builder(
                         itemCount: products().length,
                         itemBuilder: (context, index) {
-                          return ProductListTileData(leftTitle: products()[index].productName, leftValue: products()[index].price.toString(), rightTitle: 'น้ำหนัก', rightValue: products()[index].weight.toString(),); _itemOrder(
-                            image: "",
-                            title: products()[index].productName,
-                            qty: products()[index].weight.toString(),
-                            price: products()[index].price.toString(),
-                          );
+                          return ProductListTileData(leftTitle: products()[index].productName, leftValue: products()[index].price.toString(), rightTitle: 'น้ำหนัก', rightValue: products()[index].weight.toString(),);
                         }),
                   ),
                 ),

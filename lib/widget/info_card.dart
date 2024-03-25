@@ -5,14 +5,14 @@ class InfoCard extends StatelessWidget {
   final IconData? icon;
   final Function()? onPressed;
 
-  InfoCard({required this.text, @required this.icon, this.onPressed});
+  const InfoCard({super.key, required this.text, @required this.icon, this.onPressed});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
       child: Card(
         color: Colors.white,
-        margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
+        margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
         child: ListTile(
           leading: Icon(
             icon,

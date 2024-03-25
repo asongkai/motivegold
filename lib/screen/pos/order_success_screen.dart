@@ -7,6 +7,8 @@ import 'package:motivegold/utils/screen_utils.dart';
 class OrderSuccessScreen extends StatelessWidget {
   static const routeName = '/orderSuccess';
 
+  const OrderSuccessScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

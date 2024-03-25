@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/product.dart';
-import 'package:motivegold/model/product_type.dart';
 
 class ProductCodeAutocompleteTextField extends StatefulWidget {
   final List<ProductModel> items;

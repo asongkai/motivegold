@@ -1,8 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modal_dialog/flutter_modal_dialog.dart';
-import 'package:get/route_manager.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/global.dart';
@@ -12,8 +9,6 @@ import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 
-import '../checkout_screen.dart';
-import '../order_success_screen.dart';
 
 class HoldListModal extends StatefulWidget {
   const HoldListModal({super.key});

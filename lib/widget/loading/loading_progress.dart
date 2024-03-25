@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-const List<Color> _kDefaultRainbowColors = const [
+const List<Color> _kDefaultRainbowColors = [
   Colors.red,
   Colors.orange,
   Colors.yellow,
