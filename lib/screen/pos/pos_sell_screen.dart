@@ -39,7 +39,7 @@ class _POSSellScreenState extends State<POSSellScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     sumSellTotal();
   }

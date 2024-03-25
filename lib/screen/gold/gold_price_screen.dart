@@ -22,7 +22,7 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
 
     init();

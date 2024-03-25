@@ -28,7 +28,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
   }
 

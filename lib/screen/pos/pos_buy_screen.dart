@@ -34,7 +34,7 @@ class _POSBuyScreenState extends State<POSBuyScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     sumBuyTotal();
   }

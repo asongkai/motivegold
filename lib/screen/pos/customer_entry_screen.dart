@@ -34,7 +34,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
 
     birthDateCtrl.text = "2023-12-03";

@@ -21,7 +21,6 @@ class ApiServices {
   };
 
   static Future<dynamic>? get(String url) {
-    // TODO: implement post
     try {
       return http.get(Uri.parse(Constants.BACKEND_URL + url), headers: headers).then((response) {
         print(response.body);

@@ -19,7 +19,7 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
-    // TODO: implement initState
+    // implement initState
     super.initState();
     Timer(const Duration(seconds: 3), () {
       navigateFromSplash();
