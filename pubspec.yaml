@@ -25,10 +25,9 @@ dependencies:
   permission_handler: ^11.0.1
   progress_dialog_null_safe: ^1.0.7
   awesome_dialog: ^3.1.0
-  image_picker: ^1.0.4
+  image_picker: ^1.0.7
   settings_ui: ^2.0.2
   location: ^5.0.3
-  select_dialog: ^2.0.1
   easy_localization: ^3.0.0
 
   getwidget: ^4.0.0
@@ -43,17 +42,25 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   babstrap_settings_screen: ^0.1.6
   package_info_plus: ^4.0.2
+  device_info_plus: ^9.1.2
   url_launcher: ^6.0.20
   about: ^2.1.3
   animate_do: ^3.1.2
   flutter_svg: ^2.0.9
 
   flutter_modal_dialog: ^0.0.4
+  dialogx: ^1.0.0
   loading_indicator: ^3.1.1
   easy_sidemenu: ^0.5.0
   font_awesome_flutter: ^10.7.0
   badges: ^3.1.2
   empty_widget: ^0.0.5
+  pattern_formatter: ^3.0.0
+  pdf: ^3.10.8
+  printing: ^5.12.0
+  thai_idcard_reader_flutter: ^0.0.7
+  mirai_dropdown_menu: ^0.0.8+2
+  substring_highlight: ^1.0.33
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +86,8 @@ flutter:
     - assets/locale/
     - assets/icons/
     - assets/icons/gold/
+    - assets/fonts/PrintAble4U/
+    - assets/fonts/thai/
 
   fonts:
     - family: NotoSansLao

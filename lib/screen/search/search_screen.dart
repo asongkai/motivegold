@@ -1,13 +1,21 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/product_list_tile.dart';
-import 'package:select_dialog/select_dialog.dart';
+
+import '../../api/api_services.dart';
+import '../../model/product_category.dart';
+import '../../utils/global.dart';
+import '../../utils/responsive_screen.dart';
+import '../../widget/dropdown/DropDownItemWidget.dart';
+import '../../widget/dropdown/DropDownObjectChildWidget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -25,14 +33,67 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
   final TextEditingController addressCtrl = TextEditingController();
-  TextEditingController? productTypeCtrl = TextEditingController();
-  TextEditingController? productCtrl = TextEditingController();
+  TextEditingController productTypeCtrl = TextEditingController();
+  TextEditingController productCtrl = TextEditingController();
 
   ProductTypeModel? selectedProductType;
   ProductModel? selectedProduct;
+  ValueNotifier<dynamic>? productTypeNotifier;
+  bool loading = false;
+
+  List<ProductTypeModel> productTypeList = [];
+  List<ProductCategoryModel> productCategoryList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    productTypeNotifier =
+        ValueNotifier<ProductTypeModel>(ProductTypeModel(id: 0, name: 'เลือกประเภท'));
+    loadData();
+  }
+
+  void loadData() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      var result = await ApiServices.post('/producttype/all', Global.requestObj(null));
+      // print(result!.toJson());
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+
+        List<ProductTypeModel> products = productTypeListModelFromJson(data);
+        setState(() {
+          productTypeList = products;
+        });
+      } else {
+        productTypeList = [];
+      }
+
+      var warehouse = await ApiServices.post('/productcategory/all', Global.requestObj(null));
+      if (warehouse?.status == "success") {
+        var data = jsonEncode(warehouse?.data);
+        List<ProductCategoryModel> warehouses = productCategoryListModelFromJson(data);
+        setState(() {
+          productCategoryList = warehouses;
+        });
+      } else {
+        productCategoryList = [];
+      }
+    } catch (e) {
+      motivePrint(e.toString());
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(title: Text('ค้นหา'.tr()), automaticallyImplyLeading: false,),
       body: SafeArea(
@@ -73,36 +134,66 @@ class _SearchScreenState extends State<SearchScreen> {
                             Expanded(
                               child: Padding(
                                 padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(
-                                      height: 10,
+                                const EdgeInsets
+                                    .all(
+                                    8.0),
+                                child:
+                                SizedBox(
+                                  height: 80,
+                                  child: MiraiDropDownMenu<
+                                      ProductTypeModel>(
+                                    key:
+                                    UniqueKey(),
+                                    children:
+                                    productTypeList,
+                                    space: 4,
+                                    maxHeight:
+                                    360,
+                                    showSearchTextField:
+                                    true,
+                                    selectedItemBackgroundColor:
+                                    Colors
+                                        .transparent,
+                                    emptyListMessage: 'ไม่มีข้อมูล',
+                                    showSelectedItemBackgroundColor:
+                                    true,
+                                    itemWidgetBuilder:
+                                        (
+                                        int index,
+                                        ProductTypeModel?
+                                        project, {
+                                      bool isItemSelected =
+                                      false,
+                                    }) {
+                                      return DropDownItemWidget(
+                                        project:
+                                        project,
+                                        isItemSelected:
+                                        isItemSelected,
+                                        firstSpace:
+                                        10,
+                                        fontSize:
+                                        size.getWidthPx(6),
+                                      );
+                                    },
+                                    onChanged:
+                                        (ProductTypeModel
+                                    value) {
+                                      productTypeCtrl.text = value.name!;
+                                      selectedProductType = value;
+                                      productTypeNotifier!.value =
+                                          value;
+                                    },
+                                    child:
+                                    DropDownObjectChildWidget(
+                                      key:
+                                      GlobalKey(),
+                                      fontSize:
+                                      size.getWidthPx(6),
+                                      projectValueNotifier:
+                                      productTypeNotifier!,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        SelectDialog.showModal<ProductTypeModel>(
-                                          context,
-                                          label: "เลือกประเภท",
-                                          selectedValue: selectedProductType,
-                                          alwaysShowScrollBar: true,
-                                          items: productType(),
-                                          searchBoxDecoration: const InputDecoration(hintText: "ค้นหา"),
-                                          onChange: (ProductTypeModel? selected) {
-                                            setState(() {
-                                              productTypeCtrl?.text = selected!.code!;
-                                            });
-                                          },
-                                        );
-                                      },
-                                      child: buildTextFieldBig(
-                                          enabled: false,
-                                          labelText: "ประเภทสินค้า",
-                                          textColor: Colors.orange,
-                                          controller: productTypeCtrl,
-                                          option: true),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -119,19 +210,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        SelectDialog.showModal<ProductModel>(
-                                          context,
-                                          label: "เลือกประเภท",
-                                          selectedValue: selectedProduct,
-                                          alwaysShowScrollBar: true,
-                                          items: products(),
-                                          searchBoxDecoration: const InputDecoration(hintText: "ค้นหา"),
-                                          onChange: (ProductModel selected) {
-                                            setState(() {
-                                              productCtrl!.text = selected.productCode!;
-                                            });
-                                          },
-                                        );
+
                                       },
                                       child: buildTextFieldBig(
                                           enabled: false,
@@ -343,21 +422,21 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      // color: bgColor4,
-                    ),
-                    child: ListView.builder(
-                        itemCount: products().length,
-                        itemBuilder: (context, index) {
-                          return ProductListTileData(leftTitle: products()[index].productName, leftValue: products()[index].price.toString(), rightTitle: 'น้ำหนัก', rightValue: products()[index].weight.toString(),);
-                        }),
-                  ),
-                ),
+                // Expanded(
+                //   child: Container(
+                //     padding: const EdgeInsets.only(left: 20, right: 20),
+                //     margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.circular(14),
+                //       // color: bgColor4,
+                //     ),
+                //     child: ListView.builder(
+                //         itemCount: products().length,
+                //         itemBuilder: (context, index) {
+                //           return ProductListTileData(orderId: products()[index].productCode, orderDate: products()[index].price.toString(), totalPrice: products()[index].price.toString(), type: products()[index].productTypeId.toString(),);
+                //         }),
+                //   ),
+                // ),
               ],
             ),
           ),

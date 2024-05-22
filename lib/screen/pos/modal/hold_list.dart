@@ -153,10 +153,10 @@ class _HoldListModalState extends State<HoldListModal> {
           flex: 8,
           child: ListTile(
             title: ProductListTileData(
-              leftTitle: order.orderId,
-              leftValue: order.type,
-              rightTitle: 'วันที่',
-              rightValue: order.orderDate,
+              orderId: order.orderId,
+              orderDate: Global.dateOnly(order.orderDate!.toString()),
+              totalPrice: order.priceIncludeTax.toString(),
+              type: order.orderTypeId.toString(),
             ),
           ),
         ),
@@ -188,12 +188,12 @@ class _HoldListModalState extends State<HoldListModal> {
                   await Global.removeHold(index);
                   Global.posOrder = order;
 
-                  if (order.type == 'sell') {
+                  if (order.orderTypeId == 1) {
                     Global.posIndex = 0;
-                    Global.sellOrderDetail = order.detail;
-                  } else if (order.type == 'buy') {
+                    Global.sellOrderDetail = order.details;
+                  } else if (order.orderTypeId == 2) {
                     Global.posIndex = 1;
-                    Global.buyOrderDetail = order.detail;
+                    Global.buyOrderDetail = order.details;
                   }
                   Future.delayed(const Duration(milliseconds: 500), () async {
                     setState(() {

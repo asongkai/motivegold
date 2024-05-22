@@ -3,8 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/dashboard_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:motivegold/screen/pos/post_history_screen.dart';
 import 'package:motivegold/screen/search/search_screen.dart';
 import 'package:motivegold/screen/settings/setting_screen.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 
 List<TabItem> items = [
   TabItem(
@@ -12,8 +14,8 @@ List<TabItem> items = [
     title: 'หน้าแรก'.tr(),
   ),
   TabItem(
-    icon: Icons.search_sharp,
-    title: 'ค้นหา'.tr(),
+    icon: Icons.auto_graph,
+    title: 'ประวัติ'.tr(),
   ),
   TabItem(
     icon: Icons.price_change_outlined,
@@ -54,9 +56,10 @@ class _TabScreenState extends State<TabScreen>
       child: Scaffold(
           body: TabBarView(
             controller: _tabController,
+            physics: const NeverScrollableScrollPhysics(),
             children: const [
               DashboardScreen(),
-              SearchScreen(),
+              PosOrderHistoryScreen(),
               GoldPriceScreen(showBackButton: false,),
               Icon(Icons.add),
               SettingScreen(),
@@ -71,7 +74,7 @@ class _TabScreenState extends State<TabScreen>
               controller: _tabController,
               items: items,
               style: TabStyle.reactCircle,
-              onTap: (int i) => print('click index=$i'),
+              onTap: (int i) => motivePrint('click index=$i'),
             ),
           )),
     );

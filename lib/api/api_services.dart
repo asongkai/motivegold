@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/response.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import '../utils/constants.dart';
 import '../utils/util.dart';
 
@@ -20,12 +21,12 @@ class ApiServices {
     'authorization': makeAuth()
   };
 
-  static Future<dynamic>? get(String url) {
+  static Future<Response>? get(String url) {
     try {
       return http.get(Uri.parse(Constants.BACKEND_URL + url), headers: headers).then((response) {
-        print(response.body);
+        // print(response.body);
         if (response.statusCode == 200) {
-          return response.body;
+          return Response.fromJson(jsonDecode(response.body));
         } else {
           throw Future.error('error${response.body}');
         }
@@ -36,9 +37,45 @@ class ApiServices {
     return null;
   }
 
+
   static Future<Response>? post(String url, dynamic data) {
     try {
+      // motivePrint(data);
       return http.post(Uri.parse(Constants.BACKEND_URL + url), headers: headers, body: data).then((response) {
+        // print(response.body);
+        if (response.statusCode == 200) {
+          // print(response.body);
+          return Response.fromJson(jsonDecode(response.body));
+        } else {
+          throw Future.error('error${response.body}');
+        }
+      });
+    } catch (e) {
+      print(url + e.toString());
+    }
+    return null;
+  }
+
+  static Future<Response>? put(String url, dynamic id, dynamic data) {
+    try {
+      return http.put(Uri.parse('${Constants.BACKEND_URL}$url/$id'), headers: headers, body: data).then((response) {
+        // print(response.body);
+        if (response.statusCode == 200) {
+          // print(response.body);
+          return Response.fromJson(jsonDecode(response.body));
+        } else {
+          throw Future.error('error${response.body}');
+        }
+      });
+    } catch (e) {
+      print(url + e.toString());
+    }
+    return null;
+  }
+
+  static Future<Response>? delete(String url, dynamic data) {
+    try {
+      return http.delete(Uri.parse('${Constants.BACKEND_URL}$url/$data'), headers: headers).then((response) {
         // print(response.body);
         if (response.statusCode == 200) {
           // print(response.body);
@@ -57,7 +94,7 @@ class ApiServices {
     print(headers);
     if (await Utils.checkConnection()) {
       return http.post(
-        Uri.parse('${Constants.BACKEND_URL}/gold/price'),
+        Uri.parse('${Constants.GOLD_URL}/gold/price'),
         headers: headers,
       ).then((http.Response response) {
         final String res = response.body;

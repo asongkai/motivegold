@@ -4,14 +4,24 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/qty_location.dart';
+import 'package:motivegold/model/request.dart';
+import 'package:motivegold/model/transfer_detail.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/util.dart';
 
+import '../model/branch.dart';
+import '../model/company.dart';
 import '../model/order.dart';
+import '../model/sell_detail.dart';
+import '../model/transfer.dart';
+import '../model/user.dart';
 
 enum UserState {
   Offline,
@@ -24,12 +34,15 @@ class Global {
   static String phonePrefix = "856";
   static final List<int> _startWith = [2, 4, 5, 7, 9];
   static String? profileUrl;
+  static UserModel? user;
   static String? userId;
   static bool isLoggedIn = false;
   static int? lang;
   static GoldDataModel? goldDataModel;
   static List<OrderDetailModel>? orderDetail = [];
-  static List<OrderModel>? order = [];
+  static List<OrderModel>? orders = [];
+  static OrderModel? order;
+  static List<String>? orderIds = [];
   static String? trackingNumber;
 
   // POS
@@ -37,6 +50,11 @@ class Global {
   static List<OrderDetailModel>? buyOrderDetail = [];
   static OrderModel? posOrder;
   static int posIndex = 0;
+
+  static List<OrderDetailModel>? refillOrderDetail = [];
+  static List<OrderDetailModel>? usedSellDetail = [];
+  static List<TransferDetailModel>? transferDetail = [];
+  static TransferModel? transfer;
 
   static double sellSubTotal = 0;
   static double sellWeightTotal = 0;
@@ -48,7 +66,18 @@ class Global {
   static double buyTax = 0;
   static double buyTotal = 0;
 
+  static double discount = 0;
   static CustomerModel? customer;
+  static CompanyModel? company;
+  static BranchModel? branch;
+
+  // DEVICE
+  static String? brand;
+  static String? model;
+  static String? deviceId;
+  static String? platform;
+  static String? platformVersion;
+  static dynamic deviceDetail;
 
 
   static holdOrder(OrderModel orderModel) async {
@@ -57,7 +86,9 @@ class Global {
     holds.add(orderModel);
     LocalStorage.sharedInstance
         .writeValue(key: 'holds', value: orderListModelToJson(holds));
-    print(orderModel.toJson());
+    if (kDebugMode) {
+      print(orderModel.toJson());
+    }
   }
 
   static clearHold() async {
@@ -122,27 +153,93 @@ class Global {
   }
 
   static double getOrderSubTotalAmount() {
-    if (order!.isEmpty) {
+    if (orders!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < order!.length; i++) {
-      for (int j = 0; j < order![i].detail!.length; j++) {
-        amount += order![i].detail![j].price!;
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        amount += orders![i].details![j].priceIncludeTax!;
       }
     }
     return amount;
   }
 
-  static double getOrderWeightTotalAmount() {
-    if (order!.isEmpty) {
+  static double getOrderSubTotalAmountApi(List<OrderDetailModel>? details) {
+    if (details!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < order!.length; i++) {
-      for (int j = 0; j < order![i].detail!.length; j++) {
-        amount += double.parse(order![i].detail![j].weight!);
+    for (int j = 0; j < details.length; j++) {
+      amount += details[j].priceIncludeTax!;
+    }
+    return amount;
+  }
+
+  static double getOrderWeightTotalAmount() {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        amount += orders![i].details![j].weight!;
       }
+    }
+    return amount;
+  }
+
+  static double getOrderWeightTotalAmountApi(List<OrderDetailModel>? details) {
+    if (details!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < details.length; j++) {
+      amount += details[j].weight!;
+    }
+    return amount;
+  }
+
+  static double getRefillWeightTotalAmount() {
+    if (refillOrderDetail!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < refillOrderDetail!.length; i++) {
+      amount += refillOrderDetail![i].weight!;
+    }
+    return amount;
+  }
+
+  static double getUsedSellWeightTotalAmount() {
+    if (usedSellDetail!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < usedSellDetail!.length; i++) {
+      amount += usedSellDetail![i].weight!;
+    }
+    return amount;
+  }
+
+  static double getUsedSellWeightTotalAmountApi(List<SellDetailModel>? details) {
+    if (details!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < details.length; i++) {
+      amount += details[i].weight!;
+    }
+    return amount;
+  }
+
+  static double getTransferWeightTotalAmount() {
+    if (transferDetail!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < transferDetail!.length; i++) {
+      amount += transferDetail![i].weight!;
     }
     return amount;
   }
@@ -151,46 +248,100 @@ class Global {
     return subTotal + weightTotal;
   }
 
+  static double getOrderGrantTotalAmountApi(double subTotal, double? discount) {
+    discount ??= 0;
+    return subTotal - discount;
+  }
+
   static double getPaymentTotal() {
-    if (order!.isEmpty) {
+    if (orders!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < order!.length; i++) {
-      for (int j = 0; j < order![i].detail!.length; j++) {
-        double price = order![i].detail![j].price!;
-        String type = order![i].type!;
-        if (type == 'buy') {
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        double price = orders![i].details![j].priceIncludeTax!;
+        int type = orders![i].orderTypeId!;
+        if (type == 2) {
           price = -price;
         }
         amount += price;
       }
     }
+    amount = discount != 0 ? amount - discount : amount;
     return amount < 0 ? -amount : amount;
   }
 
+  static double getOrderTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < order.details!.length; i++) {
+      for (int j = 0; j < order.details!.length; j++) {
+        double price = order.details![j].priceIncludeTax!;
+        int type = order.orderTypeId!;
+        if (type == 2) {
+          price = -price;
+        }
+        amount += price;
+      }
+    }
+    // amount = discount != 0 ? amount - discount : amount;
+    return amount < 0 ? -amount : amount;
+  }
+
+  static double getPapunTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < order.details!.length; i++) {
+      for (int j = 0; j < order.details!.length; j++) {
+        double weight = order.details![j].weight!;
+        amount += weight;
+      }
+    }
+    amount = getBuyPrice(amount);
+    return amount;
+  }
+
   static dynamic payToCustomerOrShop() {
-    if (order!.isEmpty) {
+    if (orders!.isEmpty) {
       return 0;
     }
     double amount = 0;
     double buy = 0;
     double sell = 0;
-    for (int i = 0; i < order!.length; i++) {
-      for (int j = 0; j < order![i].detail!.length; j++) {
-        double price = order![i].detail![j].price!;
-        String type = order![i].type!;
-        if (type == 'buy') {
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        double price = orders![i].details![j].priceIncludeTax!;
+        int type = orders![i].orderTypeId!;
+        if (type == 2) {
           buy += -price;
         }
-        if (type == 'sell') {
+        if (type == 1) {
           sell += price;
         }
       }
     }
     amount = sell + buy;
 
-    return amount > 0 ? 'ลูกค้าจ่ายเงินให้กับเรา ${formatter.format(amount)} THB' : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+    amount = discount != 0 ? amount - discount : amount;
+    return amount > 0
+        ? 'ลูกค้าจ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
+        : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+  }
+
+  static double getOrderTotalAmount(List<OrderDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.priceIncludeTax!;
+    }
+    return sum;
   }
 
   static convertImageListToBase64(List<File> files) {
@@ -266,7 +417,7 @@ class Global {
     final RegExp pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
     pattern
         .allMatches(text)
-        .forEach((RegExpMatch match) => print(match.group(0)));
+        .forEach((RegExpMatch match) => motivePrint(match.group(0)));
   }
 
   static renderWorkDay(List<bool> workday) {
@@ -484,5 +635,26 @@ class Global {
       totalDeliveryFee += deliveryFee * (1 / i);
     }
     return totalDeliveryFee.roundToDouble();
+  }
+
+  static double getTotalWeightByLocation(
+      List<QtyLocationModel> qtyLocationList) {
+    double total = 0;
+    for (var i = 0; i < qtyLocationList.length; i++) {
+      total += qtyLocationList[i].weight!;
+    }
+    return total;
+  }
+
+  static String requestObj(dynamic data,
+      {status = "", message = "", token = ""}) {
+    return encoder.convert(RequestModel(
+        companyId: user == null ? 0 : user!.companyId,
+        branchId: user == null ? 0 : user!.branchId,
+        userId: user == null ? 0.toString() : user!.id,
+        data: data,
+        status: status,
+        token: token,
+        message: message));
   }
 }

@@ -1,39 +1,68 @@
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
 
-List<ProductModel> products() {
-  List<ProductModel> data = [];
-  data.add(ProductModel(
-    id: "1",
-    productCode: 'NN1BS01',
-    productName: 'ทองใหม่ สร้อยคอ style 01 1 บาท',
-    price: 30700,
+
+List<ProductTypeModel> productTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(
+    id: 1,
+    code: 'NEW',
+    name: 'ทองใหม่'
   ));
-  data.add(ProductModel(
-    id: "2",
-    productCode: 'OG',
-    productName: 'ทองเก่า (old gold) 2 สลึง',
-    price: 14700,
+  data.add(ProductTypeModel(
+    id: 2,
+    code: 'USED',
+    name: 'ทองเก่า'
   ));
   return data;
 }
 
-List<ProductTypeModel> productType() {
+List<ProductTypeModel> transferTypes() {
   List<ProductTypeModel> data = [];
   data.add(ProductTypeModel(
-    id: "1",
-    code: 'BUY',
-    name: 'Buy old gold from customer'
+      id: 1,
+      code: 'INTERNAL',
+      name: 'ภายใน'
   ));
   data.add(ProductTypeModel(
-    id: "2",
-    code: 'SELL',
-    name: 'Sell new gold to customer'
+      id: 2,
+      code: 'BRANCH',
+      name: 'ระหว่างสาขา'
+  ));
+  return data;
+}
+
+List<ProductTypeModel> userRoles() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(
+      id: 1,
+      code: 'Administrator',
+      name: 'ผู้บริหาร'
   ));
   data.add(ProductTypeModel(
-      id: "3",
-      code: 'USED GOLD',
-      name: 'Customer deposit interest'
+      id: 2,
+      code: 'Employee',
+      name: 'พนักงานทั่วไป'
+  ));
+  data.add(ProductTypeModel(
+      id: 3,
+      code: 'Seller',
+      name: 'พนักงานขาย'
+  ));
+  return data;
+}
+
+List<ProductTypeModel> userTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(
+      id: 1,
+      code: 'ADMIN',
+      name: 'ผู้ดูแลระบบ'
+  ));
+  data.add(ProductTypeModel(
+      id: 2,
+      code: 'COMPANY',
+      name: 'บริษัท'
   ));
   return data;
 }

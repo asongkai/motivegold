@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -6,6 +7,7 @@ import 'dart:math';
 // import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/constants.dart';
@@ -14,6 +16,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'global.dart';
 
 final formatter = NumberFormat("#,###.##");
+const JsonEncoder encoder = JsonEncoder();
 
 class AlwaysDisabledFocusNode extends FocusNode {
   @override
@@ -137,7 +140,8 @@ class Utils {
         // a..f
         val += (hexDigit - 87) * (1 << (4 * (len - 1 - i)));
       } else {
-        throw const FormatException("An error occurred when converting a color");
+        throw const FormatException(
+            "An error occurred when converting a color");
       }
     }
     return val;
@@ -204,8 +208,7 @@ class MaskedTextController extends TextEditingController {
 
   void moveCursorToEnd() {
     var text = _lastUpdatedText;
-    selection =
-        TextSelection.fromPosition(TextPosition(offset: (text).length));
+    selection = TextSelection.fromPosition(TextPosition(offset: (text).length));
   }
 
   @override
@@ -326,8 +329,8 @@ class MoneyMaskedTextController extends TextEditingController {
       text = masked;
 
       var cursorPosition = super.text.length - rightSymbol.length;
-      selection = TextSelection.fromPosition(
-          TextPosition(offset: cursorPosition));
+      selection =
+          TextSelection.fromPosition(TextPosition(offset: cursorPosition));
     }
   }
 
@@ -335,8 +338,7 @@ class MoneyMaskedTextController extends TextEditingController {
     if (text.isEmpty || ((text.length - 1) < leftSymbol.length)) {
       return 0.0;
     }
-    List<String> parts =
-        _getOnlyNumbers(text).split('').toList(growable: true);
+    List<String> parts = _getOnlyNumbers(text).split('').toList(growable: true);
 
     parts.insert(parts.length - precision, '.');
 
@@ -446,22 +448,26 @@ Widget buildTextFieldBig(
     TextEditingController? controller,
     String? suffixText,
     TextInputType? inputType,
+    List<TextInputFormatter>? inputFormat,
     line,
     Color? textColor,
     bool option = false,
     Function(String value)? onChanged,
+    bool isPassword = false,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
     child: TextFormField(
       keyboardType: inputType ?? TextInputType.text,
+      inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 38),
+      style: const TextStyle(fontSize: 32),
+      obscureText: isPassword,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
         labelText: labelText,
         labelStyle: TextStyle(
             color: textColor ?? Colors.black,
@@ -506,7 +512,9 @@ String generateRandomString(int len) {
   var r = Random();
   const chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-  return List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
+  return List.generate(len, (index) => chars[r.nextInt(chars.length)])
+      .join()
+      .toUpperCase();
 }
 
 sumSellTotal() {
@@ -516,13 +524,13 @@ sumSellTotal() {
   Global.sellWeightTotal = 0;
 
   for (int i = 0; i < Global.sellOrderDetail!.length; i++) {
-    Global.sellSubTotal += Global.sellOrderDetail![i].price!;
-    if (Global.sellOrderDetail![i].weight!.isNotEmpty) {
-      Global.sellWeightTotal += double.parse(Global.sellOrderDetail![i].weight!);
+    Global.sellSubTotal += Global.sellOrderDetail![i].priceIncludeTax!;
+    if (Global.sellOrderDetail![i].weight! != 0) {
+      Global.sellWeightTotal += Global.sellOrderDetail![i].weight!;
     }
   }
-  Global.sellTax =
-      Global.taxAmount(Global.taxBase(Global.sellSubTotal, Global.sellWeightTotal));
+  Global.sellTax = Global.taxAmount(
+      Global.taxBase(Global.sellSubTotal, Global.sellWeightTotal));
   Global.sellTotal = Global.sellSubTotal + Global.sellTax;
 }
 
@@ -533,12 +541,12 @@ sumBuyTotal() {
   Global.buyWeightTotal = 0;
 
   for (int i = 0; i < Global.buyOrderDetail!.length; i++) {
-    Global.buySubTotal += Global.buyOrderDetail![i].price!;
-    if (Global.buyOrderDetail![i].weight!.isNotEmpty) {
-      Global.buyWeightTotal += double.parse(Global.buyOrderDetail![i].weight!);
+    Global.buySubTotal += Global.buyOrderDetail![i].priceIncludeTax!;
+    if (Global.buyOrderDetail![i].weight! != 0) {
+      Global.buyWeightTotal += Global.buyOrderDetail![i].weight!;
     }
   }
 
-    Global.buyTax = 0;
-    Global.buyTotal = Global.buySubTotal + Global.buyTax;
+  Global.buyTax = 0;
+  Global.buyTotal = Global.buySubTotal + Global.buyTax;
 }

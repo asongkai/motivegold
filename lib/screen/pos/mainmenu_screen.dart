@@ -5,9 +5,12 @@ import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:motivegold/screen/pos/pos_buy_screen.dart';
 import 'package:motivegold/screen/pos/pos_sell_screen.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:motivegold/screen/refill/refill_gold_stock_screen.dart';
+import 'package:motivegold/screen/transfer/transfer_gold_screen.dart';
 import 'package:motivegold/utils/util.dart';
 
 import '../../utils/global.dart';
+import '../used/sell_used_gold_screen.dart';
 import 'checkout_screen.dart';
 
 class MainMenuScreen extends StatefulWidget {
@@ -38,7 +41,7 @@ class MainMenuScreenState extends State<MainMenuScreen> {
     int count = (await Global.getHoldList()).length;
     setState(() {
       holdCount = count;
-      cartCount = Global.order!.length;
+      cartCount = Global.orders!.length;
     });
   }
 
@@ -112,7 +115,7 @@ class MainMenuScreenState extends State<MainMenuScreen> {
               badgeColor: Colors.red,
             ),
             badgeContent: Text(
-              '$cartCount',
+              cartCount.toString(),
               style: const TextStyle(color: Colors.white),
             ),
             child: IconButton(
@@ -182,7 +185,7 @@ class MainMenuScreenState extends State<MainMenuScreen> {
             ),
             items: [
               SideMenuItem(
-                title: 'ขาย',
+                title: 'ขายทองคำใหม่',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
@@ -190,7 +193,7 @@ class MainMenuScreenState extends State<MainMenuScreen> {
                 tooltipContent: "ขายทองคำใหม่",
               ),
               SideMenuItem(
-                title: 'ซื้อ',
+                title: 'รับซื้อทองเก่า',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
@@ -207,10 +210,12 @@ class MainMenuScreenState extends State<MainMenuScreen> {
                 POSSellScreen(
                   refreshCart: refreshCart,
                   refreshHold: refreshHold,
+                  cartCount: cartCount,
                 ),
                 POSBuyScreen(
                   refreshCart: refreshCart,
                   refreshHold: refreshHold,
+                  cartCount: cartCount,
                 )
               ],
             ),

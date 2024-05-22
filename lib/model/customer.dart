@@ -13,57 +13,89 @@ CustomerModel customerModelFromJson(String str) => CustomerModel.fromJson(json.d
 String customerModelToJson(CustomerModel data) => json.encode(data.toJson());
 
 class CustomerModel {
-  String? id;
-  String? idCard;
+  int? id;
+  String? companyName;
   String? firstName;
   String? lastName;
   String? email;
-  String? phone;
-  String? dob;
-  String? province;
-  String? district;
-  String? village;
+  DateTime? doB;
+  String? phoneNumber;
+  String? username;
+  String? password;
   String? address;
+  String? district;
+  String? province;
+  String? nationality;
+  String? postalCode;
+  String? photoUrl;
+  String? idCard;
+  String? taxNumber;
+  DateTime? createdDate;
+  DateTime? updatedDate;
 
   CustomerModel({
     this.id,
-    this.idCard,
+    this.companyName,
     this.firstName,
     this.lastName,
     this.email,
-    this.phone,
-    this.dob,
-    this.province,
-    this.district,
-    this.village,
+    this.doB,
+    this.phoneNumber,
+    this.username,
+    this.password,
     this.address,
+    this.district,
+    this.province,
+    this.nationality,
+    this.postalCode,
+    this.photoUrl,
+    this.idCard,
+    this.taxNumber,
+    this.createdDate,
+    this.updatedDate,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
     id: json["id"],
-    idCard: json["id_card"],
-    firstName: json["first_name"],
-    lastName: json["last_name"],
+    companyName: json["companyName"],
+    firstName: json["firstName"],
+    lastName: json["lastName"],
     email: json["email"],
-    phone: json["phone"],
-    dob: json["dob"],
-    province: json["province"],
-    district: json["district"],
-    village: json["village"],
+    doB: json["doB"] == null ? null : DateTime.parse(json["doB"]),
+    phoneNumber: json["phoneNumber"],
+    username: json["username"],
+    password: json["password"],
     address: json["address"],
+    district: json["district"],
+    province: json["province"],
+    nationality: json["nationality"],
+    postalCode: json["postalCode"],
+    photoUrl: json["photoUrl"],
+    idCard: json["idCard"],
+    taxNumber: json["taxNumber"],
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "id_card": idCard,
-    "first_name": firstName,
-    "last_name": lastName,
+    "companyName": companyName,
+    "firstName": firstName,
+    "lastName": lastName,
     "email": email,
-    "phone": phone,
-    "dob": dob,
-    "province": province,
-    "district": district,
-    "village": village,
+    "doB": doB?.toIso8601String(),
+    "phoneNumber": phoneNumber,
+    "username": username,
+    "password": password,
     "address": address,
+    "district": district,
+    "province": province,
+    "nationality": nationality,
+    "postalCode": postalCode,
+    "photoUrl": photoUrl,
+    "idCard": idCard,
+    "taxNumber": taxNumber,
+    "createdDate": createdDate?.toIso8601String(),
+    "updatedDate": updatedDate?.toIso8601String(),
   };
 }

@@ -18,7 +18,7 @@ class ListTileData extends StatelessWidget {
       children: [
         Container(
           decoration: const BoxDecoration(
-            color: bgColor4,
+            color: bgColor2,
             border: Border(
               bottom: BorderSide(
                 color: Color(0xFFE9E9E9),
@@ -32,6 +32,7 @@ class ListTileData extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
+                  flex: 8,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,6 +54,7 @@ class ListTileData extends StatelessWidget {
                 ),
                 if (single == null)
                   Expanded(
+                    flex: 2,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,

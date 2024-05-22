@@ -2,7 +2,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:motivegold/screen/landing_screen.dart';
 import 'package:motivegold/screen/tab_screen.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+
+import '../../api/api_services.dart';
+import '../../model/user.dart';
+import '../../utils/alert.dart';
+import '../../utils/constants.dart';
+import '../../utils/global.dart';
+import '../../utils/localbindings.dart';
+import '../../utils/util.dart';
 
 class SignInTen extends StatefulWidget {
   const SignInTen({Key? key}) : super(key: key);
@@ -14,6 +24,16 @@ class SignInTen extends StatefulWidget {
 class _SignInTenState extends State<SignInTen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    emailController.text = 'admin';
+    passController.text = 'P@ssw0rd';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +105,7 @@ class _SignInTenState extends State<SignInTen> {
                 ),
 
                 //remember & forget text
-                buildRemember_ForgetSection(size),
+                buildRememberForgetSection(size),
               ],
             ),
           ),
@@ -98,10 +118,55 @@ class _SignInTenState extends State<SignInTen> {
               children: [
                 //sign in button here
                 GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                        const TabScreen(title: 'GOLD')));
+                  onTap: () async {
+
+                    var authObject = encoder.convert({
+                      "username": emailController.text,
+                      "password": passController.text,
+                      "deviceDetail": Global.deviceDetail.toString()
+                    });
+                    final ProgressDialog pr = ProgressDialog(context,
+                        type: ProgressDialogType.normal,
+                        isDismissible: true,
+                        showLogs: true);
+                    await pr.show();
+                    pr.update(message: 'processing'.tr());
+                    try {
+                      var result =
+                          await ApiServices.post('/user/login', authObject);
+                      await pr.hide();
+                      if (result?.status == "success") {
+                        var userData = result?.data;
+                        UserModel user = UserModel.fromJson(userData);
+                        LocalStorage.sharedInstance.writeValue(
+                            key: 'user', value: encoder.convert(user));
+                        setState(() {
+                          Global.user = user;
+                          Global.isLoggedIn = true;
+                        });
+                        // print(user.toJson());
+                        LocalStorage.sharedInstance.setAuthStatus(
+                            key: Constants.isLoggedIn, value: "true");
+                        if (mounted) {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => const LandingScreen()));
+                        }
+                      } else {
+                        if (mounted) {
+                          Alert.warning(context, 'Warning'.tr(),
+                              result!.message!, 'OK'.tr(),
+                              action: () {});
+                        }
+                      }
+                    } catch (e) {
+                      await pr.hide();
+                      if (mounted) {
+                        Alert.warning(
+                            context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                            action: () {});
+                      }
+                    }
                   },
                   child: signInButton(size),
                 ),
@@ -321,40 +386,16 @@ class _SignInTenState extends State<SignInTen> {
     );
   }
 
-  Widget buildRemember_ForgetSection(Size size) {
+  Widget buildRememberForgetSection(Size size) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          Container(
-            alignment: Alignment.center,
-            width: 20.0,
-            height: 20.0,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5.0),
-              color: const Color(0xFF21899C),
-            ),
-            child: const Icon(
-              Icons.check,
-              size: 13,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          Text(
-            'จำฉันไว้',
-            style: GoogleFonts.inter(
-              fontSize: 15.0,
-              color: const Color(0xFF0C0D34),
-            ),
-          ),
           const Spacer(),
           Text(
             'ลืมรหัสผ่าน?',
             style: GoogleFonts.inter(
-              fontSize: 13.0,
+              fontSize: 18,
               color: const Color(0xFF21899C),
               fontWeight: FontWeight.w500,
             ),

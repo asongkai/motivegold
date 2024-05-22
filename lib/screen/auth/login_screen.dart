@@ -1,8 +1,17 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/tab_screen.dart';
 import 'package:motivegold/widget/languageIntro.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+
+import '../../api/api_services.dart';
+import '../../utils/alert.dart';
+import '../../utils/constants.dart';
+import '../../utils/global.dart';
+import '../../utils/localbindings.dart';
+import '../../utils/util.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +21,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passwordCtrl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           duration: const Duration(milliseconds: 1000),
                           child: Text(
                             "login".tr(),
-                            style: const TextStyle(color: Colors.white, fontSize: 40),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 40),
                           )),
                       const SizedBox(
                         height: 10,
@@ -92,6 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   color:
                                                       Colors.grey.shade200))),
                                       child: TextField(
+                                        controller: emailCtrl,
                                         decoration: InputDecoration(
                                             hintText: "Email".tr(),
                                             hintStyle: const TextStyle(
@@ -107,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   color:
                                                       Colors.grey.shade200))),
                                       child: TextField(
+                                        controller: passwordCtrl,
                                         obscureText: true,
                                         decoration: InputDecoration(
                                             hintText: "Password".tr(),
@@ -133,10 +148,61 @@ class _LoginScreenState extends State<LoginScreen> {
                           FadeInUp(
                               duration: const Duration(milliseconds: 1600),
                               child: MaterialButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          const TabScreen(title: 'GOLD')));
+                                onPressed: () async {
+                                  var authObject = encoder.convert({
+                                    "username": emailCtrl.text,
+                                    "password": passwordCtrl.text,
+                                  });
+
+                                  print(authObject);
+                                  // return;
+                                  final ProgressDialog pr = ProgressDialog(
+                                      context,
+                                      type: ProgressDialogType.normal,
+                                      isDismissible: true,
+                                      showLogs: true);
+                                  await pr.show();
+                                  pr.update(message: 'processing'.tr());
+                                  try {
+                                    var result = await ApiServices.post(
+                                        '/user/login', authObject);
+                                    await pr.hide();
+                                    if (result?.status == "success") {
+                                      var userData = result?.data;
+                                      UserModel user =
+                                          UserModel.fromJson(userData);
+                                      LocalStorage.sharedInstance.writeValue(
+                                          key: 'user',
+                                          value: encoder.convert(user));
+                                      setState(() {
+                                        Global.user = user;
+                                        Global.isLoggedIn = true;
+                                      });
+                                      LocalStorage.sharedInstance.setAuthStatus(
+                                          key: Constants.isLoggedIn,
+                                          value: "true");
+                                      print(userData);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content:
+                                                  Text('loginSuccess'.tr())));
+
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const TabScreen(
+                                                      title: 'GOLD')));
+                                    } else {
+                                      Alert.warning(context, 'Warning'.tr(),
+                                          result!.message!, 'OK'.tr(),
+                                          action: () {});
+                                    }
+                                  } catch (e) {
+                                    await pr.hide();
+                                    Alert.warning(context, 'Warning'.tr(),
+                                        e.toString(), 'OK'.tr(),
+                                        action: () {});
+                                  }
                                 },
                                 height: 50,
                                 // margin: EdgeInsets.symmetric(horizontal: 50),

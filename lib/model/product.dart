@@ -4,6 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:motivegold/model/product_category.dart';
+import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/model/warehouseModel.dart';
+
 
 List<ProductModel> productListModelFromJson(String str) => List<ProductModel>.from(json.decode(str).map((x) => ProductModel.fromJson(x)));
 
@@ -14,58 +18,83 @@ ProductModel productModelFromJson(String str) => ProductModel.fromJson(json.deco
 String productModelToJson(ProductModel data) => json.encode(data.toJson());
 
 class ProductModel {
-  String? id;
+  int? id;
+  int? productTypeId;
+  ProductTypeModel? productType;
+  int? productCategoryId;
+  ProductCategoryModel? productCategory;
   String? productCode;
-  String productName;
-  String? weight;
-  double? commission;
-  double? price;
-  double? salePrice;
+  String name;
+  String? description;
+  String? photoUrl;
   String? type;
-  double? taxBase;
+  int? binLocationId;
+  WarehouseModel? binLocation;
+  DateTime? createdDate;
+  DateTime? updatedDate;
 
   ProductModel({
     this.id,
+    this.productTypeId,
+    this.productType,
+    this.productCategoryId,
+    this.productCategory,
     this.productCode,
-    required this.productName,
-    this.weight,
-    this.commission,
-    this.price,
-    this.salePrice,
+    required this.name,
+    this.description,
+    this.photoUrl,
     this.type,
-    this.taxBase
+    this.binLocationId,
+    this.binLocation,
+    this.createdDate,
+    this.updatedDate,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
     id: json["id"],
-    productCode: json["product_code"],
-    productName: json["product_name"],
-    weight: json["weight"],
-    commission: json["commission"],
-    price: json["price"],
-    salePrice: json["sale_price"],
+    productTypeId: json["productTypeId"],
+    productType: json["productType"] == null ? null : ProductTypeModel.fromJson(json["productType"]),
+    productCategoryId: json["productCategoryId"],
+    productCategory: json["productCategory"] == null ? null : ProductCategoryModel.fromJson(json["productCategory"]),
+    productCode: json["productCode"],
+    name: json["name"],
+    description: json["description"],
+    photoUrl: json["photoUrl"],
     type: json["type"],
-    taxBase: json["tax_base"],
+    binLocationId: json["binLocationId"],
+    binLocation: json["binLocation"] == null ? null : WarehouseModel.fromJson(json["binLocation"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "product_code": productCode,
-    "product_name": productName,
-    "weight": weight,
-    "commission": commission,
-    "price": price,
-    "sale_price": salePrice,
+    "productTypeId": productTypeId,
+    "productType": productType?.toJson(),
+    "productCategoryId": productCategoryId,
+    "productCategory": productCategory?.toJson(),
+    "productCode": productCode,
+    "name": name,
+    "description": description,
+    "photoUrl": photoUrl,
     "type": type,
-    "tax_base": taxBase
+    "binLocationId": binLocationId,
+    "binLocation": binLocation?.toJson(),
+    "createdDate": createdDate?.toIso8601String(),
+    "updatedDate": updatedDate?.toIso8601String(),
   };
 
   @override
-  String toString() => productName;
+  String toString() => name;
 
   @override
   operator ==(o) => o is ProductModel && o.id == id;
 
   @override
-  int get hashCode => id.hashCode^productName.hashCode^productCode.hashCode;
+  int get hashCode => id.hashCode^name.hashCode^productCode.hashCode;
+
+  @override
+  bool filter(String query) {
+    return name.toLowerCase().contains(query.toLowerCase());
+  }
 }

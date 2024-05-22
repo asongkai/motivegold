@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/landing_screen.dart';
 import 'package:motivegold/utils/custom_theme.dart';
@@ -22,6 +23,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // await Firebase.initializeApp();
+  Intl.defaultLocale = 'th_TH';
+  initializeDateFormatting('th_TH', null);
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(

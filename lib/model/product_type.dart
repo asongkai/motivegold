@@ -13,14 +13,16 @@ ProductTypeModel productTypeModelFromJson(String str) => ProductTypeModel.fromJs
 String productTypeModelToJson(ProductTypeModel data) => json.encode(data.toJson());
 
 class ProductTypeModel {
-  String? id;
+  int? id;
   String? code;
   String? name;
+  bool? isSelected;
 
   ProductTypeModel({
     this.id,
     this.code,
     this.name,
+    this.isSelected
   });
 
   factory ProductTypeModel.fromJson(Map<String, dynamic> json) => ProductTypeModel(
@@ -36,11 +38,13 @@ class ProductTypeModel {
   };
 
   @override
-  String toString() => code!;
+  String toString() {
+    return 'ProductTypeModel{id: $id, code: $code, name: $name}';
+  }
 
   @override
   operator ==(o) => o is ProductTypeModel && o.id == id;
 
   @override
-  int get hashCode => id.hashCode^code.hashCode^code.hashCode;
+  int get hashCode => id.hashCode^name.hashCode;
 }

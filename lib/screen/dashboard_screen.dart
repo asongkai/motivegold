@@ -3,10 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/screen/pos/mainmenu_screen.dart';
+import 'package:motivegold/screen/refill/refill_gold_stock_screen.dart';
+import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
+import 'package:motivegold/screen/used/sell_used_gold_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+
+import '../model/company.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -31,10 +37,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       loading = true;
     });
-    Global.goldDataModel = await api.getGoldPrice(context);
-    setState(() {
-      loading = false;
-    });
+
+    if (mounted) {
+      Global.goldDataModel = await api.getGoldPrice(context);
+
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   @override
@@ -44,10 +54,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'แดชบอร์ด',
+          Global.company != null ? ' ${Global.company!.name}' : 'แดชบอร์ด',
           style: TextStyle(fontSize: size?.getWidthPx(8)),
         ),
         automaticallyImplyLeading: false,
+        actions: [
+          Text(
+            Global.branch != null ? 'สาขา: ${Global.branch!.name}' : '',
+            style: TextStyle(
+              fontSize: size?.getWidthPx(8),
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Text(
+            Global.user != null
+                ? 'ผู้ใช้: ${Global.user!.firstName!} ${Global.user!.lastName!}'
+                : '',
+            style: TextStyle(
+              fontSize: size?.getWidthPx(8),
+            ),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+        ],
       ),
       body: Stack(
         children: <Widget>[dashBg, content],
@@ -101,40 +133,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (route != null) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => route));
-          } else {
-            showModalBottomSheet(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular(15.0)),
-              ),
-              context: context,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: isTablet ? 30 : 20,
-                    // crossAxisSpacing: 16,
-                    // mainAxisSpacing: 16,
-                    // crossAxisCount: 2,
-                    // childAspectRatio: .99,
-                    children: [
-                      modalDashboard(
-                          'สำหรับร้านขายส่ง',
-                          CupertinoIcons.sort_down_circle_fill,
-                          Colors.deepPurple,
-                          Container()),
-                      modalDashboard(
-                          'สำหรับร้านขายปลีก',
-                          CupertinoIcons.doc_text_search,
-                          Colors.teal,
-                          Container()),
-                    ],
-                  ),
-                );
-              },
-            );
           }
         },
         child: Container(
@@ -183,40 +181,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (route != null) {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => route));
-          } else {
-            showModalBottomSheet(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15.0),
-                    topRight: Radius.circular(15.0)),
-              ),
-              context: context,
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: isTablet ? 30 : 20,
-                    // crossAxisSpacing: 16,
-                    // mainAxisSpacing: 16,
-                    // crossAxisCount: 2,
-                    // childAspectRatio: .99,
-                    children: [
-                      modalDashboard(
-                          'สำหรับร้านขายส่ง',
-                          CupertinoIcons.sort_down_circle_fill,
-                          Colors.deepPurple,
-                          Container()),
-                      modalDashboard(
-                          'สำหรับร้านขายปลีก',
-                          CupertinoIcons.doc_text_search,
-                          Colors.teal,
-                          Container()),
-                    ],
-                  ),
-                );
-              },
-            );
           }
         },
         child: Container(
@@ -312,49 +276,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
   get grid => Expanded(
         child: Container(
           padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-          child: GridView.count(
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            crossAxisCount: 4,
-            // childAspectRatio: .90,
-            children: [
-              iconDashboard(
-                'ซื้อขายทองสำหรับร้านขายส่ง',
-                Image.asset('assets/icons/gold/gold-dealer.png'),
-                primer,
-                const MainMenuScreen(title: 'POS'),
-              ),
-              iconDashboard(
-                'ซื้อขายทองสำหรับร้านขายปลีก',
-                Image.asset('assets/icons/gold/gold-sub-dealer.png'),
-                Colors.tealAccent,
-                const MainMenuScreen(title: 'POS'),
-              ),
-              iconDashboard(
-                'ซื้อทองแท่ง',
-                Image.asset('assets/icons/gold/buy-gold-tang.png'),
-                Colors.redAccent,
-                const MainMenuScreen(title: 'POS'),
-              ),
-              iconDashboard(
-                'ขายทองแท่ง',
-                Image.asset('assets/icons/gold/sell-gold-tang.png'),
-                Colors.teal,
-                const MainMenuScreen(title: 'POS'),
-              ),
-              itemDashboard(
-                'ออมทอง'.tr(),
-                CupertinoIcons.download_circle,
-                Colors.green,
-                const MainMenuScreen(title: 'POS'),
-              ),
-              itemDashboard(
-                'ขายฝากทอง(จำนำ)',
-                CupertinoIcons.f_cursive,
-                Colors.purple,
-                const MainMenuScreen(title: 'POS'),
-              ),
-            ],
+          child: OrientationBuilder(
+            builder: (context, orientation) {
+              return GridView.count(
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                crossAxisCount: 5,
+                childAspectRatio:
+                    orientation == Orientation.portrait ? .80 : .90,
+                children: [
+                  iconDashboard(
+                    'ซื้อขายทองสำหรับร้านขายส่ง',
+                    Image.asset('assets/icons/gold/gold-dealer.png'),
+                    primer,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  iconDashboard(
+                    'ซื้อขายทองสำหรับร้านขายปลีก',
+                    Image.asset('assets/icons/gold/gold-sub-dealer.png'),
+                    Colors.tealAccent,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  iconDashboard(
+                    'ซื้อทองแท่ง',
+                    Image.asset('assets/icons/gold/buy-gold-tang.png'),
+                    Colors.redAccent,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  iconDashboard(
+                    'ขายทองแท่ง',
+                    Image.asset('assets/icons/gold/sell-gold-tang.png'),
+                    Colors.teal,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  itemDashboard(
+                    'ออมทอง'.tr(),
+                    CupertinoIcons.download_circle,
+                    Colors.green,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  itemDashboard(
+                    'ขายฝากทอง(จำนำ)',
+                    CupertinoIcons.f_cursive,
+                    Colors.purple,
+                    const MainMenuScreen(title: 'POS'),
+                  ),
+                  itemDashboard(
+                    'เติมทอง',
+                    Icons.add,
+                    Colors.teal,
+                    const RefillGoldStockScreen(),
+                  ),
+                  itemDashboard(
+                    'ขายทองเก่า',
+                    Icons.shopping_cart_checkout_rounded,
+                    Colors.brown,
+                    const SellUsedGoldScreen(),
+                  ),
+                  itemDashboard(
+                    'โอนทอง',
+                    Icons.compare_arrows_outlined,
+                    primer,
+                    const TransferGoldMenuScreen(),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       );

@@ -7,6 +7,8 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/title_tile.dart';
 
+import '../../widget/gold_price_data.dart';
+
 
 class GoldPriceScreen extends StatefulWidget {
   final bool showBackButton;
@@ -92,13 +94,13 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
                         title: '${Global.goldDataModel?.date}',
                       ),
                       ListTileData(
-                        leftTitle: 'ทองคำแท่ง',
-                        leftValue: "96.5%",
+                        leftTitle: '96.5%',
+                        leftValue: "",
                         rightTitle: "ขายออก",
                         rightValue: "${Global.goldDataModel?.theng?.sell}",
                       ),
                       ListTileData(
-                        leftTitle: '',
+                        leftTitle: 'ทองคำแท่ง',
                         leftValue: "",
                         rightTitle: "รับซื้อ",
                         rightValue: "${Global.goldDataModel?.theng?.buy}",
@@ -114,7 +116,22 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
                         leftValue: "",
                         rightTitle: "รับซื้อ (ฐานภาษี)",
                         rightValue: "${Global.goldDataModel?.paphun?.buy}",
-                      )
+                      ),
+                      // const GoldPriceListTileData(
+                      //   title: '96.5%',
+                      //   buy: "รับซื้อ",
+                      //   sell: "ขายออก",
+                      // ),
+                      // GoldPriceListTileData(
+                      //   title: 'ทองคำแท่ง',
+                      //   buy: "${Global.goldDataModel?.theng?.buy}",
+                      //   sell: "${Global.goldDataModel?.theng?.sell}",
+                      // ),
+                      // GoldPriceListTileData(
+                      //   title: 'ทองรูปพรรณ',
+                      //   buy: "${Global.goldDataModel?.paphun?.buy}",
+                      //   sell: "${Global.goldDataModel?.paphun?.sell}",
+                      // ),
                     ],
                   ),
                 ),
