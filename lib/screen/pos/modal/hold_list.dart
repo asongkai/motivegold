@@ -9,7 +9,6 @@ import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 
-
 class HoldListModal extends StatefulWidget {
   const HoldListModal({super.key});
 
@@ -154,7 +153,7 @@ class _HoldListModalState extends State<HoldListModal> {
           child: ListTile(
             title: ProductListTileData(
               orderId: order.orderId,
-              orderDate: Global.dateOnly(order.orderDate!.toString()),
+              weight: Global.dateOnly(order.orderDate!.toString()),
               totalPrice: order.priceIncludeTax.toString(),
               type: order.orderTypeId.toString(),
             ),
@@ -169,8 +168,8 @@ class _HoldListModalState extends State<HoldListModal> {
                   removeProduct(index);
                 },
                 child: Container(
-                  height: 80,
-                  width: 80,
+                  height: 60,
+                  width: 60,
                   decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(8)),
@@ -194,17 +193,21 @@ class _HoldListModalState extends State<HoldListModal> {
                   } else if (order.orderTypeId == 2) {
                     Global.posIndex = 1;
                     Global.buyOrderDetail = order.details;
+                  } else if (order.orderTypeId == 3 || order.orderTypeId == 4) {
+                    Global.posIndex = 0;
+                    Global.sellThengOrderDetail = order.details;
+                  } else if (order.orderTypeId == 33 || order.orderTypeId == 44) {
+                    Global.posIndex = 1;
+                    Global.buyThengOrderDetail = order.details;
                   }
                   Future.delayed(const Duration(milliseconds: 500), () async {
-                    setState(() {
-                    });
+                    setState(() {});
                     Navigator.of(context).pop();
                   });
-
                 },
                 child: Container(
-                  height: 80,
-                  width: 80,
+                  height: 60,
+                  width: 60,
                   decoration: BoxDecoration(
                       color: Colors.teal,
                       borderRadius: BorderRadius.circular(8)),
@@ -213,6 +216,9 @@ class _HoldListModalState extends State<HoldListModal> {
                     color: Colors.white,
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 40,
               ),
             ],
           ),

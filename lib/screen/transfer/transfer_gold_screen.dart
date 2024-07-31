@@ -15,21 +15,19 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import '../../api/api_services.dart';
-import '../../constants/colors.dart';
-import '../../model/order.dart';
-import '../../model/order_detail.dart';
-import '../../model/product.dart';
-import '../../model/warehouseModel.dart';
-import '../../utils/alert.dart';
-import '../../utils/global.dart';
-import '../../utils/responsive_screen.dart';
-import '../../utils/util.dart';
-import '../../widget/dropdown/DropDownItemWidget.dart';
-import '../../widget/dropdown/DropDownObjectChildWidget.dart';
-import '../../widget/list_tile_data.dart';
-import '../../widget/loading/loading_progress.dart';
-import '../gold/gold_price_screen.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/product.dart';
+import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/list_tile_data.dart';
+import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/screen/gold/gold_price_screen.dart';
 
 class TransferGoldScreen extends StatefulWidget {
   const TransferGoldScreen({super.key});
@@ -161,13 +159,14 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
   }
 
   void loadToWarehouse(int id) async {
+    motivePrint(id);
     try {
       final ProgressDialog pr = ProgressDialog(context,
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
       await pr.show();
       pr.update(message: 'processing'.tr());
       var result = await ApiServices.get('/binlocation/by-branch/$id');
-      // print(result!.data);
+      print(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         setState(() {
@@ -218,7 +217,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
       await pr.show();
       pr.update(message: 'processing'.tr());
       var result =
-          await ApiServices.get('/branch/by-company/${Global.user!.companyId}');
+          await ApiServices.get('/branch/by-company-branch/${Global.user!.companyId}/${Global.user!.branchId}');
       // motivePrint(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -668,7 +667,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
 
                                 if (selectedFromLocation == null) {
                                   Alert.warning(
@@ -698,385 +697,495 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 }
 
                                 if (Global.transfer == null) {
-                                  TransferModel transfer = TransferModel(
-                                      transferId: generateRandomString(10),
-                                      transferDate: DateTime.now().toUtc(),
-                                      binLocationId:
-                                      int.parse(
-                                          warehouseCtrl
-                                              .text),
-                                      toBinLocationId:
-                                      int.parse(
-                                          toWarehouseCtrl
-                                              .text),
-                                      fromBinLocationName:
-                                      selectedFromLocation!
-                                          .name,
-                                      toBinLocationName:
-                                      selectedToLocation!
-                                          .name,
-                                      toBranchId: selectedBranch != null ? selectedBranch!.id : 0,
-                                      toBranchName: selectedBranch != null ? selectedBranch!.name : '',
-                                      transferType: selectedTransferType!.code,
-                                      details: Global.transferDetail!,
-                                      orderTypeId: 0);
-                                  final data = transfer.toJson();
-                                  Global.transfer = TransferModel.fromJson(data);
+
+                                  final ProgressDialog pr =
+                                  ProgressDialog(context,
+                                      type: ProgressDialogType
+                                          .normal,
+                                      isDismissible: true,
+                                      showLogs: true);
+                                  await pr.show();
+                                  pr.update(
+                                      message: 'processing'.tr());
+                                  try {
+                                    var result =
+                                        await ApiServices.post(
+                                        '/order/gen/7',
+                                        Global.requestObj(null));
+                                    await pr.hide();
+                                    if (result!.status == "success") {
+
+
+                                      TransferModel transfer = TransferModel(
+                                          transferId: result.data,
+                                          transferDate: DateTime.now().toUtc(),
+                                          binLocationId:
+                                          int.parse(
+                                              warehouseCtrl
+                                                  .text),
+                                          toBinLocationId:
+                                          int.parse(
+                                              toWarehouseCtrl
+                                                  .text),
+                                          fromBinLocationName:
+                                          selectedFromLocation!
+                                              .name,
+                                          toBinLocationName:
+                                          selectedToLocation!
+                                              .name,
+                                          toBranchId: selectedBranch != null ? selectedBranch!.id : 0,
+                                          toBranchName: selectedBranch != null ? selectedBranch!.name : '',
+                                          transferType: selectedTransferType!.code,
+                                          details: Global.transferDetail!,
+                                          orderTypeId: 7);
+                                      final data = transfer.toJson();
+                                      Global.transfer = TransferModel.fromJson(data);
+
+
+
+                                    } else {
+                                      if (mounted) {
+                                        Alert.warning(
+                                            context,
+                                            'Warning'.tr(),
+                                            'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                            'OK'.tr(),
+                                            action: () {});
+                                      }
+                                    }
+                                  } catch (e) {
+                                    await pr.hide();
+                                    if (mounted) {
+                                      Alert.warning(
+                                          context,
+                                          'Warning'.tr(),
+                                          e.toString(),
+                                          'OK'.tr(),
+                                          action: () {});
+                                    }
+                                  }
+
+
                                 }
                                 resetText();
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        content: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            Positioned(
-                                              right: -40.0,
-                                              top: -40.0,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const CircleAvatar(
-                                                  backgroundColor: Colors.red,
-                                                  child: Icon(Icons.close),
+                                if (mounted) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Stack(
+                                            clipBehavior: Clip.none,
+                                            children: [
+                                              Positioned(
+                                                right: -40.0,
+                                                top: -40.0,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const CircleAvatar(
+                                                    backgroundColor: Colors.red,
+                                                    child: Icon(Icons.close),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Form(
-                                              key: formKey,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  FocusScope.of(context)
-                                                      .requestFocus(
-                                                          FocusNode());
-                                                },
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      3 /
-                                                      4,
-                                                  child: SingleChildScrollView(
-                                                    child: Column(
-                                                      children: [
-                                                        SizedBox(
-                                                          height: 100,
-                                                          child: Row(
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 5,
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          8.0),
-                                                                  child:
-                                                                      SizedBox(
-                                                                    height: 80,
-                                                                    child: MiraiDropDownMenu<
-                                                                        ProductModel>(
-                                                                      key:
-                                                                          UniqueKey(),
-                                                                      children:
-                                                                          productList,
-                                                                      space: 4,
-                                                                      maxHeight:
-                                                                          360,
-                                                                      showSearchTextField:
-                                                                          true,
-                                                                      selectedItemBackgroundColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                      emptyListMessage:
-                                                                          'ไม่มีข้อมูล',
-                                                                      showSelectedItemBackgroundColor:
-                                                                          true,
-                                                                      itemWidgetBuilder:
-                                                                          (
-                                                                        int index,
-                                                                        ProductModel?
-                                                                            project, {
-                                                                        bool isItemSelected =
-                                                                            false,
-                                                                      }) {
-                                                                        return DropDownItemWidget(
-                                                                          project:
-                                                                              project,
-                                                                          isItemSelected:
-                                                                              isItemSelected,
-                                                                          firstSpace:
-                                                                              10,
-                                                                          fontSize:
-                                                                              size!.getWidthPx(6),
-                                                                        );
-                                                                      },
-                                                                      onChanged:
-                                                                          (ProductModel
-                                                                              value) {
-                                                                        productCodeCtrl.text = value
-                                                                            .id!
-                                                                            .toString();
-                                                                        productNameCtrl.text =
-                                                                            value.name;
-                                                                        productNotifier!.value =
-                                                                            value;
-                                                                        if (warehouseCtrl.text !=
-                                                                            "") {
-                                                                          loadQtyByLocation(
-                                                                              selectedFromLocation!.id!);
-                                                                        }
-                                                                        FocusScope.of(context)
-                                                                            .requestFocus(FocusNode());
-                                                                      },
-                                                                      child:
-                                                                          DropDownObjectChildWidget(
+                                              Form(
+                                                key: formKey,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    FocusScope.of(context)
+                                                        .requestFocus(
+                                                        FocusNode());
+                                                  },
+                                                  child: SizedBox(
+                                                    width: MediaQuery
+                                                        .of(context)
+                                                        .size
+                                                        .width *
+                                                        3 /
+                                                        4,
+                                                    child: SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          SizedBox(
+                                                            height: 100,
+                                                            child: Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  flex: 5,
+                                                                  child: Padding(
+                                                                    padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        8.0),
+                                                                    child:
+                                                                    SizedBox(
+                                                                      height: 80,
+                                                                      child: MiraiDropDownMenu<
+                                                                          ProductModel>(
                                                                         key:
-                                                                            GlobalKey(),
-                                                                        fontSize:
-                                                                            size!.getWidthPx(6),
-                                                                        projectValueNotifier:
-                                                                            productNotifier!,
+                                                                        UniqueKey(),
+                                                                        children:
+                                                                        productList,
+                                                                        space: 4,
+                                                                        maxHeight:
+                                                                        360,
+                                                                        showSearchTextField:
+                                                                        true,
+                                                                        selectedItemBackgroundColor:
+                                                                        Colors
+                                                                            .transparent,
+                                                                        emptyListMessage:
+                                                                        'ไม่มีข้อมูล',
+                                                                        showSelectedItemBackgroundColor:
+                                                                        true,
+                                                                        itemWidgetBuilder:
+                                                                            (
+                                                                            int index,
+                                                                            ProductModel?
+                                                                            project,
+                                                                            {
+                                                                              bool isItemSelected =
+                                                                              false,
+                                                                            }) {
+                                                                          return DropDownItemWidget(
+                                                                            project:
+                                                                            project,
+                                                                            isItemSelected:
+                                                                            isItemSelected,
+                                                                            firstSpace:
+                                                                            10,
+                                                                            fontSize:
+                                                                            size!
+                                                                                .getWidthPx(
+                                                                                6),
+                                                                          );
+                                                                        },
+                                                                        onChanged:
+                                                                            (
+                                                                            ProductModel
+                                                                            value) {
+                                                                          productCodeCtrl
+                                                                              .text =
+                                                                              value
+                                                                                  .id!
+                                                                                  .toString();
+                                                                          productNameCtrl
+                                                                              .text =
+                                                                              value
+                                                                                  .name;
+                                                                          productNotifier!
+                                                                              .value =
+                                                                              value;
+                                                                          if (warehouseCtrl
+                                                                              .text !=
+                                                                              "") {
+                                                                            loadQtyByLocation(
+                                                                                selectedFromLocation!
+                                                                                    .id!);
+                                                                          }
+                                                                          FocusScope
+                                                                              .of(
+                                                                              context)
+                                                                              .requestFocus(
+                                                                              FocusNode());
+                                                                        },
+                                                                        child:
+                                                                        DropDownObjectChildWidget(
+                                                                          key:
+                                                                          GlobalKey(),
+                                                                          fontSize:
+                                                                          size!
+                                                                              .getWidthPx(
+                                                                              6),
+                                                                          projectValueNotifier:
+                                                                          productNotifier!,
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            ],
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child:
-                                                                    buildTextFieldBig(
-                                                                        labelText:
-                                                                            "น้ำหนักทั้งหมด (gram)",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .number,
-                                                                        enabled:
-                                                                            false,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .orange,
-                                                                        controller:
-                                                                            productWeightCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        onChanged:
-                                                                            (String
-                                                                                value) {
-                                                                          if (productWeightCtrl
-                                                                              .text
-                                                                              .isNotEmpty) {
-                                                                            productWeightBahtCtrl.text =
-                                                                                formatter.format((Global.toNumber(productWeightCtrl.text) / 15.16).toPrecision(2));
-                                                                          } else {
-                                                                            productWeightBahtCtrl.text =
-                                                                                "";
-                                                                          }
-                                                                        }),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              Expanded(
-                                                                child:
-                                                                    buildTextFieldBig(
-                                                                        labelText:
-                                                                            "น้ำหนักทั้งหมด (บาททอง)",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .phone,
-                                                                        enabled:
-                                                                            false,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .orange,
-                                                                        controller:
-                                                                            productWeightBahtCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        onChanged:
-                                                                            (String
-                                                                                value) {
-                                                                          if (productWeightBahtCtrl
-                                                                              .text
-                                                                              .isNotEmpty) {
-                                                                            productWeightCtrl.text =
-                                                                                formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
-                                                                          } else {
-                                                                            productWeightCtrl.text =
-                                                                                "";
-                                                                          }
-                                                                        }),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child:
-                                                                    buildTextFieldBig(
-                                                                        labelText:
-                                                                            "ป้อนน้ำหนัก (gram)",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .number,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .orange,
-                                                                        controller:
-                                                                            productEntryWeightCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        onChanged:
-                                                                            (String
-                                                                                value) {
-                                                                          if (productEntryWeightCtrl
-                                                                              .text
-                                                                              .isNotEmpty) {
-                                                                            productEntryWeightBahtCtrl.text =
-                                                                                formatter.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16).toPrecision(2));
-                                                                          } else {
-                                                                            productEntryWeightBahtCtrl.text =
-                                                                                "";
-                                                                          }
-                                                                        }),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 10,
-                                                              ),
-                                                              Expanded(
-                                                                child:
-                                                                    buildTextFieldBig(
-                                                                        labelText:
-                                                                            "ป้อนน้ำหนัก (บาททอง)",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .phone,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .orange,
-                                                                        controller:
-                                                                            productEntryWeightBahtCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        onChanged:
-                                                                            (String
-                                                                                value) {
-                                                                          if (productEntryWeightBahtCtrl
-                                                                              .text
-                                                                              .isNotEmpty) {
-                                                                            productEntryWeightCtrl.text =
-                                                                                formatter.format((Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16).toPrecision(2));
-                                                                          } else {
-                                                                            productEntryWeightCtrl.text =
-                                                                                "";
-                                                                          }
-                                                                        }),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: OutlinedButton(
-                                                            child: const Text(
-                                                                "เพิ่ม"),
-                                                            onPressed:
-                                                                () async {
-
-                                                              if (productEntryWeightCtrl
-                                                                  .text
-                                                                  .isEmpty) {
-                                                                Alert.warning(
-                                                                    context,
-                                                                    'คำเตือน',
-                                                                    'กรุณาเพิ่มข้อมูลก่อน',
-                                                                    'OK');
-                                                                return;
-                                                              }
-
-                                                              if (toWarehouseCtrl
-                                                                  .text
-                                                                  .isEmpty) {
-                                                                Alert.warning(
-                                                                    context,
-                                                                    'คำเตือน',
-                                                                    'กรุณาเพิ่มข้อมูลก่อน',
-                                                                    'OK');
-                                                                return;
-                                                              }
-
-                                                              Global
-                                                                  .transferDetail!
-                                                                  .add(
-                                                                TransferDetailModel(
-                                                                  productName:
-                                                                      productNameCtrl
-                                                                          .text,
-                                                                  productId: int.parse(
-                                                                      productCodeCtrl
-                                                                          .text),
-                                                                  weight: Global
-                                                                      .toNumber(
-                                                                          productEntryWeightCtrl
-                                                                              .text),
-                                                                  weightBath: Global
-                                                                      .toNumber(
-                                                                          productEntryWeightBahtCtrl
-                                                                              .text),
+                                                          const SizedBox(
+                                                            height: 10,),
+                                                          Padding(
+                                                            padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                            child: Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                  buildTextFieldBig(
+                                                                      labelText:
+                                                                      "น้ำหนักทั้งหมด (gram)",
+                                                                      inputType:
+                                                                      TextInputType
+                                                                          .number,
+                                                                      enabled:
+                                                                      false,
+                                                                      textColor:
+                                                                      Colors
+                                                                          .orange,
+                                                                      controller:
+                                                                      productWeightCtrl,
+                                                                      inputFormat: [
+                                                                        ThousandsFormatter(
+                                                                            allowFraction: true)
+                                                                      ],
+                                                                      onChanged:
+                                                                          (
+                                                                          String
+                                                                          value) {
+                                                                        if (productWeightCtrl
+                                                                            .text
+                                                                            .isNotEmpty) {
+                                                                          productWeightBahtCtrl
+                                                                              .text =
+                                                                              formatter
+                                                                                  .format(
+                                                                                  (Global
+                                                                                      .toNumber(
+                                                                                      productWeightCtrl
+                                                                                          .text) /
+                                                                                      15.16)
+                                                                                      .toPrecision(
+                                                                                      2));
+                                                                        } else {
+                                                                          productWeightBahtCtrl
+                                                                              .text =
+                                                                          "";
+                                                                        }
+                                                                      }),
                                                                 ),
-                                                              );
-                                                              Global.transfer!
-                                                                      .details =
-                                                                  Global
-                                                                      .transferDetail;
-                                                              setState(() {});
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
+                                                                const SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Expanded(
+                                                                  child:
+                                                                  buildTextFieldBig(
+                                                                      labelText:
+                                                                      "น้ำหนักทั้งหมด (บาททอง)",
+                                                                      inputType:
+                                                                      TextInputType
+                                                                          .phone,
+                                                                      enabled:
+                                                                      false,
+                                                                      textColor:
+                                                                      Colors
+                                                                          .orange,
+                                                                      controller:
+                                                                      productWeightBahtCtrl,
+                                                                      inputFormat: [
+                                                                        ThousandsFormatter(
+                                                                            allowFraction: true)
+                                                                      ],
+                                                                      onChanged:
+                                                                          (
+                                                                          String
+                                                                          value) {
+                                                                        if (productWeightBahtCtrl
+                                                                            .text
+                                                                            .isNotEmpty) {
+                                                                          productWeightCtrl
+                                                                              .text =
+                                                                              formatter
+                                                                                  .format(
+                                                                                  (Global
+                                                                                      .toNumber(
+                                                                                      productWeightBahtCtrl
+                                                                                          .text) *
+                                                                                      15.16)
+                                                                                      .toPrecision(
+                                                                                      2));
+                                                                        } else {
+                                                                          productWeightCtrl
+                                                                              .text =
+                                                                          "";
+                                                                        }
+                                                                      }),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        )
-                                                      ],
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                            child: Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                  buildTextFieldBig(
+                                                                      labelText:
+                                                                      "ป้อนน้ำหนัก (gram)",
+                                                                      inputType:
+                                                                      TextInputType
+                                                                          .number,
+                                                                      textColor:
+                                                                      Colors
+                                                                          .orange,
+                                                                      controller:
+                                                                      productEntryWeightCtrl,
+                                                                      inputFormat: [
+                                                                        ThousandsFormatter(
+                                                                            allowFraction: true)
+                                                                      ],
+                                                                      onChanged:
+                                                                          (
+                                                                          String
+                                                                          value) {
+                                                                        if (productEntryWeightCtrl
+                                                                            .text
+                                                                            .isNotEmpty) {
+                                                                          productEntryWeightBahtCtrl
+                                                                              .text =
+                                                                              formatter
+                                                                                  .format(
+                                                                                  (Global
+                                                                                      .toNumber(
+                                                                                      productEntryWeightCtrl
+                                                                                          .text) /
+                                                                                      15.16)
+                                                                                      .toPrecision(
+                                                                                      2));
+                                                                        } else {
+                                                                          productEntryWeightBahtCtrl
+                                                                              .text =
+                                                                          "";
+                                                                        }
+                                                                      }),
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                Expanded(
+                                                                  child:
+                                                                  buildTextFieldBig(
+                                                                      labelText:
+                                                                      "ป้อนน้ำหนัก (บาททอง)",
+                                                                      inputType:
+                                                                      TextInputType
+                                                                          .phone,
+                                                                      textColor:
+                                                                      Colors
+                                                                          .orange,
+                                                                      controller:
+                                                                      productEntryWeightBahtCtrl,
+                                                                      inputFormat: [
+                                                                        ThousandsFormatter(
+                                                                            allowFraction: true)
+                                                                      ],
+                                                                      onChanged:
+                                                                          (
+                                                                          String
+                                                                          value) {
+                                                                        if (productEntryWeightBahtCtrl
+                                                                            .text
+                                                                            .isNotEmpty) {
+                                                                          productEntryWeightCtrl
+                                                                              .text =
+                                                                              formatter
+                                                                                  .format(
+                                                                                  (Global
+                                                                                      .toNumber(
+                                                                                      productEntryWeightBahtCtrl
+                                                                                          .text) *
+                                                                                      15.16)
+                                                                                      .toPrecision(
+                                                                                      2));
+                                                                        } else {
+                                                                          productEntryWeightCtrl
+                                                                              .text =
+                                                                          "";
+                                                                        }
+                                                                      }),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                            child: OutlinedButton(
+                                                              child: const Text(
+                                                                  "เพิ่ม"),
+                                                              onPressed:
+                                                                  () async {
+                                                                if (productEntryWeightCtrl
+                                                                    .text
+                                                                    .isEmpty) {
+                                                                  Alert.warning(
+                                                                      context,
+                                                                      'คำเตือน',
+                                                                      'กรุณาเพิ่มข้อมูลก่อน',
+                                                                      'OK');
+                                                                  return;
+                                                                }
+
+                                                                if (toWarehouseCtrl
+                                                                    .text
+                                                                    .isEmpty) {
+                                                                  Alert.warning(
+                                                                      context,
+                                                                      'คำเตือน',
+                                                                      'กรุณาเพิ่มข้อมูลก่อน',
+                                                                      'OK');
+                                                                  return;
+                                                                }
+
+                                                                Global
+                                                                    .transferDetail!
+                                                                    .add(
+                                                                  TransferDetailModel(
+                                                                    productName:
+                                                                    productNameCtrl
+                                                                        .text,
+                                                                    productId: int
+                                                                        .parse(
+                                                                        productCodeCtrl
+                                                                            .text),
+                                                                    weight: Global
+                                                                        .toNumber(
+                                                                        productEntryWeightCtrl
+                                                                            .text),
+                                                                    weightBath: Global
+                                                                        .toNumber(
+                                                                        productEntryWeightBahtCtrl
+                                                                            .text),
+                                                                  ),
+                                                                );
+                                                                Global.transfer!
+                                                                    .details =
+                                                                    Global
+                                                                        .transferDetail;
+                                                                setState(() {});
+                                                                Navigator.of(
+                                                                    context)
+                                                                    .pop();
+                                                              },
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    });
+                                            ],
+                                          ),
+                                        );
+                                      });
+                                }
                                 setState(() {});
                               },
                               child: const Row(

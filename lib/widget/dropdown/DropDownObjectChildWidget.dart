@@ -1,13 +1,8 @@
-/*
-* Created By Mirai Devs.
-* On 24/6/2022.
-*/
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:motivegold/model/product_type.dart';
 
-import '../../utils/app_theme.dart';
-import 'MiraiContainerWidget.dart';
+import 'package:motivegold/utils/app_theme.dart';
 
 
 class DropDownObjectChildWidget extends StatelessWidget {
@@ -55,8 +50,8 @@ class DropDownObjectChildWidget extends StatelessWidget {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 400),
                     child: Text(
-                      '${project.name}',
-                      key: ValueKey<String>('${project.name}'.trim()),
+                      '${project is int ? project : project.name}',
+                      key: ValueKey<String>('${project is int ? project : project.name}'.trim()),
                       maxLines: 1,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w600,

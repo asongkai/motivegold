@@ -10,14 +10,14 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../../api/api_services.dart';
-import '../../../../model/branch.dart';
-import '../../../../model/warehouseModel.dart';
-import '../../../../utils/alert.dart';
-import '../../../../utils/global.dart';
-import '../../../../utils/responsive_screen.dart';
-import '../../../../widget/dropdown/DropDownItemWidget.dart';
-import '../../../../widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 
 class EditLocationScreen extends StatefulWidget {
@@ -39,6 +39,8 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
   BranchModel? selectedBranch;
   ValueNotifier<dynamic>? branchNotifier;
 
+  bool sell = false;
+
   @override
   void initState() {
     // implement initState
@@ -46,6 +48,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
     motivePrint(Global.user!.userRole);
     nameCtrl.text = widget.location.name;
     addressCtrl.text = widget.location.address!;
+    sell = widget.location.sell == 1 ? true : false;
     branchNotifier = ValueNotifier<BranchModel>(selectedBranch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
     loadData();
   }
@@ -266,6 +269,19 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10,),
+                    CheckboxListTile(
+                      title: const Text("ขายหน้าร้าน", style: TextStyle(fontSize: 20),),
+                      value: sell,
+                      visualDensity: VisualDensity.standard,
+                      activeColor: Colors.teal,
+                      onChanged: (newValue) {
+                        setState(() {
+                          sell = newValue!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                    )
                   ],
                 ),
               ),
@@ -301,6 +317,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                   "branchId": selectedBranch!.id.toString(),
                   "name": nameCtrl.text,
                   "address": addressCtrl.text,
+                  "sell": sell ? 1 : 0
                 });
 
                 // return;

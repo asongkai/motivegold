@@ -6,23 +6,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/model/order.dart';
-import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/model/transfer_detail.dart';
-import 'package:motivegold/screen/pos/customer_entry_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/button/simple_button.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../api/api_services.dart';
-import '../../utils/alert.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
 
 class TransferGoldCheckOutScreen extends StatefulWidget {
   const TransferGoldCheckOutScreen({super.key});
@@ -123,128 +119,6 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'ลูกค้า',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 25),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(.1),
-                                      blurRadius: 1,
-                                      spreadRadius: 1,
-                                      offset: const Offset(2, 2),
-                                    ),
-                                  ]),
-                              child: Global.customer == null
-                                  ? SimpleRoundButton(
-                                buttonText: Text(
-                                  'เพิ่ม',
-                                  style: TextStyle(
-                                      fontSize:
-                                      size.getWidthPx(10)),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const CustomerEntryScreen(),
-                                          fullscreenDialog:
-                                          true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                },
-                              )
-                                  : Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                                        style: TextStyle(
-                                          fontWeight:
-                                          FontWeight.w500,
-                                          fontSize:
-                                          size.getWidthPx(6),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                  const CustomerEntryScreen(),
-                                                  fullscreenDialog:
-                                                  true))
-                                              .whenComplete(() {
-                                            setState(() {});
-                                          });
-                                        },
-                                        child: Text(
-                                          "เปลี่ยน",
-                                          style: TextStyle(
-                                              fontWeight:
-                                              FontWeight.normal,
-                                              fontSize: size
-                                                  .getWidthPx(6),
-                                              color: Colors.red),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Text(
-                                    "${Global.customer!.phoneNumber}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                      fontSize: size.getWidthPx(6),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Text(
-                                    "${Global.customer!.email}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                      fontSize: size.getWidthPx(6),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 3,
-                                  ),
-                                  Text(
-                                    "${Global.customer!.address}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: size.getWidthPx(6),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                             const SizedBox(
                               height: 10,
                             ),
@@ -394,13 +268,13 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                 //   message: "กรุณารอจนกว่ากระบวนการพิมพ์จะเสร็จสิ้น.",
                 // );
 
-                if (Global.customer == null) {
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr());
-                    return;
-                  }
-                }
+                // if (Global.customer == null) {
+                //   if (mounted) {
+                //     Alert.warning(
+                //         context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr());
+                //     return;
+                //   }
+                // }
 
                 // if (_image == null) {
                 //   if (mounted) {
@@ -413,7 +287,7 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                 Global.transfer!.id = 0;
                 Global.transfer!.createdDate = DateTime.now().toUtc();
                 Global.transfer!.updatedDate = DateTime.now().toUtc();
-                Global.transfer!.customerId = Global.customer!.id!;
+                Global.transfer!.customerId = Global.customer == null ? 0 : Global.customer!.id!;
                 Global.transfer!.attachement =
                 _image == null ? null : Global.imageToBase64(_image!);
                 for (var j = 0; j < Global.transfer!.details!.length; j++) {
@@ -486,7 +360,7 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
   Future postOrder() async {
     var result =
     await ApiServices.post('/transfer', Global.requestObj(Global.transfer));
-    // print(result!.data);
+    print(result!.data);
     if (result!.status == "success") {
       var transfer = transferModelFromJson(jsonEncode(result.data));
       int? transferId = transfer.id;

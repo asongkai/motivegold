@@ -1,5 +1,5 @@
-import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -125,11 +125,11 @@ class Constants {
   static const String GOLD_URL = "https://motive.kodpay.la/api";
   static const String DOMAIN_GOLD = "https://motive.kodpay.la";
 
-  // static const String BACKEND_URL = "https://gold-421812.as.r.appspot.com/api";
-  // static const String DOMAIN_URL = "https://gold-421812.as.r.appspot.com";
+  // static const String BACKEND_URL = "http://testmoes.dyndns.info:5000/api";
+  // static const String DOMAIN_URL = "http://testmoes.dyndns.info:5000";
 
-  static String BACKEND_URL = Platform.isAndroid ? "http://10.0.2.2:5265/api" : "http://localhost:5265/api";
-  static String DOMAIN_URL = Platform.isAndroid ? "http://10.0.2.2:5265" : "http://localhost:5265";
+  static String BACKEND_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000/api" : "http://localhost:5000/api";
+  static String DOMAIN_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000" : "http://localhost:5000";
 
 
   static const String STORAGE_URL = "gs://app-name.appspot.com";

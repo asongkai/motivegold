@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constants/colors.dart';
+import 'package:motivegold/constants/colors.dart';
 
 class CustomTheme {
   final BoxConstraints constraints;

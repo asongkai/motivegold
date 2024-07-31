@@ -3,16 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/model/branch.dart';
-import 'package:motivegold/screen/pos/mainmenu_screen.dart';
-import 'package:motivegold/screen/refill/refill_gold_stock_screen.dart';
+import 'package:motivegold/screen/dashboard/theng_menu.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
-import 'package:motivegold/screen/used/sell_used_gold_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 
-import '../model/company.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -38,9 +36,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       loading = true;
     });
 
+    Global.goldDataModel = await api.getGoldPrice(context);
     if (mounted) {
-      Global.goldDataModel = await api.getGoldPrice(context);
-
       setState(() {
         loading = false;
       });
@@ -175,10 +172,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       );
 
   iconDashboard(
-          String title, Image iconData, Color background, dynamic route) =>
+          String title, Image iconData, Color background, dynamic route, {int index = 0}) =>
       GestureDetector(
         onTap: () {
           if (route != null) {
+            Global.posIndex = index;
+            setState(() {
+
+            });
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => route));
           }
@@ -283,58 +284,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisSpacing: 16,
                 crossAxisCount: 5,
                 childAspectRatio:
-                    orientation == Orientation.portrait ? .80 : .90,
+                    orientation == Orientation.portrait ? .80 : .80,
                 children: [
                   iconDashboard(
-                    'ซื้อขายทองสำหรับร้านขายส่ง',
-                    Image.asset('assets/icons/gold/gold-dealer.png'),
-                    primer,
-                    const MainMenuScreen(title: 'POS'),
-                  ),
-                  iconDashboard(
-                    'ซื้อขายทองสำหรับร้านขายปลีก',
+                    'ซื้อขายทองหน้าร้าน',
                     Image.asset('assets/icons/gold/gold-sub-dealer.png'),
                     Colors.tealAccent,
-                    const MainMenuScreen(title: 'POS'),
+                    const PosMenuScreen(title: 'POS'),
+                    index: 0
                   ),
                   iconDashboard(
-                    'ซื้อทองแท่ง',
+                    'ซื้อขายทองแท่ง \n',
                     Image.asset('assets/icons/gold/buy-gold-tang.png'),
                     Colors.redAccent,
-                    const MainMenuScreen(title: 'POS'),
-                  ),
-                  iconDashboard(
-                    'ขายทองแท่ง',
-                    Image.asset('assets/icons/gold/sell-gold-tang.png'),
-                    Colors.teal,
-                    const MainMenuScreen(title: 'POS'),
+                    const ThengMenuScreen(),
+                    index: 0
                   ),
                   itemDashboard(
-                    'ออมทอง'.tr(),
+                    'ออมทอง \n'.tr(),
                     CupertinoIcons.download_circle,
                     Colors.green,
-                    const MainMenuScreen(title: 'POS'),
+                    const PosMenuScreen(title: 'POS'),
                   ),
                   itemDashboard(
-                    'ขายฝากทอง(จำนำ)',
+                    'ขายฝากทอง (จำนำ)',
                     CupertinoIcons.f_cursive,
                     Colors.purple,
-                    const MainMenuScreen(title: 'POS'),
+                    const PosMenuScreen(title: 'POS'),
                   ),
                   itemDashboard(
-                    'เติมทอง',
+                    'ซื้อขายทองแท่งกับโบรกเกอร์ (จับคู่)',
                     Icons.add,
                     Colors.teal,
-                    const RefillGoldStockScreen(),
+                    const ThengMenuScreen(),
                   ),
                   itemDashboard(
-                    'ขายทองเก่า',
+                    'ซื้อขายทองแท่งกับโบรกเกอร์',
                     Icons.shopping_cart_checkout_rounded,
                     Colors.brown,
-                    const SellUsedGoldScreen(),
+                    const ThengMenuScreen(),
+                  ),
+                  iconDashboard(
+                    'ซื้อขายทองกับร้านขายส่ง',
+                    Image.asset('assets/icons/gold/gold-dealer.png'),
+                    primer,
+                    const WholeSaleMenuScreen(title: 'POS'),
                   ),
                   itemDashboard(
-                    'โอนทอง',
+                    'โอนทอง \n',
                     Icons.compare_arrows_outlined,
                     primer,
                     const TransferGoldMenuScreen(),

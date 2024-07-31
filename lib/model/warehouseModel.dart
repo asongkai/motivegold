@@ -18,6 +18,7 @@ class WarehouseModel {
   int? companyId;
   String name;
   String? address;
+  int? sell;
 
   WarehouseModel({
     this.id,
@@ -25,6 +26,7 @@ class WarehouseModel {
     this.companyId,
     required this.name,
     this.address,
+    this.sell
   });
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) => WarehouseModel(
@@ -33,6 +35,7 @@ class WarehouseModel {
     branchId: json["branchId"],
     name: json["name"],
     address: json["address"],
+    sell: json["sell"]
   );
 
   Map<String, dynamic> toJson() => {
@@ -41,6 +44,7 @@ class WarehouseModel {
     "branchId": branchId,
     "name": name,
     "address": address,
+    "sell": sell
   };
 
   @override

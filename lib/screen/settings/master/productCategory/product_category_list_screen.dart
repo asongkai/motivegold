@@ -10,9 +10,9 @@ import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../../api/api_services.dart';
-import '../../../../utils/alert.dart';
-import '../../../../utils/global.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
 import 'edit_product_category_screen.dart';
 
 

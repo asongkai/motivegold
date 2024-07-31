@@ -3,18 +3,18 @@ import 'package:motivegold/utils/responsive_screen.dart';
 
 class ProductListTileData extends StatelessWidget {
   final String? orderId;
-  final String? orderDate;
+  final String? weight;
   final String? totalPrice;
   final String? type;
-  final bool? showTotal;
+  bool showTotal;
 
-  const ProductListTileData(
+  ProductListTileData(
       {Key? key,
       this.orderId,
-      this.orderDate,
+      this.weight,
       this.totalPrice,
         this.type,
-      this.showTotal})
+      this.showTotal = false})
       : super(key: key);
 
   @override
@@ -62,6 +62,7 @@ class ProductListTileData extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (type != null)
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -87,7 +88,32 @@ class ProductListTileData extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (showTotal!)
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        'น้ำหนัก',
+                        style: TextStyle(
+                          fontSize: size.getWidthPx(8),
+                          color: const Color(0xFF636564),
+                        ),
+                      ),
+                      const SizedBox(height: 10,),
+                      Text(
+                        weight!,
+                        style: TextStyle(
+                            fontSize: size.getWidthPx(10),
+                            color: Colors.blue[700],
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                if (showTotal)
                 Expanded(
                   flex: 3,
                   child: Column(
@@ -113,31 +139,7 @@ class ProductListTileData extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text(
-                        'วันที่',
-                        style: TextStyle(
-                          fontSize: size.getWidthPx(8),
-                          color: const Color(0xFF636564),
-                        ),
-                      ),
-                      const SizedBox(height: 10,),
-                      Text(
-                        orderDate!,
-                        style: TextStyle(
-                            fontSize: size.getWidthPx(10),
-                            color: Colors.blue[700],
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                ),
+
               ],
             ),
           ),

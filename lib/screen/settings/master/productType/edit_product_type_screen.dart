@@ -1,15 +1,13 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modal_dialog/flutter_modal_dialog.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../../api/api_services.dart';
-import '../../../../model/warehouseModel.dart';
-import '../../../../utils/alert.dart';
-import '../../../../utils/global.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
 
 
 class EditProductTypeScreen extends StatefulWidget {
@@ -70,7 +68,7 @@ class _EditProductTypeScreenState extends State<EditProductTypeScreen> {
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: 'ชื่อคลังสินค้า'.tr(),
+                                  labelText: 'ชื่อประเภทสินค้า'.tr(),
                                   textColor: Colors
                                       .orange,
                                   validator: null,

@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/company.dart';
-import 'package:motivegold/model/product.dart';
 import 'package:motivegold/screen/settings/company/edit_company_screen.dart';
 import 'package:motivegold/screen/settings/company/new_company_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -12,10 +11,9 @@ import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../api/api_services.dart';
-import '../../../utils/alert.dart';
-import '../../../utils/global.dart';
-import '../../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
 
 class CompanyListScreen extends StatefulWidget {
   const CompanyListScreen({super.key});

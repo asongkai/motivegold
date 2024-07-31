@@ -10,12 +10,12 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 
-import '../../api/api_services.dart';
-import '../../model/product_category.dart';
-import '../../utils/global.dart';
-import '../../utils/responsive_screen.dart';
-import '../../widget/dropdown/DropDownItemWidget.dart';
-import '../../widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/model/product_category.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});

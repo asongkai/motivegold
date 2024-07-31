@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_pending_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -12,8 +10,8 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
-import '../../model/transfer.dart';
-import '../../utils/global.dart';
+import 'package:motivegold/model/transfer.dart';
+import 'package:motivegold/utils/global.dart';
 
 class TransferGoldMenuScreen extends StatefulWidget {
   const TransferGoldMenuScreen({super.key});

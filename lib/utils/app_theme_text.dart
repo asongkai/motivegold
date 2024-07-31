@@ -1,7 +1,4 @@
-/*
-* Created By Mirai Devs.
-* On 3/28/2022.
-*/
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

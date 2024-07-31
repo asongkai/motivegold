@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/response.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import '../utils/constants.dart';
-import '../utils/util.dart';
+import 'package:motivegold/utils/constants.dart';
+import 'package:motivegold/utils/util.dart';
 
 String makeAuth() {
   String username = 'root';
@@ -32,7 +32,7 @@ class ApiServices {
         }
       });
     } catch (e) {
-      print(e.toString());
+      motivePrint(e.toString());
     }
     return null;
   }
@@ -42,16 +42,16 @@ class ApiServices {
     try {
       // motivePrint(data);
       return http.post(Uri.parse(Constants.BACKEND_URL + url), headers: headers, body: data).then((response) {
-        // print(response.body);
+        // motivePrint(response.body);
         if (response.statusCode == 200) {
           // print(response.body);
           return Response.fromJson(jsonDecode(response.body));
         } else {
-          throw Future.error('error${response.body}');
+          return Response(data: response.body, status: "failed");
         }
       });
     } catch (e) {
-      print(url + e.toString());
+      motivePrint(url + e.toString());
     }
     return null;
   }
@@ -91,15 +91,15 @@ class ApiServices {
   }
 
   Future<GoldDataModel?> getGoldPrice(BuildContext context) async {
-    print(headers);
+    // print(headers);
     if (await Utils.checkConnection()) {
-      return http.post(
-        Uri.parse('${Constants.GOLD_URL}/gold/price'),
+      return http.get(
+        Uri.parse('${Constants.BACKEND_URL}/price'),
         headers: headers,
       ).then((http.Response response) {
         final String res = response.body;
         final int statusCode = response.statusCode;
-        print(res);
+        // print(res);
         if (statusCode < 200 || statusCode > 400) {
           Exception("Error while fetching data");
           return null;

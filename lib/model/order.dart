@@ -22,9 +22,10 @@ class OrderModel {
   String orderId;
   DateTime? orderDate;
   int? customerId;
-  int? status;
+  String? status;
   int? orderTypeId;
   String? orderTypeName;
+  double? weight;
   double? priceIncludeTax;
   double? purchasePrice;
   double? priceDiff;
@@ -37,6 +38,10 @@ class OrderModel {
   CustomerModel? customer;
   DateTime? createdDate;
   DateTime? updatedDate;
+  int? pairId;
+  String? paymentMethod;
+  DateTime? bookDate;
+  String? orderStatus;
 
   OrderModel({
     this.id,
@@ -46,6 +51,7 @@ class OrderModel {
     this.status,
     this.orderTypeId,
     this.orderTypeName,
+    this.weight,
     this.priceIncludeTax,
     this.purchasePrice,
     this.priceDiff,
@@ -58,6 +64,10 @@ class OrderModel {
     this.customer,
     this.createdDate,
     this.updatedDate,
+    this.pairId,
+    this.paymentMethod,
+    this.bookDate,
+    this.orderStatus
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
@@ -65,9 +75,10 @@ class OrderModel {
     orderId: json["orderId"],
     orderDate: json["orderDate"] == null ? null : DateTime.parse(json["orderDate"]),
     customerId: json["customerId"],
-    status: json["status"],
+    status: json["status"] is int ? json['status'].toString() : json['status'],
     orderTypeId: json["orderTypeId"],
     orderTypeName: json["orderTypeName"],
+    weight: json["weight"],
     priceIncludeTax: json["priceIncludeTax"],
     purchasePrice: json["purchasePrice"],
     priceDiff: json["priceDiff"],
@@ -80,6 +91,10 @@ class OrderModel {
     customer: json["customer"] == null ? null : CustomerModel.fromJson(json["customer"]),
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    pairId: json['pairId'],
+    paymentMethod: json['paymentMethod'],
+    bookDate: json["bookDate"] == null ? null : DateTime.parse(json["bookDate"]),
+    orderStatus: json['orderStatus'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -90,6 +105,7 @@ class OrderModel {
     "status": status,
     "orderTypeId": orderTypeId,
     "orderTypeName": orderTypeName,
+    "weight": weight,
     "priceIncludeTax": priceIncludeTax,
     "purchasePrice": purchasePrice,
     "priceDiff": priceDiff,
@@ -102,6 +118,10 @@ class OrderModel {
     "customer": customer?.toJson(),
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
+    "pairId": pairId,
+    "paymentMethod": paymentMethod,
+    "bookDate": bookDate?.toIso8601String(),
+    "orderStatus": orderStatus,
   };
 
   @override

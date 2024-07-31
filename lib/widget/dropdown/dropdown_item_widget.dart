@@ -1,7 +1,3 @@
-/*
-* Created By Mirai Devs.
-* On 3/28/2022.
-*/
 
 import 'package:flutter/material.dart';
 import 'package:substring_highlight/substring_highlight.dart';

@@ -25,7 +25,7 @@ class TransferModel {
   DateTime? transferDate;
   String? status;
   int? orderTypeId;
-  int? userId;
+  String? userId;
   dynamic attachement;
   int? binLocationId;
   WarehouseModel? fromBinLocation;

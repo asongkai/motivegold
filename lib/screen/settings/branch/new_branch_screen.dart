@@ -8,13 +8,13 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../api/api_services.dart';
-import '../../../model/company.dart';
-import '../../../utils/alert.dart';
-import '../../../utils/responsive_screen.dart';
-import '../../../utils/util.dart';
-import '../../../widget/dropdown/DropDownItemWidget.dart';
-import '../../../widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/model/company.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 class NewBranchScreen extends StatefulWidget {
   final bool showBackButton;
@@ -34,6 +34,8 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
   final TextEditingController villageCtrl = TextEditingController();
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
+  final TextEditingController branchCodeCtrl = TextEditingController();
+  final TextEditingController branchIdCtrl = TextEditingController();
 
   bool loading = false;
   List<CompanyModel>? companies;
@@ -253,6 +255,57 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
+                                  labelText: 'รหัสสาขา'.tr(),
+                                  validator: null,
+                                  enabled: true,
+                                  inputType: TextInputType.phone,
+                                  controller: branchIdCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0),
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextFieldBig(
+                                  labelText: 'ชื่อย่อสาขา (ภาษาอังกฤษเท่านั้น)'.tr(),
+                                  validator: null,
+                                  inputType: TextInputType.text,
+                                  controller: branchCodeCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextFieldBig(
                                   labelText: 'โทรศัพท์'.tr(),
                                   validator: null,
                                   enabled: true,
@@ -414,14 +467,28 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
               onPressed: () async {
                 if (selectedCompany == null) {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณาเลือกบริษัท', 'OK'.tr(),
                       action: () {});
                   return;
                 }
 
                 if (nameCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณากรอกชื่อสาขา', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (branchIdCtrl.text.trim() == "") {
+                  Alert.warning(
+                      context, 'warning'.tr(), 'กรุณากรอกรหัสสาขา', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (branchCodeCtrl.text.trim() == "") {
+                  Alert.warning(
+                      context, 'warning'.tr(), 'กรุณากรอกชื่อย่อสาขา', 'OK'.tr(),
                       action: () {});
                   return;
                 }
@@ -435,6 +502,8 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                   "village": villageCtrl.text,
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
+                  "branchId": branchIdCtrl.text,
+                  "branchCode": branchCodeCtrl.text
                 });
 
                 // print(object);

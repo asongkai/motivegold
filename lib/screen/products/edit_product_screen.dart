@@ -9,16 +9,16 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../api/api_services.dart';
-import '../../dummy/dummy.dart';
-import '../../model/product_category.dart';
-import '../../model/product_type.dart';
-import '../../utils/alert.dart';
-import '../../utils/global.dart';
-import '../../utils/responsive_screen.dart';
-import '../../utils/util.dart';
-import '../../widget/dropdown/DropDownItemWidget.dart';
-import '../../widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/dummy/dummy.dart';
+import 'package:motivegold/model/product_category.dart';
+import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 class EditProductScreen extends StatefulWidget {
   final bool showBackButton;
@@ -182,7 +182,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       buildTextFieldBig(
                                         labelText: 'รหัสสินค้า'.tr(),
                                         validator: null,
-                                        enabled: false,
+                                        enabled: true,
                                         inputType: TextInputType.text,
                                         controller: productCodeCtrl,
                                       ),

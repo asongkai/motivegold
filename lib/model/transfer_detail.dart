@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:motivegold/model/product.dart';
-import 'package:motivegold/model/warehouseModel.dart';
 
 TransferDetailModel transferDetailModelFromJson(String str) => TransferDetailModel.fromJson(json.decode(str));
 

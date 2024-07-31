@@ -1,12 +1,6 @@
-/*
-* Created By Mirai Devs.
-* On 24/6/2022.
-*/
-import 'package:flutter/material.dart';
-import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/model/product_type.dart';
 
-import 'MiraiContainerWidget.dart';
+import 'package:flutter/material.dart';
+
 
 class DropDownItemWidget extends StatelessWidget {
   const DropDownItemWidget({
@@ -41,7 +35,7 @@ class DropDownItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '${project!.name}',
+                  '${project is int ? project :project!.name}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: Colors.black,
                     fontSize: fontSize,

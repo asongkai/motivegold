@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.10"
+  board_datetime_picker:
+    dependency: "direct main"
+    description:
+      name: board_datetime_picker
+      sha256: "00e38eb4843b716314446a8d863432a82429677b0cd4907a5d14b98e22d479fb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.6"
   boolean_selector:
     dependency: transitive
     description:
@@ -480,6 +488,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_to_pdf:
+    dependency: "direct main"
+    description:
+      name: flutter_to_pdf
+      sha256: "57c767c0a3fa4527c6543c6aac01af6d106120328d097be3d7fc80be18bc1e27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -965,6 +981,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  quiver:
+    dependency: "direct main"
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   ripple_button:
     dependency: "direct main"
     description:

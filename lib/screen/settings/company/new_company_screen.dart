@@ -3,9 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../api/api_services.dart';
-import '../../../utils/alert.dart';
-import '../../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/util.dart';
 
 class NewCompanyScreen extends StatefulWidget {
   final bool showBackButton;

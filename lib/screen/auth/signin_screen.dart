@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:motivegold/screen/landing_screen.dart';
-import 'package:motivegold/screen/tab_screen.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../api/api_services.dart';
-import '../../model/user.dart';
-import '../../utils/alert.dart';
-import '../../utils/constants.dart';
-import '../../utils/global.dart';
-import '../../utils/localbindings.dart';
-import '../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/model/user.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/constants.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/localbindings.dart';
+import 'package:motivegold/utils/util.dart';
 
 class SignInTen extends StatefulWidget {
   const SignInTen({Key? key}) : super(key: key);
@@ -31,8 +30,8 @@ class _SignInTenState extends State<SignInTen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    emailController.text = 'admin';
-    passController.text = 'P@ssw0rd';
+    emailController.text = 'user';
+    passController.text = '1234';
   }
 
   @override

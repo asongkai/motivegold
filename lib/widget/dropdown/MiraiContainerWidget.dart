@@ -1,7 +1,4 @@
-/*
-* Created By Mirai Devs.
-* On 24/6/2022.
-*/
+
 import 'package:flutter/material.dart';
 
 class MiraiContainerWidget extends StatelessWidget {

@@ -5,9 +5,9 @@ import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../api/api_services.dart';
-import '../../../utils/alert.dart';
-import '../../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/util.dart';
 
 class EditBranchScreen extends StatefulWidget {
   final bool showBackButton;
@@ -34,6 +34,8 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   final TextEditingController villageCtrl = TextEditingController();
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
+  final TextEditingController branchCodeCtrl = TextEditingController();
+  final TextEditingController branchIdCtrl = TextEditingController();
 
   bool loading = false;
 
@@ -50,6 +52,8 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     villageCtrl.text = widget.branch.village ?? '';
     districtCtrl.text = widget.branch.district ?? '';
     provinceCtrl.text = widget.branch.province ?? '';
+    branchCodeCtrl.text = widget.branch.branchCode ?? '';
+    branchIdCtrl.text = widget.branch.branchId ?? '';
   }
 
   @override
@@ -96,6 +100,57 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: nameCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextFieldBig(
+                                  labelText: 'รหัสสาขา'.tr(),
+                                  validator: null,
+                                  enabled: true,
+                                  inputType: TextInputType.phone,
+                                  controller: branchIdCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0),
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextFieldBig(
+                                  labelText: 'ชื่อย่อสาขา (ภาษาอังกฤษเท่านั้น)'.tr(),
+                                  validator: null,
+                                  inputType: TextInputType.text,
+                                  controller: branchCodeCtrl,
                                 ),
                               ],
                             ),
@@ -278,9 +333,30 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
+                // if (selectedCompany == null) {
+                //   Alert.warning(
+                //       context, 'warning'.tr(), 'กรุณาเลือกบริษัท', 'OK'.tr(),
+                //       action: () {});
+                //   return;
+                // }
+
                 if (nameCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณากรอกชื่อสาขา', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (branchIdCtrl.text.trim() == "") {
+                  Alert.warning(
+                      context, 'warning'.tr(), 'กรุณากรอกรหัสสาขา', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (branchCodeCtrl.text.trim() == "") {
+                  Alert.warning(
+                      context, 'warning'.tr(), 'กรุณากรอกชื่อย่อสาขา', 'OK'.tr(),
                       action: () {});
                   return;
                 }
@@ -295,6 +371,8 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                   "village": villageCtrl.text,
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
+                  "branchId": branchIdCtrl.text,
+                  "branchCode": branchCodeCtrl.text
                 });
 
                 // print(object);

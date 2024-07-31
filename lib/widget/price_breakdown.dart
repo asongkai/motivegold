@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import '../constants/colors.dart';
+import 'package:motivegold/constants/colors.dart';
 
 class PriceBreakdown extends StatelessWidget {
   const PriceBreakdown({

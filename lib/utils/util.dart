@@ -13,6 +13,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
+import '../model/order.dart';
 import 'global.dart';
 
 final formatter = NumberFormat("#,###.##");
@@ -408,11 +409,12 @@ Widget buildTextField(
       keyboardType: inputType ?? TextInputType.text,
       enabled: enabled,
       maxLines: line ?? 1,
+      style: const TextStyle(fontSize: 25),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.all(8),
         labelText: labelText,
-        labelStyle: TextStyle(
+        labelStyle: TextStyle( fontSize: 25,
             color: textColor ?? Colors.black, fontWeight: FontWeight.w900),
         suffixText: suffixText,
         filled: true,
@@ -517,6 +519,62 @@ String generateRandomString(int len) {
       .toUpperCase();
 }
 
+String generateProductCode(int len) {
+  var r = Random();
+  const chars =
+      '1234567890';
+  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)])
+      .join()
+      .toUpperCase()}';
+}
+
+String generateOrderId(int len) {
+  var r = Random();
+  const chars =
+      '1234567890';
+  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)])
+      .join()
+      .toUpperCase()}';
+}
+
+String dataType(OrderModel list) {
+  switch (list.orderTypeId) {
+    case 1:
+      return "ขายทองใหม่";
+    case 2:
+      return "ซื้อทองเก่า";
+    case 3:
+      return "ขายทองแท่ง (จับคู่)";
+    case 4:
+      return "ขายทองแท่ง";
+    case 33:
+      return "ซื้อทองแท่ง (จับคู่)";
+    case 44:
+      return "ซื้อทองแท่ง";
+    default:
+      return "";
+  }
+}
+
+Color colorType(OrderModel list) {
+  switch (list.orderTypeId) {
+    case 1:
+      return Colors.teal;
+    case 2:
+      return Colors.orange;
+    case 3:
+      return Colors.brown;
+    case 4:
+      return Colors.deepPurple;
+    case 33:
+      return Colors.brown;
+    case 44:
+      return Colors.deepPurple;
+    default:
+      return Colors.transparent;
+  }
+}
+
 sumSellTotal() {
   Global.sellSubTotal = 0;
   Global.sellTax = 0;
@@ -532,6 +590,40 @@ sumSellTotal() {
   Global.sellTax = Global.taxAmount(
       Global.taxBase(Global.sellSubTotal, Global.sellWeightTotal));
   Global.sellTotal = Global.sellSubTotal + Global.sellTax;
+}
+
+sumBuyThengTotal() {
+  Global.buyThengSubTotal = 0;
+  Global.buyThengTax = 0;
+  Global.buyThengTotal = 0;
+  Global.buyThengWeightTotal = 0;
+
+  for (int i = 0; i < Global.buyThengOrderDetail!.length; i++) {
+    Global.buyThengSubTotal += Global.buyThengOrderDetail![i].priceIncludeTax!;
+    if (Global.buyThengOrderDetail![i].weight! != 0) {
+      Global.buyThengWeightTotal += Global.buyThengOrderDetail![i].weight!;
+    }
+  }
+  Global.buyThengTax = Global.taxAmount(
+      Global.taxBase(Global.buyThengSubTotal, Global.buyThengWeightTotal));
+  Global.buyThengTotal = Global.buyThengSubTotal + Global.buyThengTax;
+}
+
+sumSellThengTotal() {
+  Global.sellThengSubTotal = 0;
+  Global.sellThengTax = 0;
+  Global.sellThengTotal = 0;
+  Global.sellThengWeightTotal = 0;
+
+  for (int i = 0; i < Global.sellThengOrderDetail!.length; i++) {
+    Global.sellThengSubTotal += Global.sellThengOrderDetail![i].priceIncludeTax!;
+    if (Global.sellThengOrderDetail![i].weight! != 0) {
+      Global.sellThengWeightTotal += Global.sellThengOrderDetail![i].weight!;
+    }
+  }
+  Global.sellThengTax = Global.taxAmount(
+      Global.taxBase(Global.sellThengSubTotal, Global.sellThengWeightTotal));
+  Global.sellThengTotal = Global.sellThengSubTotal + Global.sellThengTax;
 }
 
 sumBuyTotal() {

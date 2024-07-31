@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
@@ -16,12 +15,11 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/util.dart';
 
-import '../model/branch.dart';
-import '../model/company.dart';
-import '../model/order.dart';
-import '../model/sell_detail.dart';
-import '../model/transfer.dart';
-import '../model/user.dart';
+import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/company.dart';
+import 'package:motivegold/model/order.dart';
+import 'package:motivegold/model/transfer.dart';
+import 'package:motivegold/model/user.dart';
 
 enum UserState {
   Offline,
@@ -43,10 +41,13 @@ class Global {
   static List<OrderModel>? orders = [];
   static OrderModel? order;
   static List<String>? orderIds = [];
+  static int? pairId;
   static String? trackingNumber;
 
   // POS
   static List<OrderDetailModel>? sellOrderDetail = [];
+  static List<OrderDetailModel>? buyThengOrderDetail = [];
+  static List<OrderDetailModel>? sellThengOrderDetail = [];
   static List<OrderDetailModel>? buyOrderDetail = [];
   static OrderModel? posOrder;
   static int posIndex = 0;
@@ -60,6 +61,16 @@ class Global {
   static double sellWeightTotal = 0;
   static double sellTax = 0;
   static double sellTotal = 0;
+
+  static double buyThengSubTotal = 0;
+  static double buyThengWeightTotal = 0;
+  static double buyThengTax = 0;
+  static double buyThengTotal = 0;
+
+  static double sellThengSubTotal = 0;
+  static double sellThengWeightTotal = 0;
+  static double sellThengTax = 0;
+  static double sellThengTotal = 0;
 
   static double buySubTotal = 0;
   static double buyWeightTotal = 0;
@@ -79,6 +90,18 @@ class Global {
   static String? platformVersion;
   static dynamic deviceDetail;
 
+  static format(double value) {
+    String number = formatter.format(value);
+    var part = number.split('.');
+    if (part.length > 1) {
+      if (part[1].length == 1) {
+        return '${number}0';
+      }
+      return number;
+    } else {
+      return '$number.00';
+    }
+  }
 
   static holdOrder(OrderModel orderModel) async {
     String? json = await LocalStorage.sharedInstance.readValue('holds');
@@ -152,6 +175,20 @@ class Global {
     return toNumber(goldDataModel!.paphun!.buy!) * weight / 15.16;
   }
 
+  static double getBuyThengPrice(double weight) {
+    if (goldDataModel == null) {
+      return 0;
+    }
+    return toNumber(goldDataModel!.theng!.buy!) * weight / 15.16;
+  }
+
+  static double getSellThengPrice(double weight) {
+    if (goldDataModel == null) {
+      return 0;
+    }
+    return toNumber(goldDataModel!.theng!.sell!) * weight / 15.16;
+  }
+
   static double getOrderSubTotalAmount() {
     if (orders!.isEmpty) {
       return 0;
@@ -222,7 +259,8 @@ class Global {
     return amount;
   }
 
-  static double getUsedSellWeightTotalAmountApi(List<SellDetailModel>? details) {
+  static double getUsedSellWeightTotalAmountApi(
+      List<OrderDetailModel>? details) {
     if (details!.isEmpty) {
       return 0;
     }
@@ -277,16 +315,15 @@ class Global {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < order.details!.length; i++) {
-      for (int j = 0; j < order.details!.length; j++) {
-        double price = order.details![j].priceIncludeTax!;
-        int type = order.orderTypeId!;
-        if (type == 2) {
-          price = -price;
-        }
-        amount += price;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].priceIncludeTax!;
+      int type = order.orderTypeId!;
+      if (type == 2) {
+        price = -price;
       }
+      amount += price;
     }
+
     // amount = discount != 0 ? amount - discount : amount;
     return amount < 0 ? -amount : amount;
   }
@@ -296,13 +333,26 @@ class Global {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < order.details!.length; i++) {
-      for (int j = 0; j < order.details!.length; j++) {
-        double weight = order.details![j].weight!;
-        amount += weight;
-      }
+    for (int j = 0; j < order.details!.length; j++) {
+      double weight = order.details![j].weight!;
+      amount += weight;
     }
+
     amount = getBuyPrice(amount);
+    return amount;
+  }
+
+  static double getThengTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double weight = order.details![j].weight!;
+      amount += weight;
+    }
+
+    amount = getBuyThengPrice(amount);
     return amount;
   }
 
@@ -317,10 +367,10 @@ class Global {
       for (int j = 0; j < orders![i].details!.length; j++) {
         double price = orders![i].details![j].priceIncludeTax!;
         int type = orders![i].orderTypeId!;
-        if (type == 2) {
+        if (type == 2 || type == 5) {
           buy += -price;
         }
-        if (type == 1) {
+        if (type == 1 || type == 6) {
           sell += price;
         }
       }
@@ -330,7 +380,34 @@ class Global {
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
         ? 'ลูกค้าจ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
-        : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+        : amount == 0 ? 0 : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+  }
+
+  static dynamic payToBrokerOrShop() {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    double buy = 0;
+    double sell = 0;
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        double price = orders![i].details![j].priceIncludeTax!;
+        int type = orders![i].orderTypeId!;
+        if (type == 2 || type == 5) {
+          buy += -price;
+        }
+        if (type == 1 || type == 6) {
+          sell += price;
+        }
+      }
+    }
+    amount = sell + buy;
+
+    amount = discount != 0 ? amount - discount : amount;
+    return amount > 0
+        ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
+        : amount == 0 ? 0 : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
   }
 
   static double getOrderTotalAmount(List<OrderDetailModel> data) {
@@ -340,6 +417,17 @@ class Global {
     double sum = 0;
     for (var e in data) {
       sum += e.priceIncludeTax!;
+    }
+    return sum;
+  }
+
+  static double getOrderTotalWeight(List<OrderDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.weight!;
     }
     return sum;
   }
@@ -581,6 +669,16 @@ class Global {
     return DateFormat('dd/MM/yyyy HH:mm:ss').format(tempDate);
   }
 
+  static String formatDateT(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(tempDate);
+  }
+
+  static String monthYear(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('MMM yyyy').format(tempDate);
+  }
+
   static String dateOnly(String date) {
     DateTime tempDate = DateTime.parse(date);
     return DateFormat('dd/MM/yyyy').format(tempDate);
@@ -598,6 +696,25 @@ class Global {
 
   static double removeDecimalZeroFormat(int n) {
     return double.parse(n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1));
+  }
+
+  static List<int> genYear() {
+    List<int> years = [];
+    int currentYear = DateTime.now().year;
+    years.add(currentYear);
+    for (int i = 0; i < 10; i++) {
+      currentYear = currentYear - 1;
+      years.add(currentYear);
+    }
+    return years;
+  }
+
+  static List<int> genMonth() {
+    List<int> months = [];
+    for (int i = 1; i <= 12; i++) {
+      months.add(i);
+    }
+    return months;
   }
 
   static String genId() {
@@ -644,6 +761,28 @@ class Global {
       total += qtyLocationList[i].weight!;
     }
     return total;
+  }
+
+  static String prefixName(int index) {
+    switch (index) {
+      case 1:
+        return "Month";
+      case 2:
+        return "Year";
+      default:
+        return "Year";
+    }
+  }
+
+  static int prefixIndex(String name) {
+    switch (name) {
+      case "Month":
+        return 1;
+      case "Year":
+        return 2;
+      default:
+        return 2;
+    }
   }
 
   static String requestObj(dynamic data,

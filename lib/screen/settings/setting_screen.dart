@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,31 +5,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/landing_screen.dart';
-import 'package:motivegold/screen/products/product_list_screen.dart';
-import 'package:motivegold/screen/refill/refill_gold_history_screen.dart';
-import 'package:motivegold/screen/refill/refill_gold_menu_screen.dart';
-import 'package:motivegold/screen/refill/refill_gold_stock_screen.dart';
-import 'package:motivegold/screen/settings/auth_history_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/refill/refill_gold_history_screen.dart';
+import 'package:motivegold/screen/settings/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
 import 'package:motivegold/screen/settings/company/company_list_screen.dart';
 import 'package:motivegold/screen/settings/master/warehouse/location_list_screen.dart';
 import 'package:motivegold/screen/settings/master_data_screen.dart';
+import 'package:motivegold/screen/settings/prefix/order_id_prefix.dart';
+import 'package:motivegold/screen/settings/reports/buy-used-gold-reports/buy_used_gold_report_screen.dart';
+import 'package:motivegold/screen/settings/reports/sell-new-gold-reports/sell_new_gold_report_screen.dart';
+import 'package:motivegold/screen/settings/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
+import 'package:motivegold/screen/settings/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
+import 'package:motivegold/screen/settings/reports/stock-reports/stock_report_list_screen.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
-import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
-import 'package:motivegold/screen/transfer/transfer_gold_screen.dart';
-import 'package:motivegold/screen/used/sell_used_gold_history_screen.dart';
-import 'package:motivegold/screen/used/sell_used_gold_menu_screen.dart';
-import 'package:motivegold/screen/used/sell_used_gold_screen.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/screen/pos/wholesale/used/sell_used_gold_history_screen.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../api/api_services.dart';
-import '../../utils/alert.dart';
-import '../../utils/constants.dart';
-import '../../utils/global.dart';
-import '../../utils/localbindings.dart';
-import '../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/constants.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/localbindings.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -109,6 +105,28 @@ class _SettingScreenState extends State<SettingScreen> {
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),
                 if (Global.user?.userType == 'COMPANY')
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const OrderIdPrefixScreen()));
+                  },
+                  icons: Icons.numbers,
+                  iconStyle: IconStyle(
+                      backgroundColor: Colors.teal
+                  ),
+                  title:
+                  'รหัสธุรกรรม',
+                  subtitle:
+                  "การตั้งค่า ID การทำธุรกรรม",
+                  titleMaxLine: 1,
+                  subtitleMaxLine: 1,
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                if (Global.user?.userType == 'COMPANY' && Global.user?.userRole == 'Administrator')
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
@@ -300,9 +318,12 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StockReportListScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.pie_chart,
                   iconStyle: IconStyle(
                     backgroundColor: Colors.green,
                   ),
@@ -313,82 +334,133 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StockMovementReportListScreen()));
+                  },
+                  icons: Icons.pie_chart,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.orange,
+                  ),
+                  title: 'รายงานความเคลื่อนไหว',
+                  subtitle: "รายงานความเคลื่อนไหวสต๊อกสินค้า",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SellNewGoldReportScreen()));
+                  },
+                  icons: Icons.checklist_rtl_outlined,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.teal,
+                  ),
+                  title: 'ขายทองใหม่',
+                  subtitle: "รายงานการขายทองคำใหม่",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SellUsedGoldReportScreen()));
+                  },
+                  icons: Icons.checklist_rtl_outlined,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.deepOrangeAccent,
+                  ),
+                  title: 'ขายทองเก่า',
+                  subtitle: "รายงานการขายทองคำเก่า",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BuyUsedGoldReportScreen()));
                   },
                   icons: Icons.checklist_rtl_outlined,
                   iconStyle: IconStyle(
                     backgroundColor: Colors.brown,
                   ),
-                  title: 'ขายทองเก่า',
-                  subtitle: "รายงานขายทองเก่า",
+                  title: 'ซื้อทองเก่า',
+                  subtitle: "รายงานการซื้อทองคำเก่า",
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),
-                SettingsItem(
-                  onTap: () {
-
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
-                  ),
-                  title: 'รายงาน 001',
-                  subtitle: "รายงาน 001",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
-                  ),
-                  title: 'รายงาน 002',
-                  subtitle: "รายงาน 002",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
-                  ),
-                  title: 'รายงาน 003',
-                  subtitle: "รายงาน 003",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
-                  ),
-                  title: 'รายงาน 004',
-                  subtitle: "รายงาน 004",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
-                  ),
-                  title: 'รายงาน 005',
-                  subtitle: "รายงาน 005",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
+                // SettingsItem(
+                //   onTap: () {
+                //
+                //   },
+                //   icons: Icons.checklist_rtl_outlined,
+                //   iconStyle: IconStyle(
+                //     backgroundColor: Colors.green,
+                //   ),
+                //   title: 'รายงาน 001',
+                //   subtitle: "รายงาน 001",
+                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                // ),
+                // SettingsItem(
+                //   onTap: () {
+                //
+                //   },
+                //   icons: Icons.checklist_rtl_outlined,
+                //   iconStyle: IconStyle(
+                //     backgroundColor: Colors.green,
+                //   ),
+                //   title: 'รายงาน 002',
+                //   subtitle: "รายงาน 002",
+                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                // ),
+                // SettingsItem(
+                //   onTap: () {
+                //
+                //   },
+                //   icons: Icons.checklist_rtl_outlined,
+                //   iconStyle: IconStyle(
+                //     backgroundColor: Colors.green,
+                //   ),
+                //   title: 'รายงาน 003',
+                //   subtitle: "รายงาน 003",
+                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                // ),
+                // SettingsItem(
+                //   onTap: () {
+                //
+                //   },
+                //   icons: Icons.checklist_rtl_outlined,
+                //   iconStyle: IconStyle(
+                //     backgroundColor: Colors.green,
+                //   ),
+                //   title: 'รายงาน 004',
+                //   subtitle: "รายงาน 004",
+                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                // ),
+                // SettingsItem(
+                //   onTap: () {
+                //
+                //   },
+                //   icons: Icons.checklist_rtl_outlined,
+                //   iconStyle: IconStyle(
+                //     backgroundColor: Colors.green,
+                //   ),
+                //   title: 'รายงาน 005',
+                //   subtitle: "รายงาน 005",
+                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                // ),
               ],
             ),
             // You can add a settings title
@@ -405,7 +477,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         "deviceDetail": Global.deviceDetail.toString()
                       });
 
-                      motivePrint(authObject);
+                      // motivePrint(authObject);
                       // return;
                       final ProgressDialog pr = ProgressDialog(context,
                           type: ProgressDialogType.normal,
@@ -414,7 +486,6 @@ class _SettingScreenState extends State<SettingScreen> {
                       await pr.show();
                       pr.update(message: 'processing'.tr());
                       try {
-                        var result =
                         await ApiServices.post('/user/logout/${Global.user!.id}', authObject);
                         await pr.hide();
                         Global.isLoggedIn = false;

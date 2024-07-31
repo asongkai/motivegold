@@ -1,14 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/products/product_list_screen.dart';
-import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
-import 'package:motivegold/screen/settings/company/company_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
-import 'package:motivegold/screen/settings/master/warehouse/location_list_screen.dart';
-import 'package:motivegold/screen/settings/user/user_list_screen.dart';
 
-import '../../utils/global.dart';
 
 class MasterDataScreen extends StatelessWidget {
   const MasterDataScreen({ Key? key }) : super(key: key);

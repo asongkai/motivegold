@@ -25,18 +25,21 @@ class BranchModel {
   String? village;
   String? district;
   String? province;
+  String? branchCode;
+  String? branchId;
 
-  BranchModel({
-    this.id,
-    this.companyId,
-    required this.name,
-    this.phone,
-    this.email,
-    this.address,
-    this.village,
-    this.district,
-    this.province,
-  });
+  BranchModel(
+      {this.id,
+      this.companyId,
+      required this.name,
+      this.phone,
+      this.email,
+      this.address,
+      this.village,
+      this.district,
+      this.province,
+      this.branchId,
+      this.branchCode});
 
   factory BranchModel.fromJson(Map<String, dynamic> json) => BranchModel(
         id: json["id"],
@@ -48,6 +51,8 @@ class BranchModel {
         village: json["village"],
         district: json["district"],
         province: json["province"],
+        branchId: json["branchId"],
+        branchCode: json["branchCode"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -60,6 +65,8 @@ class BranchModel {
         "village": village,
         "district": district,
         "province": province,
+        "branchCode": branchCode,
+        "branchId": branchId,
       };
 
   @override
@@ -69,7 +76,7 @@ class BranchModel {
   operator ==(o) => o is BranchModel && o.id == id;
 
   @override
-  int get hashCode => id.hashCode^name.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode;
 
   @override
   bool filter(String query) {

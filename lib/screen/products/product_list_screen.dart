@@ -9,10 +9,9 @@ import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../api/api_services.dart';
-import '../../utils/alert.dart';
-import '../../utils/global.dart';
-import '../../utils/util.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
 import 'edit_product_screen.dart';
 import 'new_product_screen.dart';
 
@@ -126,7 +125,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               leading: SizedBox(
                 width: 100,
                 child: Image.asset(
-                  'assets/images/Gold-Chain-PNG.png',
+                  'assets/icons/gold/gold.png',
                   fit: BoxFit.fitHeight,
                 ),
               ),
@@ -210,13 +209,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
         setState(() {
         });
       } else {
-        Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-            action: () {});
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+              action: () {});
+        }
       }
     } catch (e) {
       await pr.hide();
-      Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-          action: () {});
+      if (mounted) {
+        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+            action: () {});
+      }
     }
   }
 }

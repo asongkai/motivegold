@@ -9,13 +9,12 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import '../../../../api/api_services.dart';
-import '../../../../utils/alert.dart';
-import '../../../../utils/global.dart';
-import '../../../../utils/helps/common_function.dart';
-import '../../../../utils/responsive_screen.dart';
-import '../../../../widget/dropdown/DropDownItemWidget.dart';
-import '../../../../widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 class AddLocationScreen extends StatefulWidget {
   const AddLocationScreen({super.key});
@@ -33,12 +32,13 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   List<BranchModel>? branches;
   BranchModel? selectedBranch;
   ValueNotifier<dynamic>? branchNotifier;
+  bool sell = false;
 
   @override
   void initState() {
     // implement initState
     super.initState();
-    motivePrint(Global.user!.userRole);
+    // motivePrint(Global.user!.userRole);
     branchNotifier =
         ValueNotifier<BranchModel>(BranchModel(id: 0, name: 'เลือกสาขา'));
     loadData();
@@ -247,6 +247,19 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 10,),
+                              CheckboxListTile(
+                                title: const Text("ขายหน้าร้าน", style: TextStyle(fontSize: 20),),
+                                value: sell,
+                                visualDensity: VisualDensity.standard,
+                                activeColor: Colors.teal,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    sell = newValue!;
+                                  });
+                                },
+                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                              )
                             ],
                           ),
                         ),
@@ -282,7 +295,8 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   "name": nameCtrl.text,
                   "address": addressCtrl.text,
                   "branchId": selectedBranch!.id.toString(),
-                  "companyId": Global.user!.companyId.toString()
+                  "companyId": Global.user!.companyId.toString(),
+                  "sell": sell ? 1 : 0
                 });
 
                 // print(object);

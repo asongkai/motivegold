@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:motivegold/model/product.dart';
+import 'package:motivegold/model/warehouseModel.dart';
+
 
 List<QtyLocationModel> qtyLocationListModelFromJson(String str) => List<QtyLocationModel>.from(json.decode(str).map((x) => QtyLocationModel.fromJson(x)));
 
@@ -23,6 +26,8 @@ class QtyLocationModel {
   double? price;
   DateTime? createdDate;
   DateTime? updatedDate;
+  ProductModel? product;
+  WarehouseModel? binLocation;
 
   QtyLocationModel({
     this.id,
@@ -34,6 +39,8 @@ class QtyLocationModel {
     this.price,
     this.createdDate,
     this.updatedDate,
+    this.product,
+    this.binLocation
   });
 
   factory QtyLocationModel.fromJson(Map<String, dynamic> json) => QtyLocationModel(
@@ -46,6 +53,8 @@ class QtyLocationModel {
     price: json["price"],
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    product: json["product"] == null ? null : ProductModel.fromJson(json["product"]),
+    binLocation: json["binLocation"] == null ? null : WarehouseModel.fromJson(json["binLocation"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -58,5 +67,7 @@ class QtyLocationModel {
     "price": price,
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
+    "product": product?.toJson(),
+    "binLocation": binLocation?.toJson()
   };
 }

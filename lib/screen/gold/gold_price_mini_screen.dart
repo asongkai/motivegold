@@ -4,10 +4,9 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/title_tile.dart';
 
-import '../../widget/gold_price_data.dart';
+import 'package:motivegold/widget/gold_price_data.dart';
 
 
 class GoldPriceMiniScreen extends StatefulWidget {
