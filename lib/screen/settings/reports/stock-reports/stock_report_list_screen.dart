@@ -464,33 +464,33 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                     border: TableBorder.all(color: Colors.grey[300]!),
                     children: [
                       TableRow(children: [
-                        paddedTextBigXL('สินค้า'),
-                        paddedTextBigXL('คลังสินค้า'),
-                        paddedTextBigXL('น้ำหนักรวม'),
-                        paddedTextBigXL('ราคาต่อหน่วย'),
-                        paddedTextBigXL('ราคารวม'),
+                        paddedTextBigL('สินค้า'),
+                        paddedTextBigL('คลังสินค้า'),
+                        paddedTextBigL('น้ำหนักรวม'),
+                        paddedTextBigL('ราคาต่อหน่วย'),
+                        paddedTextBigL('ราคารวม'),
                       ]),
                       ...productList!.map((e) => TableRow(
                             decoration: const BoxDecoration(),
                             children: [
-                              paddedTextBigXL(
+                              paddedTextBig(
                                   e.product == null ? "" : e.product!.name),
-                              paddedTextBigXL(e.binLocation == null
+                              paddedTextBigL(e.binLocation == null
                                   ? ""
                                   : e.binLocation!.name),
-                              paddedTextBigXL(Global.format(e.weight ?? 0),
-                                  style: const TextStyle(fontSize: 30),
+                              paddedTextBig(Global.format(e.weight ?? 0),
+                                  style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
-                              paddedTextBigXL(
+                              paddedTextBig(
                                   Global.format(
                                       Global.getBuyPrice(e.weight ?? 0) /
                                           e.weight!),
-                                  style: const TextStyle(fontSize: 30),
+                                  style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
-                              paddedTextBigXL(
+                              paddedTextBig(
                                   Global.format(
                                       Global.getBuyPrice(e.weight ?? 0)),
-                                  style: const TextStyle(fontSize: 30),
+                                  style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                             ],
                           )),

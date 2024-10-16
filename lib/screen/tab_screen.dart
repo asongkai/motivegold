@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/dashboard_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/history_screen.dart';
+import 'package:motivegold/screen/pos/history_screen.dart';
 import 'package:motivegold/screen/settings/setting_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 

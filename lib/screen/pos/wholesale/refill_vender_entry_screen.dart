@@ -9,22 +9,24 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/customer/location.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
 
-class SellUsedGoldCustomerEntryScreen extends StatefulWidget {
-  const SellUsedGoldCustomerEntryScreen({super.key});
+class RefillVenderEntryScreen extends StatefulWidget {
+  const RefillVenderEntryScreen({super.key});
 
   @override
-  State<SellUsedGoldCustomerEntryScreen> createState() =>
-      _SellUsedGoldCustomerEntryScreenState();
+  State<RefillVenderEntryScreen> createState() =>
+      _RefillVenderEntryScreenState();
 }
 
-class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEntryScreen> {
+class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
   final TextEditingController idCardCtrl = TextEditingController();
+  final TextEditingController branchCodeCtrl = TextEditingController();
   final TextEditingController firstNameCtrl = TextEditingController();
   final TextEditingController lastNameCtrl = TextEditingController();
   final TextEditingController emailAddressCtrl = TextEditingController();
@@ -48,7 +50,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
   void initState() {
     // implement initState
     super.initState();
-    birthDateCtrl.text = "2023-12-03";
+    birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     init();
   }
 
@@ -82,7 +84,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("ผู้ซื้อ"),
+        title: const Text("ผู้ขาย"),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -105,7 +107,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                           (BuildContext context, SearchController controller) {
                         return SearchBar(
                           controller: controller,
-                          padding: const MaterialStatePropertyAll<EdgeInsets>(
+                          padding: const WidgetStatePropertyAll<EdgeInsets>(
                               EdgeInsets.symmetric(horizontal: 16.0)),
                           onTap: () {
                             controller.openView();
@@ -123,28 +125,46 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                         );
                       }, suggestionsBuilder:
                           (BuildContext context, SearchController controller) {
-                        return customers.isEmpty ? [ Container(
-                          margin: const EdgeInsets.only(top: 50.0),
-                          child: const Center(child: EmptyContent()),
-                        ) ] : customers.map((e) {
-                          return ListTile(
-                            title: Text('${e.firstName} ${e.lastName}', style: const TextStyle(fontSize: 20)),
-                            onTap: () {
-                              setState(() {
-                                controller.closeView('${e.firstName} ${e.lastName}');
-                                selectedCustomer = e;
-                                Global.customer = e;
-                                idCardCtrl.text = '${e.idCard}';
-                                firstNameCtrl.text = '${e.firstName}';
-                                lastNameCtrl.text = '${e.lastName}';
-                                emailAddressCtrl.text = '${e.email}';
-                                phoneCtrl.text = '${e.phoneNumber}';
-                                addressCtrl.text = '${e.address}';
+                        return customers.isEmpty
+                            ? [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 50.0),
+                                  child: const Center(child: EmptyContent()),
+                                )
+                              ]
+                            : customers.map((e) {
+                                return ListTile(
+                                  title: Text('${e.firstName} ${e.lastName}',
+                                      style: const TextStyle(fontSize: 20)),
+                                  onTap: () {
+                                    setState(() {
+                                      controller.closeView(
+                                          '${e.firstName} ${e.lastName}');
+                                      selectedCustomer = e;
+                                      Global.customer = e;
+                                      // idCardCtrl.text = '${e.idCard}';
+                                      // firstNameCtrl.text = '${e.firstName}';
+                                      // lastNameCtrl.text = '${e.lastName}';
+                                      // emailAddressCtrl.text = '${e.email}';
+                                      // phoneCtrl.text = '${e.phoneNumber}';
+                                      // addressCtrl.text = '${e.address}';
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          // Here you can write your code for open new view
+                                        });
+                                      });
+                                      //
+                                    });
+                                  },
+                                  trailing: Text(
+                                    getCustomerType(e),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                );
                               });
-                            },
-                            trailing: Text(getCustomerType(e), style: const TextStyle(fontSize: 20),),
-                          );
-                        });
                       }),
                     ),
                     const SizedBox(
@@ -164,10 +184,29 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: 'เลขบัตรประจำตัวประชาชน'.tr(),
+                                  labelText: 'เลขบัตรประจำตัวภาษี'.tr(),
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: idCardCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextFieldBig(
+                                  labelText: 'รหัสสาขา'.tr(),
+                                  validator: null,
+                                  inputType: TextInputType.text,
+                                  controller: branchCodeCtrl,
                                 ),
                               ],
                             ),
@@ -276,35 +315,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                     const SizedBox(
                       height: 15,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  line: 3,
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: addressCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    const LocationEntryWidget()
                   ],
                 ),
               ),
@@ -318,28 +329,24 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (idCardCtrl.text.isEmpty) {
-                  idCardCtrl.text = generateRandomString(10);
-                  firstNameCtrl.text = generateRandomString(6);
-                  lastNameCtrl.text = generateRandomString(6);
-                  emailAddressCtrl.text =
-                      '${generateRandomString(10)}@gmail.com';
-                  phoneCtrl.text = generateRandomString(12);
-                  addressCtrl.text = generateRandomString(150);
+                  Alert.warning(context, 'คำเตือน',
+                      'กรุณากรอกเลขประจำตัวผู้เสียภาษี', 'OK',
+                      action: () {});
+                  return;
                 }
 
                 if (selectedCustomer == null) {
                   var customerObject = Global.requestObj({
-                    "companyName": generateRandomString(10),
+                    "companyName": "${firstNameCtrl.text} ${lastNameCtrl.text}",
                     "firstName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
@@ -347,15 +354,18 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
-                    "address": addressCtrl.text,
-                    "district": generateRandomString(10),
-                    "province": generateRandomString(10),
-                    "nationality": generateRandomString(10),
-                    "postalCode": generateRandomString(4),
-                    "photoUrl": generateRandomString(10),
-                    "idCard": generateRandomString(10),
-                    "taxNumber": generateRandomString(10),
-                    "isSeller": 1
+                    "address": Global.addressCtrl.text,
+                    "tambonId": Global.tambonModel?.id,
+                    "amphureId": Global.amphureModel?.id,
+                    "provinceId": Global.provinceModel?.id,
+                    "nationality": '',
+                    "postalCode": '',
+                    "photoUrl": '',
+                    "idCard": '',
+                    "branchCode": branchCodeCtrl.text,
+                    "taxNumber": idCardCtrl.text,
+                    "isSeller": 1,
+                    "isBuyer": 1,
                   });
 
                   // print(customerObject);
@@ -373,7 +383,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                     if (result?.status == "success") {
                       if (mounted) {
                         CustomerModel customer =
-                        customerModelFromJson(jsonEncode(result!.data!));
+                            customerModelFromJson(jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
@@ -383,8 +393,7 @@ class _SellUsedGoldCustomerEntryScreenState extends State<SellUsedGoldCustomerEn
                       }
                     } else {
                       if (mounted) {
-                        Alert.warning(
-                            context, 'Warning'.tr(), result!.message!,
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
                             'OK'.tr(),
                             action: () {});
                       }

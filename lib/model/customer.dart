@@ -23,8 +23,10 @@ class CustomerModel {
   String? username;
   String? password;
   String? address;
-  String? district;
-  String? province;
+  String? village;
+  int? tambonId;
+  int? amphureId;
+  int? provinceId;
   String? nationality;
   String? postalCode;
   String? photoUrl;
@@ -47,8 +49,10 @@ class CustomerModel {
     this.username,
     this.password,
     this.address,
-    this.district,
-    this.province,
+    this.village,
+    this.tambonId,
+    this.amphureId,
+    this.provinceId,
     this.nationality,
     this.postalCode,
     this.photoUrl,
@@ -72,8 +76,10 @@ class CustomerModel {
     username: json["username"],
     password: json["password"],
     address: json["address"],
-    district: json["district"],
-    province: json["province"],
+    village: json["village"],
+    tambonId: json["tambonId"],
+    amphureId: json["amphureId"],
+    provinceId: json["provinceId"],
     nationality: json["nationality"],
     postalCode: json["postalCode"],
     photoUrl: json["photoUrl"],
@@ -97,8 +103,10 @@ class CustomerModel {
     "username": username,
     "password": password,
     "address": address,
-    "district": district,
-    "province": province,
+    "village": village,
+    "tambonId": tambonId,
+    "amphureId": amphureId,
+    "provinceId": provinceId,
     "nationality": nationality,
     "postalCode": postalCode,
     "photoUrl": photoUrl,

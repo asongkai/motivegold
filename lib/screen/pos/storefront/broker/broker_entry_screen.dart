@@ -1,29 +1,34 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
+import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/customer/location.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/widget/empty.dart';
 
-class RefillVenderEntryScreen extends StatefulWidget {
-  const RefillVenderEntryScreen({super.key});
+class BrokerEntryScreen extends StatefulWidget {
+  const BrokerEntryScreen({super.key});
 
   @override
-  State<RefillVenderEntryScreen> createState() =>
-      _RefillVenderEntryScreenState();
+  State<BrokerEntryScreen> createState() => _BrokerEntryScreenState();
 }
 
-class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
+class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
   final TextEditingController idCardCtrl = TextEditingController();
   final TextEditingController firstNameCtrl = TextEditingController();
   final TextEditingController lastNameCtrl = TextEditingController();
@@ -39,6 +44,22 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
   bool isCustomer = false;
   bool isBuyer = false;
 
+  ThaiIDCard? _data;
+  var _error;
+  UsbDevice? _device;
+  var _card;
+  StreamSubscription? subscription;
+  final List _idCardType = [
+    ThaiIDType.cid,
+    ThaiIDType.photo,
+    ThaiIDType.nameTH,
+    ThaiIDType.nameEN,
+    ThaiIDType.gender,
+    ThaiIDType.birthdate,
+    ThaiIDType.address,
+    ThaiIDType.issueDate,
+    ThaiIDType.expireDate,
+  ];
   List<String> selectedTypes = [];
   List<CustomerModel> customers = [];
   bool loading = false;
@@ -58,7 +79,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/customer/all', Global.requestObj(null));
+      await ApiServices.post('/customer/all', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -77,12 +98,23 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
     });
   }
 
+
+  formattedDate(dt) {
+    try {
+      DateTime dateTime = DateTime.parse(dt);
+      String formattedDate = DateFormat.yMMMMd('th_TH').format(dateTime);
+      return formattedDate;
+    } catch (e) {
+      return dt.split('').toString() + e.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("ผู้ขาย"),
+        title: const Text("โบรกเกอร์"),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -99,6 +131,9 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SearchAnchor(builder:
@@ -128,21 +163,29 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                           child: const Center(child: EmptyContent()),
                         ) ] : customers.map((e) {
                           return ListTile(
-                            title: Text('${e.firstName} ${e.lastName}', style: const TextStyle(fontSize: 20)),
+                            title: Text('${e.firstName} ${e.lastName}', style: const TextStyle(fontSize: 20),),
                             onTap: () {
                               setState(() {
                                 controller.closeView('${e.firstName} ${e.lastName}');
                                 selectedCustomer = e;
                                 Global.customer = e;
-                                idCardCtrl.text = '${e.idCard}';
-                                firstNameCtrl.text = '${e.firstName}';
-                                lastNameCtrl.text = '${e.lastName}';
-                                emailAddressCtrl.text = '${e.email}';
-                                phoneCtrl.text = '${e.phoneNumber}';
-                                addressCtrl.text = '${e.address}';
+                                // idCardCtrl.text = '${e.idCard}';
+                                // firstNameCtrl.text = '${e.firstName}';
+                                // lastNameCtrl.text = '${e.lastName}';
+                                // emailAddressCtrl.text = '${e.email}';
+                                // phoneCtrl.text = '${e.phoneNumber}';
+                                // addressCtrl.text = '${e.address}';
+                                Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                        () {
+                                      Navigator.of(context).pop();
+                                      setState(() {
+                                        // Here you can write your code for open new view
+                                      });
+                                    });
                               });
                             },
-                            trailing: Text(getCustomerType(e), style: const TextStyle(fontSize: 20),),
+                            trailing: Text(getCustomerType(e),  style: const TextStyle(fontSize: 20)),
                           );
                         });
                       }),
@@ -157,14 +200,14 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: 'เลขบัตรประจำตัวประชาชน'.tr(),
+                                  labelText: 'เลขประจําตัวผู้เสียภาษี'.tr(),
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: idCardCtrl,
@@ -185,14 +228,14 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: 'ชื่อ (หรือ บริษัท)'.tr(),
+                                  labelText: 'ชื่อ'.tr(),
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: firstNameCtrl,
@@ -204,7 +247,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -213,7 +256,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: 'นามสกุล (หรือ บริษัท)'.tr(),
+                                  labelText: 'นามสกุล'.tr(),
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: lastNameCtrl,
@@ -234,7 +277,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -253,7 +296,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -276,35 +319,78 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: TextField(
+                              controller: birthDateCtrl,
+                              //editing controller of this TextField
+                              style: const TextStyle(fontSize: 38),
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.calendar_today),
+                                //icon of text field
+                                floatingLabelBehavior:
+                                FloatingLabelBehavior.always,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                labelText: "วันเกิด".tr(),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    getProportionateScreenWidth(8),
+                                  ),
+                                  borderSide: const BorderSide(
+                                    color: kGreyShade3,
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  line: 3,
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: addressCtrl,
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    getProportionateScreenWidth(2),
+                                  ),
+                                  borderSide: const BorderSide(
+                                    color: kGreyShade3,
+                                  ),
                                 ),
-                              ],
+                              ),
+                              readOnly: true,
+                              //set it true, so that user will not able to edit text
+                              onTap: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    //DateTime.now() - not to allow to choose before today.
+                                    lastDate: DateTime(2101));
+                                if (pickedDate != null) {
+                                  motivePrint(
+                                      pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                  String formattedDate =
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(pickedDate);
+                                  motivePrint(
+                                      formattedDate); //formatted date output using intl package =>  2021-03-16
+                                  //you can implement different kind of Date Format here according to your requirement
+                                  setState(() {
+                                    birthDateCtrl.text =
+                                        formattedDate; //set output date to TextField value.
+                                  });
+                                } else {
+                                  motivePrint("Date is not selected");
+                                }
+                              },
                             ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const LocationEntryWidget()
                   ],
                 ),
               ),
@@ -319,27 +405,22 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  MaterialStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
+                  MaterialStateProperty.all<Color>(Colors.teal[700]!),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (idCardCtrl.text.isEmpty) {
-                  idCardCtrl.text = generateRandomString(10);
-                  firstNameCtrl.text = generateRandomString(6);
-                  lastNameCtrl.text = generateRandomString(6);
-                  emailAddressCtrl.text =
-                      '${generateRandomString(10)}@gmail.com';
-                  phoneCtrl.text = generateRandomString(12);
-                  addressCtrl.text = generateRandomString(150);
+                  Alert.warning(context, 'คำเตือน', 'กรุณากรอกเลขประจำตัวผู้เสียภาษี', 'OK', action: () {});
+                  return;
                 }
 
                 if (selectedCustomer == null) {
                   var customerObject = Global.requestObj({
-                    "companyName": generateRandomString(10),
+                    "companyName": "${firstNameCtrl.text} ${lastNameCtrl.text}",
                     "firstName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
@@ -347,15 +428,17 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
-                    "address": addressCtrl.text,
-                    "district": generateRandomString(10),
-                    "province": generateRandomString(10),
-                    "nationality": generateRandomString(10),
-                    "postalCode": generateRandomString(4),
-                    "photoUrl": generateRandomString(10),
-                    "idCard": generateRandomString(10),
-                    "taxNumber": generateRandomString(10),
-                    "isSeller": 1
+                    "address": Global.addressCtrl.text,
+                    "tambonId": Global.tambonModel?.id,
+                    "amphureId": Global.amphureModel?.id,
+                    "provinceId": Global.provinceModel?.id,
+                    "nationality": '',
+                    "postalCode": '',
+                    "photoUrl": '',
+                    "idCard": '',
+                    "taxNumber": idCardCtrl.text,
+                    "isSeller": 1,
+                    "isBuyer": 1,
                   });
 
                   // print(customerObject);
@@ -367,13 +450,13 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                   await pr.show();
                   pr.update(message: 'processing'.tr());
                   try {
-                    var result = await ApiServices.post(
-                        '/customer/create', customerObject);
+                    var result =
+                    await ApiServices.post('/customer/create', customerObject);
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
-                        CustomerModel customer =
-                        customerModelFromJson(jsonEncode(result!.data!));
+                        CustomerModel customer = customerModelFromJson(
+                            jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
@@ -452,7 +535,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
       Motive.imagesFileList = imageFiles;
       setState(() {});
     } catch (e) {
-      motivePrint("error while picking file.");
+      print("error while picking file.");
     }
   }
 
@@ -468,5 +551,141 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
       return 'ลูกค้า';
     }
     return 'ลูกค้า';
+  }
+}
+
+class EmptyHeader extends StatelessWidget {
+  final IconData? icon;
+  final String? text;
+
+  const EmptyHeader({
+    this.icon,
+    this.text,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: SizedBox(
+            height: 140,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon ?? Icons.usb,
+                  size: 60,
+                ),
+                Center(
+                    child: Text(
+                      text ?? 'Empty',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+              ],
+            )));
+  }
+}
+
+class UsbDeviceCard extends StatelessWidget {
+  final dynamic device;
+
+  const UsbDeviceCard({
+    Key? key,
+    this.device,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: device.isAttached ? 1.0 : 0.5,
+      child: Card(
+        child: ListTile(
+          leading: const Icon(
+            Icons.usb,
+            size: 32,
+          ),
+          title: Text('${device!.manufacturerName} ${device!.productName}'),
+          subtitle: Text(device!.identifier ?? ''),
+          trailing: Container(
+            padding: const EdgeInsets.all(8),
+            color: device!.hasPermission ? Colors.green : Colors.grey,
+            child: Text(
+                device!.hasPermission
+                    ? 'Listening'
+                    : (device!.isAttached ? 'Connected' : 'Disconnected'),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DisplayInfo extends StatelessWidget {
+  const DisplayInfo({
+    Key? key,
+    required this.title,
+    required this.value,
+  }) : super(key: key);
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle sTitle =
+    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
+    TextStyle sVal = const TextStyle(fontSize: 28);
+
+    _copyFn(value) {
+      Clipboard.setData(ClipboardData(text: value)).then((_) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Copy it already")));
+      });
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                '$title : ',
+                style: sTitle,
+              ),
+            ],
+          ),
+          Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      value,
+                      style: sVal,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () => _copyFn(value),
+                child: const Icon(Icons.copy),
+              )
+            ],
+          ),
+          const Divider(
+            color: Colors.black,
+          ),
+        ],
+      ),
+    );
   }
 }

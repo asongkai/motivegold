@@ -10,8 +10,7 @@ import 'package:motivegold/widget/gold_price_data.dart';
 
 
 class GoldPriceMiniScreen extends StatefulWidget {
-  final bool showBackButton;
-  const GoldPriceMiniScreen({super.key, required this.showBackButton});
+  const GoldPriceMiniScreen({super.key});
 
   @override
   State<GoldPriceMiniScreen> createState() => _GoldPriceMiniScreenState();
@@ -67,61 +66,34 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
         ),
       ),
     )
-        : Scaffold(
-      appBar: widget.showBackButton ? AppBar(
-        automaticallyImplyLeading: widget.showBackButton,
-      ) : null,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.all(15.0),
-                    decoration: const BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10))),
-                    child: Text(
-                      'ราคาทองตามประกาศของสมาคมค้าทองคำ',
-                      style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
-                    )),
-                TitleTile(
-                  title: '${Global.goldDataModel?.date}',
-                ),
-                const GoldPriceListTileData(
-                  title: '96.5%',
-                  buy: "รับซื้อ",
-                  sell: "ขายออก",
-                ),
-                GoldPriceListTileData(
-                  title: 'ทองคำแท่ง',
-                  buy: "${Global.goldDataModel?.theng?.buy}",
-                  sell: "${Global.goldDataModel?.theng?.sell}",
-                ),
-                GoldPriceListTileData(
-                  title: 'ทองรูปพรรณ',
-                  buy: "${Global.goldDataModel?.paphun?.buy}",
-                  sell: "${Global.goldDataModel?.paphun?.sell}",
-                ),
-              ],
-            ),
+        : SingleChildScrollView(
+          child: Column(
+            children: [
+              // TitleTile(
+              //   title: '${Global.goldDataModel?.date}',
+              // ),
+              GoldPriceListTileData(
+                title: 'ทองคำแท่ง 96.5%',
+                buy: "รับซื้อ",
+                sell: "${Global.goldDataModel?.theng?.buy}",
+              ),
+              GoldPriceListTileData(
+                title: '',
+                buy: "ขายออก",
+                sell: "${Global.goldDataModel?.theng?.buy}",
+              ),
+              GoldPriceListTileData(
+                title: 'ทองรูปพรรณ',
+                buy: "รับซื้อ",
+                sell: "${Global.goldDataModel?.paphun?.buy}",
+              ),
+              GoldPriceListTileData(
+                title: '',
+                buy: "ขายออก",
+                sell: "${Global.goldDataModel?.paphun?.sell}",
+              ),
+            ],
           ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            Global.goldDataModel = null;
-          });
-          init();
-        },
-        backgroundColor: bgColor3,
-        child: const Icon(Icons.refresh),
-      ),
-    );
+        );
   }
 }

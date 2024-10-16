@@ -8,7 +8,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
 
-import 'checkout_screen.dart';
+import '../checkout_screen.dart';
 
 class PosMenuScreen extends StatefulWidget {
   const PosMenuScreen({Key? key, required this.title}) : super(key: key);
@@ -157,7 +157,7 @@ class PosMenuScreenState extends State<PosMenuScreen> {
             controller: sideMenu,
             style: SideMenuStyle(
               showTooltip: true,
-              iconSize: 100,
+              iconSize: 90,
               compactSideMenuWidth: 130,
               itemHeight: 130,
               displayMode: SideMenuDisplayMode.compact,

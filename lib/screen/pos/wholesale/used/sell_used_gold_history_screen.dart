@@ -3,8 +3,13 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/screen_utils.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -28,7 +33,8 @@ class SellUsedGoldHistoryScreen extends StatefulWidget {
 
 class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
   bool loading = false;
-  List<OrderModel>? sellList = [];
+  List<OrderModel>? orders = [];
+  List<OrderModel?>? filterList = [];
   Screen? size;
   TextEditingController productEntryWeightCtrl = TextEditingController();
   TextEditingController productEntryWeightBahtCtrl = TextEditingController();
@@ -39,9 +45,18 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
   OrderModel? selectedSell;
   OrderDetailModel? selectedDetail;
 
+  final TextEditingController yearCtrl = TextEditingController();
+  final TextEditingController monthCtrl = TextEditingController();
+  ValueNotifier<dynamic>? yearNotifier;
+  ValueNotifier<dynamic>? monthNotifier;
+
   @override
   void initState() {
     super.initState();
+    yearNotifier = ValueNotifier<int>(DateTime.now().year);
+    monthNotifier = ValueNotifier<int>(DateTime.now().month);
+    yearCtrl.text = DateTime.now().year.toString();
+    monthCtrl.text = DateTime.now().month.toString();
     loadData();
   }
 
@@ -50,16 +65,23 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/sell/all/SUCCESS', Global.requestObj(null));
+      var result = await ApiServices.post('/order/all/type/6',
+          Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
       // print(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
         setState(() {
-          sellList = products;
+          if (products.isNotEmpty) {
+            orders = products;
+            filterList = products;
+          } else {
+            orders!.clear();
+            filterList!.clear();
+          }
         });
       } else {
-        sellList = [];
+        orders = [];
       }
     } catch (e) {
       if (kDebugMode) {
@@ -71,6 +93,20 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
     });
   }
 
+  void search() async {
+    if (yearCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+      return;
+    }
+
+    if (monthCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
+      return;
+    }
+
+    loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
@@ -80,24 +116,208 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
         actions: const [],
       ),
       body: SafeArea(
-        child: loading
-            ? const LoadingProgress()
-            : sellList!.isEmpty
-                ? const EmptyContent()
-                : SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height - 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                            itemCount: sellList!.length,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dataCard(sellList![index], index);
-                            }),
+        child: Column(
+          children: [
+            SizedBox(
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
+                      ),
+                    ),
+                    topRight: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
                       ),
                     ),
                   ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: getProportionateScreenWidth(0),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'ปี',
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(6)),
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<int>(
+                                          key: UniqueKey(),
+                                          children: Global.genYear(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            int? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(6),
+                                            );
+                                          },
+                                          onChanged: (int value) {
+                                            yearCtrl.text = value.toString();
+                                            yearNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(6),
+                                            projectValueNotifier: yearNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'เดือน',
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(6)),
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<int>(
+                                          key: UniqueKey(),
+                                          children: Global.genMonth(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            int? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(6),
+                                            );
+                                          },
+                                          onChanged: (int value) {
+                                            monthCtrl.text = value.toString();
+                                            monthNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(6),
+                                            projectValueNotifier:
+                                                monthNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(3.0),
+                          vertical: getProportionateScreenHeight(5.0),
+                        ),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(bgColor3)),
+                          onPressed: search,
+                          child: Text(
+                            'ค้นหา'.tr(),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const Divider(
+              thickness: 1.0,
+            ),
+            loading
+                ? Container(
+                    margin: const EdgeInsets.only(top: 100),
+                    child: const LoadingProgress())
+                : filterList!.isEmpty
+                    ? const EmptyContent()
+                    : Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                              itemCount: filterList!.length,
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (BuildContext context, int index) {
+                                return dataCard(filterList![index]!, index);
+                              }),
+                        ),
+                      ),
+          ],
+        ),
       ),
     );
   }
@@ -109,155 +329,160 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => PreviewSellUsedGoldPage(
-                  sell: sell,
-                )));
+                      order: sell,
+                    )));
       },
       child: Stack(
         children: [
           Card(
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: ListTile(
-                    title: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '#${sell.orderId.toString()}',
-                          style: TextStyle(fontSize: size?.getWidthPx(8)),
-                        ),
-                        Text(
-                          Global.formatDate(sell.orderDate.toString()),
-                          style: TextStyle(
-                              color: Colors.green, fontSize: size?.getWidthPx(6)),
-                        )
-                      ],
-                    ),
-                    subtitle: Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text('สินค้า',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
-                                        color: Colors.orange)),
-                              ),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text('น้ำหนัก',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
-                                        color: Colors.orange)),
-                              ),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text('คลังสินค้า',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
-                                        color: Colors.orange)),
-                              ),
-                            ),
-                            if (sell.status == 'PENDING')
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '#${sell.orderId.toString()}',
+                            style: TextStyle(fontSize: size?.getWidthPx(8)),
+                          ),
+                          Text(
+                            Global.formatDate(sell.orderDate.toString()),
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: size?.getWidthPx(6)),
+                          )
+                        ],
+                      ),
+                      subtitle: Table(
+                        children: [
+                          TableRow(
+                            children: [
                               Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20),
-                                  child: Container(),
+                                  child: Text('สินค้า',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(8),
+                                          color: Colors.orange)),
                                 ),
                               ),
-                          ],
-                        ),
-                        ...sell.details!.map(
-                          (e) => TableRow(
-                            decoration: const BoxDecoration(),
-                            children: [
-                              paddedText(e.productName,
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(7))),
-                              paddedText(formatter.format(e.weight!),
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(7))),
-                              paddedText(
-                                  '${e.binLocationName} - ${e.toBinLocationName}',
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(7))),
-                              if (sell.status == 'PENDING')
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedSell = sell;
-                                          sellIdCtrl.text = sell.orderId;
-                                          dateCtrl.text = Global.formatDate(
-                                              sell.orderDate!.toString());
-                                          productWeightCtrl.text =
-                                              formatter.format(e.weight);
-                                          productWeightBahtCtrl.text =
-                                              formatter.format(e.weightBath);
-                                          productEntryWeightCtrl.text = "";
-                                          productEntryWeightBahtCtrl.text = "";
-                                          selectedDetail = e;
-                                        });
-                                        adjustWeight(e);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          height: 60,
-                                          // width: 100,
-                                          decoration: BoxDecoration(
-                                              color: Colors.teal,
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.check,
-                                                  color: Colors.white,
-                                                ),
-                                                Text('ยืนยัน',
-                                                    style: TextStyle(
-                                                        fontSize:
-                                                            size!.getWidthPx(6),
-                                                        color: Colors.white))
-                                              ],
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Text('น้ำหนัก',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(8),
+                                          color: Colors.orange)),
+                                ),
+                              ),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Text('คลังสินค้า',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(8),
+                                          color: Colors.orange)),
+                                ),
+                              ),
+                              if (sell.orderStatus != null && sell.orderStatus == 'PENDING')
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Container(),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          ...sell.details!.map(
+                            (e) => TableRow(
+                              decoration: const BoxDecoration(),
+                              children: [
+                                paddedText(e.productName,
+                                    align: TextAlign.center,
+                                    style:
+                                        TextStyle(fontSize: size?.getWidthPx(7))),
+                                paddedText(formatter.format(e.weight!),
+                                    align: TextAlign.center,
+                                    style:
+                                        TextStyle(fontSize: size?.getWidthPx(7))),
+                                paddedText(
+                                    '${e.binLocationName} - ${e.toBinLocationName}',
+                                    align: TextAlign.center,
+                                    style:
+                                        TextStyle(fontSize: size?.getWidthPx(7))),
+                                if (sell.orderStatus != null && sell.orderStatus == 'PENDING')
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedSell = sell;
+                                            sellIdCtrl.text = sell.orderId;
+                                            dateCtrl.text = Global.formatDate(
+                                                sell.orderDate!.toString());
+                                            productWeightCtrl.text =
+                                                formatter.format(e.weight);
+                                            productWeightBahtCtrl.text =
+                                                formatter.format(e.weightBath);
+                                            productEntryWeightCtrl.text = "";
+                                            productEntryWeightBahtCtrl.text = "";
+                                            selectedDetail = e;
+                                          });
+                                          motivePrint(e.toJson());
+                                          adjustWeight(e);
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            height: 60,
+                                            // width: 100,
+                                            decoration: BoxDecoration(
+                                                color: Colors.teal,
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.check,
+                                                    color: Colors.white,
+                                                  ),
+                                                  Text('ยืนยัน',
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              size!.getWidthPx(6),
+                                                          color: Colors.white))
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                            ],
+                                    ],
+                                  )
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          if (sell.status == 'PENDING')
+          if (sell.orderStatus == 'PENDING')
             Positioned(
               right: 0,
               top: 0,
@@ -284,7 +509,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                         ),
                       ),
                       Text(
-                        sell.status!,
+                        sell.orderStatus!,
                         style: const TextStyle(color: Colors.white),
                       )
                     ],
@@ -416,9 +641,9 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                             .text.isNotEmpty) {
                                           productEntryWeightBahtCtrl.text =
                                               Global.format((Global.toNumber(
-                                                          productEntryWeightCtrl
-                                                              .text) /
-                                                      15.16));
+                                                      productEntryWeightCtrl
+                                                          .text) /
+                                                  15.16));
                                         } else {
                                           productEntryWeightBahtCtrl.text = "";
                                         }
@@ -441,9 +666,9 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                             .text.isNotEmpty) {
                                           productEntryWeightCtrl.text =
                                               Global.format((Global.toNumber(
-                                                          productEntryWeightBahtCtrl
-                                                              .text) *
-                                                      15.16));
+                                                      productEntryWeightBahtCtrl
+                                                          .text) *
+                                                  15.16));
                                         } else {
                                           productEntryWeightCtrl.text = "";
                                         }
@@ -486,21 +711,23 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                 pr.update(message: 'processing'.tr());
                                 try {
                                   var result = await ApiServices.post(
-                                      '/sell/confirm-adjust', Global.requestObj(selectedSell));
+                                      '/order/confirm-adjust',
+                                      Global.requestObj(selectedSell));
                                   // print(result!.data);
                                   if (result!.status == "success") {
                                     var detail = await ApiServices.post(
-                                        '/selldetail/adjust', Global.requestObj(selectedDetail));
-                                    // print(detail!.data);
+                                        '/orderdetail/adjust/sell',
+                                        Global.requestObj(selectedDetail));
+                                    print(detail!.data);
                                     await pr.hide();
                                     if (detail?.status == "success") {
                                       motivePrint("Confirm completed");
                                       if (mounted) {
-                                        Alert.success(context, 'Success'.tr(), 'Success', 'OK'.tr(),
-                                            action: () {
-                                              Navigator.of(context).pop();
-                                              loadData();
-                                            });
+                                        Alert.success(context, 'Success'.tr(),
+                                            'Success', 'OK'.tr(), action: () {
+                                          Navigator.of(context).pop();
+                                          loadData();
+                                        });
                                       }
                                     }
                                   } else {

@@ -28,7 +28,7 @@ class ApiServices {
         if (response.statusCode == 200) {
           return Response.fromJson(jsonDecode(response.body));
         } else {
-          throw Future.error('error${response.body}');
+          return Response(status: 'failed', message: response.body, data: null);
         }
       });
     } catch (e) {
@@ -64,7 +64,7 @@ class ApiServices {
           // print(response.body);
           return Response.fromJson(jsonDecode(response.body));
         } else {
-          throw Future.error('error${response.body}');
+          return Response(status: 'failed', message: response.body, data: null);
         }
       });
     } catch (e) {
@@ -81,11 +81,11 @@ class ApiServices {
           // print(response.body);
           return Response.fromJson(jsonDecode(response.body));
         } else {
-          throw Future.error('error${response.body}');
+          return Response(status: 'failed', message: response.body, data: null);
         }
       });
     } catch (e) {
-      print(url + e.toString());
+      motivePrint(url + e.toString());
     }
     return null;
   }

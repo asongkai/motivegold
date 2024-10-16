@@ -1,13 +1,20 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/screen_utils.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -21,12 +28,21 @@ class RefillGoldHistoryScreen extends StatefulWidget {
 
 class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
   bool loading = false;
-  List<OrderModel>? refillList = [];
+  List<OrderModel>? orders = [];
+  List<OrderModel?>? filterList = [];
   Screen? size;
+  final TextEditingController yearCtrl = TextEditingController();
+  final TextEditingController monthCtrl = TextEditingController();
+  ValueNotifier<dynamic>? yearNotifier;
+  ValueNotifier<dynamic>? monthNotifier;
 
   @override
   void initState() {
     super.initState();
+    yearNotifier = ValueNotifier<int>(DateTime.now().year);
+    monthNotifier = ValueNotifier<int>(DateTime.now().month);
+    yearCtrl.text = DateTime.now().year.toString();
+    monthCtrl.text = DateTime.now().month.toString();
     loadData();
   }
 
@@ -36,15 +52,21 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/refill/all', Global.requestObj(null));
+          await ApiServices.post('/order/all/type/5', Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
         setState(() {
-          refillList = products;
+          if (products.isNotEmpty) {
+            orders = products;
+            filterList = products;
+          } else {
+            orders!.clear();
+            filterList!.clear();
+          }
         });
       } else {
-        refillList = [];
+        orders = [];
       }
     } catch (e) {
       if (kDebugMode) {
@@ -56,6 +78,20 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
     });
   }
 
+  void search() async {
+    if (yearCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+      return;
+    }
+
+    if (monthCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
+      return;
+    }
+
+    loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
@@ -65,24 +101,211 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
         actions: const [],
       ),
       body: SafeArea(
-        child: loading
-            ? const LoadingProgress()
-            : refillList!.isEmpty
-                ? const EmptyContent()
-                : SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                            itemCount: refillList!.length,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dataCard(refillList![index], index);
-                            }),
+        child: Column(
+          children: [
+            SizedBox(
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
+                      ),
+                    ),
+                    topRight: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
                       ),
                     ),
                   ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: getProportionateScreenWidth(0),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'ปี',
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(6)),
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<int>(
+                                          key: UniqueKey(),
+                                          children: Global.genYear(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                              int index,
+                                              int? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(6),
+                                            );
+                                          },
+                                          onChanged: (int value) {
+                                            yearCtrl.text = value.toString();
+                                            yearNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(6),
+                                            projectValueNotifier: yearNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'เดือน',
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(6)),
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<int>(
+                                          key: UniqueKey(),
+                                          children: Global.genMonth(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                              int index,
+                                              int? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(6),
+                                            );
+                                          },
+                                          onChanged: (int value) {
+                                            monthCtrl.text = value.toString();
+                                            monthNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(6),
+                                            projectValueNotifier:
+                                            monthNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(3.0),
+                          vertical: getProportionateScreenHeight(5.0),
+                        ),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor:
+                              MaterialStateProperty.all<Color>(bgColor3)),
+                          onPressed: search,
+                          child: Text(
+                            'ค้นหา'.tr(),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const Divider(
+              thickness: 1.0,
+            ),
+            loading
+                ? Container(
+                margin: const EdgeInsets.only(top: 100),
+                child: const LoadingProgress())
+                : filterList!.isEmpty
+                ? const EmptyContent()
+                : SingleChildScrollView(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height - 300,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                                itemCount: orders!.length,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return dataCard(orders![index], index);
+                                }),
+                          ),
+                        ),
+                      ),
+          ],
+        ),
       ),
     );
   }

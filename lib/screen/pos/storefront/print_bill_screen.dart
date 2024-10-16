@@ -5,7 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
+import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -47,6 +49,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
     });
     try {
       Response? result;
+      Response? payment;
       if (Global.pairId == null) {
         result = await ApiServices.post(
             '/order/order-list', encoder.convert(Global.orderIds));
@@ -54,12 +57,15 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
         result = await ApiServices.post(
             '/order/print-order-list/${Global.pairId}',
             Global.requestObj(null));
+        payment = await ApiServices.post(
+            '/order/payment/${Global.pairId}', Global.requestObj(null));
       }
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> dump = orderListModelFromJson(data);
         setState(() {
           orders = dump;
+          Global.payment = PaymentModel.fromJson(payment?.data);
         });
       } else {
         orders = [];
@@ -161,7 +167,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                   children: [
                     ProductListTileData(
                       orderId: order.orderId,
-                      weight: Global.dateOnly(order.orderDate!.toString()),
+                      weight: null,
                       showTotal: false,
                       type: order.orderTypeName,
                     ),
@@ -279,7 +285,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),
-                              child: Text('',
+                              child: Text('${Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -312,13 +318,36 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                         Invoice invoice = Invoice(
                             order: order,
                             customer: order.customer!,
+                            payment: Global.payment,
                             items: order.details!);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PdfPreviewPage(invoice: invoice),
-                          ),
-                        );
+
+                        if (order.orderTypeId == 1 || order.orderTypeId == 2) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PdfPreviewPage(invoice: invoice),
+                            ),
+                          );
+                        }
+
+                        if (order.orderTypeId == 3 || order.orderTypeId == 4 || order.orderTypeId == 8) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PdfThengPreviewPage(invoice: invoice),
+                            ),
+                          );
+                        }
+
+                        if (order.orderTypeId == 33 || order.orderTypeId == 44 || order.orderTypeId == 9) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PdfThengPreviewPage(invoice: invoice),
+                            ),
+                          );
+                        }
+
                       },
                       child: Container(
                         height: 80,

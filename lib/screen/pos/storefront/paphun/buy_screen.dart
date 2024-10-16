@@ -23,8 +23,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import 'checkout_screen.dart';
-
+import '../checkout_screen.dart';
 
 class PaphunBuyScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -64,7 +63,8 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
     super.initState();
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyTotal();
     loadProducts();
   }
@@ -74,25 +74,37 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/product/type/USED', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/product/type/USED', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
+          if (productList.isNotEmpty) {
+            selectedProduct = productList.first;
+            productCodeCtrl.text =
+                (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+            productNameCtrl.text =
+                (selectedProduct != null ? selectedProduct?.name : "")!;
+            productNotifier = ValueNotifier<ProductModel>(
+                selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
+          }
         });
       } else {
         productList = [];
       }
 
-      var warehouse = await ApiServices.post('/binlocation/all', Global.requestObj(null));
+      var warehouse =
+          await ApiServices.post('/binlocation/all', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
           warehouseList = warehouses;
           selectedWarehouse = warehouseList.first;
-          warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+          warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
+              WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
       } else {
         warehouseList = [];
@@ -230,68 +242,70 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                 flex: 5,
                                                                 child: Padding(
                                                                   padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
                                                                   child:
-                                                                  SizedBox(
+                                                                      SizedBox(
                                                                     height: 80,
                                                                     child: MiraiDropDownMenu<
                                                                         ProductModel>(
                                                                       key:
-                                                                      UniqueKey(),
+                                                                          UniqueKey(),
                                                                       children:
-                                                                      productList,
+                                                                          productList,
                                                                       space: 4,
                                                                       maxHeight:
-                                                                      360,
+                                                                          360,
                                                                       showSearchTextField:
-                                                                      true,
+                                                                          true,
                                                                       selectedItemBackgroundColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                                                          Colors
+                                                                              .transparent,
+                                                                      emptyListMessage:
+                                                                          'ไม่มีข้อมูล',
                                                                       showSelectedItemBackgroundColor:
-                                                                      true,
+                                                                          true,
                                                                       itemWidgetBuilder:
                                                                           (
-                                                                          int index,
-                                                                          ProductModel?
-                                                                          project, {
+                                                                        int index,
+                                                                        ProductModel?
+                                                                            project, {
                                                                         bool isItemSelected =
-                                                                        false,
+                                                                            false,
                                                                       }) {
                                                                         return DropDownItemWidget(
                                                                           project:
-                                                                          project,
+                                                                              project,
                                                                           isItemSelected:
-                                                                          isItemSelected,
+                                                                              isItemSelected,
                                                                           firstSpace:
-                                                                          10,
+                                                                              10,
                                                                           fontSize:
-                                                                          size.getWidthPx(6),
+                                                                              size.getWidthPx(6),
                                                                         );
                                                                       },
                                                                       onChanged:
                                                                           (ProductModel
-                                                                      value) {
+                                                                              value) {
                                                                         productCodeCtrl.text = value
                                                                             .productCode!
                                                                             .toString();
                                                                         productNameCtrl.text =
                                                                             value.name;
-                                                                        selectedProduct = value;
+                                                                        selectedProduct =
+                                                                            value;
                                                                         productNotifier!.value =
                                                                             value;
                                                                       },
                                                                       child:
-                                                                      DropDownObjectChildWidget(
+                                                                          DropDownObjectChildWidget(
                                                                         key:
-                                                                        GlobalKey(),
+                                                                            GlobalKey(),
                                                                         fontSize:
-                                                                        size.getWidthPx(6),
+                                                                            size.getWidthPx(6),
                                                                         projectValueNotifier:
-                                                                        productNotifier!,
+                                                                            productNotifier!,
                                                                       ),
                                                                     ),
                                                                   ),
@@ -440,7 +454,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                   child:
                                                                       buildTextFieldBig(
                                                                     labelText:
-                                                                        "ราคาซื้อ (ฐานภาษี)",
+                                                                        "ราคารับซื้อคืน (ฐานภาษี)",
                                                                     enabled:
                                                                         false,
                                                                     textColor:
@@ -468,7 +482,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                           8.0),
                                                                   child: buildTextFieldBig(
                                                                       labelText:
-                                                                          "ราคาซื้อ",
+                                                                          "ราคารับซื้อคืน",
                                                                       inputType:
                                                                           TextInputType
                                                                               .number,
@@ -489,7 +503,6 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                             ],
                                                           ),
                                                         ),
-
                                                         SizedBox(
                                                           height: 100,
                                                           child: Row(
@@ -498,51 +511,52 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                 flex: 5,
                                                                 child: Padding(
                                                                   padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
                                                                   child:
-                                                                  SizedBox(
+                                                                      SizedBox(
                                                                     height: 80,
                                                                     child: MiraiDropDownMenu<
                                                                         WarehouseModel>(
                                                                       key:
-                                                                      UniqueKey(),
+                                                                          UniqueKey(),
                                                                       children:
-                                                                      warehouseList,
+                                                                          warehouseList,
                                                                       space: 4,
                                                                       maxHeight:
-                                                                      360,
+                                                                          360,
                                                                       showSearchTextField:
-                                                                      true,
+                                                                          true,
                                                                       selectedItemBackgroundColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                                                          Colors
+                                                                              .transparent,
+                                                                      emptyListMessage:
+                                                                          'ไม่มีข้อมูล',
                                                                       showSelectedItemBackgroundColor:
-                                                                      true,
+                                                                          true,
                                                                       itemWidgetBuilder:
                                                                           (
-                                                                          int index,
-                                                                          WarehouseModel?
-                                                                          project, {
+                                                                        int index,
+                                                                        WarehouseModel?
+                                                                            project, {
                                                                         bool isItemSelected =
-                                                                        false,
+                                                                            false,
                                                                       }) {
                                                                         return DropDownItemWidget(
                                                                           project:
-                                                                          project,
+                                                                              project,
                                                                           isItemSelected:
-                                                                          isItemSelected,
+                                                                              isItemSelected,
                                                                           firstSpace:
-                                                                          10,
+                                                                              10,
                                                                           fontSize:
-                                                                          size.getWidthPx(6),
+                                                                              size.getWidthPx(6),
                                                                         );
                                                                       },
                                                                       onChanged:
                                                                           (WarehouseModel
-                                                                      value) {
+                                                                              value) {
                                                                         warehouseCtrl.text = value
                                                                             .id!
                                                                             .toString();
@@ -552,13 +566,13 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                             value;
                                                                       },
                                                                       child:
-                                                                      DropDownObjectChildWidget(
+                                                                          DropDownObjectChildWidget(
                                                                         key:
-                                                                        GlobalKey(),
+                                                                            GlobalKey(),
                                                                         fontSize:
-                                                                        size.getWidthPx(6),
+                                                                            size.getWidthPx(6),
                                                                         projectValueNotifier:
-                                                                        warehouseNotifier!,
+                                                                            warehouseNotifier!,
                                                                       ),
                                                                     ),
                                                                   ),
@@ -569,8 +583,8 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                         ),
                                                         Padding(
                                                           padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
+                                                              const EdgeInsets
+                                                                  .all(8.0),
                                                           child: OutlinedButton(
                                                             child: const Text(
                                                                 "เพิ่ม"),
@@ -608,7 +622,8 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                 return;
                                                               }
 
-                                                              if (selectedWarehouse == null) {
+                                                              if (selectedWarehouse ==
+                                                                  null) {
                                                                 Alert.warning(
                                                                     context,
                                                                     'คำเตือน',
@@ -617,11 +632,14 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                 return;
                                                               }
 
-                                                              var realPrice = Global.toNumber(productPriceBaseCtrl.text);
+                                                              var realPrice =
+                                                                  Global.toNumber(
+                                                                      productPriceBaseCtrl
+                                                                          .text);
                                                               var price = Global
                                                                   .toNumber(
-                                                                  productPriceCtrl
-                                                                      .text);
+                                                                      productPriceCtrl
+                                                                          .text);
                                                               var check =
                                                                   price -
                                                                       realPrice;
@@ -653,33 +671,37 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                                   .add(
                                                                 OrderDetailModel(
                                                                   productName:
-                                                                  productNameCtrl
-                                                                      .text,
-                                                                  binLocationId: selectedWarehouse!.id,
-                                                                  productId: selectedProduct!.id,
+                                                                      productNameCtrl
+                                                                          .text,
+                                                                  binLocationId:
+                                                                      selectedWarehouse!
+                                                                          .id,
+                                                                  productId:
+                                                                      selectedProduct!
+                                                                          .id,
                                                                   weight: Global
                                                                       .toNumber(
-                                                                      productWeightCtrl
-                                                                          .text),
+                                                                          productWeightCtrl
+                                                                              .text),
                                                                   weightBath: Global
                                                                       .toNumber(
-                                                                      productWeightBahtCtrl
-                                                                          .text),
+                                                                          productWeightBahtCtrl
+                                                                              .text),
                                                                   commission: 0,
                                                                   taxBase: 0,
                                                                   priceIncludeTax: productWeightCtrl
-                                                                      .text
-                                                                      .isEmpty
+                                                                          .text
+                                                                          .isEmpty
                                                                       ? 0
                                                                       : Global.toNumber(
-                                                                      productPriceCtrl
-                                                                          .text),
+                                                                          productPriceCtrl
+                                                                              .text),
                                                                 ),
                                                               );
                                                               sumBuyTotal();
                                                               setState(() {});
                                                               Navigator.of(
-                                                                  context)
+                                                                      context)
                                                                   .pop();
                                                             },
                                                           ),
@@ -790,26 +812,33 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             return;
                                           }
 
-                                          final ProgressDialog pr = ProgressDialog(context,
-                                              type: ProgressDialogType.normal,
-                                              isDismissible: true,
-                                              showLogs: true);
+                                          final ProgressDialog pr =
+                                              ProgressDialog(context,
+                                                  type:
+                                                      ProgressDialogType.normal,
+                                                  isDismissible: true,
+                                                  showLogs: true);
                                           await pr.show();
                                           pr.update(message: 'processing'.tr());
                                           try {
-                                            var result = await ApiServices.post('/order/gen/2', Global.requestObj(null));
+                                            var result = await ApiServices.post(
+                                                '/order/gen/2',
+                                                Global.requestObj(null));
                                             await pr.hide();
                                             if (result!.status == "success") {
                                               OrderModel order = OrderModel(
                                                   orderId: result.data,
-                                                  orderDate: DateTime.now().toUtc(),
-                                                  details: Global.buyOrderDetail!,
+                                                  orderDate:
+                                                      DateTime.now().toUtc(),
+                                                  details:
+                                                      Global.buyOrderDetail!,
                                                   orderTypeId: 2);
                                               final data = order.toJson();
-                                              Global.orders
-                                                  ?.add(OrderModel.fromJson(data));
-                                              widget.refreshCart(
-                                                  Global.orders?.length.toString());
+                                              Global.orders?.add(
+                                                  OrderModel.fromJson(data));
+                                              widget.refreshCart(Global
+                                                  .orders?.length
+                                                  .toString());
                                               Global.buyOrderDetail!.clear();
                                               setState(() {
                                                 Global.buySubTotal = 0;
@@ -819,34 +848,36 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               if (mounted) {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                        "เพิ่มลงรถเข็นสำเร็จ...",
-                                                        style: TextStyle(
-                                                            fontSize: 22),
-                                                      ),
-                                                      backgroundColor: Colors
-                                                          .teal,
-                                                    ));
+                                                        const SnackBar(
+                                                  content: Text(
+                                                    "เพิ่มลงรถเข็นสำเร็จ...",
+                                                    style:
+                                                        TextStyle(fontSize: 22),
+                                                  ),
+                                                  backgroundColor: Colors.teal,
+                                                ));
                                               }
                                             } else {
                                               if (mounted) {
                                                 Alert.warning(
-                                                    context, 'Warning'.tr(), 'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน', 'OK'.tr(),
+                                                    context,
+                                                    'Warning'.tr(),
+                                                    'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                                    'OK'.tr(),
                                                     action: () {});
                                               }
                                             }
-
                                           } catch (e) {
                                             await pr.hide();
                                             if (mounted) {
                                               Alert.warning(
-                                                  context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                                                  context,
+                                                  'Warning'.tr(),
+                                                  e.toString(),
+                                                  'OK'.tr(),
                                                   action: () {});
                                             }
                                           }
-
-
                                         },
                                         child: Row(
                                           mainAxisAlignment:
@@ -894,14 +925,14 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               OrderModel.fromJson(data));
                                           Future.delayed(
                                               const Duration(milliseconds: 500),
-                                                  () async {
-                                                String holds =
+                                              () async {
+                                            String holds =
                                                 (await Global.getHoldList())
                                                     .length
                                                     .toString();
-                                                widget.refreshHold(holds);
-                                                setState(() {});
-                                              });
+                                            widget.refreshHold(holds);
+                                            setState(() {});
+                                          });
 
                                           Global.buyOrderDetail!.clear();
                                           setState(() {
@@ -911,19 +942,14 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                           });
                                           if (mounted) {
                                             ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    "ระงับการสั่งซื้อสำเร็จ...",
-                                                    style: TextStyle(
-                                                        fontSize: 22),
-                                                  ),
-                                                  backgroundColor: Colors
-                                                      .teal,
-                                                ));
+                                                .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                "ระงับการสั่งซื้อสำเร็จ...",
+                                                style: TextStyle(fontSize: 22),
+                                              ),
+                                              backgroundColor: Colors.teal,
+                                            ));
                                           }
-
-
                                         },
                                         child: Row(
                                           mainAxisAlignment:
@@ -960,26 +986,33 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             return;
                                           }
 
-                                          final ProgressDialog pr = ProgressDialog(context,
-                                              type: ProgressDialogType.normal,
-                                              isDismissible: true,
-                                              showLogs: true);
+                                          final ProgressDialog pr =
+                                              ProgressDialog(context,
+                                                  type:
+                                                      ProgressDialogType.normal,
+                                                  isDismissible: true,
+                                                  showLogs: true);
                                           await pr.show();
                                           pr.update(message: 'processing'.tr());
                                           try {
-                                            var result = await ApiServices.post('/order/gen/2', Global.requestObj(null));
+                                            var result = await ApiServices.post(
+                                                '/order/gen/2',
+                                                Global.requestObj(null));
                                             await pr.hide();
                                             if (result!.status == "success") {
                                               OrderModel order = OrderModel(
                                                   orderId: result.data,
-                                                  orderDate: DateTime.now().toUtc(),
-                                                  details: Global.buyOrderDetail!,
+                                                  orderDate:
+                                                      DateTime.now().toUtc(),
+                                                  details:
+                                                      Global.buyOrderDetail!,
                                                   orderTypeId: 2);
                                               final data = order.toJson();
-                                              Global.orders
-                                                  ?.add(OrderModel.fromJson(data));
-                                              widget.refreshCart(
-                                                  Global.orders?.length.toString());
+                                              Global.orders?.add(
+                                                  OrderModel.fromJson(data));
+                                              widget.refreshCart(Global
+                                                  .orders?.length
+                                                  .toString());
                                               Global.buyOrderDetail!.clear();
                                               setState(() {
                                                 Global.buySubTotal = 0;
@@ -988,48 +1021,48 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               });
                                               if (mounted) {
                                                 Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                        const CheckOutScreen()))
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const CheckOutScreen()))
                                                     .whenComplete(() {
                                                   Future.delayed(
                                                       const Duration(
                                                           milliseconds: 500),
-                                                          () async {
-                                                        String holds =
-                                                        (await Global
+                                                      () async {
+                                                    String holds = (await Global
                                                             .getHoldList())
-                                                            .length
-                                                            .toString();
-                                                        widget.refreshHold(
-                                                            holds);
-                                                        widget.refreshCart(
-                                                            Global
-                                                                .orders?.length
-                                                                .toString());
-                                                        setState(() {});
-                                                      });
+                                                        .length
+                                                        .toString();
+                                                    widget.refreshHold(holds);
+                                                    widget.refreshCart(Global
+                                                        .orders?.length
+                                                        .toString());
+                                                    setState(() {});
+                                                  });
                                                 });
                                               }
                                             } else {
                                               if (mounted) {
                                                 Alert.warning(
-                                                    context, 'Warning'.tr(), 'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน', 'OK'.tr(),
+                                                    context,
+                                                    'Warning'.tr(),
+                                                    'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                                    'OK'.tr(),
                                                     action: () {});
                                               }
                                             }
-
                                           } catch (e) {
                                             await pr.hide();
                                             if (mounted) {
                                               Alert.warning(
-                                                  context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                                                  context,
+                                                  'Warning'.tr(),
+                                                  e.toString(),
+                                                  'OK'.tr(),
                                                   action: () {});
                                             }
                                           }
-                                          
-
                                         },
                                         child: Row(
                                           mainAxisAlignment:
@@ -1069,9 +1102,15 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
     productPriceBaseCtrl.text = "";
     productWeightBahtCtrl.text = "";
     warehouseCtrl.text = "";
-    productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    selectedProduct = productList.first;
+    productCodeCtrl.text =
+        (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+    productNameCtrl.text =
+        (selectedProduct != null ? selectedProduct?.name : "")!;
+    productNotifier = ValueNotifier<ProductModel>(
+        selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
   }
 
   removeProduct(index) {

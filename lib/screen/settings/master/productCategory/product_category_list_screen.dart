@@ -140,8 +140,9 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -169,7 +170,7 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
                     ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 10,),
                 GestureDetector(
                   onTap: () {
                     remove(list[index].id!, index);

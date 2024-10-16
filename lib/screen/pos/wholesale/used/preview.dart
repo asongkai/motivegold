@@ -6,8 +6,8 @@ import 'make_pdf.dart';
 
 
 class PreviewSellUsedGoldPage extends StatelessWidget {
-  final OrderModel sell;
-  const PreviewSellUsedGoldPage({Key? key, required this.sell}) : super(key: key);
+  final OrderModel order;
+  const PreviewSellUsedGoldPage({Key? key, required this.order}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class PreviewSellUsedGoldPage extends StatelessWidget {
         title: const Text('พิมพ์เอกสาร'),
       ),
       body: PdfPreview(
-        build: (context) => makeSellUsedGoldPdf(sell),
+        build: (context) => makeSellUsedGoldPdf(order),
       ),
     );
   }

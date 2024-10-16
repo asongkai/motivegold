@@ -141,8 +141,9 @@ class _LocationListScreenState extends State<LocationListScreen> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -169,7 +170,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                     ),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 10,),
                 GestureDetector(
                   onTap: () {
                     removeProduct(locationList[index].id!, index);

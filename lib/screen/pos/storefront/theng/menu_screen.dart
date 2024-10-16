@@ -7,7 +7,7 @@ import 'package:motivegold/screen/pos/storefront/theng/sell_theng_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
 
-import '../paphun/checkout_screen.dart';
+import '../checkout_screen.dart';
 import 'buy_theng_screen.dart';
 
 class ThengSaleMenuScreen extends StatefulWidget {
@@ -159,7 +159,7 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
             controller: sideMenu,
             style: SideMenuStyle(
               showTooltip: true,
-              iconSize: 100,
+              iconSize: 90,
               compactSideMenuWidth: 130,
               itemHeight: 130,
               displayMode: SideMenuDisplayMode.compact,

@@ -4,10 +4,16 @@ import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
+import 'package:motivegold/model/location/amphure.dart';
+import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/request.dart';
 import 'package:motivegold/model/transfer_detail.dart';
@@ -43,6 +49,17 @@ class Global {
   static List<String>? orderIds = [];
   static int? pairId;
   static String? trackingNumber;
+
+  // PAYMENT
+  static String? currentPaymentMethod;
+  static File? paymentAttachment;
+  static ProductTypeModel? selectedPayment;
+  static TextEditingController bankCtrl = TextEditingController();
+  static TextEditingController refNoCtrl = TextEditingController();
+  static TextEditingController cardNameCtrl = TextEditingController();
+  static TextEditingController cardExpireDateCtrl = TextEditingController();
+  static TextEditingController paymentDetailCtrl = TextEditingController();
+  static TextEditingController paymentDateCtrl = TextEditingController();
 
   // POS
   static List<OrderDetailModel>? sellOrderDetail = [];
@@ -89,6 +106,22 @@ class Global {
   static String? platform;
   static String? platformVersion;
   static dynamic deviceDetail;
+
+  static PaymentModel? payment;
+
+  static List<ProvinceModel> provinceList = [];
+  static List<AmphureModel> amphureList = [];
+  static List<TambonModel> tambonList = [];
+
+  static ProvinceModel? provinceModel;
+  static AmphureModel? amphureModel;
+  static TambonModel? tambonModel;
+
+  static ValueNotifier<dynamic>? provinceNotifier;
+  static ValueNotifier<dynamic>? amphureNotifier;
+  static ValueNotifier<dynamic>? tambonNotifier;
+  static TextEditingController addressCtrl = TextEditingController();
+  static TextEditingController villageCtrl = TextEditingController();
 
   static format(double value) {
     String number = formatter.format(value);
@@ -291,41 +324,76 @@ class Global {
     return subTotal - discount;
   }
 
-  static double getPaymentTotal() {
-    if (orders!.isEmpty) {
-      return 0;
-    }
-    double amount = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        double price = orders![i].details![j].priceIncludeTax!;
-        int type = orders![i].orderTypeId!;
-        if (type == 2) {
-          price = -price;
-        }
-        amount += price;
-      }
-    }
-    amount = discount != 0 ? amount - discount : amount;
-    return amount < 0 ? -amount : amount;
-  }
-
-  static double getOrderTotal(OrderModel? order) {
+  static double getPriceIncludeTaxTotal(OrderModel? order) {
     if (order == null) {
       return 0;
     }
     double amount = 0;
     for (int j = 0; j < order.details!.length; j++) {
       double price = order.details![j].priceIncludeTax!;
-      int type = order.orderTypeId!;
-      if (type == 2) {
-        price = -price;
-      }
       amount += price;
     }
+    return amount;
+  }
 
-    // amount = discount != 0 ? amount - discount : amount;
-    return amount < 0 ? -amount : amount;
+  static double getPriceExcludeTaxTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].priceExcludeTax!;
+      amount += price;
+    }
+    return amount;
+  }
+
+  static double getPurchasePriceTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].purchasePrice!;
+      amount += price;
+    }
+    return amount;
+  }
+
+  static double getPriceDiffTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].priceDiff!;
+      amount += price;
+    }
+    return amount;
+  }
+
+  static double getTaxBaseTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].taxBase!;
+      amount += price;
+    }
+    return amount;
+  }
+
+  static double getTaxAmountTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].taxAmount!;
+      amount += price;
+    }
+    return amount;
   }
 
   static double getPapunTotal(OrderModel? order) {
@@ -367,10 +435,10 @@ class Global {
       for (int j = 0; j < orders![i].details!.length; j++) {
         double price = orders![i].details![j].priceIncludeTax!;
         int type = orders![i].orderTypeId!;
-        if (type == 2 || type == 5) {
+        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           buy += -price;
         }
-        if (type == 1 || type == 6) {
+        if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
           sell += price;
         }
       }
@@ -394,10 +462,10 @@ class Global {
       for (int j = 0; j < orders![i].details!.length; j++) {
         double price = orders![i].details![j].priceIncludeTax!;
         int type = orders![i].orderTypeId!;
-        if (type == 2 || type == 5) {
+        if (type == 2  || type == 5 || type == 44 || type == 33 || type == 9) {
           buy += -price;
         }
-        if (type == 1 || type == 6) {
+        if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
           sell += price;
         }
       }
@@ -408,6 +476,43 @@ class Global {
     return amount > 0
         ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
         : amount == 0 ? 0 : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
+  }
+
+  static double getPaymentTotal() {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < orders!.length; i++) {
+      for (int j = 0; j < orders![i].details!.length; j++) {
+        double price = orders![i].details![j].priceIncludeTax!;
+        int type = orders![i].orderTypeId!;
+        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+          price = -price;
+        }
+        amount += price;
+      }
+    }
+    amount = discount != 0 ? amount - discount : amount;
+    return amount < 0 ? -amount : amount;
+  }
+
+  static double getOrderTotal(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      double price = order.details![j].priceIncludeTax!;
+      int type = order.orderTypeId!;
+      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+        price = -price;
+      }
+      amount += price;
+    }
+
+    // amount = discount != 0 ? amount - discount : amount;
+    return amount < 0 ? -amount : amount;
   }
 
   static double getOrderTotalAmount(List<OrderDetailModel> data) {
@@ -660,13 +765,82 @@ class Global {
     return '0${getPhone(phone).substring(3)}';
   }
 
-  static double toNumber(String num) {
-    return double.parse(num.replaceAll(",", ""));
+  static double toNumber(String? num) {
+    return num == null || num == '' ? 0 : double.parse(num.replaceAll(",", ""));
+  }
+
+  static DateTime convertDate(String date) {
+    List<String> parts = date.split("-");
+    DateTime tempDate = DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}");
+    return tempDate;
   }
 
   static String formatDate(String date) {
     DateTime tempDate = DateTime.parse(date);
     return DateFormat('dd/MM/yyyy HH:mm:ss').format(tempDate);
+  }
+
+  static String formatDateD(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('dd-MM-yyyy').format(tempDate);
+  }
+
+  static String formatDateM(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('dd-MMM-yyyy').format(tempDate);
+  }
+
+  static String formatDateDD(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('yyyy-MM-dd').format(tempDate);
+  }
+
+  static String formatDateDT(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('dd-MM-yyyy HH:mm:ss').format(tempDate);
+  }
+
+  static String formattedDateTH(String dt) {
+    try {
+      DateTime dateTime = DateTime.parse(dt);
+      String formattedDate = DateFormat.yMMMMd('th_TH').format(dateTime);
+      return formattedDate;
+    } catch (e) {
+      return dt.split('').toString() + e.toString();
+    }
+  }
+
+  static int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
+  static Color? checkMatchingOrder(DateTime dt) {
+    DateTime now = DateTime.now();
+    DateTime order = dt.add(const Duration(days: 7));
+    int difference = daysBetween(now, order);
+
+    if (difference <= 2 && difference > 0) {
+      return Colors.amber;
+    }
+
+    if (difference == 0) {
+      return Colors.orangeAccent;
+    }
+
+    if (difference < 0) {
+      return Colors.red;
+    }
+
+    return Colors.green;
+  }
+
+  static int? getMatchingOrderDays(DateTime dt) {
+    DateTime now = DateTime.now();
+    DateTime order = dt.add(const Duration(days: 7));
+    int difference = daysBetween(now, order);
+    return difference;
   }
 
   static String formatDateT(String date) {
@@ -682,6 +856,11 @@ class Global {
   static String dateOnly(String date) {
     DateTime tempDate = DateTime.parse(date);
     return DateFormat('dd/MM/yyyy').format(tempDate);
+  }
+
+  static String dateOnlyT(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('yyyy-MM-dd').format(tempDate);
   }
 
   static String timeAndSec(String date) {

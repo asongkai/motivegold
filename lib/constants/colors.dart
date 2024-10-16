@@ -44,3 +44,8 @@ const Color bgColor3 = Color(0xfffbb034);
 const Color bgColor4 = Color(0xffffffd9);
 const Color textColor = Color(0xffFFC000);
 const Color textColor2 = Color(0xff0F8000);
+
+
+// APP THEME
+const Color snBgColorLight = Color(0xffFCE4EC);
+const Color snBgColor = Color(0xffF06292);

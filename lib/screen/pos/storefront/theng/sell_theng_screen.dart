@@ -9,7 +9,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/checkout_screen.dart';
+import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
@@ -95,6 +95,16 @@ class _SellThengScreenState extends State<SellThengScreen> {
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
+          if (productList.isNotEmpty) {
+            selectedProduct = productList.first;
+            productCodeCtrl.text =
+            (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+            productNameCtrl.text =
+            (selectedProduct != null ? selectedProduct?.name : "")!;
+            productNotifier =
+                ValueNotifier<ProductModel>(selectedProduct ??
+                    ProductModel(name: 'เลือกสินค้า', id: 0));
+          }
         });
       } else {
         productList = [];
@@ -124,7 +134,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
     });
   }
 
-  void loadQtyByLocation(int id) async {
+  Future<void> loadQtyByLocation(int id) async {
     try {
       final ProgressDialog pr = ProgressDialog(context,
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
@@ -134,6 +144,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
           '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
+        motivePrint(data);
         List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
         setState(() {
           qtyLocationList = qtys;
@@ -232,170 +243,156 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   resetText();
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          content: Stack(
-                                            clipBehavior: Clip.none,
-                                            children: [
-                                              Positioned(
-                                                right: -40.0,
-                                                top: -40.0,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: const CircleAvatar(
-                                                    backgroundColor: Colors.red,
-                                                    child: Icon(Icons.close),
+                                  await loadQtyByLocation(
+                                      selectedWarehouse!.id!);
+                                  if (mounted) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            content: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                Positioned(
+                                                  right: -40.0,
+                                                  top: -40.0,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      child: Icon(Icons.close),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              Form(
-                                                key: formKey,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    FocusScope.of(context)
-                                                        .requestFocus(
-                                                            FocusNode());
-                                                  },
-                                                  child: SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            3 /
-                                                            4,
-                                                    child:
-                                                        SingleChildScrollView(
-                                                      child: Column(
-                                                        children: [
-                                                          const SizedBox(
-                                                            height: 20,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              Expanded(
-                                                                child: Padding(
-                                                                  padding: const EdgeInsets
-                                                                      .only(
-                                                                      left: 8.0,
-                                                                      right:
+                                                Form(
+                                                  key: formKey,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      FocusScope.of(context)
+                                                          .requestFocus(
+                                                              FocusNode());
+                                                    },
+                                                    child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              3 /
+                                                              4,
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        child: Column(
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            SizedBox(
+                                                              height: 100,
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 5,
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .all(
                                                                           8.0),
-                                                                  child:
-                                                                      TextField(
-                                                                    controller:
-                                                                        reserveDateCtrl,
-                                                                    //editing controller of this TextField
-                                                                    style: const TextStyle(
-                                                                        fontSize:
-                                                                            38),
-                                                                    decoration:
-                                                                        InputDecoration(
-                                                                      prefixIcon:
-                                                                          const Icon(
-                                                                              Icons.calendar_today),
-                                                                      //icon of text field
-                                                                      floatingLabelBehavior:
-                                                                          FloatingLabelBehavior
-                                                                              .always,
-                                                                      contentPadding: const EdgeInsets
-                                                                          .symmetric(
-                                                                          vertical:
-                                                                              10.0,
-                                                                          horizontal:
-                                                                              10.0),
-                                                                      labelText:
-                                                                          "วันที่จอง"
-                                                                              .tr(),
-                                                                      border:
-                                                                          OutlineInputBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                          getProportionateScreenWidth(
-                                                                              8),
-                                                                        ),
-                                                                        borderSide:
-                                                                            const BorderSide(
-                                                                          color:
-                                                                              kGreyShade3,
-                                                                        ),
-                                                                      ),
-                                                                      enabledBorder:
-                                                                          OutlineInputBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                          getProportionateScreenWidth(
-                                                                              2),
-                                                                        ),
-                                                                        borderSide:
-                                                                            const BorderSide(
-                                                                          color:
-                                                                              kGreyShade3,
+                                                                      child:
+                                                                          SizedBox(
+                                                                        height:
+                                                                            80,
+                                                                        child: MiraiDropDownMenu<
+                                                                            ProductModel>(
+                                                                          key:
+                                                                              UniqueKey(),
+                                                                          children:
+                                                                              productList,
+                                                                          space:
+                                                                              4,
+                                                                          maxHeight:
+                                                                              360,
+                                                                          showSearchTextField:
+                                                                              true,
+                                                                          selectedItemBackgroundColor:
+                                                                              Colors.transparent,
+                                                                          emptyListMessage:
+                                                                              'ไม่มีข้อมูล',
+                                                                          showSelectedItemBackgroundColor:
+                                                                              true,
+                                                                          itemWidgetBuilder:
+                                                                              (
+                                                                            int index,
+                                                                            ProductModel?
+                                                                                project, {
+                                                                            bool isItemSelected =
+                                                                                false,
+                                                                          }) {
+                                                                            return DropDownItemWidget(
+                                                                              project: project,
+                                                                              isItemSelected: isItemSelected,
+                                                                              firstSpace: 10,
+                                                                              fontSize: size.getWidthPx(6),
+                                                                            );
+                                                                          },
+                                                                          onChanged:
+                                                                              (ProductModel value) {
+                                                                            productCodeCtrl.text =
+                                                                                value.productCode!.toString();
+                                                                            productNameCtrl.text =
+                                                                                value.name;
+                                                                            selectedProduct =
+                                                                                value;
+                                                                            productNotifier!.value =
+                                                                                value;
+                                                                            if (selectedWarehouse !=
+                                                                                null) {
+                                                                              loadQtyByLocation(selectedWarehouse!.id!);
+                                                                              setState(() {});
+                                                                            }
+                                                                          },
+                                                                          child:
+                                                                              DropDownObjectChildWidget(
+                                                                            key:
+                                                                                GlobalKey(),
+                                                                            fontSize:
+                                                                                size.getWidthPx(6),
+                                                                            projectValueNotifier:
+                                                                                productNotifier!,
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                    readOnly:
-                                                                        true,
-                                                                    //set it true, so that user will not able to edit text
-                                                                    onTap:
-                                                                        () async {
-                                                                      final pickedDate = await showBoardDateTimePicker(
-                                                                          context:
-                                                                              context,
-                                                                          pickerType: DateTimePickerType
-                                                                              .datetime,
-                                                                          initialDate:
-                                                                              DateTime.now());
-                                                                      if (pickedDate !=
-                                                                          null) {
-                                                                        setState(() =>
-                                                                            date =
-                                                                                pickedDate);
-                                                                      }
-                                                                      if (pickedDate !=
-                                                                          null) {
-                                                                        motivePrint(
-                                                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                                                        String
-                                                                            formattedDate =
-                                                                            DateFormat('yyyy-MM-dd HH:mm:ss').format(pickedDate);
-                                                                        motivePrint(
-                                                                            formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                                        //you can implement different kind of Date Format here according to your requirement
-                                                                        setState(
-                                                                            () {
-                                                                          reserveDateCtrl.text =
-                                                                              formattedDate; //set output date to TextField value.
-                                                                        });
-                                                                      } else {
-                                                                        motivePrint(
-                                                                            "Date is not selected");
-                                                                      }
-                                                                    },
                                                                   ),
-                                                                ),
+                                                                ],
                                                               ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 15,
-                                                          ),
-                                                          SizedBox(
-                                                            height: 100,
-                                                            child: Row(
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: buildTextFieldBig(
+                                                                  labelText:
+                                                                      "รหัสสินค้า",
+                                                                  textColor:
+                                                                      Colors
+                                                                          .orange,
+                                                                  controller:
+                                                                      productCodeCtrl,
+                                                                  enabled:
+                                                                      false),
+                                                            ),
+                                                            Row(
                                                               children: [
                                                                 Expanded(
-                                                                  flex: 5,
                                                                   child:
                                                                       Padding(
                                                                     padding:
@@ -407,11 +404,11 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                       height:
                                                                           80,
                                                                       child: MiraiDropDownMenu<
-                                                                          ProductModel>(
+                                                                          WarehouseModel>(
                                                                         key:
                                                                             UniqueKey(),
                                                                         children:
-                                                                            productList,
+                                                                            warehouseList,
                                                                         space:
                                                                             4,
                                                                         maxHeight:
@@ -427,7 +424,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                         itemWidgetBuilder:
                                                                             (
                                                                           int index,
-                                                                          ProductModel?
+                                                                          WarehouseModel?
                                                                               project, {
                                                                           bool isItemSelected =
                                                                               false,
@@ -444,22 +441,19 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                           );
                                                                         },
                                                                         onChanged:
-                                                                            (ProductModel
+                                                                            (WarehouseModel
                                                                                 value) {
-                                                                          productCodeCtrl.text = value
-                                                                              .productCode!
+                                                                          warehouseCtrl.text = value
+                                                                              .id!
                                                                               .toString();
-                                                                          productNameCtrl.text =
-                                                                              value.name;
-                                                                          selectedProduct =
+                                                                          selectedWarehouse =
                                                                               value;
-                                                                          productNotifier!.value =
+                                                                          warehouseNotifier!.value =
                                                                               value;
-                                                                          if (selectedWarehouse !=
-                                                                              null) {
-                                                                            loadQtyByLocation(selectedWarehouse!.id!);
-                                                                            setState(() {});
-                                                                          }
+                                                                          loadQtyByLocation(
+                                                                              value.id!);
+                                                                          setState(
+                                                                              () {});
                                                                         },
                                                                         child:
                                                                             DropDownObjectChildWidget(
@@ -468,7 +462,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                           fontSize:
                                                                               size.getWidthPx(6),
                                                                           projectValueNotifier:
-                                                                              productNotifier!,
+                                                                              warehouseNotifier!,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -476,253 +470,93 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                 ),
                                                               ],
                                                             ),
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: buildTextFieldBig(
-                                                                labelText:
-                                                                    "รหัสสินค้า",
-                                                                textColor:
-                                                                    Colors
-                                                                        .orange,
-                                                                controller:
-                                                                    productCodeCtrl,
-                                                                enabled: false),
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          8.0),
-                                                                  child:
-                                                                      SizedBox(
-                                                                    height: 80,
-                                                                    child: MiraiDropDownMenu<
-                                                                        WarehouseModel>(
-                                                                      key:
-                                                                          UniqueKey(),
-                                                                      children:
-                                                                          warehouseList,
-                                                                      space: 4,
-                                                                      maxHeight:
-                                                                          360,
-                                                                      showSearchTextField:
-                                                                          true,
-                                                                      selectedItemBackgroundColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                      emptyListMessage:
-                                                                          'ไม่มีข้อมูล',
-                                                                      showSelectedItemBackgroundColor:
-                                                                          true,
-                                                                      itemWidgetBuilder:
-                                                                          (
-                                                                        int index,
-                                                                        WarehouseModel?
-                                                                            project, {
-                                                                        bool isItemSelected =
-                                                                            false,
-                                                                      }) {
-                                                                        return DropDownItemWidget(
-                                                                          project:
-                                                                              project,
-                                                                          isItemSelected:
-                                                                              isItemSelected,
-                                                                          firstSpace:
-                                                                              10,
-                                                                          fontSize:
-                                                                              size.getWidthPx(6),
-                                                                        );
-                                                                      },
-                                                                      onChanged:
-                                                                          (WarehouseModel
-                                                                              value) {
-                                                                        warehouseCtrl.text = value
-                                                                            .id!
-                                                                            .toString();
-                                                                        selectedWarehouse =
-                                                                            value;
-                                                                        warehouseNotifier!.value =
-                                                                            value;
-                                                                        loadQtyByLocation(
-                                                                            value.id!);
-                                                                        setState(
-                                                                            () {});
-                                                                      },
-                                                                      child:
-                                                                          DropDownObjectChildWidget(
-                                                                        key:
-                                                                            GlobalKey(),
-                                                                        fontSize:
-                                                                            size.getWidthPx(6),
-                                                                        projectValueNotifier:
-                                                                            warehouseNotifier!,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: buildTextFieldBig(
-                                                                      labelText:
-                                                                          "น้ำหนัก (บาททอง) ที่เหลืออยู่",
-                                                                      inputType:
-                                                                          TextInputType
-                                                                              .phone,
-                                                                      textColor:
-                                                                          Colors
-                                                                              .black38,
-                                                                      enabled:
-                                                                          false,
-                                                                      controller:
-                                                                          productWeightBahtRemainCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction:
-                                                                                true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (String
-                                                                              value) {}),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 10,
-                                                                ),
-                                                                Expanded(
-                                                                  child:
-                                                                  buildTextFieldBig(
-                                                                      labelText:
-                                                                      "น้ำหนัก (บาททอง)",
-                                                                      inputType: TextInputType
-                                                                          .phone,
-                                                                      textColor: Colors
-                                                                          .orange,
-                                                                      controller:
-                                                                      productWeightBahtCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(allowFraction: true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (String value) {
-                                                                        if (productWeightBahtCtrl.text.isNotEmpty) {
-                                                                          productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
-                                                                          marketPriceTotalCtrl.text = Global.format(Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
-                                                                          productPriceCtrl.text = marketPriceTotalCtrl.text;
-                                                                          productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}' : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
-                                                                        } else {
-                                                                          productWeightCtrl.text = "";
-                                                                          marketPriceTotalCtrl.text = "";
-                                                                          productPriceCtrl.text = "";
-                                                                          productPriceTotalCtrl.text = "";
-                                                                        }
-                                                                      }),
-                                                                ),
-                                                              ],
+                                                            const SizedBox(
+                                                              height: 10,
                                                             ),
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child: buildTextFieldBig(
-                                                                      labelText:
-                                                                          "ราคาสมาคม",
-                                                                      inputType:
-                                                                          TextInputType
-                                                                              .number,
-                                                                      textColor:
-                                                                          Colors
-                                                                              .black38,
-                                                                      controller:
-                                                                          marketPriceTotalCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction:
-                                                                                true)
-                                                                      ],
-                                                                      enabled:
-                                                                          false),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 10,
-                                                                ),
-                                                                Expanded(
-                                                                  child:
-                                                                      buildTextFieldBig(
-                                                                          labelText:
-                                                                              "ราคาขาย",
-                                                                          inputType: TextInputType
-                                                                              .phone,
-                                                                          enabled:
-                                                                              true,
-                                                                          textColor: Colors
-                                                                              .orange,
-                                                                          controller:
-                                                                              productPriceCtrl,
-                                                                          inputFormat: [
-                                                                            ThousandsFormatter(allowFraction: true)
-                                                                          ],
-                                                                          onChanged:
-                                                                              (String value) {
-                                                                            if (productPriceCtrl.text.isNotEmpty &&
-                                                                                productCommissionCtrl.text.isNotEmpty) {
-                                                                              productPriceTotalCtrl.text = formatter.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)).toPrecision(2));
-                                                                              setState(() {});
-                                                                            }
-                                                                          }),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            8.0),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
                                                                     child: buildTextFieldBig(
                                                                         labelText:
-                                                                            "รวมราคาขาย",
+                                                                            "น้ำหนัก (บาททอง) ที่เหลืออยู่",
+                                                                        inputType:
+                                                                            TextInputType
+                                                                                .phone,
+                                                                        textColor:
+                                                                            Colors
+                                                                                .black38,
+                                                                        enabled:
+                                                                            false,
+                                                                        controller:
+                                                                            productWeightBahtRemainCtrl,
+                                                                        inputFormat: [
+                                                                          ThousandsFormatter(
+                                                                              allowFraction: true)
+                                                                        ],
+                                                                        onChanged:
+                                                                            (String
+                                                                                value) {}),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child:
+                                                                        buildTextFieldBig(
+                                                                            labelText:
+                                                                                "น้ำหนัก (บาททอง)",
+                                                                            inputType: TextInputType
+                                                                                .phone,
+                                                                            textColor: Colors
+                                                                                .orange,
+                                                                            controller:
+                                                                                productWeightBahtCtrl,
+                                                                            inputFormat: [
+                                                                              ThousandsFormatter(allowFraction: true)
+                                                                            ],
+                                                                            onChanged:
+                                                                                (String value) {
+                                                                              if (productWeightBahtCtrl.text.isNotEmpty) {
+                                                                                productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+                                                                                marketPriceTotalCtrl.text = Global.format(Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+                                                                                productPriceCtrl.text = marketPriceTotalCtrl.text;
+                                                                                productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}' : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
+                                                                              } else {
+                                                                                productWeightCtrl.text = "";
+                                                                                marketPriceTotalCtrl.text = "";
+                                                                                productPriceCtrl.text = "";
+                                                                                productPriceTotalCtrl.text = "";
+                                                                              }
+                                                                            }),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: buildTextFieldBig(
+                                                                        labelText:
+                                                                            "ราคาขายทองคำแท่ง (สมาคม)",
                                                                         inputType:
                                                                             TextInputType
                                                                                 .number,
                                                                         textColor:
                                                                             Colors
-                                                                                .grey,
+                                                                                .black38,
                                                                         controller:
-                                                                            productPriceTotalCtrl,
+                                                                            marketPriceTotalCtrl,
                                                                         inputFormat: [
                                                                           ThousandsFormatter(
                                                                               allowFraction: true)
@@ -730,141 +564,231 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                                         enabled:
                                                                             false),
                                                                   ),
-                                                                ),
-                                                              ],
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child:
+                                                                        buildTextFieldBig(
+                                                                            labelText:
+                                                                                "ราคาขายทองคำแท่ง",
+                                                                            inputType: TextInputType
+                                                                                .phone,
+                                                                            enabled:
+                                                                                true,
+                                                                            textColor: Colors
+                                                                                .orange,
+                                                                            controller:
+                                                                                productPriceCtrl,
+                                                                            inputFormat: [
+                                                                              ThousandsFormatter(allowFraction: true)
+                                                                            ],
+                                                                            onChanged:
+                                                                                (String value) {
+                                                                              if (productPriceCtrl.text.isNotEmpty && productCommissionCtrl.text.isNotEmpty) {
+                                                                                productPriceTotalCtrl.text = formatter.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)).toPrecision(2));
+                                                                                setState(() {});
+                                                                              }
+                                                                            }),
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child:
-                                                                OutlinedButton(
-                                                              child: const Text(
-                                                                  "เพิ่ม"),
-                                                              onPressed:
-                                                                  () async {
-                                                                if (reserveDateCtrl
-                                                                    .text
-                                                                    .isEmpty) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'กรุณาเลือกวันจอง',
-                                                                      'OK');
-                                                                  return;
-                                                                }
-
-                                                                if (productCodeCtrl
-                                                                    .text
-                                                                    .isEmpty) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'กรุณาเลือกสินค้า',
-                                                                      'OK');
-                                                                  return;
-                                                                }
-
-                                                                if (productWeightBahtCtrl
-                                                                    .text
-                                                                    .isEmpty) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'กรุณาใส่น้ำหนัก',
-                                                                      'OK');
-                                                                  return;
-                                                                }
-
-                                                                if (productPriceTotalCtrl
-                                                                    .text
-                                                                    .isEmpty) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'กรุณากรอกราคา',
-                                                                      'OK');
-                                                                  return;
-                                                                }
-
-                                                                var realPrice =
-                                                                    Global.getBuyThengPrice(
-                                                                        Global.toNumber(
-                                                                            productWeightCtrl.text));
-                                                                var price = Global
-                                                                    .toNumber(
-                                                                        productPriceCtrl
-                                                                            .text);
-                                                                var check =
-                                                                    price -
-                                                                        realPrice;
-
-                                                                if (check >
-                                                                    10000) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
-                                                                      'OK');
-
-                                                                  return;
-                                                                }
-
-                                                                if (check <
-                                                                    -10000) {
-                                                                  Alert.warning(
-                                                                      context,
-                                                                      'คำเตือน',
-                                                                      'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                                                                      'OK');
-
-                                                                  return;
-                                                                }
-
-                                                                Global
-                                                                    .sellThengOrderDetail!
-                                                                    .add(
-                                                                  OrderDetailModel(
-                                                                      productName:
-                                                                          productNameCtrl
-                                                                              .text,
-                                                                      productId:
-                                                                          selectedProduct!
-                                                                              .id,
-                                                                      binLocationId:
-                                                                          selectedWarehouse!
-                                                                              .id,
-                                                                      weight: Global.toNumber(
-                                                                          productWeightCtrl
-                                                                              .text),
-                                                                      weightBath:
-                                                                          Global.toNumber(productWeightBahtCtrl
-                                                                              .text),
-                                                                      commission: 0,
-                                                                      taxBase: 0,
-                                                                      priceIncludeTax: Global.toNumber(productPriceTotalCtrl.text),
-                                                                      bookDate: DateTime.parse(reserveDateCtrl.text)),
-                                                                );
-                                                                sumSellThengTotal();
-                                                                setState(() {});
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                        buildTextFieldBig(
+                                                                            labelText:
+                                                                                "ค่าบล็อกทอง",
+                                                                            inputType: TextInputType
+                                                                                .phone,
+                                                                            textColor: Colors
+                                                                                .orange,
+                                                                            controller:
+                                                                                productCommissionCtrl,
+                                                                            inputFormat: [
+                                                                              ThousandsFormatter(allowFraction: true)
+                                                                            ],
+                                                                            onChanged:
+                                                                                (String value) {
+                                                                              if (productPriceCtrl.text.isNotEmpty && productCommissionCtrl.text.isNotEmpty) {
+                                                                                productPriceTotalCtrl.text = "${Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)}";
+                                                                                setState(() {});
+                                                                              }
+                                                                            }),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child:
+                                                                        Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                      child: buildTextFieldBig(
+                                                                          labelText:
+                                                                              "รวมราคาขาย",
+                                                                          inputType: TextInputType
+                                                                              .number,
+                                                                          textColor: Colors
+                                                                              .grey,
+                                                                          controller:
+                                                                              productPriceTotalCtrl,
+                                                                          inputFormat: [
+                                                                            ThousandsFormatter(allowFraction: true)
+                                                                          ],
+                                                                          enabled:
+                                                                              false),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             ),
-                                                          )
-                                                        ],
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child:
+                                                                  OutlinedButton(
+                                                                child:
+                                                                    const Text(
+                                                                        "เพิ่ม"),
+                                                                onPressed:
+                                                                    () async {
+                                                                  // if (reserveDateCtrl
+                                                                  //     .text
+                                                                  //     .isEmpty) {
+                                                                  //   Alert.warning(
+                                                                  //       context,
+                                                                  //       'คำเตือน',
+                                                                  //       'กรุณาเลือกวันจอง',
+                                                                  //       'OK');
+                                                                  //   return;
+                                                                  // }
+
+                                                                  if (productCodeCtrl
+                                                                      .text
+                                                                      .isEmpty) {
+                                                                    Alert.warning(
+                                                                        context,
+                                                                        'คำเตือน',
+                                                                        'กรุณาเลือกสินค้า',
+                                                                        'OK');
+                                                                    return;
+                                                                  }
+
+                                                                  if (productWeightBahtCtrl
+                                                                      .text
+                                                                      .isEmpty) {
+                                                                    Alert.warning(
+                                                                        context,
+                                                                        'คำเตือน',
+                                                                        'กรุณาใส่น้ำหนัก',
+                                                                        'OK');
+                                                                    return;
+                                                                  }
+
+                                                                  if (productPriceTotalCtrl
+                                                                      .text
+                                                                      .isEmpty) {
+                                                                    Alert.warning(
+                                                                        context,
+                                                                        'คำเตือน',
+                                                                        'กรุณากรอกราคา',
+                                                                        'OK');
+                                                                    return;
+                                                                  }
+
+                                                                  var realPrice =
+                                                                      Global.getBuyThengPrice(
+                                                                          Global.toNumber(
+                                                                              productWeightCtrl.text));
+                                                                  var price = Global
+                                                                      .toNumber(
+                                                                          productPriceCtrl
+                                                                              .text);
+                                                                  var check =
+                                                                      price -
+                                                                          realPrice;
+
+                                                                  if (check >
+                                                                      10000) {
+                                                                    Alert.warning(
+                                                                        context,
+                                                                        'คำเตือน',
+                                                                        'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
+                                                                        'OK');
+
+                                                                    return;
+                                                                  }
+
+                                                                  if (check <
+                                                                      -10000) {
+                                                                    Alert.warning(
+                                                                        context,
+                                                                        'คำเตือน',
+                                                                        'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
+                                                                        'OK');
+
+                                                                    return;
+                                                                  }
+
+                                                                  Global
+                                                                      .sellThengOrderDetail!
+                                                                      .add(
+                                                                    OrderDetailModel(
+                                                                        productName:
+                                                                            productNameCtrl
+                                                                                .text,
+                                                                        productId:
+                                                                            selectedProduct!
+                                                                                .id,
+                                                                        binLocationId:
+                                                                            selectedWarehouse!
+                                                                                .id,
+                                                                        weight: Global.toNumber(
+                                                                            productWeightCtrl
+                                                                                .text),
+                                                                        weightBath:
+                                                                            Global.toNumber(productWeightBahtCtrl
+                                                                                .text),
+                                                                        commission:
+                                                                            0,
+                                                                        taxBase:
+                                                                            0,
+                                                                        priceIncludeTax:
+                                                                            Global.toNumber(productPriceTotalCtrl
+                                                                                .text),
+                                                                        bookDate:
+                                                                            null),
+                                                                  );
+                                                                  sumSellThengTotal();
+                                                                  setState(
+                                                                      () {});
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      });
-                                  setState(() {});
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                    setState(() {});
+                                  }
                                 },
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -974,7 +898,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                             try {
                                               var result =
                                                   await ApiServices.post(
-                                                      '/order/gen/3',
+                                                      '/order/gen/4',
                                                       Global.requestObj(null));
                                               await pr.hide();
                                               if (result!.status == "success") {
@@ -994,8 +918,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                 Global.sellThengOrderDetail!
                                                     .clear();
                                                 setState(() {
-                                                  Global.sellThengSubTotal =
-                                                      0;
+                                                  Global.sellThengSubTotal = 0;
                                                   Global.sellThengTax = 0;
                                                   Global.sellThengTotal = 0;
                                                 });
@@ -1077,7 +1000,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                     DateTime.now().toUtc(),
                                                 details: Global
                                                     .sellThengOrderDetail!,
-                                                orderTypeId: 3);
+                                                orderTypeId: 4);
 
                                             final data = order.toJson();
                                             Global.holdOrder(
@@ -1160,7 +1083,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                             try {
                                               var result =
                                                   await ApiServices.post(
-                                                      '/order/gen/3',
+                                                      '/order/gen/4',
                                                       Global.requestObj(null));
                                               await pr.hide();
                                               if (result!.status == "success") {
@@ -1170,7 +1093,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                         DateTime.now().toUtc(),
                                                     details: Global
                                                         .sellThengOrderDetail!,
-                                                    orderTypeId: 3);
+                                                    orderTypeId: 4);
                                                 final data = order.toJson();
                                                 Global.orders?.add(
                                                     OrderModel.fromJson(data));
@@ -1180,8 +1103,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                                 Global.sellThengOrderDetail!
                                                     .clear();
                                                 setState(() {
-                                                  Global.sellThengSubTotal =
-                                                      0;
+                                                  Global.sellThengSubTotal = 0;
                                                   Global.sellThengTax = 0;
                                                   Global.sellThengTotal = 0;
                                                 });
@@ -1279,8 +1201,13 @@ class _SellThengScreenState extends State<SellThengScreen> {
     productWeightBahtRemainCtrl.text = "";
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
+    productCodeCtrl.text =
+    (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+    productNameCtrl.text =
+    (selectedProduct != null ? selectedProduct?.name : "")!;
     productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+        ValueNotifier<ProductModel>(selectedProduct ??
+            ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
   }
@@ -1304,7 +1231,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
               leftTitle: order.productName,
               leftValue: Global.format(order.priceIncludeTax!),
               rightTitle: 'น้ำหนัก',
-              rightValue: '${order.weight! / 15.16} บาท',
+              rightValue: '${Global.format(order.weight! / 15.16)} บาท',
             ),
           ),
         ),
@@ -1317,7 +1244,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                   removeProduct(index);
                 },
                 child: Container(
-                  height: 80,
+                  height: 70,
                   width: 80,
                   decoration: BoxDecoration(
                       color: Colors.red,

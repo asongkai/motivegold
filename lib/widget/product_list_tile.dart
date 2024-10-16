@@ -28,7 +28,7 @@ class ProductListTileData extends StatelessWidget {
             border: Border(
               bottom: BorderSide(
                 color: Color(0xFFE9E9E9),
-                width: 1,
+                width: 0,
               ),
             ),
           ),
@@ -88,6 +88,7 @@ class ProductListTileData extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (weight != null)
                 Expanded(
                   flex: 3,
                   child: Column(

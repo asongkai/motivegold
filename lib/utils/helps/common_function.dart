@@ -240,7 +240,7 @@ double getWeight(dynamic order) {
 
 Widget paddedText(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 10)}) =>
+      final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(5),
       child: Text(

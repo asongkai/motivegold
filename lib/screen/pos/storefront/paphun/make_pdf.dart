@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
+import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -32,23 +33,9 @@ Future<Uint8List> makePdf(Invoice invoice) async {
         return [
           Column(
             children: [
-              Center(
-                  child: Column(children: [
-                    Text('${Global.company?.name}'), Text('(${Global.branch!.name})'),
-                    //   Text('(สํานักงานใหญ่)'),
-                    //   Text('${Global.company?.name}'),
-                    Text('${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-                    //   Text('${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-                    Text('เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
-                    Text('TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
-                    Text('POS Reg. No : '),
-                    //   ใบเสร็จรับเงิน/ใบกำกับภาษี/ใบส่งของ พิมพ์เมื่อลูกค้าสำแดงตนและขอใบกำกับภาษีเต็มรูป
-                    //   Text('ใบเสร็จรับเงิน/ใบกํากับภาษี/ใบส่งของ (สําเนา)'),
-                    Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} เลขที่ : ${invoice.order.orderId}'),
-                    Text('ชื่อผู้ซื้อ : ${invoice.customer.firstName} ${invoice.customer.lastName}'),
-                    Text('เลขประจําตัวผู้เสียภาษี : 1234567890123'),
-                    Text('ที่อยู่ : ${invoice.customer.address}, ${invoice.customer.district}, ${invoice.customer.province}'),
-                  ])),
+              header(invoice.order, 'TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
+              SizedBox(height: 10),
+              buyerSellerInfo(invoice.customer, invoice.order),
               SizedBox(height: 10),
               Divider(
                 height: 1,

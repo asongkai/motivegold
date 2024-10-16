@@ -33,6 +33,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   BranchModel? selectedBranch;
   ValueNotifier<dynamic>? branchNotifier;
   bool sell = false;
+  bool matching = false;
 
   @override
   void initState() {
@@ -248,17 +249,37 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                 ],
                               ),
                               const SizedBox(height: 10,),
-                              CheckboxListTile(
-                                title: const Text("ขายหน้าร้าน", style: TextStyle(fontSize: 20),),
-                                value: sell,
-                                visualDensity: VisualDensity.standard,
-                                activeColor: Colors.teal,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    sell = newValue!;
-                                  });
-                                },
-                                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text("ขายหน้าร้าน", style: TextStyle(fontSize: 20),),
+                                      value: sell,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          sell = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text("ทองแท่ง (จับคู่)", style: TextStyle(fontSize: 20),),
+                                      value: matching,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          matching = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                    ),
+                                  ),
+                                ],
                               )
                             ],
                           ),
@@ -296,7 +317,8 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   "address": addressCtrl.text,
                   "branchId": selectedBranch!.id.toString(),
                   "companyId": Global.user!.companyId.toString(),
-                  "sell": sell ? 1 : 0
+                  "sell": sell ? 1 : 0,
+                  "matching": matching ? 1 : 0,
                 });
 
                 // print(object);

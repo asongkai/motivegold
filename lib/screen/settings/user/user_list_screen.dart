@@ -150,8 +150,9 @@ class _UserListScreenState extends State<UserListScreen> {
             ),
             if (list.username != 'admin')
             Expanded(
-              flex: (Global.user!.userRole == 'Administrator') ? 1 : 0,
+              flex: (Global.user!.userRole == 'Administrator') ? 2 : 0,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -181,7 +182,7 @@ class _UserListScreenState extends State<UserListScreen> {
                     ),
                   ),
                   if (Global.user!.userRole == 'Administrator')
-                  const Spacer(),
+                  const SizedBox(width: 10,),
                   if (Global.user!.userRole == 'Administrator')
                   GestureDetector(
                     onTap: () {

@@ -111,7 +111,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => PreviewSellUsedGoldPage(
-                  sell: sell,
+                  order: sell,
                 )));
       },
       child: Stack(

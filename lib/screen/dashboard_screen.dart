@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/theng_menu.dart';
+import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 
@@ -22,6 +27,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   ApiServices api = ApiServices();
   Screen? size;
+  List<OrderModel>? list = [];
   bool loading = false;
 
   @override
@@ -37,6 +43,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
 
     Global.goldDataModel = await api.getGoldPrice(context);
+
+    var result = await ApiServices.post(
+        '/order/matching/PENDING/clear', Global.requestObj(null));
+    motivePrint(result?.data);
+    if (result?.status == "success") {
+      var data = jsonEncode(result?.data);
+      List<OrderModel> products = orderListModelFromJson(data);
+      setState(() {
+        list = products;
+      });
+    } else {
+      list = [];
+    }
+
     if (mounted) {
       setState(() {
         loading = false;
@@ -284,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisSpacing: 16,
                 crossAxisCount: 5,
                 childAspectRatio:
-                    orientation == Orientation.portrait ? .80 : .80,
+                    orientation == Orientation.portrait ? .78 : .80,
                 children: [
                   iconDashboard(
                     'ซื้อขายทองหน้าร้าน',
@@ -293,36 +313,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const PosMenuScreen(title: 'POS'),
                     index: 0
                   ),
-                  iconDashboard(
-                    'ซื้อขายทองแท่ง \n',
-                    Image.asset('assets/icons/gold/buy-gold-tang.png'),
-                    Colors.redAccent,
-                    const ThengMenuScreen(),
-                    index: 0
-                  ),
+                  Stack(children: [
+                    iconDashboard(
+                        'ซื้อขายทองแท่ง ${orientation == Orientation.portrait ? '' : '\n'}',
+                        Image.asset('assets/icons/gold/buy-gold-tang.png'),
+                        Colors.redAccent,
+                        const ThengMenuScreen(),
+                        index: 0
+                    ),
+                    if (list != null && list!.isNotEmpty)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20.0)),
+                            padding:
+                            const EdgeInsets.only(left: 5.0, right: 5.0),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    (list == null)
+                                        ? 0.toString()
+                                        : list!.length.toString(),
+                                    style:
+                                    const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],),
+
                   itemDashboard(
                     'ออมทอง \n'.tr(),
                     CupertinoIcons.download_circle,
                     Colors.green,
-                    const PosMenuScreen(title: 'POS'),
+                    null,
                   ),
                   itemDashboard(
                     'ขายฝากทอง (จำนำ)',
                     CupertinoIcons.f_cursive,
                     Colors.purple,
-                    const PosMenuScreen(title: 'POS'),
-                  ),
-                  itemDashboard(
-                    'ซื้อขายทองแท่งกับโบรกเกอร์ (จับคู่)',
-                    Icons.add,
-                    Colors.teal,
-                    const ThengMenuScreen(),
+                    null,
                   ),
                   itemDashboard(
                     'ซื้อขายทองแท่งกับโบรกเกอร์',
                     Icons.shopping_cart_checkout_rounded,
                     Colors.brown,
-                    const ThengMenuScreen(),
+                    const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
                   ),
                   iconDashboard(
                     'ซื้อขายทองกับร้านขายส่ง',

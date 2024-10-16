@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:motivegold/screen/landing_screen.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -14,7 +15,7 @@ import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/util.dart';
 
 class SignInTen extends StatefulWidget {
-  const SignInTen({Key? key}) : super(key: key);
+  const SignInTen({super.key});
 
   @override
   State<SignInTen> createState() => _SignInTenState();
@@ -30,7 +31,7 @@ class _SignInTenState extends State<SignInTen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    emailController.text = 'user';
+    emailController.text = 'com';
     passController.text = '1234';
   }
 
@@ -124,6 +125,7 @@ class _SignInTenState extends State<SignInTen> {
                       "password": passController.text,
                       "deviceDetail": Global.deviceDetail.toString()
                     });
+
                     final ProgressDialog pr = ProgressDialog(context,
                         type: ProgressDialogType.normal,
                         isDismissible: true,
@@ -133,6 +135,7 @@ class _SignInTenState extends State<SignInTen> {
                     try {
                       var result =
                           await ApiServices.post('/user/login', authObject);
+                      motivePrint(result?.data);
                       await pr.hide();
                       if (result?.status == "success") {
                         var userData = result?.data;
@@ -154,7 +157,7 @@ class _SignInTenState extends State<SignInTen> {
                       } else {
                         if (mounted) {
                           Alert.warning(context, 'Warning'.tr(),
-                              result!.message!, 'OK'.tr(),
+                              result!.message ?? 'Unable to connect to server', 'OK'.tr(),
                               action: () {});
                         }
                       }

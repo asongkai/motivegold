@@ -30,3 +30,12 @@ List<ProductTypeModel> userTypes() {
   data.add(ProductTypeModel(id: 2, code: 'COMPANY', name: 'บริษัท'));
   return data;
 }
+
+List<ProductTypeModel> paymentTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'CA', name: 'Cash/เงินสด'));
+  data.add(ProductTypeModel(id: 2, code: 'TR', name: 'Transfer/เงินโอน'));
+  data.add(ProductTypeModel(id: 3, code: 'CR', name: 'Credit card/บัตรเครดิต'));
+  data.add(ProductTypeModel(id: 4, code: 'OTH', name: 'Other/อื่นๆ'));
+  return data;
+}

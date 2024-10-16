@@ -8,11 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
+import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/customer/location.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
@@ -34,7 +37,6 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
   final TextEditingController emailAddressCtrl = TextEditingController();
   final TextEditingController phoneCtrl = TextEditingController();
   final TextEditingController birthDateCtrl = TextEditingController();
-  final TextEditingController addressCtrl = TextEditingController();
 
   final ImagePicker imagePicker = ImagePicker();
   List<File>? imageFiles = [];
@@ -68,7 +70,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
   void initState() {
     // implement initState
     super.initState();
-    birthDateCtrl.text = "2023-12-03";
+    birthDateCtrl.text = Global.formatDateDD(DateTime.now().toString());
     ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
     init();
   }
@@ -79,7 +81,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
     });
     try {
       var result =
-      await ApiServices.post('/customer/all', Global.requestObj(null));
+          await ApiServices.post('/customer/all/customer', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -90,6 +92,20 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       } else {
         customers = [];
       }
+
+      var province =
+      await ApiServices.post('/customer/province', Global.requestObj(null));
+      // motivePrint(province!.toJson());
+      if (province?.status == "success") {
+        var data = jsonEncode(province?.data);
+        List<ProvinceModel> products = provinceModelFromJson(data);
+        setState(() {
+          Global.provinceList = products;
+        });
+      } else {
+        Global.provinceList = [];
+      }
+
     } catch (e) {
       motivePrint(e.toString());
     }
@@ -115,7 +131,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = "_onUSB " + e.toString();
+        _error = "_onUSB $e";
       });
     }
   }
@@ -132,7 +148,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       }
     } catch (e) {
       setState(() {
-        _error = "_onData " + e.toString();
+        _error = "_onData $e";
       });
     }
   }
@@ -155,12 +171,10 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
         }
         emailAddressCtrl.text = "";
         phoneCtrl.text = "";
-        addressCtrl.text = _data!.address!;
+        Global.addressCtrl.text = _data!.address!;
         //birthDateCtrl.text = '${formattedDate(_data!.birthdate)}';
       }
-      setState(() {
-
-      });
+      setState(() {});
     } catch (e) {
       setState(() {
         _error = 'ERR readCard $e';
@@ -189,6 +203,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -236,28 +251,49 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                         );
                       }, suggestionsBuilder:
                           (BuildContext context, SearchController controller) {
-                        return customers.isEmpty ? [ Container(
-                          margin: const EdgeInsets.only(top: 50.0),
-                          child: const Center(child: EmptyContent()),
-                        ) ] : customers.map((e) {
-                          return ListTile(
-                            title: Text('${e.firstName} ${e.lastName}', style: const TextStyle(fontSize: 20),),
-                            onTap: () {
-                              setState(() {
-                                controller.closeView('${e.firstName} ${e.lastName}');
-                                selectedCustomer = e;
-                                Global.customer = e;
-                                idCardCtrl.text = '${e.idCard}';
-                                firstNameCtrl.text = '${e.firstName}';
-                                lastNameCtrl.text = '${e.lastName}';
-                                emailAddressCtrl.text = '${e.email}';
-                                phoneCtrl.text = '${e.phoneNumber}';
-                                addressCtrl.text = '${e.address}';
+                        return customers.isEmpty
+                            ? [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 50.0),
+                                  child: const Center(child: EmptyContent()),
+                                )
+                              ]
+                            : customers.map((e) {
+                                return ListTile(
+                                  title: Text(
+                                    '${e.firstName} ${e.lastName}',
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      controller.closeView(
+                                          '${e.firstName} ${e.lastName}');
+                                      selectedCustomer = e;
+                                      Global.customer = e;
+                                      // idCardCtrl.text = '${e.idCard}';
+                                      // firstNameCtrl.text = '${e.firstName}';
+                                      // lastNameCtrl.text = '${e.lastName}';
+                                      // emailAddressCtrl.text = '${e.email}';
+                                      // phoneCtrl.text = '${e.phoneNumber}';
+                                      // birthDateCtrl.text = Global.formatDateDD(e.doB.toString());
+                                      // Global.addressCtrl.text = '${e.address}';
+                                      // if (e.provinceId != null) {
+                                      //
+                                      // }
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                              () {
+                                            Navigator.of(context).pop();
+                                            setState(() {
+                                              // Here you can write your code for open new view
+                                            });
+                                          });
+                                    });
+                                  },
+                                  trailing: Text(getCustomerType(e),
+                                      style: const TextStyle(fontSize: 20)),
+                                );
                               });
-                            },
-                            trailing: Text(getCustomerType(e),  style: const TextStyle(fontSize: 20)),
-                          );
-                        });
                       }),
                     ),
                     const SizedBox(
@@ -274,7 +310,8 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                       ),
                     ],
                     if (_error != null) Text(_error.toString()),
-                    if (_data == null && (_device != null && _device!.hasPermission)) ...[
+                    if (_data == null &&
+                        (_device != null && _device!.hasPermission)) ...[
                       const EmptyHeader(
                         icon: Icons.credit_card,
                         text: 'เสียบบัตรประชาชนได้เลย',
@@ -319,7 +356,9 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                         ]),
                       ),
                     ],
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,32 +556,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  line: 3,
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: addressCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    const LocationEntryWidget()
                   ],
                 ),
               ),
@@ -566,18 +580,13 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (idCardCtrl.text.isEmpty) {
-                  idCardCtrl.text = generateRandomString(10);
-                  firstNameCtrl.text = generateRandomString(6);
-                  lastNameCtrl.text = generateRandomString(6);
-                  emailAddressCtrl.text =
-                      '${generateRandomString(10)}@gmail.com';
-                  phoneCtrl.text = generateRandomString(12);
-                  addressCtrl.text = generateRandomString(150);
+                  Alert.warning(context, 'คำเตือน', 'กรุณากรอกหมายเลขบัตรประชาชน', 'OK', action: () {});
+                  return;
                 }
 
                 if (selectedCustomer == null) {
                   var customerObject = Global.requestObj({
-                    "companyName": generateRandomString(10),
+                    "companyName": '',
                     "fistName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
@@ -585,15 +594,18 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
-                    "address": addressCtrl.text,
-                    "district": generateRandomString(10),
-                    "province": generateRandomString(10),
-                    "nationality": generateRandomString(10),
-                    "postalCode": generateRandomString(4),
-                    "photoUrl": generateRandomString(10),
-                    "idCard": generateRandomString(10),
-                    "taxNumber": generateRandomString(10),
-                    "isCustomer": 1
+                    "address": Global.addressCtrl.text,
+                    "tambonId": Global.tambonModel?.id,
+                    "amphureId": Global.amphureModel?.id,
+                    "provinceId": Global.provinceModel?.id,
+                    "nationality": '',
+                    "postalCode": '',
+                    "photoUrl": '',
+                    "idCard": idCardCtrl.text,
+                    "taxNumber": '',
+                    "isCustomer": 1,
+                    "isBuyer": 0,
+                    "isSeller": 0
                   });
 
                   // print(customerObject);
@@ -605,13 +617,13 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                   await pr.show();
                   pr.update(message: 'processing'.tr());
                   try {
-                    var result =
-                    await ApiServices.post('/customer/create', customerObject);
+                    var result = await ApiServices.post(
+                        '/customer/create', customerObject);
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
-                        CustomerModel customer = customerModelFromJson(
-                            jsonEncode(result!.data!));
+                        CustomerModel customer =
+                            customerModelFromJson(jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
@@ -621,8 +633,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                       }
                     } else {
                       if (mounted) {
-                        Alert.warning(
-                            context, 'Warning'.tr(), result!.message!,
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
                             'OK'.tr(),
                             action: () {});
                       }
@@ -639,7 +650,6 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                   setState(() {
                     Global.customer = selectedCustomer;
                   });
-
                   Navigator.of(context).pop();
                 }
               },
@@ -707,6 +717,8 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
     }
     return 'ลูกค้า';
   }
+
+
 }
 
 class EmptyHeader extends StatelessWidget {

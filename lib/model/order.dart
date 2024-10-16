@@ -25,6 +25,10 @@ class OrderModel {
   String? status;
   int? orderTypeId;
   String? orderTypeName;
+  double? sellTPrice;
+  double? buyTPrice;
+  double? sellPrice;
+  double? buyPrice;
   double? weight;
   double? priceIncludeTax;
   double? purchasePrice;
@@ -51,6 +55,10 @@ class OrderModel {
     this.status,
     this.orderTypeId,
     this.orderTypeName,
+    this.sellTPrice,
+    this.buyTPrice,
+    this.sellPrice,
+    this.buyPrice,
     this.weight,
     this.priceIncludeTax,
     this.purchasePrice,
@@ -78,6 +86,10 @@ class OrderModel {
     status: json["status"] is int ? json['status'].toString() : json['status'],
     orderTypeId: json["orderTypeId"],
     orderTypeName: json["orderTypeName"],
+    sellTPrice: json["sellTPrice"],
+    buyTPrice: json["buyTPrice"],
+    sellPrice: json["sellPrice"],
+    buyPrice: json["buyPrice"],
     weight: json["weight"],
     priceIncludeTax: json["priceIncludeTax"],
     purchasePrice: json["purchasePrice"],
@@ -105,6 +117,10 @@ class OrderModel {
     "status": status,
     "orderTypeId": orderTypeId,
     "orderTypeName": orderTypeName,
+    "sellTPrice": sellTPrice,
+    "buyTPrice": buyTPrice,
+    "sellPrice": sellPrice,
+    "buyPrice": buyPrice,
     "weight": weight,
     "priceIncludeTax": priceIncludeTax,
     "purchasePrice": purchasePrice,

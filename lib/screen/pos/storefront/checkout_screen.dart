@@ -1,103 +1,59 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/screen/pos/storefront/broker/broker_entry_screen.dart';
+import 'package:motivegold/screen/pos/storefront/customer_entry_screen.dart';
+import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/button/simple_button.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/payment/payment_method.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
+import 'package:motivegold/widget/product_list_tile.dart';
+import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
-import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/widget/product_list_tile.dart';
-import 'refill/refill_vender_entry_screen.dart';
-
-class WholesaleCheckOutScreen extends StatefulWidget {
-  const WholesaleCheckOutScreen({super.key});
+class CheckOutScreen extends StatefulWidget {
+  const CheckOutScreen({super.key});
 
   @override
-  State<WholesaleCheckOutScreen> createState() =>
-      _WholesaleCheckOutScreenState();
+  State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
 
-class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
-  int currentIndex = 1;
+class _CheckOutScreenState extends State<CheckOutScreen> {
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
-  File? _image;
-  final picker = ImagePicker();
-  String currentPaymentMethod = 'CA';
+  Screen? size;
 
   @override
   void initState() {
     // implement initState
     super.initState();
-  }
-
-  //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
-
-  //Image Picker function to get image from camera
-  Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
-
-  Future showOptions() async {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            child: const Text('คลังภาพ'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from gallery
-              getImageFromGallery();
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: const Text('ถ่ายรูป'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from camera
-              getImageFromCamera();
-            },
-          ),
-        ],
-      ),
-    );
+    Global.selectedPayment = null;
+    Global.currentPaymentMethod = null;
+    Global.paymentAttachment = null;
+    Global.cardNameCtrl.text = "";
+    Global.cardExpireDateCtrl.text = "";
+    Global.bankCtrl.text = "";
+    Global.refNoCtrl.text = "";
+    Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
+    Global.paymentDetailCtrl.text = "";
   }
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
+    size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         title: Text('เช็คเอาท์'.tr()),
@@ -125,7 +81,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'ผู้ขาย',
+                                    'ลูกค้า',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium,
@@ -154,19 +110,39 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                               'เพิ่ม',
                                               style: TextStyle(
                                                   fontSize:
-                                                      size.getWidthPx(10)),
+                                                      size!.getWidthPx(10)),
                                             ),
                                             onPressed: () {
-                                              Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const RefillVenderEntryScreen(),
-                                                          fullscreenDialog:
-                                                              true))
-                                                  .whenComplete(() {
-                                                setState(() {});
-                                              });
+                                              if (Global.orders![0]
+                                                  .orderTypeId ==
+                                                  8 ||
+                                                  Global.orders![0]
+                                                      .orderTypeId ==
+                                                      9) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                        const BrokerEntryScreen(),
+                                                        fullscreenDialog:
+                                                        true))
+                                                    .whenComplete(() {
+                                                  setState(() {});
+                                                });
+                                              } else {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder:
+                                                            (context) =>
+                                                        const CustomerEntryScreen(),
+                                                        fullscreenDialog:
+                                                        true))
+                                                    .whenComplete(() {
+                                                  setState(() {});
+                                                });
+                                              }
                                             },
                                           )
                                         : Column(
@@ -181,30 +157,49 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       fontSize:
-                                                          size.getWidthPx(6),
+                                                          size!.getWidthPx(6),
                                                     ),
                                                   ),
                                                   const Spacer(),
                                                   InkWell(
                                                     onTap: () {
-                                                      Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const RefillVenderEntryScreen(),
-                                                                  fullscreenDialog:
-                                                                      true))
-                                                          .whenComplete(() {
-                                                        setState(() {});
-                                                      });
+                                                      if (Global.orders![0]
+                                                                  .orderTypeId ==
+                                                              8 ||
+                                                          Global.orders![0]
+                                                                  .orderTypeId ==
+                                                              9) {
+                                                        Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const BrokerEntryScreen(),
+                                                                    fullscreenDialog:
+                                                                        true))
+                                                            .whenComplete(() {
+                                                          setState(() {});
+                                                        });
+                                                      } else {
+                                                        Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const CustomerEntryScreen(),
+                                                                    fullscreenDialog:
+                                                                        true))
+                                                            .whenComplete(() {
+                                                          setState(() {});
+                                                        });
+                                                      }
                                                     },
                                                     child: Text(
                                                       "เปลี่ยน",
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.normal,
-                                                          fontSize: size
+                                                          fontSize: size!
                                                               .getWidthPx(6),
                                                           color: Colors.red),
                                                     ),
@@ -219,7 +214,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
-                                                  fontSize: size.getWidthPx(6),
+                                                  fontSize: size!.getWidthPx(6),
                                                 ),
                                               ),
                                               const SizedBox(
@@ -230,7 +225,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
-                                                  fontSize: size.getWidthPx(6),
+                                                  fontSize: size!.getWidthPx(6),
                                                 ),
                                               ),
                                               const SizedBox(
@@ -240,7 +235,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                                 "${Global.customer!.address}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: size.getWidthPx(6),
+                                                  fontSize: size!.getWidthPx(6),
                                                 ),
                                               ),
                                             ],
@@ -250,7 +245,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                     height: 10,
                                   ),
                                   Text(
-                                    'รายการสินค้า',
+                                    'รายการสั่งซื้อ',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium,
@@ -269,12 +264,47 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                       children: [
                                         ...Global.orders!.map((e) {
                                           return _itemOrderList(
-                                              order: e,
-                                              index: 0);
+                                              order: e, index: 0);
                                         })
                                       ],
                                     ),
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'เลือกวิธีการชำระเงิน'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                  ),
+                                  const PaymentMethodWidget(),
+                                  Divider(
+                                    height: getProportionateScreenHeight(56),
+                                  ),
+                                  Text(
+                                    'ราคา',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  buildTextFieldBig(
+                                      labelText: "ส่วนลด (บาทไทย)",
+                                      textColor: Colors.orange,
+                                      controller: discountCtrl,
+                                      inputType: TextInputType.phone,
+                                      inputFormat: [
+                                        ThousandsFormatter(allowFraction: true)
+                                      ],
+                                      onChanged: (value) {
+                                        Global.discount = value.isNotEmpty
+                                            ? Global.toNumber(value)
+                                            : 0;
+                                        setState(() {});
+                                      }),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10, horizontal: 10),
@@ -287,120 +317,20 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                         PriceBreakdown(
                                           title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                           price:
-                                          '${formatter.format(Global.getPaymentTotal())} THB',
+                                              '${formatter.format(Global.getPaymentTotal())} THB',
                                         ),
                                         PriceBreakdown(
                                           title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
-                                          price: '${Global.payToBrokerOrShop()}',
+                                          price:
+                                              '${Global.payToCustomerOrShop()}',
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'เลือกวิธีการชำระเงิน'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  PaymentCard(
-                                    isSelected: currentPaymentMethod == 'TR',
-                                    title: 'โอน'.tr(),
-                                    image: 'assets/images/money_transfer.jpeg',
-                                    action: () {
-                                      setState(() {
-                                        currentPaymentMethod = 'TR';
-                                      });
-                                    },
-                                  ),
-                                  PaymentCard(
-                                    isSelected: currentPaymentMethod == 'CA',
-                                    title: 'เงินสด'.tr(),
-                                    image:
-                                    'assets/images/cash_on_delivery.jpeg',
-                                    action: () {
-                                      setState(() {
-                                        currentPaymentMethod = 'CA';
-                                      });
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'เอกสารที่แนบมา'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      SizedBox(
-                                        width: 200,
-                                        child: ElevatedButton.icon(
-                                          onPressed: showOptions,
-                                          icon: const Icon(Icons.add_a_photo_outlined,), label: Text(
-                                          'เลือกรูปภาพ',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
-                                        ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: _image == null
-                                              ? Text(
-                                                  'ไม่ได้เลือกรูปภาพ',
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          size.getWidthPx(6)),
-                                                )
-                                              : SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      4,
-                                                  child: Stack(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                                8.0),
-                                                        child:
-                                                            Image.file(_image!),
-                                                      ),
-                                                      Positioned(
-                                                        right: 0.0,
-                                                        top: 0.0,
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              _image = null;
-                                                            });
-                                                          },
-                                                          child:
-                                                              const CircleAvatar(
-                                                            backgroundColor:
-                                                                Colors.red,
-                                                            child:
-                                                                Icon(Icons.close),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                   SizedBox(
-                                    height: _image == null ? 200 : 0,
+                                    height: Global.paymentAttachment == null
+                                        ? 100
+                                        : 0,
                                   ),
                                 ],
                               ),
@@ -428,7 +358,6 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
-
                 if (Global.customer == null) {
                   if (mounted) {
                     Alert.warning(
@@ -452,32 +381,99 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                   Global.orders![i].customerId = Global.customer!.id!;
                   Global.orders![i].status = "0";
                   Global.orders![i].discount = Global.discount;
-                  Global.orders![i].paymentMethod = currentPaymentMethod;
-                  Global.orders![i].attachement = _image != null ? Global.imageToBase64(_image!) : null;
+                  Global.orders![i].paymentMethod = Global.currentPaymentMethod;
+                  Global.orders![i].attachement =
+                      Global.paymentAttachment != null
+                          ? Global.imageToBase64(Global.paymentAttachment!)
+                          : null;
                   Global.orders![i].priceIncludeTax =
                       Global.getOrderTotal(Global.orders![i]);
-                  Global.orders![i].purchasePrice = 0;
-                  Global.orders![i].priceDiff = 0;
-                  Global.orders![i].taxBase = 0;
-                  Global.orders![i].taxAmount = 0;
-                  Global.orders![i].priceExcludeTax = 0;
+                  Global.orders![i].purchasePrice =
+                      Global.orders![i].orderTypeId == 2
+                          ? 0
+                          : Global.getPapunTotal(Global.orders![i]);
+                  Global.orders![i].priceDiff =
+                      Global.orders![i].orderTypeId == 2
+                          ? 0
+                          : Global.getOrderTotal(Global.orders![i]) -
+                              Global.getPapunTotal(Global.orders![i]);
+                  Global.orders![i].taxBase = Global.orders![i].orderTypeId == 2
+                      ? 0
+                      : (Global.getOrderTotal(Global.orders![i]) -
+                              Global.getPapunTotal(Global.orders![i])) *
+                          100 /
+                          107;
+                  Global.orders![i].taxAmount =
+                      Global.orders![i].orderTypeId == 2
+                          ? 0
+                          : ((Global.getOrderTotal(Global.orders![i]) -
+                                      Global.getPapunTotal(Global.orders![i])) *
+                                  100 /
+                                  107) *
+                              0.07;
+                  Global.orders![i].priceExcludeTax = Global
+                              .orders![i].orderTypeId ==
+                          2
+                      ? 0
+                      : Global.getOrderTotal(Global.orders![i]) -
+                          (((Global.getOrderTotal(Global.orders![i]) -
+                                      Global.getPapunTotal(Global.orders![i])) *
+                                  100 /
+                                  107) *
+                              0.07);
                   for (var j = 0; j < Global.orders![i].details!.length; j++) {
                     Global.orders![i].details![j].id = 0;
-                    Global.orders![i].details![j].orderId = Global.orders![i].id;
+                    Global.orders![i].details![j].orderId =
+                        Global.orders![i].id;
                     Global.orders![i].details![j].unitCost =
                         Global.orders![i].details![j].priceIncludeTax! / 15.16;
-                    Global.orders![i].details![j].purchasePrice =0;
-                    Global.orders![i].details![j].priceDiff = 0;
-                    Global.orders![i].details![j].taxBase = 0;
-                    Global.orders![i].details![j].taxAmount =  0;
-                    Global.orders![i].details![j].priceExcludeTax = 0;
+                    Global.orders![i].details![j].purchasePrice =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : Global.getBuyPrice(
+                                Global.orders![i].details![j].weight!);
+                    Global.orders![i].details![j].priceDiff =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : Global.orders![i].details![j].priceIncludeTax! -
+                                Global.getBuyPrice(
+                                    Global.orders![i].details![j].weight!);
+                    Global.orders![i].details![j].taxBase = Global
+                                .orders![i].orderTypeId ==
+                            2
+                        ? 0
+                        : (Global.orders![i].details![j].priceIncludeTax! -
+                                Global.getBuyPrice(
+                                    Global.orders![i].details![j].weight!)) *
+                            100 /
+                            107;
+                    Global.orders![i].details![j].taxAmount =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : ((Global.orders![i].details![j].priceIncludeTax! -
+                                        Global.getBuyPrice(Global
+                                            .orders![i].details![j].weight!)) *
+                                    100 /
+                                    107) *
+                                0.07;
+                    Global.orders![i].details![j].priceExcludeTax =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : (Global.orders![i].details![j].priceIncludeTax! -
+                                ((((Global.orders![i].details![j]
+                                                .priceIncludeTax! -
+                                            Global.getBuyPrice(Global.orders![i]
+                                                .details![j].weight!)) *
+                                        100 /
+                                        107) *
+                                    0.07)));
                     Global.orders![i].details![j].createdDate =
                         DateTime.now().toUtc();
                     Global.orders![i].details![j].updatedDate =
                         DateTime.now().toUtc();
                   }
                 }
-                // print(orderListModelToJson(Global.order!));
+                // print(orderListModelToJson(Global.orders!));
                 // return;
                 final ProgressDialog pr = ProgressDialog(context,
                     type: ProgressDialogType.normal,
@@ -486,27 +482,33 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                 await pr.show();
                 pr.update(message: 'processing'.tr());
                 try {
+                  if (Global.posOrder != null) {
+                    await reserveOrder(Global.posOrder!);
+                  }
                   // Gen pair ID before submit
                   var pair = await ApiServices.post(
                       '/order/gen-pair/${Global.orders?.first.orderTypeId}',
                       Global.requestObj(null));
+
+                  // print(detail!.data);
                   if (pair?.status == "success") {
+
+                    await postPayment(pair?.data);
                     await postOrder(pair?.data);
                     Global.orderIds =
                         Global.orders!.map((e) => e.orderId).toList();
                     Global.pairId = pair?.data;
                     await pr.hide();
                     if (mounted) {
-                      Alert.success(context, 'Success'.tr(), "", 'OK'.tr(),
-                          action: () async {
-                        Global.order!.details!.clear();
-                        Global.order = null;
-                        Global.refillOrderDetail!.clear();
-                        Global.discount = 0;
-                        Global.customer = null;
-                        setState(() {});
-                        Navigator.of(context).pop();
-                      });
+                      Global.orders!.clear();
+                      Global.discount = 0;
+                      Global.customer = null;
+                      Global.posOrder = null;
+                      setState(() {});
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PrintBillScreen()));
                     }
                   } else {
                     if (mounted) {
@@ -528,24 +530,52 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.save_alt_outlined,
-                    color: Colors.white,
-                    size: 30,
+                  Text(
+                    "บันทึก".tr(),
+                    style: TextStyle(
+                        color: Colors.white, fontSize: size!.getWidthPx(8)),
                   ),
                   const SizedBox(
                     width: 2,
                   ),
-                  Text(
-                    "บันทึก".tr(),
-                    style: TextStyle(
-                        color: Colors.white, fontSize: size.getWidthPx(8)),
+                  const Icon(
+                    Icons.save_alt_outlined,
+                    color: Colors.white,
+                    size: 30,
                   ),
                 ],
               ),
             )),
       ],
     );
+  }
+
+  Future postPayment(int pairId) async {
+    var result = await ApiServices.post(
+        '/order/payment',
+        Global.requestObj(
+          PaymentModel(
+              id: 0,
+              pairId: pairId,
+              paymentMethod: Global.currentPaymentMethod,
+              paymentDate: DateTime.parse(Global.paymentDateCtrl.text).toUtc(),
+              bankName: Global.bankCtrl.text,
+              referenceNumber: Global.refNoCtrl.text,
+              cardName: Global.cardNameCtrl.text,
+              cardExpiryDate: Global.cardExpireDateCtrl.text.trim() != ""
+                  ? DateTime.parse(Global.cardExpireDateCtrl.text).toUtc()
+                  : null,
+              paymentDetail: Global.paymentDetailCtrl.text,
+              attachement: Global.paymentAttachment != null
+                  ? Global.imageToBase64(Global.paymentAttachment!)
+                  : null,
+              createdDate: DateTime.now().toUtc(),
+              updatedDate: DateTime.now().toUtc()),
+        ));
+    // motivePrint(result?.toJson());
+    if (result?.status == "success") {
+      motivePrint("Payment completed");
+    }
   }
 
   Future postOrder(int pairId) async {
@@ -569,43 +599,88 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
   }
 
   Widget _itemOrderList({required OrderModel order, required index}) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          flex: 8,
-          child: ProductListTileData(
-              orderId: order.orderId,
-              weight: Global.format(
-                  Global.getOrderTotalWeight(order.details!)),
-              showTotal: true,
-              totalPrice: Global.format(
-                  Global.getOrderTotalAmount(order.details!)),
-              type: null //order.orderTypeId.toString(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              flex: 8,
+              child: ProductListTileData(
+                  orderId: order.orderId,
+                  weight:
+                      Global.format(Global.getOrderTotalWeight(order.details!)),
+                  showTotal: true,
+                  totalPrice:
+                      Global.format(Global.getOrderTotalAmount(order.details!)),
+                  type: null //order.orderTypeId.toString(),
+                  ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      removeProduct(index);
+                    },
+                    child: Container(
+                      height: 60,
+                      width: 80,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  removeProduct(index);
-                },
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
+        Table(
+          border: TableBorder.all(color: Colors.grey.shade300),
+          children: [
+            TableRow(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    '',
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-            ],
-          ),
-        )
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text('น้ำหนัก',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: size?.getWidthPx(8))),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text('ราคา',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: size?.getWidthPx(8))),
+                ),
+              ],
+            ),
+            ...order.details!.map((e) => TableRow(
+                  decoration: const BoxDecoration(),
+                  children: [
+                    paddedTextBigL(e.productName,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                    paddedTextBigL(Global.format(e.weight!),
+                        align: TextAlign.center,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                    paddedTextBigL(Global.format(e.priceIncludeTax!),
+                        align: TextAlign.center,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                  ],
+                )),
+          ],
+        ),
       ],
     );
   }
@@ -615,6 +690,17 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});
     });
+  }
+
+  Future<void> reserveOrder(OrderModel order) async {
+    motivePrint(order.toJson());
+    var result = await ApiServices.post(
+        '/order/reserve',
+        Global.requestObj(order));
+    motivePrint(result?.toJson());
+    if (result?.status == "success") {
+      motivePrint("Reverse completed");
+    }
   }
 }
 

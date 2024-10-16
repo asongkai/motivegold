@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    ndkVersion "25.1.8937393"
+    ndkVersion = "25.1.8937393"
     namespace "com.motive.motivegold.motivegold"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion

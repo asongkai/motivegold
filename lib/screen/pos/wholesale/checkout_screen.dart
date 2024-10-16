@@ -5,94 +5,53 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
-import 'package:motivegold/screen/pos/storefront/customer_entry_screen.dart';
-import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
-import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/screen/pos/wholesale/print_bill_screen.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/button/simple_button.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/payment/payment_method.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
-import 'package:motivegold/widget/product_list_tile.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/product_list_tile.dart';
+import 'refill_vender_entry_screen.dart';
 
-class CheckOutScreen extends StatefulWidget {
-  const CheckOutScreen({super.key});
+class WholesaleCheckOutScreen extends StatefulWidget {
+  const WholesaleCheckOutScreen({super.key});
 
   @override
-  State<CheckOutScreen> createState() => _CheckOutScreenState();
+  State<WholesaleCheckOutScreen> createState() =>
+      _WholesaleCheckOutScreenState();
 }
 
-class _CheckOutScreenState extends State<CheckOutScreen> {
-  String currentPaymentMethod = 'CA';
+class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
+  int currentIndex = 1;
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
-  File? _image;
-  final picker = ImagePicker();
 
   @override
   void initState() {
     // implement initState
     super.initState();
-  }
-
-  //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
-
-//Image Picker function to get image from camera
-  Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
-
-  Future showOptions() async {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            child: const Text('คลังภาพ'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from gallery
-              getImageFromGallery();
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: const Text('ถ่ายรูป'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from camera
-              getImageFromCamera();
-            },
-          ),
-        ],
-      ),
-    );
+    Global.selectedPayment = null;
+    Global.currentPaymentMethod = null;
+    Global.paymentAttachment = null;
+    Global.cardNameCtrl.text = "";
+    Global.cardExpireDateCtrl.text = "";
+    Global.bankCtrl.text = "";
+    Global.refNoCtrl.text = "";
+    Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
+    Global.paymentDetailCtrl.text = "";
   }
 
   @override
@@ -125,7 +84,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'ลูกค้า',
+                                    'ผู้ขาย',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium,
@@ -161,7 +120,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              const CustomerEntryScreen(),
+                                                              const RefillVenderEntryScreen(),
                                                           fullscreenDialog:
                                                               true))
                                                   .whenComplete(() {
@@ -192,7 +151,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                               MaterialPageRoute(
                                                                   builder:
                                                                       (context) =>
-                                                                          const CustomerEntryScreen(),
+                                                                          const RefillVenderEntryScreen(),
                                                                   fullscreenDialog:
                                                                       true))
                                                           .whenComplete(() {
@@ -250,7 +209,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     height: 10,
                                   ),
                                   Text(
-                                    'รายการสั่งซื้อ',
+                                    'รายการสินค้า',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineMedium,
@@ -275,123 +234,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'เลือกวิธีการชำระเงิน'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  PaymentCard(
-                                    isSelected: currentPaymentMethod == 'TR',
-                                    title: 'โอน'.tr(),
-                                    image: 'assets/images/money_transfer.jpeg',
-                                    action: () {
-                                      setState(() {
-                                        currentPaymentMethod = 'TR';
-                                      });
-                                    },
-                                  ),
-                                  PaymentCard(
-                                    isSelected: currentPaymentMethod == 'CA',
-                                    title: 'เงินสด'.tr(),
-                                    image:
-                                        'assets/images/cash_on_delivery.jpeg',
-                                    action: () {
-                                      setState(() {
-                                        currentPaymentMethod = 'CA';
-                                      });
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'เพิ่มสลิปการชำระเงิน'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      SizedBox(
-                                        width: 200,
-                                        child: ElevatedButton.icon(
-                                          onPressed: showOptions,
-                                          icon: const Icon(Icons.add_a_photo_outlined,), label: Text(
-                                          'เลือกรูปภาพ',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
-                                        ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                          child: _image == null
-                                              ? Text(
-                                                  'ไม่ได้เลือกรูปภาพ',
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          size.getWidthPx(6)),
-                                                )
-                                              : SizedBox(
-                                                  width: MediaQuery.of(context).size.width / 4,
-                                                  child: Stack(
-                                                    children: [
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(8.0),
-                                                        child: Image.file(_image!),
-                                                      ),
-                                                      Positioned(
-                                                        right: 0.0,
-                                                        top: 0.0,
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              _image = null;
-                                                            });
-                                                          },
-                                                          child: const CircleAvatar(
-                                                            backgroundColor: Colors.red,
-                                                            child: Icon(Icons.close),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Divider(
-                                    height: getProportionateScreenHeight(56),
-                                  ),
-                                  Text(
-                                    'ราคา',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  buildTextFieldBig(
-                                      labelText: "ส่วนลด (บาทไทย)",
-                                      textColor: Colors.orange,
-                                      controller: discountCtrl,
-                                      inputType: TextInputType.phone,
-                                      inputFormat: [
-                                        ThousandsFormatter(allowFraction: true)
-                                      ],
-                                      onChanged: (value) {
-                                        Global.discount = value.isNotEmpty
-                                            ? Global.toNumber(value)
-                                            : 0;
-                                        setState(() {});
-                                      }),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10, horizontal: 10),
@@ -408,13 +250,26 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         ),
                                         PriceBreakdown(
                                           title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
-                                          price: '${Global.payToCustomerOrShop()}',
+                                          price: '${Global.payToBrokerOrShop()}',
                                         ),
                                       ],
                                     ),
                                   ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'เลือกวิธีการชำระเงิน'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                  ),
+                                  const PaymentMethodWidget(),
                                   SizedBox(
-                                    height: _image == null ? 100 : 0,
+                                    height: Global.paymentAttachment == null ? 200 : 0,
                                   ),
                                 ],
                               ),
@@ -466,83 +321,26 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   Global.orders![i].customerId = Global.customer!.id!;
                   Global.orders![i].status = "0";
                   Global.orders![i].discount = Global.discount;
-                  Global.orders![i].paymentMethod = currentPaymentMethod;
-                  Global.orders![i].attachement = _image != null ? Global.imageToBase64(_image!) : null;
-                  Global.orders![i].priceIncludeTax =
-                      Global.getOrderTotal(Global.orders![i]);
-                  Global.orders![i].purchasePrice =
-                      Global.orders![i].orderTypeId == 2
-                          ? 0 : Global.getPapunTotal(Global.orders![i]);
-                  Global.orders![i].priceDiff = Global.orders![i].orderTypeId == 2
-                      ? 0 : Global.getOrderTotal(Global.orders![i]) -
-                          Global.getPapunTotal(Global.orders![i]);
-                  Global.orders![i].taxBase = Global.orders![i].orderTypeId == 2
-                      ? 0 : (Global.getOrderTotal(Global.orders![i]) -
-                              Global.getPapunTotal(Global.orders![i])) *
-                          100 /
-                          107;
-                  Global.orders![i].taxAmount = Global.orders![i].orderTypeId == 2
-                      ? 0 : ((Global.getOrderTotal(Global.orders![i]) -
-                                  Global.getPapunTotal(Global.orders![i])) *
-                              100 /
-                              107) *
-                          0.07;
-                  Global.orders![i].priceExcludeTax = Global
-                              .orders![i].orderTypeId ==
-                          2
-                      ? 0 : Global.getOrderTotal(Global.orders![i]) -
-                          (((Global.getOrderTotal(Global.orders![i]) -
-                                      Global.getPapunTotal(Global.orders![i])) *
-                                  100 /
-                                  107) *
-                              0.07);
+                  // Global.orders![i].paymentMethod = Global.currentPaymentMethod;
+                  // Global.orders![i].attachement = Global.paymentAttachment != null ? Global.imageToBase64(Global.paymentAttachment!) : null;
+                  // Global.orders![i].priceIncludeTax = Global.getPriceIncludeTaxTotal(Global.orders![i]);
+                  // Global.orders![i].purchasePrice = Global.getPurchasePriceTotal(Global.orders![i]);
+                  // Global.orders![i].priceDiff = Global.getPriceDiffTotal(Global.orders![i]);
+                  // Global.orders![i].taxBase = Global.getTaxBaseTotal(Global.orders![i]);
+                  // Global.orders![i].taxAmount = Global.getTaxAmountTotal(Global.orders![i]);
+                  // Global.orders![i].priceExcludeTax = Global.getPriceExcludeTaxTotal(Global.orders![i]);
                   for (var j = 0; j < Global.orders![i].details!.length; j++) {
                     Global.orders![i].details![j].id = 0;
                     Global.orders![i].details![j].orderId = Global.orders![i].id;
                     Global.orders![i].details![j].unitCost =
                         Global.orders![i].details![j].priceIncludeTax! / 15.16;
-                    Global.orders![i].details![j].purchasePrice =
-                        Global.orders![i].orderTypeId == 2
-                            ? 0 : Global.getBuyPrice(
-                                Global.orders![i].details![j].weight!);
-                    Global.orders![i].details![j].priceDiff =
-                        Global.orders![i].orderTypeId == 2
-                            ? 0 : Global.orders![i].details![j].priceIncludeTax! -
-                                Global.getBuyPrice(
-                                    Global.orders![i].details![j].weight!);
-                    Global.orders![i].details![j].taxBase =
-                        Global.orders![i].orderTypeId == 2
-                            ? 0 : (Global.orders![i].details![j].priceIncludeTax! -
-                                    Global.getBuyPrice(
-                                        Global.orders![i].details![j].weight!)) *
-                                100 /
-                                107;
-                    Global.orders![i].details![j].taxAmount = Global
-                                .orders![i].orderTypeId ==
-                            2
-                        ? 0 : ((Global.orders![i].details![j].priceIncludeTax! -
-                                    Global.getBuyPrice(
-                                        Global.orders![i].details![j].weight!)) *
-                                100 /
-                                107) *
-                            0.07;
-                    Global.orders![i].details![j].priceExcludeTax =
-                        Global.orders![i].orderTypeId == 2
-                            ? 0 : (Global.orders![i].details![j].priceIncludeTax! -
-                                ((((Global.orders![i].details![j]
-                                                .priceIncludeTax! -
-                                            Global.getBuyPrice(Global.orders![i]
-                                                .details![j].weight!)) *
-                                        100 /
-                                        107) *
-                                    0.07)));
                     Global.orders![i].details![j].createdDate =
                         DateTime.now().toUtc();
                     Global.orders![i].details![j].updatedDate =
                         DateTime.now().toUtc();
                   }
                 }
-                // print(orderListModelToJson(Global.orders!));
+                // print(orderListModelToJson(Global.order!));
                 // return;
                 final ProgressDialog pr = ProgressDialog(context,
                     type: ProgressDialogType.normal,
@@ -551,36 +349,40 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 await pr.show();
                 pr.update(message: 'processing'.tr());
                 try {
-
                   // Gen pair ID before submit
-                  var pair =
-                  await ApiServices.post('/order/gen-pair/${Global.orders?.first.orderTypeId}', Global.requestObj(null));
-                  // print(detail!.data);
+                  var pair = await ApiServices.post(
+                      '/order/gen-pair/${Global.orders?.first.orderTypeId}',
+                      Global.requestObj(null));
                   if (pair?.status == "success") {
+                    await postPayment(pair?.data);
                     await postOrder(pair?.data);
                     Global.orderIds =
                         Global.orders!.map((e) => e.orderId).toList();
                     Global.pairId = pair?.data;
                     await pr.hide();
                     if (mounted) {
-                      Global.orders!.clear();
-                      Global.discount = 0;
-                      Global.customer = null;
-                      setState(() {});
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PrintBillScreen()));
+                      Alert.success(context, 'Success'.tr(), "", 'OK'.tr(),
+                          action: () async {
+                        Global.orders = [];
+                        Global.refillOrderDetail = [];
+                        Global.usedSellDetail = [];
+                        Global.discount = 0;
+                        Global.customer = null;
+                        setState(() {});
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const WholeSalePrintBillScreen()));
+                        // Navigator.of(context).pop();
+                      });
                     }
                   } else {
                     if (mounted) {
-                      Alert.warning(
-                          context, 'Warning'.tr(), 'Unable to generate pairing ID', 'OK'.tr(),
+                      Alert.warning(context, 'Warning'.tr(),
+                          'Unable to generate pairing ID', 'OK'.tr(),
                           action: () {});
                     }
                   }
-
-
                 } catch (e) {
                   await pr.hide();
                   if (mounted) {
@@ -594,18 +396,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "ต่อไป".tr(),
-                    style: TextStyle(
-                        color: Colors.white, fontSize: size.getWidthPx(8)),
+                  const Icon(
+                    Icons.save_alt_outlined,
+                    color: Colors.white,
+                    size: 30,
                   ),
                   const SizedBox(
                     width: 2,
                   ),
-                  const Icon(
-                    Icons.keyboard_arrow_right,
-                    color: Colors.white,
-                    size: 30,
+                  Text(
+                    "บันทึก".tr(),
+                    style: TextStyle(
+                        color: Colors.white, fontSize: size.getWidthPx(8)),
                   ),
                 ],
               ),
@@ -614,10 +416,39 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     );
   }
 
+  Future postPayment(int pairId) async {
+    var result = await ApiServices.post(
+        '/order/payment',
+        Global.requestObj(
+          PaymentModel(
+              id: 0,
+              pairId: pairId,
+              paymentMethod: Global.currentPaymentMethod,
+              paymentDate: DateTime.parse(Global.paymentDateCtrl.text).toUtc(),
+              bankName: Global.bankCtrl.text,
+              referenceNumber: Global.refNoCtrl.text,
+              cardName: Global.cardNameCtrl.text,
+              cardExpiryDate: Global.cardExpireDateCtrl.text.trim() != ""
+                  ? DateTime.parse(Global.cardExpireDateCtrl.text).toUtc()
+                  : null,
+              paymentDetail: Global.paymentDetailCtrl.text,
+              attachement: Global.paymentAttachment != null
+                  ? Global.imageToBase64(Global.paymentAttachment!)
+                  : null,
+              createdDate: DateTime.now().toUtc(),
+              updatedDate: DateTime.now().toUtc()),
+        ));
+    motivePrint(result?.toJson());
+    if (result?.status == "success") {
+      motivePrint("Payment completed");
+    }
+  }
+
   Future postOrder(int pairId) async {
     await Future.forEach<OrderModel>(Global.orders!, (e) async {
       e.pairId = pairId;
-      var result = await ApiServices.post('/order/create', Global.requestObj(e));
+      var result =
+          await ApiServices.post('/order/create', Global.requestObj(e));
       if (result?.status == "success") {
         var order = orderModelFromJson(jsonEncode(result?.data));
         int? id = order.id;

@@ -54,7 +54,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
     });
 
     // try {
-      var result = await ApiServices.post('/sell/all/type/6',
+      var result = await ApiServices.post('/order/all/type/6',
           Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);

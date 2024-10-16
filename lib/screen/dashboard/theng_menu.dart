@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/matching_pending_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_pending_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -25,7 +27,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
   ApiServices api = ApiServices();
   Screen? size;
   bool loading = false;
-  List<TransferModel>? list = [];
+  List<OrderModel>? list = [];
 
   @override
   void initState() {
@@ -40,11 +42,11 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
     });
     try {
       var result = await ApiServices.post(
-          '/transfer/other-branch/pending', Global.requestObj(null));
+          '/order/matching/PENDING', Global.requestObj(null));
       // motivePrint(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        List<TransferModel> products = transferListModelFromJson(data);
+        List<OrderModel> products = orderListModelFromJson(data);
         setState(() {
           list = products;
         });
@@ -275,7 +277,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
                     'รายการที่รอดำเนินการ',
                     Icons.pending_actions,
                     Colors.red,
-                    const TransferGoldPendingScreen(),
+                    const MatchingPendingScreen(),
                   ),
                   if (list != null && list!.isNotEmpty)
                     Positioned(
@@ -285,7 +287,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.red,
-                              borderRadius: BorderRadius.circular(10.0)),
+                              borderRadius: BorderRadius.circular(20.0)),
                           padding:
                           const EdgeInsets.only(left: 5.0, right: 5.0),
                           child: Row(
@@ -297,7 +299,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
                                       ? 0.toString()
                                       : list!.length.toString(),
                                   style:
-                                  const TextStyle(color: Colors.white),
+                                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                                 ),
                               )
                             ],

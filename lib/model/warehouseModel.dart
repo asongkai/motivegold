@@ -4,11 +4,15 @@
 
 import 'dart:convert';
 
-List<WarehouseModel> warehouseListModelFromJson(String str) => List<WarehouseModel>.from(json.decode(str).map((x) => WarehouseModel.fromJson(x)));
+List<WarehouseModel> warehouseListModelFromJson(String str) =>
+    List<WarehouseModel>.from(
+        json.decode(str).map((x) => WarehouseModel.fromJson(x)));
 
-String warehouseListModelToJson(List<WarehouseModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String warehouseListModelToJson(List<WarehouseModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-WarehouseModel warehouseModelFromJson(String str) => WarehouseModel.fromJson(json.decode(str));
+WarehouseModel warehouseModelFromJson(String str) =>
+    WarehouseModel.fromJson(json.decode(str));
 
 String warehouseModelToJson(WarehouseModel data) => json.encode(data.toJson());
 
@@ -19,33 +23,35 @@ class WarehouseModel {
   String name;
   String? address;
   int? sell;
+  int? matching;
 
-  WarehouseModel({
-    this.id,
-    this.branchId,
-    this.companyId,
-    required this.name,
-    this.address,
-    this.sell
-  });
+  WarehouseModel(
+      {this.id,
+      this.branchId,
+      this.companyId,
+      required this.name,
+      this.address,
+      this.sell,
+      this.matching});
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) => WarehouseModel(
-    id: json["id"],
-    companyId: json["companyId"],
-    branchId: json["branchId"],
-    name: json["name"],
-    address: json["address"],
-    sell: json["sell"]
-  );
+      id: json["id"],
+      companyId: json["companyId"],
+      branchId: json["branchId"],
+      name: json["name"],
+      address: json["address"],
+      sell: json["sell"],
+      matching: json["matching"]);
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "companyId": companyId,
-    "branchId": branchId,
-    "name": name,
-    "address": address,
-    "sell": sell
-  };
+        "id": id,
+        "companyId": companyId,
+        "branchId": branchId,
+        "name": name,
+        "address": address,
+        "sell": sell,
+        "matching": matching,
+      };
 
   @override
   String toString() => name;
@@ -54,7 +60,7 @@ class WarehouseModel {
   operator ==(o) => o is WarehouseModel && o.id == id;
 
   @override
-  int get hashCode => id.hashCode^name.hashCode^id.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ id.hashCode;
 
   @override
   bool filter(String query) {

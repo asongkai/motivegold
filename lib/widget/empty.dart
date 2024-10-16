@@ -1,4 +1,6 @@
-import 'package:empty_widget/empty_widget.dart';
+
+import 'package:empty_widget_fork/empty_widget_fork.dart';
+
 import 'package:flutter/material.dart';
 
 class EmptyContent extends StatefulWidget {

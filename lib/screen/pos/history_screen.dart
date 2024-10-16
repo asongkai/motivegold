@@ -8,6 +8,10 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
+import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -19,7 +23,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'checkout_summary_history_screen.dart';
-import 'preview_pdf.dart';
+import 'storefront/paphun/preview_pdf.dart';
 
 class PosOrderHistoryScreen extends StatefulWidget {
   const PosOrderHistoryScreen({super.key});
@@ -280,7 +284,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                               child: ElevatedButton(
                                 style: ButtonStyle(
                                     backgroundColor:
-                                        MaterialStateProperty.all<Color>(
+                                        WidgetStateProperty.all<Color>(
                                             bgColor3)),
                                 onPressed: search,
                                 child: Text(
@@ -345,7 +349,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     setState(() {});
   }
 
-  Widget dataCard(OrderModel list, int index) {
+  Widget dataCard(OrderModel order, int index) {
     return Stack(
       children: [
         GestureDetector(
@@ -370,11 +374,11 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '#${list.orderId.toString()}',
+                          '#${order.orderId.toString()}',
                           style: TextStyle(fontSize: size?.getWidthPx(8)),
                         ),
                         Text(
-                          Global.formatDate(list.orderDate.toString()),
+                          Global.formatDate(order.orderDate.toString()),
                           style: TextStyle(
                               color: Colors.green,
                               fontSize: size!.getWidthPx(5)),
@@ -417,7 +421,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                             ),
                           ],
                         ),
-                        ...list.details!.map(
+                        ...order.details!.map(
                           (e) => TableRow(
                             decoration: const BoxDecoration(),
                             children: [
@@ -429,7 +433,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                   align: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(7))),
-                              paddedText(e.toBinLocationName ?? '',
+                              paddedText(e.binLocationName ?? '',
                                   align: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(7))),
@@ -446,9 +450,12 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
+                        const SizedBox(
+                          height: 30,
+                        ),
                         GestureDetector(
                           onTap: () {
-                            Global.pairId = list.pairId;
+                            Global.pairId = order.pairId;
                             Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -485,21 +492,67 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                           ),
                         ),
                         const SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         GestureDetector(
-                          onTap: () {
-                            Global.orderIds!.add(list.orderId);
-                            Invoice invoice = Invoice(
-                                order: list,
-                                customer: list.customer!,
-                                items: list.details!);
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PdfPreviewPage(invoice: invoice),
-                              ),
-                            );
+                          onTap: () async {
+                            // motivePrint(order.orderTypeId);
+                            Global.orderIds!.add(order.orderId);
+                            if (order.orderTypeId == 1 ||
+                                order.orderTypeId == 2) {
+                              Invoice invoice = Invoice(
+                                  order: order,
+                                  customer: order.customer!,
+                                  items: order.details!);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PdfPreviewPage(invoice: invoice),
+                                ),
+                              );
+                            } else if (order.orderTypeId == 5) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PreviewRefillGoldPage(
+                                            order: order,
+                                          )));
+                            } else if (order.orderTypeId == 6) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PreviewSellUsedGoldPage(
+                                            order: order,
+                                          )));
+                            } else if (order.orderTypeId == 3 ||
+                                order.orderTypeId == 4 ||
+                                order.orderTypeId == 33 ||
+                                order.orderTypeId == 44 ||
+                                order.orderTypeId == 8 ||
+                                order.orderTypeId == 9) {
+                              var payment = await ApiServices.post(
+                                  '/order/payment/${order.pairId}',
+                                  Global.requestObj(null));
+
+                              PaymentModel paymentModel =
+                                  PaymentModel.fromJson(payment?.data);
+
+                              Invoice invoice = Invoice(
+                                  order: order,
+                                  customer: order.customer!,
+                                  payment: paymentModel,
+                                  items: order.details!);
+                              if (mounted) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PdfThengPreviewPage(invoice: invoice),
+                                  ),
+                                );
+                              }
+                            }
                           },
                           child: Container(
                             height: 50,
@@ -540,7 +593,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
           child: Center(
             child: Container(
               decoration: BoxDecoration(
-                  color: colorType(list),
+                  color: colorType(order),
                   borderRadius: BorderRadius.circular(10.0)),
               padding: const EdgeInsets.only(left: 5.0, right: 5.0),
               child: Row(
@@ -552,7 +605,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       child: RawMaterialButton(
                         elevation: 10.0,
                         child: Icon(
-                          (list.orderTypeId == 1)
+                          (order.orderTypeId == 1)
                               ? Icons.check
                               : Icons.pending_actions,
                           color: Colors.white,
@@ -562,7 +615,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                     ),
                   ),
                   Text(
-                    dataType(list),
+                    dataType(order),
                     style: const TextStyle(color: Colors.white),
                   )
                 ],

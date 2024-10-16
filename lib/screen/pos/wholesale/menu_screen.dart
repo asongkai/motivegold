@@ -6,7 +6,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/utils/global.dart';
 import 'refill/refill_gold_stock_screen.dart';
 import 'used/sell_used_gold_screen.dart';
-import 'wholesale_checkout_screen.dart';
+import 'checkout_screen.dart';
 
 class WholeSaleMenuScreen extends StatefulWidget {
   const WholeSaleMenuScreen({Key? key, required this.title}) : super(key: key);
@@ -105,7 +105,7 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
             controller: sideMenu,
             style: SideMenuStyle(
               showTooltip: true,
-              iconSize: 100,
+              iconSize: 90,
               compactSideMenuWidth: 130,
               itemHeight: 130,
               displayMode: SideMenuDisplayMode.compact,
@@ -138,7 +138,7 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.s),
+                icon: const Icon(FontAwesomeIcons.b),
                 tooltipContent: "ขายทองคำใหม่",
               ),
               SideMenuItem(
@@ -146,7 +146,7 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.b),
+                icon: const Icon(FontAwesomeIcons.s),
                 tooltipContent: 'รับซื้อทองเก่า',
               ),
             ],

@@ -28,6 +28,10 @@ class OrderDetailModel {
   String? toBinLocationName;
   int? toBranchId;
   String? toBranchName;
+  double? sellTPrice;
+  double? buyTPrice;
+  double? sellPrice;
+  double? buyPrice;
   double? commission;
   double? weight;
   double? weightBath;
@@ -52,6 +56,10 @@ class OrderDetailModel {
       this.toBinLocationId,
       this.binLocationName,
       this.toBinLocationName,
+      this.sellTPrice,
+      this.buyTPrice,
+      this.sellPrice,
+      this.buyPrice,
       this.commission,
       this.weight,
       this.weightBath,
@@ -79,6 +87,10 @@ class OrderDetailModel {
           toBinLocationId: json["toBinLocationId"],
           binLocationName: json["binLocationName"],
           toBinLocationName: json["toBinLocationName"],
+          sellTPrice: json["sellTPrice"],
+          buyTPrice: json["buyTPrice"],
+          sellPrice: json["sellPrice"],
+          buyPrice: json["buyPrice"],
           commission: json["commission"],
           weight: json["weight"],
           weightBath: json["weightBath"],
@@ -111,6 +123,10 @@ class OrderDetailModel {
         "toBinLocationId": toBinLocationId,
         "binLocationName": binLocationName,
         "toBinLocationName": toBinLocationName,
+        "sellTPrice": sellTPrice,
+        "buyTPrice": buyTPrice,
+        "sellPrice": sellPrice,
+        "buyPrice": buyPrice,
         "commission": commission,
         "weight": weight,
         "weightBath": weightBath,

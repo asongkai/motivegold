@@ -131,7 +131,6 @@ class Constants {
   static String BACKEND_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000/api" : "http://localhost:5000/api";
   static String DOMAIN_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000" : "http://localhost:5000";
 
-
   static const String STORAGE_URL = "gs://app-name.appspot.com";
 
   static const kGoogleApiKey = "AIzaSyBeTEo6O-FqFeEtrrCqjpcKnBo8iipVnBc";

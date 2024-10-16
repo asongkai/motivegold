@@ -97,10 +97,8 @@ class Utils {
       BuildContext context, String title, String text, VoidCallback onPressed) {
     var alert = AlertDialog(
       title: Text(title),
-      content: Container(
-        child: Row(
-          children: <Widget>[Text(text)],
-        ),
+      content: Row(
+        children: <Widget>[Text(text)],
       ),
       actions: <Widget>[
         TextButton(
@@ -160,21 +158,20 @@ String getImageFileName(id, timestamp) {
 
 class MaskedTextController extends TextEditingController {
   MaskedTextController(
-      {String? text, this.mask, Map<String, RegExp>? translator})
-      : super(text: text) {
+      {super.text, this.mask, Map<String, RegExp>? translator}) {
     this.translator = translator ?? MaskedTextController.getDefaultTranslator();
 
     addListener(() {
       var previous = _lastUpdatedText;
-      if (beforeChange(previous, this.text)) {
-        updateText(this.text);
-        afterChange(previous, this.text);
+      if (beforeChange(previous, text)) {
+        updateText(text);
+        afterChange(previous, text);
       } else {
         updateText(_lastUpdatedText);
       }
     });
 
-    updateText(this.text);
+    updateText(text);
   }
 
   String? mask;
@@ -398,6 +395,7 @@ Widget buildTextField(
     TextEditingController? controller,
     String? suffixText,
     TextInputType? inputType,
+      List<TextInputFormatter>? inputFormat,
     line,
     Color? textColor,
     bool option = false,
@@ -407,6 +405,7 @@ Widget buildTextField(
     padding: const EdgeInsets.only(bottom: 8.0),
     child: TextFormField(
       keyboardType: inputType ?? TextInputType.text,
+      inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
       style: const TextStyle(fontSize: 25),
@@ -551,6 +550,14 @@ String dataType(OrderModel list) {
       return "ซื้อทองแท่ง (จับคู่)";
     case 44:
       return "ซื้อทองแท่ง";
+    case 5:
+      return "เติมทอง";
+    case 6:
+      return "ขายทองเก่า";
+    case 8:
+      return "ขายทองแท่งกับโบรกเกอร์";
+    case 9:
+      return "ซื้อทองแท่งกับโบรกเกอร์";
     default:
       return "";
   }
@@ -570,6 +577,14 @@ Color colorType(OrderModel list) {
       return Colors.brown;
     case 44:
       return Colors.deepPurple;
+    case 5:
+      return Colors.green;
+    case 6:
+      return Colors.blueGrey;
+    case 8:
+      return Colors.green;
+    case 9:
+      return Colors.blueGrey;
     default:
       return Colors.transparent;
   }

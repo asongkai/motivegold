@@ -23,7 +23,7 @@ class GoldPriceListTileData extends StatelessWidget {
       children: [
         Container(
           decoration: const BoxDecoration(
-            color: bgColor2,
+            color: bgColor,
             border: Border(
               bottom: BorderSide(
                 color: Color(0xFFE9E9E9),
