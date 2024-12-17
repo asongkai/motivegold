@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
@@ -18,16 +19,33 @@ Widget height({double h = 10}) {
 }
 
 Widget header(OrderModel order, String? title) {
-  return Center(
-      child: Column(children: [
-    Text('${Global.company?.name} (${Global.branch!.name})',
-        style: const TextStyle(fontSize: 16)),
-    Text(
-        '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-    Text(
-        'โทร: ${Global.company?.phone}    เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
-    if (title != null) Text(title, style: const TextStyle(fontSize: 16)),
-  ]));
+  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Row(children: [
+      Expanded(flex: 2, child: Center(child: Text('LOGO'))),
+      Expanded(
+          flex: 8,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('${Global.company?.name} (${Global.branch!.name})',
+                style: const TextStyle(fontSize: 16)),
+            Text(
+                '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
+            Text('โทรศัพท์/Phone : ${Global.company?.phone} โทรสาร/Fax : '),
+            Text(
+                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}'),
+          ]))
+    ]),
+    SizedBox(
+      height: 10,
+    ),
+    if (title != null)
+      Center(
+          child: Column(children: [
+        Text(title, style: const TextStyle(fontSize: 14)),
+        Text('เลขรหัสประจําเครื่อง POS ID : A0120000000X000',
+            style: const TextStyle(fontSize: 12))
+      ])),
+  ]);
 }
 
 Widget headerRefill(CustomerModel customer, OrderModel order, String? title) {
@@ -40,6 +58,16 @@ Widget headerRefill(CustomerModel customer, OrderModel order, String? title) {
         'โทร: ${customer.phoneNumber}    เลขประจําตัวผู้เสียภาษี : ${customer.taxNumber}'),
     if (title != null) Text(title, style: const TextStyle(fontSize: 16)),
   ]));
+}
+
+Widget docNo(OrderModel order) {
+  return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text('เลขที่ : ${order.orderId}'),
+        Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} '),
+      ]);
 }
 
 Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
@@ -130,7 +158,8 @@ Widget getThongThengTable(OrderModel order) {
   ]);
 }
 
-Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) => Table(children: [
+Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) =>
+    Table(children: [
       TableRow(
         children: [
           Text('1)  เงินสด',
@@ -139,7 +168,9 @@ Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) => Table
           Text('บาท'),
           Text(''),
           Text('วันที่'),
-          Text(payment.paymentMethod == 'CA' ? Global.formatDateM(payment.paymentDate.toString()) : ''),
+          Text(payment.paymentMethod == 'CA'
+              ? Global.formatDateM(payment.paymentDate.toString())
+              : ''),
         ],
       ),
       TableRow(children: [
@@ -150,7 +181,10 @@ Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) => Table
         Container(child: Text('เลขที่ ')),
         Text('${payment.referenceNumber}'),
         Text('วันที่'),
-        Container(child: Text(payment.paymentMethod == 'TR' ? Global.formatDateM(payment.paymentDate.toString()) : ''))
+        Container(
+            child: Text(payment.paymentMethod == 'TR'
+                ? Global.formatDateM(payment.paymentDate.toString())
+                : ''))
       ]),
       TableRow(children: [
         Text('3)  อื่นๆ',
@@ -159,7 +193,9 @@ Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) => Table
         Text(''),
         Text(''),
         Text('วันที่'),
-        Text(payment.paymentMethod == 'OTH' ? Global.formatDateM(payment.paymentDate.toString()) : '')
+        Text(payment.paymentMethod == 'OTH'
+            ? Global.formatDateM(payment.paymentDate.toString())
+            : '')
       ])
     ]);
 

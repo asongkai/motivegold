@@ -1,6 +1,7 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/screen/dashboard_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/history_screen.dart';
@@ -25,7 +26,7 @@ List<TabItem> items = [
   ),
   TabItem(
     icon: Icons.people,
-    title: 'ข้อมูลส่วนตัว'.tr(),
+    title: 'ข้อมูลลูกค้า'.tr(),
   ),
   const TabItem(
     icon: Icons.more_horiz_outlined,
@@ -131,7 +132,7 @@ class _TabScreenState extends State<TabScreen>
   Widget build(BuildContext context) {
     super.build(context);
     return PopScope(
-      onPopInvoked: (bool value) => onBackPress(context),
+      onPopInvokedWithResult: (bool value, result) => onBackPress(context),
       child: DefaultTabController(
         length: items.length,
         child: Scaffold(
@@ -144,7 +145,7 @@ class _TabScreenState extends State<TabScreen>
                 GoldPriceScreen(
                   showBackButton: false,
                 ),
-                Icon(Icons.add),
+                CustomerScreen(),
                 SettingScreen(),
               ],
             ),

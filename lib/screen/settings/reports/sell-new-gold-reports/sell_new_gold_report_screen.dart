@@ -8,6 +8,7 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/settings/reports/sell-new-gold-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:quiver/time.dart';
 
@@ -57,6 +58,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
     try {
       var result = await ApiServices.post('/order/all/type/1',
           Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
+      motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
@@ -377,7 +379,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
     return filterList!.isEmpty
         ? Container(
             margin: const EdgeInsets.only(top: 100),
-            child: const EmptyContent())
+            child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(
               child: Padding(

@@ -12,7 +12,9 @@ import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/model/transfer_detail.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_checkout.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
+
+// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
@@ -147,10 +149,8 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter
           .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
-      setState(
-              () {});
-      setState(
-              () {});
+      setState(() {});
+      setState(() {});
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -178,10 +178,8 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
       await pr.hide();
       toWarehouseNotifier = ValueNotifier<WarehouseModel>(
           WarehouseModel(id: 0, name: 'เลือกคลังสินค้าปลายทาง'));
-      setState(
-              () {});
-      setState(
-              () {});
+      setState(() {});
+      setState(() {});
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -216,8 +214,8 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
       await pr.show();
       pr.update(message: 'processing'.tr());
-      var result =
-          await ApiServices.get('/branch/by-company-branch/${Global.user!.companyId}/${Global.user!.branchId}');
+      var result = await ApiServices.get(
+          '/branch/by-company-branch/${Global.user!.companyId}/${Global.user!.branchId}');
       // motivePrint(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -302,96 +300,64 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 Expanded(
                                   flex: 5,
                                   child: Padding(
-                                    padding:
-                                    const EdgeInsets
-                                        .all(
-                                        8.0),
-                                    child:
-                                    SizedBox(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
                                       height: 80,
-                                      child: MiraiDropDownMenu<
-                                          WarehouseModel>(
-                                        key:
-                                        UniqueKey(),
-                                        children:
-                                        fromWarehouseList,
+                                      child: MiraiDropDownMenu<WarehouseModel>(
+                                        key: UniqueKey(),
+                                        children: fromWarehouseList,
                                         space: 4,
-                                        maxHeight:
-                                        360,
-                                        showSearchTextField:
-                                        true,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
                                         selectedItemBackgroundColor:
-                                        Colors
-                                            .transparent,
-                                        emptyListMessage:
-                                        'ไม่มีข้อมูล',
-                                        showSelectedItemBackgroundColor:
-                                        true,
-                                        itemWidgetBuilder:
-                                            (
-                                            int index,
-                                            WarehouseModel?
-                                            project, {
-                                          bool isItemSelected =
-                                          false,
+                                            Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                          int index,
+                                          WarehouseModel? project, {
+                                          bool isItemSelected = false,
                                         }) {
                                           return DropDownItemWidget(
-                                            project:
-                                            project,
-                                            isItemSelected:
-                                            isItemSelected,
-                                            firstSpace:
-                                            10,
-                                            fontSize:
-                                            size!.getWidthPx(6),
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size!.getWidthPx(6),
                                           );
                                         },
-                                        onChanged:
-                                            (WarehouseModel
-                                        value) {
-                                          warehouseCtrl.text = value
-                                              .id!
-                                              .toString();
-                                          selectedFromLocation =
-                                              value;
-                                          fromWarehouseNotifier!.value =
-                                              value;
-                                          if (productCodeCtrl.text !=
-                                              "") {
-                                            loadQtyByLocation(
-                                                value.id!);
-                                            setState(() {
-
-                                            });
+                                        onChanged: (WarehouseModel value) {
+                                          warehouseCtrl.text =
+                                              value.id!.toString();
+                                          selectedFromLocation = value;
+                                          fromWarehouseNotifier!.value = value;
+                                          if (productCodeCtrl.text != "") {
+                                            loadQtyByLocation(value.id!);
+                                            setState(() {});
                                           }
-                                          if (selectedFromLocation !=
-                                              null) {
+                                          if (selectedFromLocation != null) {
                                             if (selectedTransferType != null &&
-                                                selectedTransferType!.code == 'BRANCH' &&
+                                                selectedTransferType!.code ==
+                                                    'BRANCH' &&
                                                 selectedBranch != null) {
-                                              loadToWarehouse(selectedBranch!.id!);
+                                              loadToWarehouse(
+                                                  selectedBranch!.id!);
                                               setState(() {});
                                             } else {
-                                              loadToWarehouseNoId(selectedFromLocation!.id!);
+                                              loadToWarehouseNoId(
+                                                  selectedFromLocation!.id!);
                                               setState(() {});
                                             }
                                           }
                                           FocusScope.of(context)
                                               .requestFocus(FocusNode());
-                                          setState(
-                                                  () {});
-                                          setState(
-                                                  () {});
-
+                                          setState(() {});
+                                          setState(() {});
                                         },
-                                        child:
-                                        DropDownObjectChildWidget(
-                                          key:
-                                          GlobalKey(),
-                                          fontSize:
-                                          size!.getWidthPx(6),
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size!.getWidthPx(6),
                                           projectValueNotifier:
-                                          fromWarehouseNotifier!,
+                                              fromWarehouseNotifier!,
                                         ),
                                       ),
                                     ),
@@ -400,88 +366,58 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 Expanded(
                                   flex: 5,
                                   child: Padding(
-                                    padding:
-                                    const EdgeInsets
-                                        .all(
-                                        8.0),
-                                    child:
-                                    SizedBox(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
                                       height: 80,
-                                      child: MiraiDropDownMenu<
-                                          ProductTypeModel>(
-                                        key:
-                                        UniqueKey(),
-                                        children:
-                                        transferTypes(),
+                                      child:
+                                          MiraiDropDownMenu<ProductTypeModel>(
+                                        key: UniqueKey(),
+                                        children: transferTypes(),
                                         space: 4,
-                                        maxHeight:
-                                        360,
-                                        showSearchTextField:
-                                        true,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
                                         selectedItemBackgroundColor:
-                                        Colors
-                                            .transparent,
-                                        emptyListMessage:
-                                        'ไม่มีข้อมูล',
-                                        showSelectedItemBackgroundColor:
-                                        true,
-                                        itemWidgetBuilder:
-                                            (
-                                            int index,
-                                            ProductTypeModel?
-                                            project, {
-                                          bool isItemSelected =
-                                          false,
+                                            Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                          int index,
+                                          ProductTypeModel? project, {
+                                          bool isItemSelected = false,
                                         }) {
                                           return DropDownItemWidget(
-                                            project:
-                                            project,
-                                            isItemSelected:
-                                            isItemSelected,
-                                            firstSpace:
-                                            10,
-                                            fontSize:
-                                            size!.getWidthPx(6),
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size!.getWidthPx(6),
                                           );
                                         },
-                                        onChanged:
-                                            (ProductTypeModel
-                                        project) {
-                                          selectedTransferType =
-                                              project;
-                                          transferTypeNotifier!.value =
-                                              project;
-                                          if (selectedTransferType !=
-                                              null &&
+                                        onChanged: (ProductTypeModel project) {
+                                          selectedTransferType = project;
+                                          transferTypeNotifier!.value = project;
+                                          if (selectedTransferType != null &&
                                               selectedTransferType!.code ==
                                                   'BRANCH') {
                                             loadBranches();
-                                            setState(
-                                                    () {});
+                                            setState(() {});
                                           } else {
-                                            branchList!
-                                                .clear();
-                                            if (selectedToLocation !=
-                                                null) {
-                                              loadToWarehouseNoId(selectedFromLocation!.id!);
+                                            branchList!.clear();
+                                            if (selectedToLocation != null) {
+                                              loadToWarehouseNoId(
+                                                  selectedFromLocation!.id!);
                                               setState(() {});
                                             }
                                           }
-                                          setState(
-                                                  () {});
-                                          setState(
-                                                  () {});
+                                          setState(() {});
+                                          setState(() {});
                                           FocusScope.of(context)
                                               .requestFocus(FocusNode());
                                         },
-                                        child:
-                                        DropDownObjectChildWidget(
-                                          key:
-                                          GlobalKey(),
-                                          fontSize:
-                                          size!.getWidthPx(6),
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size!.getWidthPx(6),
                                           projectValueNotifier:
-                                          transferTypeNotifier!,
+                                              transferTypeNotifier!,
                                         ),
                                       ),
                                     ),
@@ -494,85 +430,52 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                             height: 100,
                             child: Row(
                               children: [
-                                if (branchList!
-                                    .isNotEmpty &&
-                                    selectedTransferType!
-                                        .code ==
-                                        "BRANCH")
+                                if (branchList!.isNotEmpty &&
+                                    selectedTransferType!.code == "BRANCH")
                                   Expanded(
                                     flex: 5,
-                                    child:
-                                    Padding(
-                                      padding:
-                                      const EdgeInsets
-                                          .all(
-                                          8.0),
-                                      child:
-                                      SizedBox(
-                                        height:
-                                        80,
-                                        child: MiraiDropDownMenu<
-                                            BranchModel>(
-                                          key:
-                                          UniqueKey(),
-                                          children:
-                                          branchList!,
-                                          space:
-                                          4,
-                                          maxHeight:
-                                          360,
-                                          showSearchTextField:
-                                          true,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SizedBox(
+                                        height: 80,
+                                        child: MiraiDropDownMenu<BranchModel>(
+                                          key: UniqueKey(),
+                                          children: branchList!,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
                                           selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          showSelectedItemBackgroundColor:
-                                          true,
-                                          itemWidgetBuilder:
-                                              (
-                                              int index,
-                                              BranchModel?
-                                              project, {
-                                            bool isItemSelected =
-                                            false,
+                                              Colors.transparent,
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            BranchModel? project, {
+                                            bool isItemSelected = false,
                                           }) {
                                             return DropDownItemWidget(
-                                              project:
-                                              project,
-                                              isItemSelected:
-                                              isItemSelected,
-                                              firstSpace:
-                                              10,
-                                              fontSize:
-                                              size!.getWidthPx(6),
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size!.getWidthPx(6),
                                             );
                                           },
-                                          onChanged:
-                                              (BranchModel
-                                          value) {
-                                            selectedBranch =
-                                                value;
-                                            branchNotifier!.value =
-                                                value;
-                                            if (selectedBranch !=
-                                                null) {
+                                          onChanged: (BranchModel value) {
+                                            selectedBranch = value;
+                                            branchNotifier!.value = value;
+                                            if (selectedBranch != null) {
                                               loadToWarehouse(value.id!);
                                               setState(() {});
                                             }
-                                            setState(
-                                                    () {});
-                                            setState(
-                                                    () {});
+                                            setState(() {});
+                                            setState(() {});
                                             FocusScope.of(context)
                                                 .requestFocus(FocusNode());
                                           },
-                                          child:
-                                          DropDownObjectChildWidget(
-                                            key:
-                                            GlobalKey(),
-                                            fontSize:
-                                            size!.getWidthPx(6),
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size!.getWidthPx(6),
                                             projectValueNotifier:
-                                            branchNotifier!,
+                                                branchNotifier!,
                                           ),
                                         ),
                                       ),
@@ -581,69 +484,42 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 Expanded(
                                   flex: 5,
                                   child: Padding(
-                                    padding:
-                                    const EdgeInsets
-                                        .all(
-                                        8.0),
-                                    child:
-                                    SizedBox(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
                                       height: 80,
-                                      child: MiraiDropDownMenu<
-                                          WarehouseModel>(
-                                        key:
-                                        UniqueKey(),
-                                        children:
-                                        toWarehouseList,
+                                      child: MiraiDropDownMenu<WarehouseModel>(
+                                        key: UniqueKey(),
+                                        children: toWarehouseList,
                                         space: 4,
-                                        maxHeight:
-                                        360,
-                                        showSearchTextField:
-                                        true,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
                                         selectedItemBackgroundColor:
-                                        Colors
-                                            .transparent,
-                                        emptyListMessage:
-                                        'ไม่มีข้อมูล',
-                                        showSelectedItemBackgroundColor:
-                                        true,
-                                        itemWidgetBuilder:
-                                            (
-                                            int index,
-                                            WarehouseModel?
-                                            project, {
-                                          bool isItemSelected =
-                                          false,
+                                            Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                          int index,
+                                          WarehouseModel? project, {
+                                          bool isItemSelected = false,
                                         }) {
                                           return DropDownItemWidget(
-                                            project:
-                                            project,
-                                            isItemSelected:
-                                            isItemSelected,
-                                            firstSpace:
-                                            10,
-                                            fontSize:
-                                            size!.getWidthPx(6),
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size!.getWidthPx(6),
                                           );
                                         },
-                                        onChanged:
-                                            (WarehouseModel
-                                        value) {
-                                          toWarehouseCtrl.text = value
-                                              .id!
-                                              .toString();
-                                          selectedToLocation =
-                                              value;
-                                          toWarehouseNotifier!.value =
-                                              value;
+                                        onChanged: (WarehouseModel value) {
+                                          toWarehouseCtrl.text =
+                                              value.id!.toString();
+                                          selectedToLocation = value;
+                                          toWarehouseNotifier!.value = value;
                                         },
-                                        child:
-                                        DropDownObjectChildWidget(
-                                          key:
-                                          GlobalKey(),
-                                          fontSize:
-                                          size!.getWidthPx(6),
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size!.getWidthPx(6),
                                           projectValueNotifier:
-                                          toWarehouseNotifier!,
+                                              toWarehouseNotifier!,
                                         ),
                                       ),
                                     ),
@@ -668,81 +544,62 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 ),
                               ),
                               onPressed: () async {
-
                                 if (selectedFromLocation == null) {
-                                  Alert.warning(
-                                      context,
-                                      'คำเตือน',
-                                      'กรุณาเลือกคลังสินค้าต้นทาง',
-                                      'OK');
+                                  Alert.warning(context, 'คำเตือน',
+                                      'กรุณาเลือกคลังสินค้าต้นทาง', 'OK');
                                   return;
                                 }
 
                                 if (selectedTransferType == null) {
-                                  Alert.warning(
-                                      context,
-                                      'คำเตือน',
-                                      'กรุณาเลือกประเภทการโอน',
-                                      'OK');
+                                  Alert.warning(context, 'คำเตือน',
+                                      'กรุณาเลือกประเภทการโอน', 'OK');
                                   return;
                                 }
 
                                 if (selectedToLocation == null) {
-                                  Alert.warning(
-                                      context,
-                                      'คำเตือน',
-                                      'กรุณาเลือกคลังสินค้าปลายทาง',
-                                      'OK');
+                                  Alert.warning(context, 'คำเตือน',
+                                      'กรุณาเลือกคลังสินค้าปลายทาง', 'OK');
                                   return;
                                 }
 
                                 if (Global.transfer == null) {
-
-                                  final ProgressDialog pr =
-                                  ProgressDialog(context,
-                                      type: ProgressDialogType
-                                          .normal,
+                                  final ProgressDialog pr = ProgressDialog(
+                                      context,
+                                      type: ProgressDialogType.normal,
                                       isDismissible: true,
                                       showLogs: true);
                                   await pr.show();
-                                  pr.update(
-                                      message: 'processing'.tr());
+                                  pr.update(message: 'processing'.tr());
                                   try {
-                                    var result =
-                                        await ApiServices.post(
+                                    var result = await ApiServices.post(
                                         '/order/gen/7',
                                         Global.requestObj(null));
                                     await pr.hide();
                                     if (result!.status == "success") {
-
-
                                       TransferModel transfer = TransferModel(
                                           transferId: result.data,
                                           transferDate: DateTime.now().toUtc(),
                                           binLocationId:
-                                          int.parse(
-                                              warehouseCtrl
-                                                  .text),
+                                              int.parse(warehouseCtrl.text),
                                           toBinLocationId:
-                                          int.parse(
-                                              toWarehouseCtrl
-                                                  .text),
+                                              int.parse(toWarehouseCtrl.text),
                                           fromBinLocationName:
-                                          selectedFromLocation!
-                                              .name,
+                                              selectedFromLocation!.name,
                                           toBinLocationName:
-                                          selectedToLocation!
-                                              .name,
-                                          toBranchId: selectedBranch != null ? selectedBranch!.id : 0,
-                                          toBranchName: selectedBranch != null ? selectedBranch!.name : '',
-                                          transferType: selectedTransferType!.code,
+                                              selectedToLocation!.name,
+                                          toBranchId: selectedBranch != null
+                                              ? selectedBranch!.id
+                                              : 0,
+                                          toBranchName: selectedBranch != null
+                                              ? selectedBranch!.name
+                                              : '',
+                                          transferType:
+                                              selectedTransferType!.code,
                                           details: Global.transferDetail!,
                                           orderTypeId: 7);
                                       final data = transfer.toJson();
-                                      Global.transfer = TransferModel.fromJson(data);
-
-
-
+                                      Global.transfer =
+                                          TransferModel.fromJson(data);
                                     } else {
                                       if (mounted) {
                                         Alert.warning(
@@ -756,16 +613,11 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                   } catch (e) {
                                     await pr.hide();
                                     if (mounted) {
-                                      Alert.warning(
-                                          context,
-                                          'Warning'.tr(),
-                                          e.toString(),
-                                          'OK'.tr(),
+                                      Alert.warning(context, 'Warning'.tr(),
+                                          e.toString(), 'OK'.tr(),
                                           action: () {});
                                     }
                                   }
-
-
                                 }
                                 resetText();
                                 if (mounted) {
@@ -795,16 +647,17 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                   onTap: () {
                                                     FocusScope.of(context)
                                                         .requestFocus(
-                                                        FocusNode());
+                                                            FocusNode());
                                                   },
                                                   child: SizedBox(
-                                                    width: MediaQuery
-                                                        .of(context)
-                                                        .size
-                                                        .width *
-                                                        3 /
-                                                        4,
-                                                    child: SingleChildScrollView(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            3 /
+                                                            4,
+                                                    child:
+                                                        SingleChildScrollView(
                                                       child: Column(
                                                         children: [
                                                           SizedBox(
@@ -813,93 +666,78 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                               children: [
                                                                 Expanded(
                                                                   flex: 5,
-                                                                  child: Padding(
+                                                                  child:
+                                                                      Padding(
                                                                     padding:
-                                                                    const EdgeInsets
-                                                                        .all(
-                                                                        8.0),
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            8.0),
                                                                     child:
-                                                                    SizedBox(
-                                                                      height: 80,
+                                                                        SizedBox(
+                                                                      height:
+                                                                          80,
                                                                       child: MiraiDropDownMenu<
                                                                           ProductModel>(
                                                                         key:
-                                                                        UniqueKey(),
+                                                                            UniqueKey(),
                                                                         children:
-                                                                        productList,
-                                                                        space: 4,
+                                                                            productList,
+                                                                        space:
+                                                                            4,
                                                                         maxHeight:
-                                                                        360,
+                                                                            360,
                                                                         showSearchTextField:
-                                                                        true,
+                                                                            true,
                                                                         selectedItemBackgroundColor:
-                                                                        Colors
-                                                                            .transparent,
+                                                                            Colors.transparent,
                                                                         emptyListMessage:
-                                                                        'ไม่มีข้อมูล',
+                                                                            'ไม่มีข้อมูล',
                                                                         showSelectedItemBackgroundColor:
-                                                                        true,
+                                                                            true,
                                                                         itemWidgetBuilder:
                                                                             (
-                                                                            int index,
-                                                                            ProductModel?
-                                                                            project,
-                                                                            {
-                                                                              bool isItemSelected =
+                                                                          int index,
+                                                                          ProductModel?
+                                                                              project, {
+                                                                          bool isItemSelected =
                                                                               false,
-                                                                            }) {
+                                                                        }) {
                                                                           return DropDownItemWidget(
                                                                             project:
-                                                                            project,
+                                                                                project,
                                                                             isItemSelected:
-                                                                            isItemSelected,
+                                                                                isItemSelected,
                                                                             firstSpace:
-                                                                            10,
+                                                                                10,
                                                                             fontSize:
-                                                                            size!
-                                                                                .getWidthPx(
-                                                                                6),
+                                                                                size!.getWidthPx(6),
                                                                           );
                                                                         },
                                                                         onChanged:
-                                                                            (
-                                                                            ProductModel
-                                                                            value) {
-                                                                          productCodeCtrl
-                                                                              .text =
-                                                                              value
-                                                                                  .id!
-                                                                                  .toString();
-                                                                          productNameCtrl
-                                                                              .text =
-                                                                              value
-                                                                                  .name;
-                                                                          productNotifier!
-                                                                              .value =
+                                                                            (ProductModel
+                                                                                value) {
+                                                                          productCodeCtrl.text = value
+                                                                              .id!
+                                                                              .toString();
+                                                                          productNameCtrl.text =
+                                                                              value.name;
+                                                                          productNotifier!.value =
                                                                               value;
-                                                                          if (warehouseCtrl
-                                                                              .text !=
+                                                                          if (warehouseCtrl.text !=
                                                                               "") {
-                                                                            loadQtyByLocation(
-                                                                                selectedFromLocation!
-                                                                                    .id!);
+                                                                            loadQtyByLocation(selectedFromLocation!.id!);
                                                                           }
-                                                                          FocusScope
-                                                                              .of(
-                                                                              context)
-                                                                              .requestFocus(
-                                                                              FocusNode());
+                                                                          FocusScope.of(context)
+                                                                              .requestFocus(FocusNode());
                                                                         },
                                                                         child:
-                                                                        DropDownObjectChildWidget(
+                                                                            DropDownObjectChildWidget(
                                                                           key:
-                                                                          GlobalKey(),
+                                                                              GlobalKey(),
                                                                           fontSize:
-                                                                          size!
-                                                                              .getWidthPx(
-                                                                              6),
+                                                                              size!.getWidthPx(6),
                                                                           projectValueNotifier:
-                                                                          productNotifier!,
+                                                                              productNotifier!,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -909,103 +747,66 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                             ),
                                                           ),
                                                           const SizedBox(
-                                                            height: 10,),
+                                                            height: 10,
+                                                          ),
                                                           Padding(
                                                             padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
+                                                                const EdgeInsets
+                                                                    .all(8.0),
                                                             child: Row(
                                                               children: [
                                                                 Expanded(
                                                                   child:
-                                                                  buildTextFieldBig(
-                                                                      labelText:
-                                                                      "น้ำหนักทั้งหมด (gram)",
-                                                                      inputType:
-                                                                      TextInputType
-                                                                          .number,
-                                                                      enabled:
-                                                                      false,
-                                                                      textColor:
-                                                                      Colors
-                                                                          .orange,
-                                                                      controller:
-                                                                      productWeightCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction: true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (
-                                                                          String
-                                                                          value) {
-                                                                        if (productWeightCtrl
-                                                                            .text
-                                                                            .isNotEmpty) {
-                                                                          productWeightBahtCtrl
-                                                                              .text =
-                                                                              formatter
-                                                                                  .format(
-                                                                                  (Global
-                                                                                      .toNumber(
-                                                                                      productWeightCtrl
-                                                                                          .text) /
-                                                                                      15.16)
-                                                                                      .toPrecision(
-                                                                                      2));
-                                                                        } else {
-                                                                          productWeightBahtCtrl
-                                                                              .text =
-                                                                          "";
-                                                                        }
-                                                                      }),
+                                                                      buildTextFieldBig(
+                                                                          labelText:
+                                                                              "น้ำหนักทั้งหมด (gram)",
+                                                                          inputType: TextInputType
+                                                                              .number,
+                                                                          enabled:
+                                                                              false,
+                                                                          textColor: Colors
+                                                                              .orange,
+                                                                          controller:
+                                                                              productWeightCtrl,
+                                                                          inputFormat: [
+                                                                            ThousandsFormatter(allowFraction: true)
+                                                                          ],
+                                                                          onChanged:
+                                                                              (String value) {
+                                                                            if (productWeightCtrl.text.isNotEmpty) {
+                                                                              productWeightBahtCtrl.text = formatter.format((Global.toNumber(productWeightCtrl.text) / 15.16).toPrecision(2));
+                                                                            } else {
+                                                                              productWeightBahtCtrl.text = "";
+                                                                            }
+                                                                          }),
                                                                 ),
                                                                 const SizedBox(
                                                                   width: 10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
-                                                                  buildTextFieldBig(
-                                                                      labelText:
-                                                                      "น้ำหนักทั้งหมด (บาททอง)",
-                                                                      inputType:
-                                                                      TextInputType
-                                                                          .phone,
-                                                                      enabled:
-                                                                      false,
-                                                                      textColor:
-                                                                      Colors
-                                                                          .orange,
-                                                                      controller:
-                                                                      productWeightBahtCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction: true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (
-                                                                          String
-                                                                          value) {
-                                                                        if (productWeightBahtCtrl
-                                                                            .text
-                                                                            .isNotEmpty) {
-                                                                          productWeightCtrl
-                                                                              .text =
-                                                                              formatter
-                                                                                  .format(
-                                                                                  (Global
-                                                                                      .toNumber(
-                                                                                      productWeightBahtCtrl
-                                                                                          .text) *
-                                                                                      15.16)
-                                                                                      .toPrecision(
-                                                                                      2));
-                                                                        } else {
-                                                                          productWeightCtrl
-                                                                              .text =
-                                                                          "";
-                                                                        }
-                                                                      }),
+                                                                      buildTextFieldBig(
+                                                                          labelText:
+                                                                              "น้ำหนักทั้งหมด (บาททอง)",
+                                                                          inputType: TextInputType
+                                                                              .phone,
+                                                                          enabled:
+                                                                              false,
+                                                                          textColor: Colors
+                                                                              .orange,
+                                                                          controller:
+                                                                              productWeightBahtCtrl,
+                                                                          inputFormat: [
+                                                                            ThousandsFormatter(allowFraction: true)
+                                                                          ],
+                                                                          onChanged:
+                                                                              (String value) {
+                                                                            if (productWeightBahtCtrl.text.isNotEmpty) {
+                                                                              productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+                                                                            } else {
+                                                                              productWeightCtrl.text = "";
+                                                                            }
+                                                                          }),
                                                                 ),
                                                               ],
                                                             ),
@@ -1015,96 +816,58 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                           ),
                                                           Padding(
                                                             padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
+                                                                const EdgeInsets
+                                                                    .all(8.0),
                                                             child: Row(
                                                               children: [
                                                                 Expanded(
                                                                   child:
-                                                                  buildTextFieldBig(
-                                                                      labelText:
-                                                                      "ป้อนน้ำหนัก (gram)",
-                                                                      inputType:
-                                                                      TextInputType
-                                                                          .number,
-                                                                      textColor:
-                                                                      Colors
-                                                                          .orange,
-                                                                      controller:
-                                                                      productEntryWeightCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction: true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (
-                                                                          String
-                                                                          value) {
-                                                                        if (productEntryWeightCtrl
-                                                                            .text
-                                                                            .isNotEmpty) {
-                                                                          productEntryWeightBahtCtrl
-                                                                              .text =
-                                                                              formatter
-                                                                                  .format(
-                                                                                  (Global
-                                                                                      .toNumber(
-                                                                                      productEntryWeightCtrl
-                                                                                          .text) /
-                                                                                      15.16)
-                                                                                      .toPrecision(
-                                                                                      2));
-                                                                        } else {
-                                                                          productEntryWeightBahtCtrl
-                                                                              .text =
-                                                                          "";
-                                                                        }
-                                                                      }),
+                                                                      buildTextFieldBig(
+                                                                          labelText:
+                                                                              "ป้อนน้ำหนัก (gram)",
+                                                                          inputType: TextInputType
+                                                                              .number,
+                                                                          textColor: Colors
+                                                                              .orange,
+                                                                          controller:
+                                                                              productEntryWeightCtrl,
+                                                                          inputFormat: [
+                                                                            ThousandsFormatter(allowFraction: true)
+                                                                          ],
+                                                                          onChanged:
+                                                                              (String value) {
+                                                                            if (productEntryWeightCtrl.text.isNotEmpty) {
+                                                                              productEntryWeightBahtCtrl.text = formatter.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16).toPrecision(2));
+                                                                            } else {
+                                                                              productEntryWeightBahtCtrl.text = "";
+                                                                            }
+                                                                          }),
                                                                 ),
                                                                 const SizedBox(
                                                                   width: 10,
                                                                 ),
                                                                 Expanded(
                                                                   child:
-                                                                  buildTextFieldBig(
-                                                                      labelText:
-                                                                      "ป้อนน้ำหนัก (บาททอง)",
-                                                                      inputType:
-                                                                      TextInputType
-                                                                          .phone,
-                                                                      textColor:
-                                                                      Colors
-                                                                          .orange,
-                                                                      controller:
-                                                                      productEntryWeightBahtCtrl,
-                                                                      inputFormat: [
-                                                                        ThousandsFormatter(
-                                                                            allowFraction: true)
-                                                                      ],
-                                                                      onChanged:
-                                                                          (
-                                                                          String
-                                                                          value) {
-                                                                        if (productEntryWeightBahtCtrl
-                                                                            .text
-                                                                            .isNotEmpty) {
-                                                                          productEntryWeightCtrl
-                                                                              .text =
-                                                                              formatter
-                                                                                  .format(
-                                                                                  (Global
-                                                                                      .toNumber(
-                                                                                      productEntryWeightBahtCtrl
-                                                                                          .text) *
-                                                                                      15.16)
-                                                                                      .toPrecision(
-                                                                                      2));
-                                                                        } else {
-                                                                          productEntryWeightCtrl
-                                                                              .text =
-                                                                          "";
-                                                                        }
-                                                                      }),
+                                                                      buildTextFieldBig(
+                                                                          labelText:
+                                                                              "ป้อนน้ำหนัก (บาททอง)",
+                                                                          inputType: TextInputType
+                                                                              .phone,
+                                                                          textColor: Colors
+                                                                              .orange,
+                                                                          controller:
+                                                                              productEntryWeightBahtCtrl,
+                                                                          inputFormat: [
+                                                                            ThousandsFormatter(allowFraction: true)
+                                                                          ],
+                                                                          onChanged:
+                                                                              (String value) {
+                                                                            if (productEntryWeightBahtCtrl.text.isNotEmpty) {
+                                                                              productEntryWeightCtrl.text = formatter.format((Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16).toPrecision(2));
+                                                                            } else {
+                                                                              productEntryWeightCtrl.text = "";
+                                                                            }
+                                                                          }),
                                                                 ),
                                                               ],
                                                             ),
@@ -1114,9 +877,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                           ),
                                                           Padding(
                                                             padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                            child: OutlinedButton(
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child:
+                                                                OutlinedButton(
                                                               child: const Text(
                                                                   "เพิ่ม"),
                                                               onPressed:
@@ -1148,29 +912,26 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                     .add(
                                                                   TransferDetailModel(
                                                                     productName:
-                                                                    productNameCtrl
-                                                                        .text,
-                                                                    productId: int
-                                                                        .parse(
+                                                                        productNameCtrl
+                                                                            .text,
+                                                                    productId: int.parse(
                                                                         productCodeCtrl
                                                                             .text),
-                                                                    weight: Global
-                                                                        .toNumber(
+                                                                    weight: Global.toNumber(
                                                                         productEntryWeightCtrl
                                                                             .text),
-                                                                    weightBath: Global
-                                                                        .toNumber(
-                                                                        productEntryWeightBahtCtrl
-                                                                            .text),
+                                                                    weightBath:
+                                                                        Global.toNumber(
+                                                                            productEntryWeightBahtCtrl.text),
                                                                   ),
                                                                 );
                                                                 Global.transfer!
-                                                                    .details =
+                                                                        .details =
                                                                     Global
                                                                         .transferDetail;
                                                                 setState(() {});
                                                                 Navigator.of(
-                                                                    context)
+                                                                        context)
                                                                     .pop();
                                                               },
                                                             ),
@@ -1216,7 +977,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                   itemCount: Global.transferDetail!.length,
                                   itemBuilder: (context, index) {
                                     return _itemOrderList(
-                                      transfer: Global.transfer!,
+                                        transfer: Global.transfer!,
                                         detail: Global.transferDetail![index],
                                         index: index);
                                   }),
@@ -1344,7 +1105,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                       builder: (context) =>
                                                           const TransferGoldCheckOutScreen()))
                                               .whenComplete(() {
-                                                resetTextAll();
+                                            resetTextAll();
                                             setState(() {});
                                           });
                                         },
@@ -1422,14 +1183,20 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
   }
 
   removeProduct(index) {
-    Global.transferDetail!.removeAt(index);
-    if (Global.transferDetail!.isEmpty) {
-      Global.transferDetail!.clear();
-    }
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+      Global.transferDetail!.removeAt(index);
+      if (Global.transferDetail!.isEmpty) {
+        Global.transferDetail!.clear();
+      }
+    });
     setState(() {});
   }
 
-  Widget _itemOrderList({required TransferModel transfer, required TransferDetailModel detail, required index}) {
+  Widget _itemOrderList(
+      {required TransferModel transfer,
+      required TransferDetailModel detail,
+      required index}) {
     return Row(
       children: [
         Expanded(

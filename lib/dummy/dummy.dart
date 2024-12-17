@@ -39,3 +39,29 @@ List<ProductTypeModel> paymentTypes() {
   data.add(ProductTypeModel(id: 4, code: 'OTH', name: 'Other/อื่นๆ'));
   return data;
 }
+
+List<ProductTypeModel> customerTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'company', name: 'ลูกค้าบริษัท'));
+  data.add(ProductTypeModel(id: 2, code: 'general', name: 'ลูกค้าทั่วไป'));
+  return data;
+}
+
+List<ProductTypeModel> orderTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: null, code: null, name: "ทั้งหมด"));
+  data.add(ProductTypeModel(id: 1, code: 'SN', name: "ขายทองใหม่"));
+  data.add(ProductTypeModel(id: 2, code: 'BU', name: "ซื้อทองเก่า"));
+  data.add(ProductTypeModel(id: 3, code: 'SMB', name: "ขายทองแท่ง (จับคู่)"));
+  data.add(ProductTypeModel(id: 33, code: 'SB', name: "ซื้อทองแท่ง (จับคู่)"));
+  data.add(ProductTypeModel(id: 4, code: 'BMB', name: 'ขายทองแท่ง'));
+  data.add(ProductTypeModel(id: 44, code: 'BB', name: "ซื้อทองแท่ง"));
+  data.add(ProductTypeModel(id: 5, code: 'RF', name: "เติมทอง"));
+  data.add(ProductTypeModel(id: 6, code: 'SU', name: "ขายทองเก่า"));
+  data.add(ProductTypeModel(id: 7, code: 'TR', name: "โอนทอง"));
+  data.add(
+      ProductTypeModel(id: 8, code: 'SBB', name: "ขายทองแท่งกับโบรกเกอร์"));
+  data.add(
+      ProductTypeModel(id: 9, code: 'BBB', name: "ซื้อทองแท่งกับโบรกเกอร์"));
+  return data;
+}

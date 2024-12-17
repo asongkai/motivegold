@@ -13,7 +13,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -96,7 +96,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                 },
                 child: orders.isEmpty
                     ? const Center(
-                        child: EmptyContent(),
+                        child: NoDataFoundWidget(),
                       )
                     : Column(
                         children: [
@@ -203,7 +203,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           (e) => TableRow(
                             decoration: const BoxDecoration(),
                             children: [
-                              paddedText(e.productName),
+                              paddedTextBigXL(e.productName),
                               paddedText(Global.format(e.weight!),
                                   align: TextAlign.center,
                                   style:

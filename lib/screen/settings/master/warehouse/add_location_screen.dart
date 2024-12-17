@@ -248,12 +248,17 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 children: [
                                   Expanded(
                                     child: CheckboxListTile(
-                                      title: const Text("ขายหน้าร้าน", style: TextStyle(fontSize: 20),),
+                                      title: const Text(
+                                        "ขายหน้าร้าน",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
                                       value: sell,
                                       visualDensity: VisualDensity.standard,
                                       activeColor: Colors.teal,
@@ -262,12 +267,16 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                           sell = newValue!;
                                         });
                                       },
-                                      controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
                                     ),
                                   ),
                                   Expanded(
                                     child: CheckboxListTile(
-                                      title: const Text("ทองแท่ง (จับคู่)", style: TextStyle(fontSize: 20),),
+                                      title: const Text(
+                                        "ทองแท่ง (จับคู่)",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
                                       value: matching,
                                       visualDensity: VisualDensity.standard,
                                       activeColor: Colors.teal,
@@ -276,7 +285,8 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                           matching = newValue!;
                                         });
                                       },
-                                      controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
                                     ),
                                   ),
                                 ],
@@ -296,11 +306,10 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -321,40 +330,41 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   "matching": matching ? 1 : 0,
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result =
-                      await ApiServices.post('/binlocation/create', object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                        Navigator.of(context).pop();
-                      });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result =
+                        await ApiServices.post('/binlocation/create', object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

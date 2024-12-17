@@ -14,6 +14,7 @@ import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/customer/location.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
@@ -79,7 +80,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
     });
     try {
       var result =
-      await ApiServices.post('/customer/all', Global.requestObj(null));
+          await ApiServices.post('/customer/all', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -97,7 +98,6 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
       loading = false;
     });
   }
-
 
   formattedDate(dt) {
     try {
@@ -158,36 +158,46 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         );
                       }, suggestionsBuilder:
                           (BuildContext context, SearchController controller) {
-                        return customers.isEmpty ? [ Container(
-                          margin: const EdgeInsets.only(top: 50.0),
-                          child: const Center(child: EmptyContent()),
-                        ) ] : customers.map((e) {
-                          return ListTile(
-                            title: Text('${e.firstName} ${e.lastName}', style: const TextStyle(fontSize: 20),),
-                            onTap: () {
-                              setState(() {
-                                controller.closeView('${e.firstName} ${e.lastName}');
-                                selectedCustomer = e;
-                                Global.customer = e;
-                                // idCardCtrl.text = '${e.idCard}';
-                                // firstNameCtrl.text = '${e.firstName}';
-                                // lastNameCtrl.text = '${e.lastName}';
-                                // emailAddressCtrl.text = '${e.email}';
-                                // phoneCtrl.text = '${e.phoneNumber}';
-                                // addressCtrl.text = '${e.address}';
-                                Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                        () {
-                                      Navigator.of(context).pop();
-                                      setState(() {
-                                        // Here you can write your code for open new view
+                        return customers.isEmpty
+                            ? [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 50.0),
+                                  child:
+                                      const Center(child: NoDataFoundWidget()),
+                                )
+                              ]
+                            : customers.map((e) {
+                                return ListTile(
+                                  title: Text(
+                                    '${e.firstName} ${e.lastName}',
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      controller.closeView(
+                                          '${e.firstName} ${e.lastName}');
+                                      selectedCustomer = e;
+                                      Global.customer = e;
+                                      // idCardCtrl.text = '${e.idCard}';
+                                      // firstNameCtrl.text = '${e.firstName}';
+                                      // lastNameCtrl.text = '${e.lastName}';
+                                      // emailAddressCtrl.text = '${e.email}';
+                                      // phoneCtrl.text = '${e.phoneNumber}';
+                                      // addressCtrl.text = '${e.address}';
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          // Here you can write your code for open new view
+                                        });
                                       });
                                     });
+                                  },
+                                  trailing: Text(getCustomerType(e),
+                                      style: const TextStyle(fontSize: 20)),
+                                );
                               });
-                            },
-                            trailing: Text(getCustomerType(e),  style: const TextStyle(fontSize: 20)),
-                          );
-                        });
                       }),
                     ),
                     const SizedBox(
@@ -200,7 +210,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -228,7 +238,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -247,7 +257,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -277,7 +287,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -296,7 +306,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -326,7 +336,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                         Expanded(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: TextField(
                               controller: birthDateCtrl,
                               //editing controller of this TextField
@@ -335,7 +345,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                                 prefixIcon: const Icon(Icons.calendar_today),
                                 //icon of text field
                                 floatingLabelBehavior:
-                                FloatingLabelBehavior.always,
+                                    FloatingLabelBehavior.always,
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 10.0, horizontal: 10.0),
                                 labelText: "วันเกิด".tr(),
@@ -369,8 +379,8 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                                   motivePrint(
                                       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                                   String formattedDate =
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(pickedDate);
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(pickedDate);
                                   motivePrint(
                                       formattedDate); //formatted date output using intl package =>  2021-03-16
                                   //you can implement different kind of Date Format here according to your requirement
@@ -405,16 +415,18 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.teal[700]!),
+                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (idCardCtrl.text.isEmpty) {
-                  Alert.warning(context, 'คำเตือน', 'กรุณากรอกเลขประจำตัวผู้เสียภาษี', 'OK', action: () {});
+                  Alert.warning(context, 'คำเตือน',
+                      'กรุณากรอกเลขประจำตัวผู้เสียภาษี', 'OK',
+                      action: () {});
                   return;
                 }
 
@@ -424,7 +436,9 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                     "firstName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
-                    "doB": "2024-04-25T12:59:54.676Z",
+                    "doB": birthDateCtrl.text.isEmpty
+                        ? ""
+                        : Global.convertDate(birthDateCtrl.text).toUtc(),
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
@@ -450,13 +464,13 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                   await pr.show();
                   pr.update(message: 'processing'.tr());
                   try {
-                    var result =
-                    await ApiServices.post('/customer/create', customerObject);
+                    var result = await ApiServices.post(
+                        '/customer/create', customerObject);
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
-                        CustomerModel customer = customerModelFromJson(
-                            jsonEncode(result!.data!));
+                        CustomerModel customer =
+                            customerModelFromJson(jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
@@ -466,8 +480,7 @@ class _BrokerEntryScreenState extends State<BrokerEntryScreen> {
                       }
                     } else {
                       if (mounted) {
-                        Alert.warning(
-                            context, 'Warning'.tr(), result!.message!,
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
                             'OK'.tr(),
                             action: () {});
                       }
@@ -578,13 +591,13 @@ class EmptyHeader extends StatelessWidget {
                 ),
                 Center(
                     child: Text(
-                      text ?? 'Empty',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
+                  text ?? 'Empty',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
               ],
             )));
   }
@@ -640,7 +653,7 @@ class DisplayInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextStyle sTitle =
-    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
+        const TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
     TextStyle sVal = const TextStyle(fontSize: 28);
 
     _copyFn(value) {

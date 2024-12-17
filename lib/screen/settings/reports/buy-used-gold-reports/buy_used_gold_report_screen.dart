@@ -8,6 +8,7 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/settings/reports/buy-used-gold-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:quiver/time.dart';
 
@@ -377,7 +378,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
     return filterList!.isEmpty
         ? Container(
             margin: const EdgeInsets.only(top: 100),
-            child: const EmptyContent())
+            child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(
               child: Padding(

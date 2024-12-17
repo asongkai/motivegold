@@ -4,11 +4,15 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/model/request.dart';
 import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
@@ -18,7 +22,9 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -40,10 +46,16 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
 
+  ProductTypeModel? selectedOrderType;
+  static ValueNotifier<dynamic>? orderTypeNotifier;
+
   @override
   void initState() {
     super.initState();
-    loadData();
+    selectedOrderType = orderTypes()[0];
+    orderTypeNotifier = ValueNotifier<ProductTypeModel>(selectedOrderType ??
+        ProductTypeModel(id: 0, code: '', name: 'เลือกประเภทธุรกรรม'));
+    // loadData();
   }
 
   void loadData() async {
@@ -87,9 +99,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
         actions: const [],
       ),
       body: SafeArea(
-        child: loading
-            ? const LoadingProgress()
-            : Column(
+        child: Column(
                 children: [
                   SizedBox(
                     child: Container(
@@ -111,12 +121,71 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       ),
                       child: Padding(
                         padding: EdgeInsets.only(
-                          top: getProportionateScreenWidth(10),
+                          top: getProportionateScreenWidth(0),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text('เลือกประเภทธุรกรรม', style: TextStyle(fontSize: 30, color: textColor),),
+                                        SizedBox(
+                                          height: 90,
+                                          child:
+                                              MiraiDropDownMenu<ProductTypeModel>(
+                                            key: UniqueKey(),
+                                            children: orderTypes(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor: true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              ProductTypeModel? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size?.getWidthPx(10),
+                                              );
+                                            },
+                                            onChanged:
+                                                (ProductTypeModel value) async {
+                                              selectedOrderType = value;
+                                              orderTypeNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size?.getWidthPx(10),
+                                              projectValueNotifier:
+                                                  orderTypeNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -304,8 +373,10 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: filterList!.isEmpty
-                          ? const EmptyContent()
+                      child:loading
+                          ? const LoadingProgress()
+                          : filterList!.isEmpty
+                          ? const NoDataFoundWidget()
                           : ListView.builder(
                               itemCount: filterList!.length,
                               scrollDirection: Axis.vertical,
@@ -320,33 +391,59 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     );
   }
 
-  void search() {
-    if (fromDateCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK');
-      return;
-    }
+  void search() async {
+    // if (fromDateCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+    //   return;
+    // }
+    //
+    // if (toDateCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+    //   return;
+    // }
 
-    if (toDateCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK');
-      return;
-    }
+    setState(() {
+      loading = true;
+      filterList?.clear();
+      Global.pairId = null;
+      Global.orderIds!.clear();
+    });
+    try {
+      var result = await ApiServices.post(
+          '/order/all/search',
+          Global.requestObj({
+            "year": 0,
+            "month": 0,
+            "fromDate": fromDateCtrl.text.isNotEmpty
+                ? DateTime.parse(fromDateCtrl.text).toUtc().toString()
+                : null,
+            "toDate": toDateCtrl.text.isNotEmpty
+                ? DateTime.parse(toDateCtrl.text).toUtc().toString()
+                : null,
+            "orderTypeId": selectedOrderType?.id,
+          }));
+      // Global.printLongString(result!.toJson().toString());
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
 
-    var result = list?.map((e) {
-      if (e.orderDate != null) {
-        DateTime? orderDate = e.orderDate;
-
-        if ((orderDate!.isAfter(DateTime.parse(fromDateCtrl.text)) ||
-                orderDate == DateTime.parse(fromDateCtrl.text)) &&
-            (orderDate == DateTime.parse(toDateCtrl.text) ||
-                orderDate.isBefore(DateTime.parse(toDateCtrl.text)))) {
-          return e;
-        }
+        List<OrderModel> products = orderListModelFromJson(data);
+        // motivePrint(products.first);
+        setState(() {
+          list = products;
+          filterList!.addAll(products);
+        });
+      } else {
+        list = [];
       }
-    }).toList();
-    result?.removeWhere((element) => element == null);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    setState(() {
+      loading = false;
+    });
 
-    filterList = result!;
-    setState(() {});
   }
 
   Widget dataCard(OrderModel order, int index) {
@@ -463,7 +560,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                             const CheckOutSummaryHistoryScreen(),
                                         fullscreenDialog: true))
                                 .whenComplete(() {
-                              loadData();
+                              search();
                             });
                           },
                           child: Container(

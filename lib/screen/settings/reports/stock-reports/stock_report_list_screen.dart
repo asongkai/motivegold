@@ -8,6 +8,7 @@ import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/settings/reports/stock-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -105,6 +106,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
     }));
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
+      motivePrint(data);
       List<QtyLocationModel> products = qtyLocationListModelFromJson(data);
       setState(() {
         dataList = products;
@@ -379,7 +381,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                           child: ElevatedButton(
                                             style: ButtonStyle(
                                                 backgroundColor:
-                                                MaterialStateProperty.all<Color>(bgColor3)),
+                                                WidgetStateProperty.all<Color>(bgColor3)),
                                             onPressed: search,
                                             child: Row(
                                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -400,7 +402,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                           child: ElevatedButton(
                                             style: ButtonStyle(
                                                 backgroundColor:
-                                                MaterialStateProperty.all<Color>(Colors.red)),
+                                                WidgetStateProperty.all<Color>(Colors.red)),
                                             onPressed: () {
                                               productNotifier =
                                                   ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
@@ -454,7 +456,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
     return filterList!.isEmpty
         ? Container(
             margin: const EdgeInsets.only(top: 100),
-            child: const EmptyContent())
+            child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(
               child: Card(
@@ -467,7 +469,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                         paddedTextBigL('สินค้า'),
                         paddedTextBigL('คลังสินค้า'),
                         paddedTextBigL('น้ำหนักรวม'),
-                        paddedTextBigL('ราคาต่อหน่วย'),
+                        paddedTextBigL('ราคาเฉลี่ยต่อน้ำหนักทอง'),
                         paddedTextBigL('ราคารวม'),
                       ]),
                       ...productList!.map((e) => TableRow(
@@ -482,14 +484,11 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                   style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                               paddedTextBig(
-                                  Global.format(
-                                      Global.getBuyPrice(e.weight ?? 0) /
-                                          e.weight!),
+                                  Global.format(e.unitCost ?? 0),
                                   style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                               paddedTextBig(
-                                  Global.format(
-                                      Global.getBuyPrice(e.weight ?? 0)),
+                                  Global.format(e.weight! * e.unitCost!),
                                   style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                             ],

@@ -8,7 +8,10 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
+import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/location/tambon.dart';
+import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
@@ -16,6 +19,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/customer/location.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
@@ -46,9 +50,9 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
   bool isBuyer = false;
 
   ThaiIDCard? _data;
-  var _error;
+  String? _error;
   UsbDevice? _device;
-  var _card;
+  dynamic _card;
   StreamSubscription? subscription;
   final List _idCardType = [
     ThaiIDType.cid,
@@ -80,8 +84,8 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       loading = true;
     });
     try {
-      var result =
-          await ApiServices.post('/customer/all/customer', Global.requestObj(null));
+      var result = await ApiServices.post(
+          '/customer/all/customer', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -94,7 +98,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       }
 
       var province =
-      await ApiServices.post('/customer/province', Global.requestObj(null));
+          await ApiServices.post('/customer/province', Global.requestObj(null));
       // motivePrint(province!.toJson());
       if (province?.status == "success") {
         var data = jsonEncode(province?.data);
@@ -105,7 +109,6 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       } else {
         Global.provinceList = [];
       }
-
     } catch (e) {
       motivePrint(e.toString());
     }
@@ -133,6 +136,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       setState(() {
         _error = "_onUSB $e";
       });
+      Alert.error(context, 'OnUsb', "$e", 'OK', action: () {});
     }
   }
 
@@ -150,6 +154,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       setState(() {
         _error = "_onData $e";
       });
+      Alert.error(context, 'OnData', "$e", 'OK', action: () {});
     }
   }
 
@@ -171,8 +176,31 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
         }
         emailAddressCtrl.text = "";
         phoneCtrl.text = "";
-        Global.addressCtrl.text = _data!.address!;
-        //birthDateCtrl.text = '${formattedDate(_data!.birthdate)}';
+        var address0 = _data!.address ?? "";
+
+        if (address0.isNotEmpty) {
+          var sp1 = address0.split("ตำบล");
+          var sp2 = sp1[1].split("อำเภอ");
+          var sp3 = sp2[1].split("จังหวัด");
+
+          var address = sp1[0].trimLeft().trimRight();
+          var tambon = sp2[0].trimLeft().trimRight();
+          var ampher = sp3[0].trimLeft().trimRight();
+          var chunvat = sp3[1].trimLeft().trimRight();
+
+          Global.addressCtrl.text = address0;
+
+          int? chungVatId = filterChungVatByName(chunvat);
+          await loadAmphureByProvince(chungVatId);
+          int? ampherId = filterAmpheryName(ampher);
+          await loadTambonByAmphure(ampherId);
+          int? tambonId = filterTambonByName(tambon);
+          Alert.success(context, 'Success', 'ID Synced', 'OK', action: () {
+            setState(() {});
+          });
+        }
+
+        birthDateCtrl.text = Global.formatDateDD(_data!.birthdate!);
       }
       setState(() {});
     } catch (e) {
@@ -180,7 +208,7 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
         _error = 'ERR readCard $e';
       });
       if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), '$e', 'OK'.tr());
+        Alert.warning(context, 'ERR readCard'.tr(), '$e', 'OK'.tr());
       }
     }
   }
@@ -208,6 +236,19 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("ลูกค้า"),
+        actions: [
+          IconButton(icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CustomerScreen(selected: true,),
+                        fullscreenDialog: true))
+                    .whenComplete(() {
+                  setState(() {});
+                });
+              })
+        ],
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -227,78 +268,79 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SearchAnchor(builder:
-                          (BuildContext context, SearchController controller) {
-                        return SearchBar(
-                          controller: controller,
-                          padding: const MaterialStatePropertyAll<EdgeInsets>(
-                              EdgeInsets.symmetric(horizontal: 16.0)),
-                          onTap: () {
-                            controller.openView();
-                            setState(() {
-                              selectedCustomer = null;
-                            });
-                          },
-                          onChanged: (_) {
-                            controller.openView();
-                            setState(() {
-                              selectedCustomer = null;
-                            });
-                          },
-                          leading: const Icon(Icons.search),
-                        );
-                      }, suggestionsBuilder:
-                          (BuildContext context, SearchController controller) {
-                        return customers.isEmpty
-                            ? [
-                                Container(
-                                  margin: const EdgeInsets.only(top: 50.0),
-                                  child: const Center(child: EmptyContent()),
-                                )
-                              ]
-                            : customers.map((e) {
-                                return ListTile(
-                                  title: Text(
-                                    '${e.firstName} ${e.lastName}',
-                                    style: const TextStyle(fontSize: 20),
-                                  ),
-                                  onTap: () {
-                                    setState(() {
-                                      controller.closeView(
-                                          '${e.firstName} ${e.lastName}');
-                                      selectedCustomer = e;
-                                      Global.customer = e;
-                                      // idCardCtrl.text = '${e.idCard}';
-                                      // firstNameCtrl.text = '${e.firstName}';
-                                      // lastNameCtrl.text = '${e.lastName}';
-                                      // emailAddressCtrl.text = '${e.email}';
-                                      // phoneCtrl.text = '${e.phoneNumber}';
-                                      // birthDateCtrl.text = Global.formatDateDD(e.doB.toString());
-                                      // Global.addressCtrl.text = '${e.address}';
-                                      // if (e.provinceId != null) {
-                                      //
-                                      // }
-                                      Future.delayed(
-                                          const Duration(milliseconds: 500),
-                                              () {
-                                            Navigator.of(context).pop();
-                                            setState(() {
-                                              // Here you can write your code for open new view
-                                            });
-                                          });
-                                    });
-                                  },
-                                  trailing: Text(getCustomerType(e),
-                                      style: const TextStyle(fontSize: 20)),
-                                );
-                              });
-                      }),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: SearchAnchor(builder:
+                    //       (BuildContext context, SearchController controller) {
+                    //     return SearchBar(
+                    //       controller: controller,
+                    //       padding: const WidgetStatePropertyAll<EdgeInsets>(
+                    //           EdgeInsets.symmetric(horizontal: 16.0)),
+                    //       onTap: () {
+                    //         controller.openView();
+                    //         setState(() {
+                    //           selectedCustomer = null;
+                    //         });
+                    //       },
+                    //       onChanged: (_) {
+                    //         controller.openView();
+                    //         setState(() {
+                    //           selectedCustomer = null;
+                    //         });
+                    //       },
+                    //       leading: const Icon(Icons.search),
+                    //     );
+                    //   }, suggestionsBuilder:
+                    //       (BuildContext context, SearchController controller) {
+                    //     return customers.isEmpty
+                    //         ? [
+                    //             Container(
+                    //               margin: const EdgeInsets.only(top: 50.0),
+                    //               child:
+                    //                   const Center(child: NoDataFoundWidget()),
+                    //             )
+                    //           ]
+                    //         : customers.map((e) {
+                    //             return ListTile(
+                    //               title: Text(
+                    //                 '${e.firstName} ${e.lastName}',
+                    //                 style: const TextStyle(fontSize: 20),
+                    //               ),
+                    //               onTap: () {
+                    //                 setState(() {
+                    //                   controller.closeView(
+                    //                       '${e.firstName} ${e.lastName}');
+                    //                   selectedCustomer = e;
+                    //                   Global.customer = e;
+                    //                   // idCardCtrl.text = '${e.idCard}';
+                    //                   // firstNameCtrl.text = '${e.firstName}';
+                    //                   // lastNameCtrl.text = '${e.lastName}';
+                    //                   // emailAddressCtrl.text = '${e.email}';
+                    //                   // phoneCtrl.text = '${e.phoneNumber}';
+                    //                   // birthDateCtrl.text = Global.formatDateDD(e.doB.toString());
+                    //                   // Global.addressCtrl.text = '${e.address}';
+                    //                   // if (e.provinceId != null) {
+                    //                   //
+                    //                   // }
+                    //                   Future.delayed(
+                    //                       const Duration(milliseconds: 500),
+                    //                       () {
+                    //                     Navigator.of(context).pop();
+                    //                     setState(() {
+                    //                       // Here you can write your code for open new view
+                    //                     });
+                    //                   });
+                    //                 });
+                    //               },
+                    //               trailing: Text(getCustomerType(e),
+                    //                   style: const TextStyle(fontSize: 20)),
+                    //             );
+                    //           });
+                    //   }),
+                    // ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
                     if (_device != null)
                       UsbDeviceCard(
                         device: _device,
@@ -356,6 +398,16 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                         ]),
                       ),
                     ],
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (_data != null)
+                      if (_data!.photo.isNotEmpty)
+                        Center(
+                          child: Image.memory(
+                            Uint8List.fromList(_data!.photo),
+                          ),
+                        ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -570,17 +622,18 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (idCardCtrl.text.isEmpty) {
-                  Alert.warning(context, 'คำเตือน', 'กรุณากรอกหมายเลขบัตรประชาชน', 'OK', action: () {});
+                  Alert.warning(
+                      context, 'คำเตือน', 'กรุณากรอกหมายเลขบัตรประชาชน', 'OK',
+                      action: () {});
                   return;
                 }
 
@@ -590,7 +643,9 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                     "fistName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
-                    "doB": "2024-04-25T12:59:54.676Z",
+                    "doB": birthDateCtrl.text.isEmpty
+                        ? ""
+                        : Global.convertDate(birthDateCtrl.text).toUtc(),
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
@@ -608,44 +663,45 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
                     "isSeller": 0
                   });
 
-                  // print(customerObject);
-                  // return;
-                  final ProgressDialog pr = ProgressDialog(context,
-                      type: ProgressDialogType.normal,
-                      isDismissible: true,
-                      showLogs: true);
-                  await pr.show();
-                  pr.update(message: 'processing'.tr());
-                  try {
-                    var result = await ApiServices.post(
-                        '/customer/create', customerObject);
-                    await pr.hide();
-                    if (result?.status == "success") {
-                      if (mounted) {
-                        CustomerModel customer =
-                            customerModelFromJson(jsonEncode(result!.data!));
-                        // print(customer.toJson());
-                        setState(() {
-                          Global.customer = customer;
-                        });
+                  Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      action: () async {
+                    final ProgressDialog pr = ProgressDialog(context,
+                        type: ProgressDialogType.normal,
+                        isDismissible: true,
+                        showLogs: true);
+                    await pr.show();
+                    pr.update(message: 'processing'.tr());
+                    try {
+                      var result = await ApiServices.post(
+                          '/customer/create', customerObject);
+                      await pr.hide();
+                      if (result?.status == "success") {
+                        if (mounted) {
+                          CustomerModel customer =
+                              customerModelFromJson(jsonEncode(result!.data!));
+                          // print(customer.toJson());
+                          setState(() {
+                            Global.customer = customer;
+                          });
 
-                        Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        }
+                      } else {
+                        if (mounted) {
+                          Alert.warning(context, 'Warning'.tr(),
+                              result!.message!, 'OK'.tr(),
+                              action: () {});
+                        }
                       }
-                    } else {
+                    } catch (e) {
+                      await pr.hide();
                       if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(), result!.message!,
-                            'OK'.tr(),
+                        Alert.warning(
+                            context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                             action: () {});
                       }
                     }
-                  } catch (e) {
-                    await pr.hide();
-                    if (mounted) {
-                      Alert.warning(
-                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                          action: () {});
-                    }
-                  }
+                  });
                 } else {
                   setState(() {
                     Global.customer = selectedCustomer;
@@ -717,8 +773,6 @@ class _CustomerEntryScreenState extends State<CustomerEntryScreen> {
     }
     return 'ลูกค้า';
   }
-
-
 }
 
 class EmptyHeader extends StatelessWidget {

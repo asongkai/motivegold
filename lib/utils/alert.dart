@@ -3,7 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class Alert {
-  static error(BuildContext context, String title, String message, String buttonText, {Function()? action}) {
+  static error(
+      BuildContext context, String title, String message, String buttonText,
+      {Function()? action}) {
     return AwesomeDialog(
         context: context,
         dialogType: DialogType.error,
@@ -15,12 +17,18 @@ class Alert {
         dismissOnBackKeyPress: false,
         btnOkOnPress: action,
         btnOkText: buttonText,
+        btnOkColor: Colors.redAccent,
+        btnCancelColor: Colors.redAccent,
         btnOkIcon: Icons.cancel,
-        btnOkColor: Colors.red)
+        width: MediaQuery.of(context).size.width > 1300
+            ? MediaQuery.of(context).size.width * 1 / 4
+            : MediaQuery.of(context).size.width * 2 / 4)
       ..show();
   }
 
-  static warning(BuildContext context, String title, String message, String buttonText, {Function()? action}) {
+  static warning(
+      BuildContext context, String title, String message, String buttonText,
+      {Function()? action}) {
     return AwesomeDialog(
         context: context,
         dialogType: DialogType.warning,
@@ -33,13 +41,21 @@ class Alert {
         title: title,
         desc: message,
         btnOkText: buttonText,
+        btnOkColor: Colors.orange,
+        btnCancelColor: Colors.orange,
         btnCancelOnPress: null,
         btnCancelText: buttonText,
+        width: MediaQuery.of(context).size.width > 1300
+            ? MediaQuery.of(context).size.width * 1 / 4
+            : MediaQuery.of(context).size.width * 2 / 4,
         btnOkOnPress: action)
       ..show();
   }
 
-  static info(BuildContext context, String title, String message, String buttonText, {Function()? action}) {
+  static info(
+      BuildContext context, String title, String message, String buttonText,
+      {Function()? action}) {
+    // kclPrint(MediaQuery.of(context).size.width);
     return AwesomeDialog(
         context: context,
         dialogType: DialogType.info,
@@ -49,16 +65,23 @@ class Alert {
         dismissOnTouchOutside: false,
         dismissOnBackKeyPress: false,
         closeIcon: const Icon(Icons.close),
-        btnCancelText: 'Cancel'.tr(),
+        btnCancelText: 'ยกเลิก',
         btnOkText: buttonText,
+        btnOkColor: Colors.deepPurple[700],
+        btnCancelColor: Colors.orange,
         title: title,
         desc: message,
         btnCancelOnPress: () {},
+        width: MediaQuery.of(context).size.width > 1300
+            ? MediaQuery.of(context).size.width * 1 / 4
+            : MediaQuery.of(context).size.width * 2 / 4,
         btnOkOnPress: action)
       ..show();
   }
 
-  static success(BuildContext context, String title, String message, String buttonText, {Function()? action}) {
+  static success(
+      BuildContext context, String title, String message, String buttonText,
+      {Function()? action}) {
     return AwesomeDialog(
         context: context,
         animType: AnimType.scale,
@@ -70,6 +93,11 @@ class Alert {
         dismissOnTouchOutside: false,
         dismissOnBackKeyPress: false,
         btnOkText: buttonText,
+        btnOkColor: const Color(0xFF00CA71),
+        btnCancelColor: Colors.orange,
+        width: MediaQuery.of(context).size.width > 1300
+            ? MediaQuery.of(context).size.width * 1 / 4
+            : MediaQuery.of(context).size.width * 2 / 4,
         btnOkIcon: Icons.check_circle)
       ..show();
   }

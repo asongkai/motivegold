@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:motivegold/model/gold_data.dart';
+
 List<OrderDetailModel> orderDetailListModelFromJson(String str) =>
     List<OrderDetailModel>.from(
         json.decode(str).map((x) => OrderDetailModel.fromJson(x)));
@@ -46,73 +48,80 @@ class OrderDetailModel {
   DateTime? updatedDate;
   DateTime? bookDate;
   String? transferType;
+  GoldDataModel? goldDataModel;
 
-  OrderDetailModel(
-      {this.id,
-      this.orderId,
-      this.productId,
-      required this.productName,
-      this.binLocationId,
-      this.toBinLocationId,
-      this.binLocationName,
-      this.toBinLocationName,
-      this.sellTPrice,
-      this.buyTPrice,
-      this.sellPrice,
-      this.buyPrice,
-      this.commission,
-      this.weight,
-      this.weightBath,
-      this.unitCost,
-      this.priceIncludeTax,
-      this.purchasePrice,
-      this.priceDiff,
-      this.taxAmount,
-      this.taxBase,
-      this.priceExcludeTax,
-      this.createdDate,
-      this.updatedDate,
-      this.toBranchId,
-      this.toBranchName,
-      this.bookDate,
-      this.transferType});
+  OrderDetailModel({
+    this.id,
+    this.orderId,
+    this.productId,
+    required this.productName,
+    this.binLocationId,
+    this.toBinLocationId,
+    this.binLocationName,
+    this.toBinLocationName,
+    this.sellTPrice,
+    this.buyTPrice,
+    this.sellPrice,
+    this.buyPrice,
+    this.commission,
+    this.weight,
+    this.weightBath,
+    this.unitCost,
+    this.priceIncludeTax,
+    this.purchasePrice,
+    this.priceDiff,
+    this.taxAmount,
+    this.taxBase,
+    this.priceExcludeTax,
+    this.createdDate,
+    this.updatedDate,
+    this.toBranchId,
+    this.toBranchName,
+    this.bookDate,
+    this.transferType,
+    this.goldDataModel,
+  });
 
   factory OrderDetailModel.fromJson(Map<String, dynamic> json) =>
       OrderDetailModel(
-          id: json["id"],
-          orderId: json["orderId"],
-          productId: json["productId"],
-          productName: json["productName"],
-          binLocationId: json["binLocationId"],
-          toBinLocationId: json["toBinLocationId"],
-          binLocationName: json["binLocationName"],
-          toBinLocationName: json["toBinLocationName"],
-          sellTPrice: json["sellTPrice"],
-          buyTPrice: json["buyTPrice"],
-          sellPrice: json["sellPrice"],
-          buyPrice: json["buyPrice"],
-          commission: json["commission"],
-          weight: json["weight"],
-          weightBath: json["weightBath"],
-          unitCost: json["unitCost"],
-          priceIncludeTax: json["priceIncludeTax"],
-          purchasePrice: json["purchasePrice"],
-          priceDiff: json["priceDiff"],
-          taxAmount: json["taxAmount"],
-          taxBase: json["taxBase"],
-          priceExcludeTax: json["priceExcludeTax"],
-          createdDate: json["createdDate"] == null
-              ? null
-              : DateTime.parse(json["createdDate"]),
-          updatedDate: json["updatedDate"] == null
-              ? null
-              : DateTime.parse(json["updatedDate"]),
-          bookDate: json["reserveDate"] == null
-              ? null
-              : DateTime.parse(json["reserveDate"]),
-          toBranchId: json["toBranchId"],
-          toBranchName: json["toBranchName"],
-          transferType: json["transferType"]);
+        id: json["id"],
+        orderId: json["orderId"],
+        productId: json["productId"],
+        productName: json["productName"],
+        binLocationId: json["binLocationId"],
+        toBinLocationId: json["toBinLocationId"],
+        binLocationName: json["binLocationName"],
+        toBinLocationName: json["toBinLocationName"],
+        sellTPrice: json["sellTPrice"],
+        buyTPrice: json["buyTPrice"],
+        sellPrice: json["sellPrice"],
+        buyPrice: json["buyPrice"],
+        commission: json["commission"],
+        weight: json["weight"],
+        weightBath: json["weightBath"],
+        unitCost: json["unitCost"],
+        priceIncludeTax: json["priceIncludeTax"],
+        purchasePrice: json["purchasePrice"],
+        priceDiff: json["priceDiff"],
+        taxAmount: json["taxAmount"],
+        taxBase: json["taxBase"],
+        priceExcludeTax: json["priceExcludeTax"],
+        createdDate: json["createdDate"] == null
+            ? null
+            : DateTime.parse(json["createdDate"]),
+        updatedDate: json["updatedDate"] == null
+            ? null
+            : DateTime.parse(json["updatedDate"]),
+        bookDate: json["reserveDate"] == null
+            ? null
+            : DateTime.parse(json["reserveDate"]),
+        toBranchId: json["toBranchId"],
+        toBranchName: json["toBranchName"],
+        transferType: json["transferType"],
+        goldDataModel: json["goldDataModel"] == null
+            ? null
+            : GoldDataModel.fromJson(json["goldDataModel"]),
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -142,7 +151,8 @@ class OrderDetailModel {
         "reserveDate": bookDate?.toIso8601String(),
         "toBranchId": toBranchId,
         "toBranchName": toBranchName,
-        "transferType": transferType
+        "transferType": transferType,
+        "goldDataModel": goldDataModel?.toJson(),
       };
 
   @override

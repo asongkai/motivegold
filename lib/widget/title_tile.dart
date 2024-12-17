@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 
 class TitleTile extends StatelessWidget {
@@ -37,7 +38,7 @@ class TitleTile extends StatelessWidget {
                         title!,
                         style: TextStyle(
                           fontSize: size.getWidthPx(7),
-                          color: const Color(0xFF636564),
+                          color: textColor,
                         ),
                       ),
                     ],

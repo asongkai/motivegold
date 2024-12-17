@@ -6,6 +6,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 
@@ -49,7 +50,7 @@ class _HoldListModalState extends State<HoldListModal> {
         child: loading
             ? const LoadingProgress()
             : holds!.isEmpty
-                ? const EmptyContent()
+                ? const NoDataFoundWidget()
                 : Column(
                     children: [
                       Expanded(

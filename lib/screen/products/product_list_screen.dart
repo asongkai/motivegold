@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -75,7 +76,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : productList!.isEmpty ? const EmptyContent() : SingleChildScrollView(
+            : productList!.isEmpty ? const NoDataFoundWidget() : SingleChildScrollView(
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: ListView.builder(
@@ -198,29 +199,30 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void removeProduct(int id, int i) async {
-    final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-    await pr.show();
-    pr.update(message: 'processing'.tr());
-    try {
-      var result = await ApiServices.delete('/product', id);
-      await pr.hide();
-      if (result?.status == "success") {
-        productList!.removeAt(i);
-        setState(() {
-        });
-      } else {
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง', action: () async {
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        var result = await ApiServices.delete('/product', id);
+        await pr.hide();
+        if (result?.status == "success") {
+          productList!.removeAt(i);
+          setState(() {});
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
         if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
               action: () {});
         }
       }
-    } catch (e) {
-      await pr.hide();
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-            action: () {});
-      }
-    }
+    });
   }
 }

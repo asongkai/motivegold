@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   awesome_dialog:
     dependency: "direct main"
     description:
@@ -241,6 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  dropdown_button2:
+    dependency: "direct main"
+    description:
+      name: dropdown_button2
+      sha256: cb589893f90bade7452abd8ccffa3d811071febcfa8a1e5bb6d6eb593cdb3fa9
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-beta.19"
   easy_localization:
     dependency: "direct main"
     description:
@@ -358,6 +374,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "17.1.0"
+  flutter_grid_button:
+    dependency: transitive
+    description:
+      name: flutter_grid_button
+      sha256: "51e8a3838439ccdc33363a8fec2cb7575d63a3a2cf37f189d110a05ae2740752"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -499,6 +523,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  flutter_simple_calculator:
+    dependency: "direct main"
+    description:
+      path: "plugins/simple_calculator"
+      relative: true
+    source: path
+    version: "2.3.0"
   flutter_slidable:
     dependency: "direct main"
     description:
@@ -515,6 +546,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.10+1"
+  flutter_symbols:
+    dependency: transitive
+    description:
+      name: flutter_symbols
+      sha256: f3d0282b9ee38b440af8874e7dd5339eaba594c4a57793c34749a7d0c698d6b3
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -765,6 +804,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: "7afc60865a2429d994144f7d66ced2ae4305fe35d82890b8766e3359872d872c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.3"
   markdown:
     dependency: transitive
     description:
@@ -805,6 +852,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  math_expressions:
+    dependency: "direct main"
+    description:
+      name: math_expressions
+      sha256: e32d803d758ace61cc6c4bdfed1226ff60a6a23646b35685670d28b5616139f8
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0"
   meta:
     dependency: transitive
     description:
@@ -925,14 +980,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  pattern_formatter:
-    dependency: "direct main"
-    description:
-      name: pattern_formatter
-      sha256: e870e12352f4d5537b8822826a0b1e3912ba91c504d79450dcaed4db79c211d3
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   pdf:
     dependency: "direct main"
     description:
@@ -1242,6 +1289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  table_desk:
+    dependency: "direct main"
+    description:
+      name: table_desk
+      sha256: "0c4f274d240cebfe4301c3a213a2ab4cccd2f0c333abdf975a3876126abc1f11"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   term_glyph:
     dependency: transitive
     description:

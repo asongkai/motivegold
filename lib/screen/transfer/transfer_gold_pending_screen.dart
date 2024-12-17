@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -73,7 +74,7 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
         child: loading
             ? const LoadingProgress()
             : list!.isEmpty
-                ? const EmptyContent()
+                ? const NoDataFoundWidget()
                 : SingleChildScrollView(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,

@@ -13,6 +13,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -104,7 +105,7 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
           },
           child: Global.transfer == null
               ? const Center(
-            child: EmptyContent(),
+            child: NoDataFoundWidget(),
           )
               : Column(
             children: [

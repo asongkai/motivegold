@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:motivegold/constants/colors.dart';
 
 import 'package:motivegold/utils/app_theme.dart';
 
@@ -55,7 +56,7 @@ class DropDownObjectChildWidget extends StatelessWidget {
                       maxLines: 1,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.keyTextBlackColor,
+                        color: textColor,
                         fontSize: fontSize,
                         overflow: TextOverflow.ellipsis,
                       ),

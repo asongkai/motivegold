@@ -8,6 +8,7 @@ import 'package:motivegold/screen/settings/master/productType/add_product_type_s
 import 'package:motivegold/screen/settings/master/productType/edit_product_type_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -74,7 +75,7 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : productTypeList!.isEmpty ? const EmptyContent() : SingleChildScrollView(
+            : productTypeList!.isEmpty ? const NoDataFoundWidget() : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
@@ -196,29 +197,30 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
   }
 
   void remove(int id, int i) async {
-    final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-    await pr.show();
-    pr.update(message: 'processing'.tr());
-    try {
-      var result = await ApiServices.delete('/producttype', id);
-      await pr.hide();
-      if (result?.status == "success") {
-        productTypeList!.removeAt(i);
-        setState(() {
-        });
-      } else {
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง', action: () async {
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        var result = await ApiServices.delete('/producttype', id);
+        await pr.hide();
+        if (result?.status == "success") {
+          productTypeList!.removeAt(i);
+          setState(() {});
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
         if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
               action: () {});
         }
       }
-    } catch (e) {
-      await pr.hide();
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-            action: () {});
-      }
-    }
+    });
   }
 }

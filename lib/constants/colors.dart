@@ -42,10 +42,28 @@ const Color bgColor = Color(0xffFFF7CF);
 const Color bgColor2 = Color(0xffFFFCED);
 const Color bgColor3 = Color(0xfffbb034);
 const Color bgColor4 = Color(0xffffffd9);
-const Color textColor = Color(0xffFFC000);
+const Color textColor = Color(0xff000080);
 const Color textColor2 = Color(0xff0F8000);
 
 
 // APP THEME
 const Color snBgColorLight = Color(0xffFCE4EC);
 const Color snBgColor = Color(0xffF06292);
+
+const Color suBgColorLight = Color(0xffefebe9);
+const Color suBgColor = Color(0xff6d4c41);
+
+const Color buBgColor = Color(0xffff8a65);
+const Color buBgColorLight = Color(0xfffbe9e7);
+
+const Color rfBgColor = Color(0xffffca28);
+const Color rfBgColorLight = Color(0xfffff8e1);
+
+const Color stmBgColor = Color(0xff9575cd);
+const Color stmBgColorLight = Color(0xffede7f6);
+
+const Color stBgColor = Color(0xff26c6da);
+const Color stBgColorLight = Color(0xffe0f7fa);
+
+const Color btBgColor = Color(0xffc5e1a5);
+const Color btBgColorLight = Color(0xfff1f8e9);

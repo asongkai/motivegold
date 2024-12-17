@@ -8,6 +8,7 @@ import 'package:motivegold/model/stockmovement.dart';
 import 'package:motivegold/screen/settings/reports/stock-movement-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -103,6 +104,7 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
       "productId": selectedProduct?.id,
       "binLocationId": selectedWarehouse?.id
     }));
+    motivePrint(location?.toJson());
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
       List<StockMovementModel> products = stockMovementListModelFromJson(data);
@@ -379,7 +381,7 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                                           child: ElevatedButton(
                                             style: ButtonStyle(
                                                 backgroundColor:
-                                                MaterialStateProperty.all<Color>(bgColor3)),
+                                                WidgetStateProperty.all<Color>(bgColor3)),
                                             onPressed: search,
                                             child: Row(
                                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -400,7 +402,7 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                                           child: ElevatedButton(
                                             style: ButtonStyle(
                                                 backgroundColor:
-                                                MaterialStateProperty.all<Color>(Colors.red)),
+                                                WidgetStateProperty.all<Color>(Colors.red)),
                                             onPressed: () {
                                               productNotifier =
                                                   ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
@@ -454,7 +456,7 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
     return filterList!.isEmpty
         ? Container(
             margin: const EdgeInsets.only(top: 100),
-            child: const EmptyContent())
+            child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(
               child: Card(
@@ -489,13 +491,10 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                               paddedTextBig(' ${Global.format(e.weight ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
-                              paddedTextBig(' ${Global.format(
-                                  Global.getBuyPrice(e.weight ?? 0) /
-                                      e.weight!)}',
+                              paddedTextBig(' ${Global.format(e.unitCost ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
-                              paddedTextBig(' ${Global.format(
-                                  Global.getBuyPrice(e.weight ?? 0))}'
+                              paddedTextBig(' ${Global.format(e.weight! * e.unitCost!)}'
                                   ,
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),

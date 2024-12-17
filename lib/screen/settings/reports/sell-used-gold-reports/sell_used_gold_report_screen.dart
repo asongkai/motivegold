@@ -7,6 +7,7 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/settings/reports/sell-used-gold-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:quiver/time.dart';
 
@@ -23,7 +24,8 @@ class SellUsedGoldReportScreen extends StatefulWidget {
   const SellUsedGoldReportScreen({super.key});
 
   @override
-  State<SellUsedGoldReportScreen> createState() => _SellUsedGoldReportScreenState();
+  State<SellUsedGoldReportScreen> createState() =>
+      _SellUsedGoldReportScreenState();
 }
 
 class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
@@ -54,23 +56,22 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
     });
 
     // try {
-      var result = await ApiServices.post('/order/all/type/6',
-          Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-        List<OrderModel> products = orderListModelFromJson(data);
-        setState(() {
-          if (products.isNotEmpty) {
-            orders = products;
-            filterList = products;
-          } else {
-            orders!.clear();
-            filterList!.clear();
-          }
-        });
+    var result = await ApiServices.post('/order/all/type/6',
+        Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
+    if (result?.status == "success") {
+      var data = jsonEncode(result?.data);
+      List<OrderModel> products = orderListModelFromJson(data);
+      if (products.isNotEmpty) {
+        orders = products;
+        filterList = products;
       } else {
-        orders = [];
+        orders!.clear();
+        filterList!.clear();
       }
+      setState(() {});
+    } else {
+      orders = [];
+    }
     // } catch (e) {
     //   if (kDebugMode) {
     //     print(e.toString());
@@ -113,7 +114,8 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
                   builder: (context) => PreviewSellUsedGoldReportPage(
                     orders: filterList!,
                     type: 1,
-                    date: DateTime.parse("${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
+                    date: DateTime.parse(
+                        "${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
                   ),
                 ),
               );
@@ -146,7 +148,8 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
                   builder: (context) => PreviewSellUsedGoldReportPage(
                     orders: dailyList,
                     type: 2,
-                    date: DateTime.parse("${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
+                    date: DateTime.parse(
+                        "${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
                   ),
                 ),
               );
@@ -375,7 +378,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
     return filterList!.isEmpty
         ? Container(
             margin: const EdgeInsets.only(top: 100),
-            child: const EmptyContent())
+            child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -385,26 +388,39 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
                   children: [
                     TableRow(children: [
                       paddedTextBigL('วัน/เดือน/ปี', align: TextAlign.center),
-                      paddedTextBigL('เลขท่ีใบสําคัญรับเงิน', align: TextAlign.center),
+                      paddedTextBigL('เลขท่ีใบสําคัญรับเงิน',
+                          align: TextAlign.center),
                       paddedTextBigL('ผู้ซื้อ', align: TextAlign.center),
-                      paddedTextBigL('เลขประจําตัวผู้เสียภาษี', align: TextAlign.center),
+                      paddedTextBigL('เลขประจําตัวผู้เสียภาษี',
+                          align: TextAlign.center),
                       paddedTextBigL('รายการสินค้า', align: TextAlign.center),
-                      paddedTextBigL('น้ําหนัก (กรัม) \n(น.น.สินค้า/น.น.96.5)', align: TextAlign.center),
-                      paddedTextBigL('จํานวนเงิน (บาท)', align: TextAlign.center),
+                      paddedTextBigL('น้ําหนัก (กรัม) \n(น.น.สินค้า/น.น.96.5)',
+                          align: TextAlign.center),
+                      paddedTextBigL('จํานวนเงิน (บาท)',
+                          align: TextAlign.center),
                     ]),
                     ...ods.map((e) => TableRow(
                           decoration: const BoxDecoration(),
                           children: [
                             paddedTextBigL(
-                                Global.dateOnly(e!.orderDate.toString()), align: TextAlign.center),
+                                Global.dateOnly(e!.orderDate.toString()),
+                                align: TextAlign.center),
                             paddedTextBigL(e.orderId, align: TextAlign.center),
-                            paddedTextBigL('${e.customer!.firstName!} ${e.customer!.lastName!}', align: TextAlign.center),
-                            paddedTextBigL(Global.company != null
-                                ? Global.company!.taxNumber ?? ''
-                                : '', align: TextAlign.center),
+                            paddedTextBigL(
+                                '${e.customer!.firstName!} ${e.customer!.lastName!}',
+                                align: TextAlign.center),
+                            paddedTextBigL(
+                                Global.company != null
+                                    ? Global.company!.taxNumber ?? ''
+                                    : '',
+                                align: TextAlign.center),
                             paddedTextBigL('ทองเก่า', align: TextAlign.center),
-                            paddedTextBigL('${Global.format(getWeight(e))}/${Global.format(getWeight(e))}', align: TextAlign.right),
-                            paddedTextBigL(Global.format(e.priceIncludeTax ?? 0), align: TextAlign.right)
+                            paddedTextBigL(
+                                '${Global.format(getWeight(e))}/${Global.format(getWeight(e))}',
+                                align: TextAlign.right),
+                            paddedTextBigL(
+                                Global.format(e.priceIncludeTax ?? 0),
+                                align: TextAlign.right)
                           ],
                         )),
                     TableRow(children: [
@@ -413,8 +429,11 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
                       paddedTextBigL(''),
                       paddedTextBigL(''),
                       paddedTextBigL('รวมท้ังหมด', align: TextAlign.right),
-                      paddedTextBigL('${Global.format(getWeightTotal(ods))}/${Global.format(getWeightTotal(ods))}', align: TextAlign.right),
-                      paddedTextBigL(Global.format(priceIncludeTaxTotal(ods)), align: TextAlign.right),
+                      paddedTextBigL(
+                          '${Global.format(getWeightTotal(ods))}/${Global.format(getWeightTotal(ods))}',
+                          align: TextAlign.right),
+                      paddedTextBigL(Global.format(priceIncludeTaxTotal(ods)),
+                          align: TextAlign.right),
                     ])
                   ],
                 ),

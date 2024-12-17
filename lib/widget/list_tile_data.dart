@@ -9,7 +9,7 @@ class ListTileData extends StatelessWidget {
   final String? rightValue;
   final bool? single;
 
-  const ListTileData({Key? key, this.leftTitle, this.leftValue, this.rightTitle, this.rightValue, this.single}) : super(key: key);
+  const ListTileData({super.key, this.leftTitle, this.leftValue, this.rightTitle, this.rightValue, this.single});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,11 @@ class ListTileData extends StatelessWidget {
       children: [
         Container(
           decoration: const BoxDecoration(
-            color: bgColor2,
+            color: Colors.transparent,
             border: Border(
               bottom: BorderSide(
-                color: Color(0xFFE9E9E9),
-                width: 1,
+                color: Colors.white,
+                width: 0,
               ),
             ),
           ),

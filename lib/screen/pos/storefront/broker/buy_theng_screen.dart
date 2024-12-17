@@ -4,6 +4,7 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -12,19 +13,23 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:motivegold/screen/pos/storefront/broker/dialog/buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
+
 // import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-import 'package:pattern_formatter/pattern_formatter.dart';
+// import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class BuyThengBrokerScreen extends StatefulWidget {
@@ -61,24 +66,93 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
   TextEditingController productCommissionCtrl = TextEditingController();
   TextEditingController productPriceCtrl = TextEditingController();
   TextEditingController productPriceTotalCtrl = TextEditingController();
-  final TextEditingController reserveDateCtrl = TextEditingController();
+  TextEditingController reserveDateCtrl = TextEditingController();
   TextEditingController marketPriceTotalCtrl = TextEditingController();
   TextEditingController warehouseCtrl = TextEditingController();
 
   final controller = BoardDateTimeController();
 
   DateTime date = DateTime.now();
+  double? _currentValue = 0;
+  String? mode;
+  late SimpleCalculator calc;
 
   @override
   void initState() {
     // implement initState
     super.initState();
+    calc = SimpleCalculator(
+      value: _currentValue!,
+      hideExpression: false,
+      hideSurroundingBorder: true,
+      autofocus: true,
+      onChanged: (key, value, expression) {
+        if (mode == 'com') {
+          productCommissionCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+          comChanged();
+        }
+        if (mode == 'price') {
+          productPriceCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+          priceChanged();
+        }
+        if (mode == 'baht') {
+          productWeightBahtCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+          bahtChanged();
+        }
+        setState(() {
+          _currentValue = value ?? 0;
+        });
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+      onTappedDisplay: (value, details) {
+        if (kDebugMode) {
+          print('$value\t${details.globalPosition}');
+        }
+      },
+      theme: const CalculatorThemeData(
+          // borderColor: Colors.black,
+          // borderWidth: 2,
+          // displayColor: Colors.black,
+          // displayStyle: TextStyle(fontSize: 80, color: Colors.yellow),
+          // expressionColor: Colors.indigo,
+          // expressionStyle: TextStyle(fontSize: 20, color: Colors.white),
+          // operatorColor: Colors.pink,
+          // operatorStyle: TextStyle(fontSize: 30, color: Colors.white),
+          // commandColor: Colors.orange,
+          // commandStyle: TextStyle(fontSize: 30, color: Colors.white),
+          // numColor: Colors.grey,
+          // numStyle: TextStyle(fontSize: 50, color: Colors.white),
+          ),
+    );
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyThengTotal();
     loadProducts();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    productCodeCtrl.dispose();
+    productNameCtrl.dispose();
+    productWeightCtrl.dispose();
+    productWeightBahtCtrl.dispose();
+    productWeightRemainCtrl.dispose();
+    productWeightBahtRemainCtrl.dispose();
+    productCommissionCtrl.dispose();
+    productPriceCtrl.dispose();
+    productPriceTotalCtrl.dispose();
+    reserveDateCtrl.dispose();
+    marketPriceTotalCtrl.dispose();
+    warehouseCtrl.dispose();
   }
 
   void loadProducts() async {
@@ -116,6 +190,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
         selectedWarehouse = warehouseList.first;
         warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
             WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+        await loadQtyByLocation(selectedWarehouse!.id!);
         setState(() {});
       } else {
         warehouseList = [];
@@ -132,10 +207,10 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
 
   Future<void> loadQtyByLocation(int id) async {
     try {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
+      // final ProgressDialog pr = ProgressDialog(context,
+      //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      // await pr.show();
+      // pr.update(message: 'processing'.tr());
       var result = await ApiServices.get(
           '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
       if (result?.status == "success") {
@@ -147,7 +222,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
       } else {
         qtyLocationList = [];
       }
-      await pr.hide();
+      // await pr.hide();
 
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
@@ -239,564 +314,15 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  resetText();
-                                  await loadQtyByLocation(
-                                      selectedWarehouse!.id!);
-                                  if (mounted) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            content: Stack(
-                                              clipBehavior: Clip.none,
-                                              children: [
-                                                Positioned(
-                                                  right: -40.0,
-                                                  top: -40.0,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child: const CircleAvatar(
-                                                      backgroundColor:
-                                                          Colors.red,
-                                                      child: Icon(Icons.close),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Form(
-                                                  key: formKey,
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      FocusScope.of(context)
-                                                          .requestFocus(
-                                                              FocusNode());
-                                                    },
-                                                    child: SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              3 /
-                                                              4,
-                                                      child:
-                                                          SingleChildScrollView(
-                                                        child: Column(
-                                                          children: [
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            SizedBox(
-                                                              height: 100,
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    flex: 5,
-                                                                    child:
-                                                                        Padding(
-                                                                      padding: const EdgeInsets
-                                                                          .all(
-                                                                          8.0),
-                                                                      child:
-                                                                          SizedBox(
-                                                                        height:
-                                                                            80,
-                                                                        child: MiraiDropDownMenu<
-                                                                            ProductModel>(
-                                                                          key:
-                                                                              UniqueKey(),
-                                                                          children:
-                                                                              productList,
-                                                                          space:
-                                                                              4,
-                                                                          maxHeight:
-                                                                              360,
-                                                                          showSearchTextField:
-                                                                              true,
-                                                                          selectedItemBackgroundColor:
-                                                                              Colors.transparent,
-                                                                          emptyListMessage:
-                                                                              'ไม่มีข้อมูล',
-                                                                          showSelectedItemBackgroundColor:
-                                                                              true,
-                                                                          itemWidgetBuilder:
-                                                                              (
-                                                                            int index,
-                                                                            ProductModel?
-                                                                                project, {
-                                                                            bool isItemSelected =
-                                                                                false,
-                                                                          }) {
-                                                                            return DropDownItemWidget(
-                                                                              project: project,
-                                                                              isItemSelected: isItemSelected,
-                                                                              firstSpace: 10,
-                                                                              fontSize: size.getWidthPx(6),
-                                                                            );
-                                                                          },
-                                                                          onChanged:
-                                                                              (ProductModel value) {
-                                                                            productCodeCtrl.text =
-                                                                                value.productCode!.toString();
-                                                                            productNameCtrl.text =
-                                                                                value.name;
-                                                                            selectedProduct =
-                                                                                value;
-                                                                            productNotifier!.value =
-                                                                                value;
-                                                                            if (selectedWarehouse !=
-                                                                                null) {
-                                                                              loadQtyByLocation(selectedWarehouse!.id!);
-                                                                              setState(() {});
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              DropDownObjectChildWidget(
-                                                                            key:
-                                                                                GlobalKey(),
-                                                                            fontSize:
-                                                                                size.getWidthPx(6),
-                                                                            projectValueNotifier:
-                                                                                productNotifier!,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: buildTextFieldBig(
-                                                                  labelText:
-                                                                      "รหัสสินค้า",
-                                                                  textColor:
-                                                                      Colors
-                                                                          .orange,
-                                                                  controller:
-                                                                      productCodeCtrl,
-                                                                  enabled:
-                                                                      false),
-                                                            ),
-                                                            Row(
-                                                              children: [
-                                                                Expanded(
-                                                                  child:
-                                                                      Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            8.0),
-                                                                    child:
-                                                                        SizedBox(
-                                                                      height:
-                                                                          80,
-                                                                      child: MiraiDropDownMenu<
-                                                                          WarehouseModel>(
-                                                                        key:
-                                                                            UniqueKey(),
-                                                                        children:
-                                                                            warehouseList,
-                                                                        space:
-                                                                            4,
-                                                                        maxHeight:
-                                                                            360,
-                                                                        showSearchTextField:
-                                                                            true,
-                                                                        selectedItemBackgroundColor:
-                                                                            Colors.transparent,
-                                                                        emptyListMessage:
-                                                                            'ไม่มีข้อมูล',
-                                                                        showSelectedItemBackgroundColor:
-                                                                            true,
-                                                                        itemWidgetBuilder:
-                                                                            (
-                                                                          int index,
-                                                                          WarehouseModel?
-                                                                              project, {
-                                                                          bool isItemSelected =
-                                                                              false,
-                                                                        }) {
-                                                                          return DropDownItemWidget(
-                                                                            project:
-                                                                                project,
-                                                                            isItemSelected:
-                                                                                isItemSelected,
-                                                                            firstSpace:
-                                                                                10,
-                                                                            fontSize:
-                                                                                size.getWidthPx(6),
-                                                                          );
-                                                                        },
-                                                                        onChanged:
-                                                                            (WarehouseModel
-                                                                                value) {
-                                                                          warehouseCtrl.text = value
-                                                                              .id!
-                                                                              .toString();
-                                                                          selectedWarehouse =
-                                                                              value;
-                                                                          warehouseNotifier!.value =
-                                                                              value;
-                                                                          loadQtyByLocation(
-                                                                              value.id!);
-                                                                          setState(
-                                                                              () {});
-                                                                        },
-                                                                        child:
-                                                                            DropDownObjectChildWidget(
-                                                                          key:
-                                                                              GlobalKey(),
-                                                                          fontSize:
-                                                                              size.getWidthPx(6),
-                                                                          projectValueNotifier:
-                                                                              warehouseNotifier!,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: buildTextFieldBig(
-                                                                        labelText:
-                                                                            "น้ำหนัก (บาททอง) ที่เหลืออยู่",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .phone,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .black38,
-                                                                        enabled:
-                                                                            false,
-                                                                        controller:
-                                                                            productWeightBahtRemainCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        onChanged:
-                                                                            (String
-                                                                                value) {}),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                        buildTextFieldBig(
-                                                                            labelText:
-                                                                                "น้ำหนัก (บาททอง)",
-                                                                            inputType: TextInputType
-                                                                                .phone,
-                                                                            textColor: Colors
-                                                                                .orange,
-                                                                            controller:
-                                                                                productWeightBahtCtrl,
-                                                                            inputFormat: [
-                                                                              ThousandsFormatter(allowFraction: true)
-                                                                            ],
-                                                                            onChanged:
-                                                                                (String value) {
-                                                                              if (productWeightBahtCtrl.text.isNotEmpty) {
-                                                                                productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
-                                                                                marketPriceTotalCtrl.text = Global.format(Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
-                                                                                productPriceCtrl.text = marketPriceTotalCtrl.text;
-                                                                                productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}' : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
-                                                                              } else {
-                                                                                productWeightCtrl.text = "";
-                                                                                marketPriceTotalCtrl.text = "";
-                                                                                productPriceCtrl.text = "";
-                                                                                productPriceTotalCtrl.text = "";
-                                                                              }
-                                                                            }),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: buildTextFieldBig(
-                                                                        labelText:
-                                                                            "ราคารับซื้อทองคำแท่ง (สมาคม)",
-                                                                        inputType:
-                                                                            TextInputType
-                                                                                .number,
-                                                                        textColor:
-                                                                            Colors
-                                                                                .black38,
-                                                                        controller:
-                                                                            marketPriceTotalCtrl,
-                                                                        inputFormat: [
-                                                                          ThousandsFormatter(
-                                                                              allowFraction: true)
-                                                                        ],
-                                                                        enabled:
-                                                                            false),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                        buildTextFieldBig(
-                                                                            labelText:
-                                                                                "ราคารับซื้อทองคำแท่ง",
-                                                                            inputType: TextInputType
-                                                                                .phone,
-                                                                            enabled:
-                                                                                true,
-                                                                            textColor: Colors
-                                                                                .orange,
-                                                                            controller:
-                                                                                productPriceCtrl,
-                                                                            inputFormat: [
-                                                                              ThousandsFormatter(allowFraction: true)
-                                                                            ],
-                                                                            onChanged:
-                                                                                (String value) {
-                                                                              if (productPriceCtrl.text.isNotEmpty && productCommissionCtrl.text.isNotEmpty) {
-                                                                                productPriceTotalCtrl.text = formatter.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)).toPrecision(2));
-                                                                                setState(() {});
-                                                                              }
-                                                                            }),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child:
-                                                                        buildTextFieldBig(
-                                                                            labelText:
-                                                                                "ค่าบล็อกทอง",
-                                                                            inputType: TextInputType
-                                                                                .phone,
-                                                                            textColor: Colors
-                                                                                .orange,
-                                                                            controller:
-                                                                                productCommissionCtrl,
-                                                                            inputFormat: [
-                                                                              ThousandsFormatter(allowFraction: true)
-                                                                            ],
-                                                                            onChanged:
-                                                                                (String value) {
-                                                                              if (productPriceCtrl.text.isNotEmpty && productCommissionCtrl.text.isNotEmpty) {
-                                                                                productPriceTotalCtrl.text = "${Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)}";
-                                                                                setState(() {});
-                                                                              }
-                                                                            }),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    height: 10,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child:
-                                                                        Padding(
-                                                                      padding: const EdgeInsets
-                                                                          .all(
-                                                                          8.0),
-                                                                      child: buildTextFieldBig(
-                                                                          labelText:
-                                                                              "รวมราคารับซื้",
-                                                                          inputType: TextInputType
-                                                                              .number,
-                                                                          textColor: Colors
-                                                                              .grey,
-                                                                          controller:
-                                                                              productPriceTotalCtrl,
-                                                                          inputFormat: [
-                                                                            ThousandsFormatter(allowFraction: true)
-                                                                          ],
-                                                                          enabled:
-                                                                              false),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child:
-                                                                  OutlinedButton(
-                                                                child:
-                                                                    const Text(
-                                                                        "เพิ่ม"),
-                                                                onPressed:
-                                                                    () async {
-                                                                  // if (reserveDateCtrl
-                                                                  //     .text
-                                                                  //     .isEmpty) {
-                                                                  //   Alert.warning(
-                                                                  //       context,
-                                                                  //       'คำเตือน',
-                                                                  //       'กรุณาเลือกวันจอง',
-                                                                  //       'OK');
-                                                                  //   return;
-                                                                  // }
-
-                                                                  if (productCodeCtrl
-                                                                      .text
-                                                                      .isEmpty) {
-                                                                    Alert.warning(
-                                                                        context,
-                                                                        'คำเตือน',
-                                                                        'กรุณาเลือกสินค้า',
-                                                                        'OK');
-                                                                    return;
-                                                                  }
-
-                                                                  if (productWeightBahtCtrl
-                                                                      .text
-                                                                      .isEmpty) {
-                                                                    Alert.warning(
-                                                                        context,
-                                                                        'คำเตือน',
-                                                                        'กรุณาใส่น้ำหนัก',
-                                                                        'OK');
-                                                                    return;
-                                                                  }
-
-                                                                  if (productPriceTotalCtrl
-                                                                      .text
-                                                                      .isEmpty) {
-                                                                    Alert.warning(
-                                                                        context,
-                                                                        'คำเตือน',
-                                                                        'กรุณากรอกราคา',
-                                                                        'OK');
-                                                                    return;
-                                                                  }
-
-                                                                  // if (Global.toNumber(
-                                                                  //         productWeightCtrl
-                                                                  //             .text) >
-                                                                  //     Global.toNumber(
-                                                                  //         productWeightRemainCtrl
-                                                                  //             .text)) {
-                                                                  //   Alert.warning(
-                                                                  //       context,
-                                                                  //       'คำเตือน',
-                                                                  //       'ไม่สามารถขายเกินปริมาณคงเหลือได้',
-                                                                  //       'OK');
-                                                                  //   return;
-                                                                  // }
-
-                                                                  // var realPrice =
-                                                                  //     Global.getBuyThengPrice(
-                                                                  //         Global.toNumber(
-                                                                  //             productWeightCtrl.text));
-                                                                  // var price = Global
-                                                                  //     .toNumber(
-                                                                  //         productPriceCtrl
-                                                                  //             .text);
-                                                                  // var check =
-                                                                  //     price -
-                                                                  //         realPrice;
-                                                                  //
-                                                                  // if (check >
-                                                                  //     10000) {
-                                                                  //   Alert.warning(
-                                                                  //       context,
-                                                                  //       'คำเตือน',
-                                                                  //       'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
-                                                                  //       'OK');
-                                                                  //
-                                                                  //   return;
-                                                                  // }
-                                                                  //
-                                                                  // if (check <
-                                                                  //     -10000) {
-                                                                  //   Alert.warning(
-                                                                  //       context,
-                                                                  //       'คำเตือน',
-                                                                  //       'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                                                                  //       'OK');
-                                                                  //
-                                                                  //   return;
-                                                                  // }
-
-                                                                  Global
-                                                                      .buyThengOrderDetail!
-                                                                      .add(
-                                                                    OrderDetailModel(
-                                                                        productName:
-                                                                            selectedProduct!.name,
-                                                                        productId:
-                                                                            selectedProduct!
-                                                                                .id,
-                                                                        binLocationId:
-                                                                            selectedWarehouse!
-                                                                                .id,
-                                                                        weight: Global.toNumber(productWeightCtrl
-                                                                            .text),
-                                                                        weightBath:
-                                                                            Global.toNumber(productWeightBahtCtrl
-                                                                                .text),
-                                                                        commission: productCommissionCtrl.text.isEmpty
-                                                                            ? 0
-                                                                            : Global.toNumber(productCommissionCtrl
-                                                                                .text),
-                                                                        taxBase: productWeightCtrl.text.isEmpty
-                                                                            ? 0
-                                                                            : Global.taxBase(Global.toNumber(productPriceTotalCtrl.text),
-                                                                                Global.toNumber(productWeightCtrl.text)),
-                                                                        priceIncludeTax: Global.toNumber(productPriceTotalCtrl.text),
-                                                                        bookDate: null),
-                                                                  );
-                                                                  sumBuyThengTotal();
-                                                                  setState(
-                                                                      () {});
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        });
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                          const BuyDialog(),
+                                          fullscreenDialog: true))
+                                      .whenComplete(() {
                                     setState(() {});
-                                  }
+                                  });
                                 },
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -894,24 +420,24 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                               return;
                                             }
 
-                                            final ProgressDialog pr =
-                                                ProgressDialog(context,
-                                                    type: ProgressDialogType
-                                                        .normal,
-                                                    isDismissible: true,
-                                                    showLogs: true);
-                                            await pr.show();
-                                            pr.update(
-                                                message: 'processing'.tr());
+                                            // final ProgressDialog pr =
+                                            //     ProgressDialog(context,
+                                            //         type: ProgressDialogType
+                                            //             .normal,
+                                            //         isDismissible: true,
+                                            //         showLogs: true);
+                                            // await pr.show();
+                                            // pr.update(
+                                            //     message: 'processing'.tr());
                                             try {
-                                              var result =
-                                                  await ApiServices.post(
-                                                      '/order/gen/9',
-                                                      Global.requestObj(null));
-                                              await pr.hide();
-                                              if (result!.status == "success") {
+                                              // var result =
+                                              //     await ApiServices.post(
+                                              //         '/order/gen/9',
+                                              //         Global.requestObj(null));
+                                              // await pr.hide();
+                                              // if (result!.status == "success") {
                                                 OrderModel order = OrderModel(
-                                                    orderId: result.data,
+                                                    orderId: "",
                                                     orderDate:
                                                         DateTime.now().toUtc(),
                                                     details: Global
@@ -943,18 +469,18 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                                         Colors.teal,
                                                   ));
                                                 }
-                                              } else {
-                                                if (mounted) {
-                                                  Alert.warning(
-                                                      context,
-                                                      'Warning'.tr(),
-                                                      'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                                      'OK'.tr(),
-                                                      action: () {});
-                                                }
-                                              }
+                                              // } else {
+                                              //   if (mounted) {
+                                              //     Alert.warning(
+                                              //         context,
+                                              //         'Warning'.tr(),
+                                              //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                              //         'OK'.tr(),
+                                              //         action: () {});
+                                              //   }
+                                              // }
                                             } catch (e) {
-                                              await pr.hide();
+                                              // await pr.hide();
                                               if (mounted) {
                                                 Alert.warning(
                                                     context,
@@ -1078,24 +604,24 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                               return;
                                             }
 
-                                            final ProgressDialog pr =
-                                                ProgressDialog(context,
-                                                    type: ProgressDialogType
-                                                        .normal,
-                                                    isDismissible: true,
-                                                    showLogs: true);
-                                            await pr.show();
-                                            pr.update(
-                                                message: 'processing'.tr());
+                                            // final ProgressDialog pr =
+                                            //     ProgressDialog(context,
+                                            //         type: ProgressDialogType
+                                            //             .normal,
+                                            //         isDismissible: true,
+                                            //         showLogs: true);
+                                            // await pr.show();
+                                            // pr.update(
+                                            //     message: 'processing'.tr());
                                             try {
-                                              var result =
-                                                  await ApiServices.post(
-                                                      '/order/gen/9',
-                                                      Global.requestObj(null));
-                                              await pr.hide();
-                                              if (result!.status == "success") {
+                                              // var result =
+                                              //     await ApiServices.post(
+                                              //         '/order/gen/9',
+                                              //         Global.requestObj(null));
+                                              // await pr.hide();
+                                              // if (result!.status == "success") {
                                                 OrderModel order = OrderModel(
-                                                    orderId: result.data,
+                                                    orderId: "",
                                                     orderDate:
                                                         DateTime.now().toUtc(),
                                                     details: Global
@@ -1138,18 +664,18 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                                     });
                                                   });
                                                 }
-                                              } else {
-                                                if (mounted) {
-                                                  Alert.warning(
-                                                      context,
-                                                      'Warning'.tr(),
-                                                      'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                                      'OK'.tr(),
-                                                      action: () {});
-                                                }
-                                              }
+                                              // } else {
+                                              //   if (mounted) {
+                                              //     Alert.warning(
+                                              //         context,
+                                              //         'Warning'.tr(),
+                                              //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                              //         'OK'.tr(),
+                                              //         action: () {});
+                                              //   }
+                                              // }
                                             } catch (e) {
-                                              await pr.hide();
+                                              // await pr.hide();
                                               if (mounted) {
                                                 Alert.warning(
                                                     context,
@@ -1192,6 +718,44 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
     );
   }
 
+  void comChanged() {
+    if (productPriceCtrl.text.isNotEmpty &&
+        productCommissionCtrl.text.isNotEmpty) {
+      productPriceTotalCtrl.text =
+          "${Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)}";
+      setState(() {});
+    }
+  }
+
+  void priceChanged() {
+    if (productPriceCtrl.text.isNotEmpty &&
+        productCommissionCtrl.text.isNotEmpty) {
+      productPriceTotalCtrl.text = formatter.format(
+          (Global.toNumber(productCommissionCtrl.text) +
+                  Global.toNumber(productPriceCtrl.text))
+              .toPrecision(2));
+      setState(() {});
+    }
+  }
+
+  void bahtChanged() {
+    if (productWeightBahtCtrl.text.isNotEmpty) {
+      productWeightCtrl.text = formatter.format(
+          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+      marketPriceTotalCtrl.text = Global.format(
+          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+      productPriceCtrl.text = marketPriceTotalCtrl.text;
+      productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
+          ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
+          : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
+    } else {
+      productWeightCtrl.text = "";
+      marketPriceTotalCtrl.text = "";
+      productPriceCtrl.text = "";
+      productPriceTotalCtrl.text = "";
+    }
+  }
+
   resetText() {
     productCodeCtrl.text = "";
     productNameCtrl.text = "";
@@ -1217,12 +781,14 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
   }
 
   removeProduct(index) {
-    Global.buyThengOrderDetail!.removeAt(index);
-    if (Global.buyThengOrderDetail!.isEmpty) {
-      Global.buyThengOrderDetail!.clear();
-    }
-    sumBuyThengTotal();
-    setState(() {});
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง', action: () async {
+      Global.buyThengOrderDetail!.removeAt(index);
+      if (Global.buyThengOrderDetail!.isEmpty) {
+        Global.buyThengOrderDetail!.clear();
+      }
+      sumBuyThengTotal();
+      setState(() {});
+    });
   }
 
   Widget _itemOrderList({required OrderDetailModel order, required index}) {

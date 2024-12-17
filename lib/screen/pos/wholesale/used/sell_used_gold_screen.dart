@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/used/dialog/sell_used_dialog.dart';
 import 'package:motivegold/utils/screen_utils.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
+
+// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -76,7 +80,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   TextEditingController taxAmountTotalCtrl = TextEditingController();
   TextEditingController purchasePriceTotalCtrl = TextEditingController();
 
-  final TextEditingController orderDateCtrl = TextEditingController();
+  TextEditingController orderDateCtrl = TextEditingController();
   TextEditingController referenceNumberCtrl = TextEditingController();
 
   ProductModel? selectedProduct;
@@ -84,10 +88,104 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   ValueNotifier<dynamic>? toWarehouseNotifier;
   ValueNotifier<dynamic>? branchNotifier;
   ValueNotifier<dynamic>? productNotifier;
+  double? _currentValue = 0;
+  String? mode;
+  late SimpleCalculator calc;
 
   @override
   void initState() {
+    // implement initState
     super.initState();
+    calc = SimpleCalculator(
+      value: _currentValue!,
+      hideExpression: false,
+      hideSurroundingBorder: true,
+      autofocus: true,
+      onChanged: (key, value, expression) {
+        if (mode == 'ts') {
+          productSellThengPriceCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'tb') {
+          productBuyThengPriceCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'ps') {
+          productSellPriceCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'pb') {
+          productBuyPriceCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'p_e_t_total') {
+          priceExcludeTaxTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'p_p') {
+          purchasePriceTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'p_d') {
+          priceDiffTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 't_b') {
+          taxBaseTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 't_a') {
+          taxAmountTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+        if (mode == 'p_i_t_total') {
+          priceIncludeTaxTotalCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+
+        if (mode == 'baht') {
+          productWeightBahtCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+          bahtChanged();
+        }
+        if (mode == 'gram') {
+          productWeightCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+          gramChanged();
+        }
+        if (mode == 'price') {
+          priceIncludeTaxCtrl.text =
+              value != null ? "${Global.format(value)}" : "";
+        }
+
+        setState(() {
+          _currentValue = value ?? 0;
+        });
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+      onTappedDisplay: (value, details) {
+        if (kDebugMode) {
+          print('$value\t${details.globalPosition}');
+        }
+      },
+      theme: const CalculatorThemeData(
+          // borderColor: Colors.black,
+          // borderWidth: 2,
+          // displayColor: Colors.black,
+          // displayStyle: TextStyle(fontSize: 80, color: Colors.yellow),
+          // expressionColor: Colors.indigo,
+          // expressionStyle: TextStyle(fontSize: 20, color: Colors.white),
+          // operatorColor: Colors.pink,
+          // operatorStyle: TextStyle(fontSize: 30, color: Colors.white),
+          // commandColor: Colors.orange,
+          // commandStyle: TextStyle(fontSize: 30, color: Colors.white),
+          // numColor: Colors.grey,
+          // numStyle: TextStyle(fontSize: 50, color: Colors.white),
+          ),
+    );
+    Global.appBarColor = suBgColor;
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     fromWarehouseNotifier = ValueNotifier<WarehouseModel>(
@@ -97,6 +195,42 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     branchNotifier = ValueNotifier<BranchModel>(
         BranchModel(id: 0, name: 'เลือกสาขาปลายทาง'));
     loadProducts();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    productCodeCtrl.dispose();
+    productNameCtrl.dispose();
+    productWeightCtrl.dispose();
+    productWeightBahtCtrl.dispose();
+    productEntryWeightCtrl.dispose();
+    productEntryWeightBahtCtrl.dispose();
+    warehouseCtrl.dispose();
+
+    productSellThengPriceCtrl.dispose();
+    productBuyThengPriceCtrl.dispose();
+    priceExcludeTaxCtrl.dispose();
+    priceIncludeTaxCtrl.dispose();
+    priceDiffCtrl.dispose();
+    taxBaseCtrl.dispose();
+    taxAmountCtrl.dispose();
+    purchasePriceCtrl.dispose();
+
+    toWarehouseCtrl.dispose();
+    productSellPriceCtrl.dispose();
+    productBuyPriceCtrl.dispose();
+
+    priceExcludeTaxTotalCtrl.dispose();
+    priceIncludeTaxTotalCtrl.dispose();
+    priceDiffTotalCtrl.dispose();
+    taxBaseTotalCtrl.dispose();
+    taxAmountTotalCtrl.dispose();
+    purchasePriceTotalCtrl.dispose();
+
+    orderDateCtrl.dispose();
+    referenceNumberCtrl.dispose();
   }
 
   void loadProducts() async {
@@ -197,13 +331,16 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey();
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: suBgColor,
         centerTitle: true,
-        title: const Text('ขายทองเก่า'),
+        title: const Text(
+          'ขายทองเก่าร้านขายส่ง',
+          style: TextStyle(fontSize: 32),
+        ),
         actions: [
           GestureDetector(
             onTap: () {
@@ -237,942 +374,331 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
         child: loading
             ? const LoadingProgress()
             : SingleChildScrollView(
-              child: Container(
-                height: size!.hp(75),
-                margin: const EdgeInsets.all(8),
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10, horizontal: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  color: bgColor3.withAlpha(80),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        'HEADER [ส่วนหัว]',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: MaskedTextField(
-                              controller: orderDateCtrl,
-                              mask: "##-##-####",
-                              maxLength: 10,
-                              keyboardType: TextInputType.number,
-                              //editing controller of this TextField
-                              style: const TextStyle(fontSize: 30),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white70,
-                                hintText: 'xx-xx-xxxx',
-                                prefixIcon:
-                                    const Icon(Icons.calendar_today),
-                                //icon of text field
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                contentPadding:
-                                    const EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                labelText: "วันที่".tr(),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    getProportionateScreenWidth(8),
-                                  ),
-                                  borderSide: const BorderSide(
-                                    color: kGreyShade3,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    getProportionateScreenWidth(2),
-                                  ),
-                                  borderSide: const BorderSide(
-                                    color: kGreyShade3,
-                                  ),
-                                ),
-                              ),
-                              //set it true, so that user will not able to edit text
-                            ),
-                          ),
+                child: Container(
+                  height: size!.hp(75),
+                  margin: const EdgeInsets.all(8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: suBgColorLight,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'HEADER [ส่วนหัว]',
+                          style: TextStyle(fontSize: 20),
                         ),
-                        Expanded(
-                            child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: buildTextField(
-                            labelText: "เลขที่อ้างอิง",
-                            inputType: TextInputType.text,
-                            enabled: true,
-                            textColor: Colors.orange,
-                            controller: referenceNumberCtrl,
-                          ),
-                        ))
-                      ],
-                    ),
-                    SizedBox(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText: "ทองคำแท่งขายออก",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: productSellThengPriceCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                  labelText: "ทองคำแท่งรับซื้อ",
-                                  inputType: TextInputType.number,
-                                  textColor: Colors.orange,
-                                  controller: productBuyThengPriceCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(
-                                        allowFraction: true)
-                                  ],
-                                  enabled: true),
-                            ),
-                          ),
-                        ],
                       ),
-                    ),
-                    SizedBox(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText: "ทองรูปพรรณขายออก",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: productSellPriceCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                  labelText: "ทองรูปพรรณรับซื้อ",
-                                  inputType: TextInputType.number,
-                                  textColor: Colors.orange,
-                                  controller: productBuyPriceCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(
-                                        allowFraction: true)
-                                  ],
-                                  enabled: true),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(
+                        height: 20,
                       ),
-                    ),
-                    const Divider(),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        'FOOTER [ส่วนท้าย]',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    SizedBox(
-                      child: Row(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText:
-                                    "ราคาสินค้า (ไม่รวมภาษีมูลค่าเพิ่ม)",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: priceExcludeTaxTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText:
-                                    "หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: purchasePriceTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText: "ผลต่าง (ฐานภาษี)",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: priceDiffTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText: "มูลค่าฐานภาษีมูลค่าเพิ่ม",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: taxBaseTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText: "ภาษีมูลค่าเพิ่ม",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: taxAmountTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: buildTextField(
-                                labelText:
-                                    "ราคาสินค้า (รวมภาษีมูลค่าเพิ่ม)",
-                                inputType: TextInputType.phone,
-                                enabled: true,
-                                textColor: Colors.orange,
-                                controller: priceIncludeTaxTotalCtrl,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 150,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.orange,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () async {
-                          resetText();
-                          // await loadQtyByLocation(selectedFromLocation!.id!);
-                          if (mounted) {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Positioned(
-                                          right: -40.0,
-                                          top: -40.0,
-                                          child: InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const CircleAvatar(
-                                              backgroundColor: Colors.red,
-                                              child: Icon(Icons.close),
-                                            ),
-                                          ),
-                                        ),
-                                        Form(
-                                          key: formKey,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              FocusScope.of(context)
-                                                  .requestFocus(
-                                                      FocusNode());
-                                            },
-                                            child: SizedBox(
-                                              width:
-                                                  MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      3 /
-                                                      4,
-                                              child:
-                                                  SingleChildScrollView(
-                                                child: Column(
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 100,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 5,
-                                                            child:
-                                                                Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
-                                                              child:
-                                                                  SizedBox(
-                                                                height:
-                                                                    80,
-                                                                child: MiraiDropDownMenu<
-                                                                    ProductModel>(
-                                                                  key:
-                                                                      UniqueKey(),
-                                                                  children:
-                                                                      productList,
-                                                                  space:
-                                                                      4,
-                                                                  maxHeight:
-                                                                      360,
-                                                                  showSearchTextField:
-                                                                      true,
-                                                                  selectedItemBackgroundColor:
-                                                                      Colors.transparent,
-                                                                  emptyListMessage:
-                                                                      'ไม่มีข้อมูล',
-                                                                  showSelectedItemBackgroundColor:
-                                                                      true,
-                                                                  itemWidgetBuilder:
-                                                                      (
-                                                                    int index,
-                                                                    ProductModel?
-                                                                        project, {
-                                                                    bool isItemSelected =
-                                                                        false,
-                                                                  }) {
-                                                                    return DropDownItemWidget(
-                                                                      project:
-                                                                          project,
-                                                                      isItemSelected:
-                                                                          isItemSelected,
-                                                                      firstSpace:
-                                                                          10,
-                                                                      fontSize:
-                                                                          size!.getWidthPx(10),
-                                                                    );
-                                                                  },
-                                                                  onChanged:
-                                                                      (ProductModel
-                                                                          value) {
-                                                                    productCodeCtrl.text =
-                                                                        value.productCode!;
-                                                                    productNameCtrl.text =
-                                                                        value.name;
-                                                                    productNotifier!.value =
-                                                                        value;
-                                                                    if (warehouseCtrl.text !=
-                                                                        "") {
-                                                                      loadQtyByLocation(selectedFromLocation!.id!);
-                                                                    }
-                                                                  },
-                                                                  child:
-                                                                      DropDownObjectChildWidget(
-                                                                    key:
-                                                                        GlobalKey(),
-                                                                    fontSize:
-                                                                        size!.getWidthPx(10),
-                                                                    projectValueNotifier:
-                                                                        productNotifier!,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
-                                                      child: buildTextFieldBig(
-                                                          labelText:
-                                                              "รหัสสินค้า",
-                                                          textColor:
-                                                              Colors
-                                                                  .orange,
-                                                          controller:
-                                                              productCodeCtrl,
-                                                          enabled: false),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 100,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 5,
-                                                            child:
-                                                                Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
-                                                              child:
-                                                                  SizedBox(
-                                                                height:
-                                                                    80,
-                                                                child: MiraiDropDownMenu<
-                                                                    WarehouseModel>(
-                                                                  key:
-                                                                      UniqueKey(),
-                                                                  children:
-                                                                      fromWarehouseList,
-                                                                  space:
-                                                                      4,
-                                                                  maxHeight:
-                                                                      360,
-                                                                  showSearchTextField:
-                                                                      true,
-                                                                  selectedItemBackgroundColor:
-                                                                      Colors.transparent,
-                                                                  emptyListMessage:
-                                                                      'ไม่มีข้อมูล',
-                                                                  showSelectedItemBackgroundColor:
-                                                                      true,
-                                                                  itemWidgetBuilder:
-                                                                      (
-                                                                    int index,
-                                                                    WarehouseModel?
-                                                                        project, {
-                                                                    bool isItemSelected =
-                                                                        false,
-                                                                  }) {
-                                                                    return DropDownItemWidget(
-                                                                      project:
-                                                                          project,
-                                                                      isItemSelected:
-                                                                          isItemSelected,
-                                                                      firstSpace:
-                                                                          10,
-                                                                      fontSize:
-                                                                          size!.getWidthPx(10),
-                                                                    );
-                                                                  },
-                                                                  onChanged:
-                                                                      (WarehouseModel
-                                                                          value) {
-                                                                    warehouseCtrl.text = value
-                                                                        .id!
-                                                                        .toString();
-                                                                    selectedFromLocation =
-                                                                        value;
-                                                                    fromWarehouseNotifier!.value =
-                                                                        value;
-                                                                    if (productCodeCtrl.text !=
-                                                                        "") {
-                                                                      loadQtyByLocation(value.id!);
-                                                                    }
-                                                                    if (selectedFromLocation !=
-                                                                        null) {
-                                                                      loadToWarehouseNoId(selectedFromLocation!.id!);
-                                                                    }
-                                                                  },
-                                                                  child:
-                                                                      DropDownObjectChildWidget(
-                                                                    key:
-                                                                        GlobalKey(),
-                                                                    fontSize:
-                                                                        size!.getWidthPx(10),
-                                                                    projectValueNotifier:
-                                                                        fromWarehouseNotifier!,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                buildTextFieldBig(
-                                                                    labelText:
-                                                                        "น้ำหนักทั้งหมด (gram)",
-                                                                    inputType: TextInputType
-                                                                        .number,
-                                                                    enabled:
-                                                                        false,
-                                                                    textColor: Colors
-                                                                        .orange,
-                                                                    controller:
-                                                                        productWeightCtrl,
-                                                                    inputFormat: [
-                                                                      ThousandsFormatter(allowFraction: true)
-                                                                    ],
-                                                                    onChanged:
-                                                                        (String value) {
-                                                                      if (productWeightCtrl.text.isNotEmpty) {
-                                                                        productWeightBahtCtrl.text = Global.format((Global.toNumber(productWeightCtrl.text) / 15.16));
-                                                                      } else {
-                                                                        productWeightBahtCtrl.text = "";
-                                                                      }
-                                                                    }),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Expanded(
-                                                            child:
-                                                                buildTextFieldBig(
-                                                                    labelText:
-                                                                        "น้ำหนักทั้งหมด (บาททอง)",
-                                                                    inputType: TextInputType
-                                                                        .phone,
-                                                                    enabled:
-                                                                        false,
-                                                                    textColor: Colors
-                                                                        .orange,
-                                                                    controller:
-                                                                        productWeightBahtCtrl,
-                                                                    inputFormat: [
-                                                                      ThousandsFormatter(allowFraction: true)
-                                                                    ],
-                                                                    onChanged:
-                                                                        (String value) {
-                                                                      if (productWeightBahtCtrl.text.isNotEmpty) {
-                                                                        productWeightCtrl.text = Global.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16));
-                                                                      } else {
-                                                                        productWeightCtrl.text = "";
-                                                                      }
-                                                                    }),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                buildTextFieldBig(
-                                                                    labelText:
-                                                                        "ป้อนน้ำหนัก (gram)",
-                                                                    inputType: TextInputType
-                                                                        .number,
-                                                                    textColor: Colors
-                                                                        .orange,
-                                                                    controller:
-                                                                        productEntryWeightCtrl,
-                                                                    inputFormat: [
-                                                                      ThousandsFormatter(allowFraction: true)
-                                                                    ],
-                                                                    onChanged:
-                                                                        (String value) {
-                                                                      if (productEntryWeightCtrl.text.isNotEmpty) {
-                                                                        productEntryWeightBahtCtrl.text = Global.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16));
-                                                                      } else {
-                                                                        productEntryWeightBahtCtrl.text = "";
-                                                                      }
-                                                                    }),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Expanded(
-                                                            child:
-                                                                buildTextFieldBig(
-                                                                    labelText:
-                                                                        "ป้อนน้ำหนัก (บาททอง)",
-                                                                    inputType: TextInputType
-                                                                        .phone,
-                                                                    textColor: Colors
-                                                                        .orange,
-                                                                    controller:
-                                                                        productEntryWeightBahtCtrl,
-                                                                    inputFormat: [
-                                                                      ThousandsFormatter(allowFraction: true)
-                                                                    ],
-                                                                    onChanged:
-                                                                        (String value) {
-                                                                      if (productEntryWeightBahtCtrl.text.isNotEmpty) {
-                                                                        productEntryWeightCtrl.text = Global.format((Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16));
-                                                                      } else {
-                                                                        productEntryWeightCtrl.text = "";
-                                                                      }
-                                                                    }),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 100,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
-                                                              child:
-                                                                  buildTextFieldBig(
-                                                                labelText:
-                                                                    "ราคาสินค้า",
-                                                                inputType:
-                                                                    TextInputType
-                                                                        .phone,
-                                                                enabled:
-                                                                    true,
-                                                                textColor:
-                                                                    Colors
-                                                                        .orange,
-                                                                controller:
-                                                                    priceIncludeTaxCtrl,
-                                                                inputFormat: [
-                                                                  ThousandsFormatter(
-                                                                      allowFraction:
-                                                                          true)
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 100,
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 5,
-                                                            child:
-                                                                Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      8.0),
-                                                              child:
-                                                                  SizedBox(
-                                                                height:
-                                                                    80,
-                                                                child: MiraiDropDownMenu<
-                                                                    WarehouseModel>(
-                                                                  key:
-                                                                      UniqueKey(),
-                                                                  children:
-                                                                      toWarehouseList,
-                                                                  space:
-                                                                      4,
-                                                                  maxHeight:
-                                                                      360,
-                                                                  showSearchTextField:
-                                                                      true,
-                                                                  selectedItemBackgroundColor:
-                                                                      Colors.transparent,
-                                                                  emptyListMessage:
-                                                                      'ไม่มีข้อมูล',
-                                                                  showSelectedItemBackgroundColor:
-                                                                      true,
-                                                                  itemWidgetBuilder:
-                                                                      (
-                                                                    int index,
-                                                                    WarehouseModel?
-                                                                        project, {
-                                                                    bool isItemSelected =
-                                                                        false,
-                                                                  }) {
-                                                                    return DropDownItemWidget(
-                                                                      project:
-                                                                          project,
-                                                                      isItemSelected:
-                                                                          isItemSelected,
-                                                                      firstSpace:
-                                                                          10,
-                                                                      fontSize:
-                                                                          size!.getWidthPx(10),
-                                                                    );
-                                                                  },
-                                                                  onChanged:
-                                                                      (WarehouseModel
-                                                                          value) {
-                                                                    toWarehouseCtrl.text = value
-                                                                        .id!
-                                                                        .toString();
-                                                                    selectedToLocation =
-                                                                        value;
-                                                                    toWarehouseNotifier!.value =
-                                                                        value;
-                                                                  },
-                                                                  child:
-                                                                      DropDownObjectChildWidget(
-                                                                    key:
-                                                                        GlobalKey(),
-                                                                    fontSize:
-                                                                        size!.getWidthPx(10),
-                                                                    projectValueNotifier:
-                                                                        toWarehouseNotifier!,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .all(8.0),
-                                                      child:
-                                                          OutlinedButton(
-                                                        child: const Text(
-                                                            "เพิ่ม"),
-                                                        onPressed:
-                                                            () async {
-                                                          if (warehouseCtrl
-                                                              .text
-                                                              .isEmpty) {
-                                                            Alert.warning(
-                                                                context,
-                                                                'คำเตือน',
-                                                                'กรุณาเลือกคลังสินค้า',
-                                                                'OK');
-                                                            return;
-                                                          }
-
-                                                          if (productEntryWeightCtrl
-                                                              .text
-                                                              .isEmpty) {
-                                                            Alert.warning(
-                                                                context,
-                                                                'คำเตือน',
-                                                                'กรุณากรอกน้ำหนัก',
-                                                                'OK');
-                                                            return;
-                                                          }
-
-                                                          if (priceIncludeTaxCtrl
-                                                              .text
-                                                              .isEmpty) {
-                                                            Alert.warning(
-                                                                context,
-                                                                'คำเตือน',
-                                                                'กรุณากรอกราคา',
-                                                                'OK');
-                                                            return;
-                                                          }
-
-                                                          if (toWarehouseCtrl
-                                                              .text
-                                                              .isEmpty) {
-                                                            Alert.warning(
-                                                                context,
-                                                                'คำเตือน',
-                                                                'กรุณาเลือกคลังสินค้าปลายทาง',
-                                                                'OK');
-                                                            return;
-                                                          }
-
-                                                          Global
-                                                              .usedSellDetail!
-                                                              .add(
-                                                            OrderDetailModel(
-                                                              productName:
-                                                                  selectedProduct!
-                                                                      .name,
-                                                              productId:
-                                                                  selectedProduct!
-                                                                      .id,
-                                                              binLocationId:
-                                                                  selectedFromLocation!
-                                                                      .id,
-                                                              toBinLocationId:
-                                                                  selectedToLocation!
-                                                                      .id,
-                                                              binLocationName:
-                                                                  selectedFromLocation!
-                                                                      .name,
-                                                              toBinLocationName:
-                                                                  selectedToLocation!
-                                                                      .name,
-                                                              sellTPrice:
-                                                                  0,
-                                                              buyTPrice:
-                                                                  0,
-                                                              sellPrice:
-                                                                  0,
-                                                              buyPrice: 0,
-                                                              weight: Global.toNumber(
-                                                                  productEntryWeightCtrl
-                                                                      .text),
-                                                              weightBath:
-                                                                  Global.toNumber(
-                                                                      productEntryWeightBahtCtrl.text),
-                                                              commission:
-                                                                  0,
-                                                              priceIncludeTax:
-                                                                  Global.toNumber(
-                                                                      priceIncludeTaxCtrl.text),
-                                                              priceExcludeTax:
-                                                                  0,
-                                                              purchasePrice:
-                                                                  0,
-                                                              priceDiff:
-                                                                  0,
-                                                              taxBase: 0,
-                                                              taxAmount:
-                                                                  0,
-                                                            ),
-                                                          );
-                                                          setState(() {});
-                                                          Navigator.of(
-                                                                  context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: MaskedTextField(
+                                controller: orderDateCtrl,
+                                mask: "##-##-####",
+                                maxLength: 10,
+                                keyboardType: TextInputType.number,
+                                //editing controller of this TextField
+                                style: const TextStyle(fontSize: 30),
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white70,
+                                  hintText: 'xx-xx-xxxx',
+                                  labelStyle: TextStyle(
+                                      fontSize: 25,
+                                      color: Colors.blue[900],
+                                      fontWeight: FontWeight.w900),
+                                  prefixIcon: const Icon(Icons.calendar_today),
+                                  //icon of text field
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  labelText: "วันที่".tr(),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(8),
                                     ),
-                                  );
-                                });
-                          }
-                          setState(() {});
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(2),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                ),
+                                //set it true, so that user will not able to edit text
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: buildTextFieldX(
+                              labelText: "เลขที่อ้างอิง",
+                              inputType: TextInputType.text,
+                              enabled: true,
+                              controller: referenceNumberCtrl,
+                            ),
+                          ))
+                        ],
+                      ),
+                      SizedBox(
+                        child: Row(
                           children: [
-                            Icon(Icons.add, size: 25),
-                            SizedBox(width: 6),
-                            Text(
-                              'เพิ่ม',
-                              style: TextStyle(fontSize: 25),
-                            )
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "ทองคำแท่งขายออก",
+                                  inputType: TextInputType.phone,
+                                  controller: productSellThengPriceCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                    labelText: "ทองคำแท่งรับซื้อ",
+                                    inputType: TextInputType.number,
+                                    controller: productBuyThengPriceCtrl,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    enabled: true),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          color: bgColor2,
+                      SizedBox(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "ทองรูปพรรณขายออก",
+                                  inputType: TextInputType.phone,
+                                  controller: productSellPriceCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                    labelText: "ทองรูปพรรณรับซื้อ",
+                                    inputType: TextInputType.number,
+                                    controller: productBuyPriceCtrl,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    enabled: true),
+                              ),
+                            ),
+                          ],
                         ),
-                        child: ListView.builder(
-                            itemCount: Global.usedSellDetail!.length,
-                            itemBuilder: (context, index) {
-                              return _itemOrderList(
-                                  order: Global.usedSellDetail![index],
-                                  index: index);
-                            }),
                       ),
-                    ),
-                  ],
+                      const Divider(),
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'FOOTER [ส่วนท้าย]',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      SizedBox(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText:
+                                      "ราคาสินค้า (ไม่รวมภาษีมูลค่าเพิ่ม)",
+                                  inputType: TextInputType.phone,
+                                  controller: priceExcludeTaxTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText:
+                                      "หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)",
+                                  inputType: TextInputType.phone,
+                                  controller: purchasePriceTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "ผลต่าง (ฐานภาษี)",
+                                  inputType: TextInputType.phone,
+                                  controller: priceDiffTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "มูลค่าฐานภาษีมูลค่าเพิ่ม",
+                                  inputType: TextInputType.phone,
+                                  controller: taxBaseTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "ภาษีมูลค่าเพิ่ม",
+                                  inputType: TextInputType.phone,
+                                  controller: taxAmountTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: buildTextFieldX(
+                                  labelText: "ราคาสินค้า (รวมภาษีมูลค่าเพิ่ม)",
+                                  inputType: TextInputType.phone,
+                                  controller: priceIncludeTaxTotalCtrl,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: suBgColor,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () async {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                    const SellUsedDialog(),
+                                    fullscreenDialog: true))
+                                .whenComplete(() {
+                              setState(() {});
+                            });
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add, size: 25),
+                              SizedBox(width: 6),
+                              Text(
+                                'เพิ่ม',
+                                style: TextStyle(fontSize: 25),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            color: suBgColorLight,
+                          ),
+                          child: ListView.builder(
+                              itemCount: Global.usedSellDetail!.length,
+                              itemBuilder: (context, index) {
+                                return _itemOrderList(
+                                    order: Global.usedSellDetail![index],
+                                    index: index);
+                              }),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
       ),
       persistentFooterButtons: [
         Container(
@@ -1180,111 +706,113 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
           margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: bgColor4,
+            color: suBgColorLight,
           ),
           child: Column(
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (Global.usedSellDetail!.isEmpty) {
-                          return;
-                        }
-
-                        final ProgressDialog pr = ProgressDialog(context,
-                            type: ProgressDialogType.normal,
-                            isDismissible: true,
-                            showLogs: true);
-                        await pr.show();
-                        pr.update(message: 'processing'.tr());
-                        try {
-                          var result = await ApiServices.post(
-                              '/order/gen/6', Global.requestObj(null));
-                          await pr.hide();
-                          if (result!.status == "success") {
-                            OrderModel order = OrderModel(
-                                orderId: result.data,
-                                orderDate: DateTime.now().toUtc(),
-                                details: Global.usedSellDetail!,
-                                sellTPrice: Global.toNumber(
-                                    productSellThengPriceCtrl.text),
-                                buyTPrice: Global.toNumber(
-                                    productBuyThengPriceCtrl.text),
-                                sellPrice:
-                                Global.toNumber(productSellPriceCtrl.text),
-                                buyPrice:
-                                Global.toNumber(productBuyPriceCtrl.text),
-                                priceIncludeTax: Global.toNumber(priceIncludeTaxTotalCtrl.text),
-                                priceExcludeTax:
-                                Global.toNumber(priceExcludeTaxTotalCtrl.text),
-                                purchasePrice:
-                                Global.toNumber(purchasePriceTotalCtrl.text),
-                                priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
-                                taxBase: Global.toNumber(taxBaseTotalCtrl.text),
-                                taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-                                orderTypeId: 6,
-                                orderStatus: 'PENDING');
-                            final data = order.toJson();
-                            Global.orders?.add(OrderModel.fromJson(data));
-                            widget
-                                .refreshCart(Global.orders?.length.toString());
-                            Global.usedSellDetail!.clear();
-                            if (mounted) {
-                              resetTotal();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
-                          } else {
-                            if (mounted) {
-                              Alert.warning(
-                                  context,
-                                  'Warning'.tr(),
-                                  'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                  'OK'.tr(),
-                                  action: () {});
-                            }
-                          }
-                        } catch (e) {
-                          await pr.hide();
-                          if (mounted) {
-                            Alert.warning(context, 'Warning'.tr(), e.toString(),
-                                'OK'.tr(),
-                                action: () {});
-                          }
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: size?.getWidthPx(8)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       foregroundColor: Colors.white,
+                  //       backgroundColor: Colors.blue[700],
+                  //       padding: const EdgeInsets.symmetric(vertical: 8),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //     ),
+                  //     onPressed: () async {
+                  //       if (Global.usedSellDetail!.isEmpty) {
+                  //         return;
+                  //       }
+                  //
+                  //       // final ProgressDialog pr = ProgressDialog(context,
+                  //       //     type: ProgressDialogType.normal,
+                  //       //     isDismissible: true,
+                  //       //     showLogs: true);
+                  //       // await pr.show();
+                  //       // pr.update(message: 'processing'.tr());
+                  //       try {
+                  //         // var result = await ApiServices.post(
+                  //         //     '/order/gen/6', Global.requestObj(null));
+                  //         // await pr.hide();
+                  //         // if (result!.status == "success") {
+                  //         OrderModel order = OrderModel(
+                  //             orderId: "",
+                  //             orderDate: DateTime.now().toUtc(),
+                  //             details: Global.usedSellDetail!,
+                  //             sellTPrice: Global.toNumber(
+                  //                 productSellThengPriceCtrl.text),
+                  //             buyTPrice: Global.toNumber(
+                  //                 productBuyThengPriceCtrl.text),
+                  //             sellPrice:
+                  //                 Global.toNumber(productSellPriceCtrl.text),
+                  //             buyPrice:
+                  //                 Global.toNumber(productBuyPriceCtrl.text),
+                  //             priceIncludeTax: Global.toNumber(
+                  //                 priceIncludeTaxTotalCtrl.text),
+                  //             priceExcludeTax: Global.toNumber(
+                  //                 priceExcludeTaxTotalCtrl.text),
+                  //             purchasePrice:
+                  //                 Global.toNumber(purchasePriceTotalCtrl.text),
+                  //             priceDiff:
+                  //                 Global.toNumber(priceDiffTotalCtrl.text),
+                  //             taxBase: Global.toNumber(taxBaseTotalCtrl.text),
+                  //             taxAmount:
+                  //                 Global.toNumber(taxAmountTotalCtrl.text),
+                  //             orderTypeId: 6,
+                  //             orderStatus: 'PENDING');
+                  //         final data = order.toJson();
+                  //         Global.orders?.add(OrderModel.fromJson(data));
+                  //         widget.refreshCart(Global.orders?.length.toString());
+                  //         Global.usedSellDetail!.clear();
+                  //         if (mounted) {
+                  //           resetTotal();
+                  //           ScaffoldMessenger.of(context)
+                  //               .showSnackBar(const SnackBar(
+                  //             content: Text(
+                  //               "เพิ่มลงรถเข็นสำเร็จ...",
+                  //               style: TextStyle(fontSize: 22),
+                  //             ),
+                  //             backgroundColor: Colors.teal,
+                  //           ));
+                  //         }
+                  //         // } else {
+                  //         //   if (mounted) {
+                  //         //     Alert.warning(
+                  //         //         context,
+                  //         //         'Warning'.tr(),
+                  //         //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                  //         //         'OK'.tr(),
+                  //         //         action: () {});
+                  //         //   }
+                  //         // }
+                  //       } catch (e) {
+                  //         // await pr.hide();
+                  //         if (mounted) {
+                  //           Alert.warning(context, 'Warning'.tr(), e.toString(),
+                  //               'OK'.tr(),
+                  //               action: () {});
+                  //         }
+                  //       }
+                  //     },
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         const Icon(Icons.add, size: 16),
+                  //         const SizedBox(width: 6),
+                  //         Text(
+                  //           'เพิ่มลงในรถเข็น',
+                  //           style: TextStyle(fontSize: size?.getWidthPx(8)),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   width: 20,
+                  // ),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -1321,7 +849,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.teal[700],
+                        backgroundColor: suBgColor,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -1333,20 +861,22 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                               context, 'คำเตือน', 'กรุณาเพิ่มข้อมูลก่อน', 'OK');
                           return;
                         }
-
-                        final ProgressDialog pr = ProgressDialog(context,
-                            type: ProgressDialogType.normal,
-                            isDismissible: true,
-                            showLogs: true);
-                        await pr.show();
-                        pr.update(message: 'processing'.tr());
-                        try {
-                          var result = await ApiServices.post(
-                              '/order/gen/6', Global.requestObj(null));
-                          await pr.hide();
-                          if (result!.status == "success") {
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                            action: () async {
+                          // final ProgressDialog pr = ProgressDialog(context,
+                          //     type: ProgressDialogType.normal,
+                          //     isDismissible: true,
+                          //     showLogs: true);
+                          // await pr.show();
+                          // pr.update(message: 'processing'.tr());
+                          try {
+                            // var result = await ApiServices.post(
+                            //     '/order/gen/6', Global.requestObj(null));
+                            // await pr.hide();
+                            // if (result!.status == "success") {
                             OrderModel order = OrderModel(
-                                orderId: result.data,
+                                orderId: "",
                                 orderDate: DateTime.now().toUtc(),
                                 details: Global.usedSellDetail!,
                                 sellTPrice: Global.toNumber(
@@ -1354,17 +884,20 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                 buyTPrice: Global.toNumber(
                                     productBuyThengPriceCtrl.text),
                                 sellPrice:
-                                Global.toNumber(productSellPriceCtrl.text),
+                                    Global.toNumber(productSellPriceCtrl.text),
                                 buyPrice:
-                                Global.toNumber(productBuyPriceCtrl.text),
-                                priceIncludeTax: Global.toNumber(priceIncludeTaxTotalCtrl.text),
-                                priceExcludeTax:
-                                Global.toNumber(priceExcludeTaxTotalCtrl.text),
-                                purchasePrice:
-                                Global.toNumber(purchasePriceTotalCtrl.text),
-                                priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
+                                    Global.toNumber(productBuyPriceCtrl.text),
+                                priceIncludeTax: Global.toNumber(
+                                    priceIncludeTaxTotalCtrl.text),
+                                priceExcludeTax: Global.toNumber(
+                                    priceExcludeTaxTotalCtrl.text),
+                                purchasePrice: Global.toNumber(
+                                    purchasePriceTotalCtrl.text),
+                                priceDiff:
+                                    Global.toNumber(priceDiffTotalCtrl.text),
                                 taxBase: Global.toNumber(taxBaseTotalCtrl.text),
-                                taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
+                                taxAmount:
+                                    Global.toNumber(taxAmountTotalCtrl.text),
                                 orderTypeId: 6,
                                 orderStatus: 'PENDING');
                             final data = order.toJson();
@@ -1389,24 +922,25 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                 });
                               });
                             }
-                          } else {
+                            // } else {
+                            //   if (mounted) {
+                            //     Alert.warning(
+                            //         context,
+                            //         'Warning'.tr(),
+                            //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                            //         'OK'.tr(),
+                            //         action: () {});
+                            //   }
+                            // }
+                          } catch (e) {
+                            // await pr.hide();
                             if (mounted) {
-                              Alert.warning(
-                                  context,
-                                  'Warning'.tr(),
-                                  'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                  'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  e.toString(), 'OK'.tr(),
                                   action: () {});
                             }
                           }
-                        } catch (e) {
-                          await pr.hide();
-                          if (mounted) {
-                            Alert.warning(context, 'Warning'.tr(), e.toString(),
-                                'OK'.tr(),
-                                action: () {});
-                          }
-                        }
+                        });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1428,6 +962,24 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
         ),
       ],
     );
+  }
+
+  void bahtChanged() {
+    if (productEntryWeightBahtCtrl.text.isNotEmpty) {
+      productEntryWeightCtrl.text = Global.format(
+          (Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16));
+    } else {
+      productEntryWeightCtrl.text = "";
+    }
+  }
+
+  void gramChanged() {
+    if (productEntryWeightCtrl.text.isNotEmpty) {
+      productEntryWeightBahtCtrl.text =
+          Global.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16));
+    } else {
+      productEntryWeightBahtCtrl.text = "";
+    }
   }
 
   resetText() {
@@ -1453,53 +1005,78 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   }
 
   removeProduct(index) {
-    Global.usedSellDetail!.removeAt(index);
-    if (Global.usedSellDetail!.isEmpty) {
-      Global.usedSellDetail!.clear();
-    }
-    setState(() {});
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+      Global.usedSellDetail!.removeAt(index);
+      if (Global.usedSellDetail!.isEmpty) {
+        Global.usedSellDetail!.clear();
+      }
+      setState(() {});
+    });
   }
 
   Widget _itemOrderList({required OrderDetailModel order, required index}) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 8,
-          child: ListTile(
-            title: ListTileData(
-              leftTitle: order.productName,
-              leftValue: '${order.weight!.toString()} กรัม',
-              rightTitle: 'คลังสินค้า',
-              rightValue:
-                  '${order.binLocationName} -> ${order.toBinLocationName}',
-              single: null,
-            ),
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          left: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          right: BorderSide(
+            color: Colors.white,
+            width: 2,
           ),
         ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  removeProduct(index);
-                },
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 8,
+            child: ListTile(
+              title: ListTileData(
+                leftTitle: order.productName,
+                leftValue: '${order.weight!.toString()} กรัม',
+                rightTitle: 'คลังสินค้า',
+                rightValue:
+                    '${order.binLocationName} -> ${order.toBinLocationName}',
+                single: null,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    removeProduct(index);
+                  },
+                  child: Container(
+                    height: 80,
+                    width: 80,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        )
-      ],
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -1516,8 +1093,6 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
-    setState(() {
-
-    });
+    setState(() {});
   }
 }

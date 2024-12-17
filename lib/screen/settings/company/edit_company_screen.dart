@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/company.dart';
@@ -36,7 +35,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   final TextEditingController provinceCtrl = TextEditingController();
 
   bool loading = false;
-
 
   @override
   void initState() {
@@ -186,7 +184,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                       left: 8.0, right: 8.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(
@@ -236,7 +234,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                       left: 8.0, right: 8.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       const SizedBox(
@@ -271,7 +269,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'หมายเลขประจำตัวผู้เสียภาษี'.tr(),
+                                        labelText:
+                                            'หมายเลขประจำตัวผู้เสียภาษี'.tr(),
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: taxNumberCtrl,
@@ -295,11 +294,10 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -323,39 +321,40 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                   "taxNumber": taxNumberCtrl.text
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result = await ApiServices.put('/company', id, object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                        Navigator.of(context).pop();
-                      });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result = await ApiServices.put('/company', id, object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

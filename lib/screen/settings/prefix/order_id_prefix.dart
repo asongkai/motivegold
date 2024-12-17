@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,8 +42,8 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
       loading = true;
     });
     try {
-      var result =
-          await ApiServices.get('/company/configure/prefix/get/${Global.user!.companyId}');
+      var result = await ApiServices.get(
+          '/company/configure/prefix/get/${Global.user!.companyId}');
       // print(result!.toJson());
       if (result?.status == "success") {
         PrefixModel model = PrefixModel.fromJson(result?.data);
@@ -57,7 +56,6 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
             nameCtrl.text = prefixFormat[1];
           }
         });
-        
       } else {
         prefixModel = null;
         selectedOption = 0;
@@ -103,12 +101,15 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     child: RadioListTile(
-                                        title: const Text("รีเซ็ต ID ทุกเดือน", style: TextStyle(fontSize: 20),),
+                                        title: const Text(
+                                          "รีเซ็ต ID ทุกเดือน",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
                                         value: 1,
                                         visualDensity: VisualDensity.standard,
                                         activeColor: Colors.teal,
@@ -126,7 +127,10 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                                   ),
                                   Expanded(
                                     child: RadioListTile(
-                                        title: const Text("รีเซ็ต ID ทุกปี", style: TextStyle(fontSize: 20),),
+                                        title: const Text(
+                                          "รีเซ็ต ID ทุกปี",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
                                         value: 2,
                                         visualDensity: VisualDensity.standard,
                                         activeColor: Colors.teal,
@@ -162,7 +166,9 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                                             height: 10,
                                           ),
                                           buildTextField(
-                                            labelText: 'ตัวอย่างรูปแบบรหัสธุรกรรม'.tr(),
+                                            labelText:
+                                                'ตัวอย่างรูปแบบรหัสธุรกรรม'
+                                                    .tr(),
                                             textColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
@@ -178,8 +184,6 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-
-
                             ],
                           ),
                         ),
@@ -195,11 +199,10 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -217,40 +220,41 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                   "prefix": ""
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result =
-                      await ApiServices.post('/company/configure/prefix/set', object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                        loadData();
-                      });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result = await ApiServices.post(
+                        '/company/configure/prefix/set', object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          loadData();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

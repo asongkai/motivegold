@@ -6,6 +6,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:motivegold/model/bank/bank.dart';
+import 'package:motivegold/model/bank/bank_account.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/location/amphure.dart';
@@ -55,11 +57,16 @@ class Global {
   static File? paymentAttachment;
   static ProductTypeModel? selectedPayment;
   static TextEditingController bankCtrl = TextEditingController();
+  static TextEditingController accountNoCtrl = TextEditingController();
   static TextEditingController refNoCtrl = TextEditingController();
   static TextEditingController cardNameCtrl = TextEditingController();
+  static TextEditingController cardNumberCtrl = TextEditingController();
   static TextEditingController cardExpireDateCtrl = TextEditingController();
   static TextEditingController paymentDetailCtrl = TextEditingController();
   static TextEditingController paymentDateCtrl = TextEditingController();
+  static TextEditingController amountCtrl = TextEditingController();
+  static BankModel? selectedBank;
+  static BankAccountModel? selectedAccount;
 
   // POS
   static List<OrderDetailModel>? sellOrderDetail = [];
@@ -108,6 +115,10 @@ class Global {
   static dynamic deviceDetail;
 
   static PaymentModel? payment;
+  static List<PaymentModel>? paymentList = [];
+  static List<BankModel> bankList = [];
+  static List<BankAccountModel> accountList = [];
+  static List<BankAccountModel> filterAccountList = [];
 
   static List<ProvinceModel> provinceList = [];
   static List<AmphureModel> amphureList = [];
@@ -122,6 +133,8 @@ class Global {
   static ValueNotifier<dynamic>? tambonNotifier;
   static TextEditingController addressCtrl = TextEditingController();
   static TextEditingController villageCtrl = TextEditingController();
+
+  static Color? appBarColor;
 
   static format(double value) {
     String number = formatter.format(value);
@@ -201,11 +214,25 @@ class Global {
     return toNumber(goldDataModel!.theng!.sell!) * weight / 15.16;
   }
 
+  static double getSellPriceUsePrice(double weight, double price) {
+    if (goldDataModel == null) {
+      return 0;
+    }
+    return price * weight / 15.16;
+  }
+
   static double getBuyPrice(double weight) {
     if (goldDataModel == null) {
       return 0;
     }
     return toNumber(goldDataModel!.paphun!.buy!) * weight / 15.16;
+  }
+
+  static double getBuyPriceUsePrice(double weight, double price) {
+    if (goldDataModel == null) {
+      return 0;
+    }
+    return price * weight / 15.16;
   }
 
   static double getBuyThengPrice(double weight) {
@@ -447,8 +474,10 @@ class Global {
 
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
-        ? 'ลูกค้าจ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
-        : amount == 0 ? 0 : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+        ? 'ลูกค้าจ่ายเงินให้กับเรา ${format(amount)} THB'
+        : amount == 0
+            ? 0
+            : 'เราจ่ายเงินให้กับลูกค้า ${format(-amount)} THB';
   }
 
   static dynamic payToBrokerOrShop() {
@@ -462,7 +491,7 @@ class Global {
       for (int j = 0; j < orders![i].details!.length; j++) {
         double price = orders![i].details![j].priceIncludeTax!;
         int type = orders![i].orderTypeId!;
-        if (type == 2  || type == 5 || type == 44 || type == 33 || type == 9) {
+        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           buy += -price;
         }
         if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
@@ -475,7 +504,9 @@ class Global {
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
         ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
-        : amount == 0 ? 0 : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
+        : amount == 0
+            ? 0
+            : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
   }
 
   static double getPaymentTotal() {
@@ -771,6 +802,7 @@ class Global {
 
   static DateTime convertDate(String date) {
     List<String> parts = date.split("-");
+    // motivePrint("${parts[2]}-${parts[1]}-${parts[0]}");
     DateTime tempDate = DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}");
     return tempDate;
   }
@@ -778,6 +810,11 @@ class Global {
   static String formatDate(String date) {
     DateTime tempDate = DateTime.parse(date);
     return DateFormat('dd/MM/yyyy HH:mm:ss').format(tempDate);
+  }
+
+  static String formatDateNT(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('dd/MM/yyyy').format(tempDate);
   }
 
   static String formatDateD(String date) {

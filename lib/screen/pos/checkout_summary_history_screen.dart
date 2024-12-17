@@ -10,17 +10,16 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart' as rs;
 import 'package:motivegold/utils/constants.dart';
-import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/image/cached_image.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
 
 class CheckOutSummaryHistoryScreen extends StatefulWidget {
   const CheckOutSummaryHistoryScreen({super.key});
@@ -114,7 +113,7 @@ class _CheckOutSummaryHistoryScreenState
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
-        title: Text('เช็คเอาท์'.tr()),
+        title: Text('รายละเอียดบิล'.tr()),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -123,7 +122,7 @@ class _CheckOutSummaryHistoryScreenState
           },
           child: orders.isEmpty
               ? const Center(
-                  child: EmptyContent(),
+                  child: NoDataFoundWidget(),
                 )
               : Column(
                   children: [
@@ -252,7 +251,7 @@ class _CheckOutSummaryHistoryScreenState
                                     ),
                                   ),
                                   const SizedBox(
-                                    height: 10,
+                                    height: 20,
                                   ),
                                   Row(
                                     children: [
@@ -277,6 +276,9 @@ class _CheckOutSummaryHistoryScreenState
                                         ),
                                       ),
                                     ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
                                   ),
                                   if (Global.currentPaymentMethod == 'TR')
                                     Row(
@@ -596,9 +598,6 @@ class _CheckOutSummaryHistoryScreenState
                                       width: 150,
                                       fit: BoxFit.cover,
                                     ),
-                                  Divider(
-                                    height: getProportionateScreenHeight(56),
-                                  ),
                                   Text(
                                     'ราคา',
                                     style: Theme.of(context)
@@ -606,7 +605,7 @@ class _CheckOutSummaryHistoryScreenState
                                         .headlineMedium,
                                   ),
                                   const SizedBox(
-                                    height: 10,
+                                    height: 40,
                                   ),
                                   buildTextFieldBig(
                                       labelText: "ส่วนลด (บาทไทย)",
@@ -692,10 +691,10 @@ class _CheckOutSummaryHistoryScreenState
 
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
-        ? 'ลูกค้าจ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
+        ? 'ลูกค้าจ่ายเงินให้กับเรา ${Global.format(amount)} THB'
         : amount == 0
             ? '0'
-            : 'เราจ่ายเงินให้กับลูกค้า ${formatter.format(-amount)} THB';
+            : 'เราจ่ายเงินให้กับลูกค้า ${Global.format(-amount)} THB';
   }
 
   Widget _itemOrderList({required OrderModel order, required index}) {

@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/transfer.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -39,6 +40,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     });
     try {
       var result = await ApiServices.post('/transfer/all', Global.requestObj(null));
+      motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<TransferModel> products = transferListModelFromJson(data);
@@ -71,7 +73,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : list!.isEmpty ? const EmptyContent() : SingleChildScrollView(
+            : list!.isEmpty ? const Center(child: NoDataFoundWidget()) : SingleChildScrollView(
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: Padding(
@@ -151,8 +153,8 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                             align: TextAlign.center,
                             style:
                             TextStyle(fontSize: size?.getWidthPx(7))),
-                        paddedText('${list.fromBinLocation!.name} - ${list.toBinLocation!.name}',
-                            align: TextAlign.center,
+                        paddedText('ต้นทาง: ${list.fromBinLocation!.name} \nปลายทาง: ${list.toBinLocation!.name}',
+                            align: TextAlign.left,
                             style:
                             TextStyle(fontSize: size?.getWidthPx(7))),
                       ],

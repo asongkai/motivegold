@@ -13,21 +13,20 @@ class GoldDataModel {
   String? date;
   Lakha? theng;
   Lakha? paphun;
+  double? different;
 
-  GoldDataModel({
-    this.date,
-    this.theng,
-    this.paphun,
-  });
+  GoldDataModel({this.date, this.theng, this.paphun, this.different});
 
   factory GoldDataModel.fromJson(Map<String, dynamic> json) => GoldDataModel(
         date: json["date"],
+        different: json["different"],
         theng: json["theng"] == null ? null : Lakha.fromJson(json["theng"]),
         paphun: json["paphun"] == null ? null : Lakha.fromJson(json["paphun"]),
       );
 
   Map<String, dynamic> toJson() => {
         "date": date,
+        "different": different,
         "theng": theng?.toJson(),
         "paphun": paphun?.toJson(),
       };

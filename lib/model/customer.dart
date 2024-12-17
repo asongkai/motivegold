@@ -37,6 +37,7 @@ class CustomerModel {
   int? isSeller;
   int? isCustomer;
   int? isBuyer;
+  String? customerType;
 
   CustomerModel({
     this.id,
@@ -62,7 +63,8 @@ class CustomerModel {
     this.updatedDate,
     this.isSeller,
     this.isCustomer,
-    this.isBuyer
+    this.isBuyer,
+    this.customerType,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
@@ -88,6 +90,7 @@ class CustomerModel {
     isSeller: json["isSeller"],
     isCustomer: json["isCustomer"],
     isBuyer: json["isBuyer"],
+    customerType: json["customerType"],
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
   );
@@ -115,6 +118,7 @@ class CustomerModel {
     "isSeller": isSeller,
     "isCustomer": isCustomer,
     "isBuyer": isBuyer,
+    "customerType": customerType,
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
   };

@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/utils/util.dart';
@@ -8,12 +7,12 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 
-
 class AddProductCategoryScreen extends StatefulWidget {
   const AddProductCategoryScreen({super.key});
 
   @override
-  State<AddProductCategoryScreen> createState() => _AddProductCategoryScreenState();
+  State<AddProductCategoryScreen> createState() =>
+      _AddProductCategoryScreenState();
 }
 
 class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
@@ -23,7 +22,6 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
   void initState() {
     // implement initState
     super.initState();
-
   }
 
   @override
@@ -43,7 +41,7 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Card(
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 7/10,
+                  height: MediaQuery.of(context).size.height * 7 / 10,
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -60,8 +58,8 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
                           children: [
                             Expanded(
                               child: Padding(
-                                padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
                                 child: Column(
                                   children: [
                                     const SizedBox(
@@ -69,8 +67,7 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
                                     ),
                                     buildTextFieldBig(
                                       labelText: 'ชื่อหมวดหมู่สินค้า'.tr(),
-                                      textColor: Colors
-                                          .orange,
+                                      textColor: Colors.orange,
                                       validator: null,
                                       inputType: TextInputType.text,
                                       controller: nameCtrl,
@@ -96,16 +93,14 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
-
                 if (nameCtrl.text.trim() == "") {
                   Alert.warning(
                       context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
@@ -118,40 +113,41 @@ class _AddProductCategoryScreenState extends State<AddProductCategoryScreen> {
                   "name": nameCtrl.text,
                 });
 
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result = await ApiServices.post('/productcategory/create', object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                            Navigator.of(context).pop();
-                          });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result = await ApiServices.post(
+                        '/productcategory/create', object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
-
-
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

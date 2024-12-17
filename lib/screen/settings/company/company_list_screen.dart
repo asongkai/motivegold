@@ -8,6 +8,7 @@ import 'package:motivegold/screen/settings/company/edit_company_screen.dart';
 import 'package:motivegold/screen/settings/company/new_company_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -39,10 +40,14 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
       loading = true;
     });
     try {
-      var result = Global.user!.userType == 'ADMIN' ? await ApiServices.get('/company') : await ApiServices.get('/company/${Global.user!.companyId}');
+      var result = Global.user!.userType == 'ADMIN'
+          ? await ApiServices.get('/company')
+          : await ApiServices.get('/company/${Global.user!.companyId}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        List<CompanyModel> products = Global.user!.userType == 'ADMIN' ? companyListModelFromJson(data) : [CompanyModel.fromJson(result!.data)];
+        List<CompanyModel> products = Global.user!.userType == 'ADMIN'
+            ? companyListModelFromJson(data)
+            : [CompanyModel.fromJson(result!.data)];
         setState(() {
           list = products;
         });
@@ -67,32 +72,32 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
         title: const Text('บริษัท'),
         actions: [
           if (Global.user!.userType == 'ADMIN')
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NewCompanyScreen(
-                                showBackButton: true,
-                              ),
-                          fullscreenDialog: true))
-                  .whenComplete(() {
-                loadProducts();
-              });
-            },
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.add,
-                  size: 50,
-                ),
-                Text(
-                  'เพิ่มบริษัทใหม่',
-                  style: TextStyle(fontSize: size.getWidthPx(6)),
-                )
-              ],
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NewCompanyScreen(
+                                  showBackButton: true,
+                                ),
+                            fullscreenDialog: true))
+                    .whenComplete(() {
+                  loadProducts();
+                });
+              },
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.add,
+                    size: 50,
+                  ),
+                  Text(
+                    'เพิ่มบริษัทใหม่',
+                    style: TextStyle(fontSize: size.getWidthPx(6)),
+                  )
+                ],
+              ),
             ),
-          ),
           const SizedBox(
             width: 20,
           )
@@ -101,20 +106,22 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : list!.isEmpty ? const EmptyContent() :  SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: ListView.builder(
-                        itemCount: list!.length,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) {
-                          return dataCard(list![index], index);
-                        }),
+            : list!.isEmpty
+                ? const NoDataFoundWidget()
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView.builder(
+                            itemCount: list!.length,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int index) {
+                              return dataCard(list![index], index);
+                            }),
+                      ),
+                    ),
                   ),
-                ),
-              ),
       ),
     );
   }
@@ -150,52 +157,51 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
               flex: Global.user!.userType == 'ADMIN' ? 1 : 0,
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditCompanyScreen(
-                                showBackButton: true,
-                                company: list,
-                                index: index
-                              ),
-                              fullscreenDialog: true))
-                          .whenComplete(() {
-                        loadProducts();
-                      });
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
+                  if (Global.user!.userRole == 'Administrator')
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditCompanyScreen(
+                                        showBackButton: true,
+                                        company: list,
+                                        index: index),
+                                    fullscreenDialog: true))
+                            .whenComplete(() {
+                          loadProducts();
+                        });
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.teal,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
+                  if (Global.user!.userType == 'ADMIN') const Spacer(),
                   if (Global.user!.userType == 'ADMIN')
-                  const Spacer(),
-                  if (Global.user!.userType == 'ADMIN')
-                  GestureDetector(
-                    onTap: () {
-                      removeProduct(list.id!, index);
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
+                    GestureDetector(
+                      onTap: () {
+                        removeProduct(list.id!, index);
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             )
@@ -206,29 +212,31 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
   }
 
   void removeProduct(int id, int i) async {
-    final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-    await pr.show();
-    pr.update(message: 'processing'.tr());
-    try {
-      var result = await ApiServices.delete('/company', id);
-      await pr.hide();
-      if (result?.status == "success") {
-        list!.removeAt(i);
-        setState(() {
-        });
-      } else {
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        var result = await ApiServices.delete('/company', id);
+        await pr.hide();
+        if (result?.status == "success") {
+          list!.removeAt(i);
+          setState(() {});
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
         if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
               action: () {});
         }
       }
-    } catch (e) {
-      await pr.hide();
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-            action: () {});
-      }
-    }
+    });
   }
 }

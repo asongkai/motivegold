@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/products/product_list_screen.dart';
+import 'package:motivegold/screen/settings/master/bank/bank_screen.dart';
+import 'package:motivegold/screen/settings/master/bankAccount/bank_account_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
 
@@ -50,15 +52,23 @@ class MasterDataScreen extends StatelessWidget {
                               const ProductListScreen()));
                     }),
                     const SizedBox(height: 32),
-                    // Text("ผู้ใช้", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
-                    // const SizedBox(height: 8),
-                    // _buildListTile('ผู้ใช้', Icons.supervised_user_circle_sharp, '', Colors.blue, theme, onTab: () {
-                    //   Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) =>
-                    //           const UserListScreen()));
-                    // }),
+                    Text("ธนาคาร", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
+                    const SizedBox(height: 8),
+                    _buildListTile('ธนาคาร', Icons.supervised_user_circle_sharp, '', Colors.blue, theme, onTab: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const BankListScreen()));
+                    }),
+                    const SizedBox(height: 8),
+                    _buildListTile('บัญชีธนาคาร', Icons.line_style_outlined, '', Colors.teal, theme, onTab: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const BankAccountListScreen()));
+                    }),
                   ],
                 ),
                 // Text("Version 1.0.0", style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500)),

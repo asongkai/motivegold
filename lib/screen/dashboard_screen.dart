@@ -42,11 +42,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       loading = true;
     });
 
-    Global.goldDataModel = await api.getGoldPrice(context);
+
 
     var result = await ApiServices.post(
         '/order/matching/PENDING/clear', Global.requestObj(null));
-    motivePrint(result?.data);
+    // motivePrint(result?.data);
     if (result?.status == "success") {
       var data = jsonEncode(result?.data);
       List<OrderModel> products = orderListModelFromJson(data);
@@ -56,6 +56,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else {
       list = [];
     }
+
+    Global.goldDataModel = await api.getGoldPrice(context);
 
     if (mounted) {
       setState(() {
@@ -304,7 +306,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisSpacing: 16,
                 crossAxisCount: 5,
                 childAspectRatio:
-                    orientation == Orientation.portrait ? .78 : .80,
+                    orientation == Orientation.portrait ? .74 : .80,
                 children: [
                   iconDashboard(
                     'ซื้อขายทองหน้าร้าน',

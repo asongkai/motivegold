@@ -66,13 +66,14 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
           companies = products;
         });
         if (Global.user!.userType == 'COMPANY') {
-          selectedCompany = companies!.where((element) => element.id == Global.user!.companyId).first;
+          selectedCompany = companies!
+              .where((element) => element.id == Global.user!.companyId)
+              .first;
           companyCtrl.text = selectedCompany!.name;
         }
       } else {
         companies = [];
       }
-
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -96,358 +97,337 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: loading ? const LoadingProgress() : SingleChildScrollView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (Global.user!.userType == 'ADMIN')
-                        Expanded(
-                          child: Padding(
-                            padding:
-                            const EdgeInsets
-                                .all(
-                                8.0),
-                            child:
-                            SizedBox(
-                              height: 80,
-                              child: MiraiDropDownMenu<
-                                  CompanyModel>(
-                                key:
-                                UniqueKey(),
-                                children:
-                                companies!,
-                                space: 4,
-                                maxHeight:
-                                360,
-                                showSearchTextField:
-                                true,
-                                selectedItemBackgroundColor:
-                                Colors
-                                    .transparent,
-                                emptyListMessage: 'ไม่มีข้อมูล',
-                                showSelectedItemBackgroundColor:
-                                true,
-                                itemWidgetBuilder:
-                                    (
-                                    int index,
-                                    CompanyModel?
-                                    project, {
-                                  bool isItemSelected =
-                                  false,
-                                }) {
-                                  return DropDownItemWidget(
-                                    project:
-                                    project,
-                                    isItemSelected:
-                                    isItemSelected,
-                                    firstSpace:
-                                    10,
-                                    fontSize:
-                                    size.getWidthPx(6),
-                                  );
-                                },
-                                onChanged:
-                                    (CompanyModel
-                                value) {
-                                      companyCtrl.text = value.name;
-                                      selectedCompany = value;
-                                  companyNotifier!.value =
-                                      value;
-                                },
-                                child:
-                                DropDownObjectChildWidget(
-                                  key:
-                                  GlobalKey(),
-                                  fontSize:
-                                  size.getWidthPx(6),
-                                  projectValueNotifier:
-                                  companyNotifier!,
-                                ),
-                              ),
-                            ),
+          child: loading
+              ? const LoadingProgress()
+              : SingleChildScrollView(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                        if (Global.user!.userType != 'ADMIN')
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    if (Global.user!.userType == 'ADMIN') {
-
-                                    }
-                                  },
-                                  child: buildTextFieldBig(
-                                    labelText: 'บริษัท'.tr(),
-                                    validator: null,
-                                    enabled: false,
-                                    option: true,
-                                    inputType: TextInputType.text,
-                                    controller: companyCtrl,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (Global.user!.userType == 'ADMIN')
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 80,
+                                      child: MiraiDropDownMenu<CompanyModel>(
+                                        key: UniqueKey(),
+                                        children: companies!,
+                                        space: 4,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
+                                        selectedItemBackgroundColor:
+                                            Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                          int index,
+                                          CompanyModel? project, {
+                                          bool isItemSelected = false,
+                                        }) {
+                                          return DropDownItemWidget(
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size.getWidthPx(6),
+                                          );
+                                        },
+                                        onChanged: (CompanyModel value) {
+                                          companyCtrl.text = value.name;
+                                          selectedCompany = value;
+                                          companyNotifier!.value = value;
+                                        },
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size.getWidthPx(6),
+                                          projectValueNotifier:
+                                              companyNotifier!,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              if (Global.user!.userType != 'ADMIN')
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            if (Global.user!.userType ==
+                                                'ADMIN') {}
+                                          },
+                                          child: buildTextFieldBig(
+                                            labelText: 'บริษัท'.tr(),
+                                            validator: null,
+                                            enabled: false,
+                                            option: true,
+                                            inputType: TextInputType.text,
+                                            controller: companyCtrl,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ชื่อสาขา'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: nameCtrl,
-                                ),
-                              ],
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'ชื่อสาขา'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: nameCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'รหัสสาขา'.tr(),
-                                  validator: null,
-                                  enabled: true,
-                                  inputType: TextInputType.phone,
-                                  controller: branchIdCtrl,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ชื่อย่อสาขา (ภาษาอังกฤษเท่านั้น)'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: branchCodeCtrl,
-                                ),
-                              ],
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'รหัสสาขา'.tr(),
+                                        validator: null,
+                                        enabled: true,
+                                        inputType: TextInputType.phone,
+                                        controller: branchIdCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'โทรศัพท์'.tr(),
-                                  validator: null,
-                                  enabled: true,
-                                  inputType: TextInputType.phone,
-                                  controller: phoneCtrl,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText:
+                                            'ชื่อย่อสาขา (ภาษาอังกฤษเท่านั้น)'
+                                                .tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: branchCodeCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'อีเมล'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.emailAddress,
-                                  controller: emailCtrl,
-                                ),
-                              ],
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'โทรศัพท์'.tr(),
+                                        validator: null,
+                                        enabled: true,
+                                        inputType: TextInputType.phone,
+                                        controller: phoneCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'จังหวัด'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: provinceCtrl,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'อีเมล'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.emailAddress,
+                                        controller: emailCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'เขต'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: districtCtrl,
-                                ),
-                              ],
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'จังหวัด'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: provinceCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'บ้าน'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: villageCtrl,
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'เขต'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: districtCtrl,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: addressCtrl,
-                                ),
-                              ],
-                            ),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'บ้าน'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: villageCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'ที่อยู่'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: addressCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ),
       persistentFooterButtons: [
@@ -456,11 +436,10 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -487,8 +466,8 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                 }
 
                 if (branchCodeCtrl.text.trim() == "") {
-                  Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกชื่อย่อสาขา', 'OK'.tr(),
+                  Alert.warning(context, 'warning'.tr(), 'กรุณากรอกชื่อย่อสาขา',
+                      'OK'.tr(),
                       action: () {});
                   return;
                 }
@@ -506,39 +485,41 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                   "branchCode": branchCodeCtrl.text
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result = await ApiServices.post('/branch/create', object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                            Navigator.of(context).pop();
-                          });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result =
+                        await ApiServices.post('/branch/create', object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

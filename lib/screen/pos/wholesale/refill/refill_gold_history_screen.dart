@@ -16,6 +16,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class RefillGoldHistoryScreen extends StatefulWidget {
@@ -289,10 +290,10 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                 margin: const EdgeInsets.only(top: 100),
                 child: const LoadingProgress())
                 : filterList!.isEmpty
-                ? const EmptyContent()
+                ? const NoDataFoundWidget()
                 : SingleChildScrollView(
                         child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 300,
+                          height: MediaQuery.of(context).size.height - 350,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ListView.builder(
@@ -387,7 +388,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                           paddedText(Global.format(e.weight ?? 0),
                               align: TextAlign.center,
                               style: TextStyle(fontSize: size?.getWidthPx(7))),
-                          paddedText('${e.toBinLocationName}',
+                          paddedText('${e.binLocationName}',
                               align: TextAlign.center,
                               style: TextStyle(fontSize: size?.getWidthPx(7))),
                         ],

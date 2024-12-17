@@ -160,6 +160,7 @@ class _LandingScreenState extends State<LandingScreen> {
           Global.branch = null;
         }
       }
+
       // Navigator.of(context).pushReplacement(
       //     MaterialPageRoute(builder: (context) => const SignInTen()));
       if (mounted) {

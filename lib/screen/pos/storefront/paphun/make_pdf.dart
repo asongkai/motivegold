@@ -7,6 +7,7 @@ import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:table_desk/table_desk.dart';
 
 
 Future<Uint8List> makePdf(Invoice invoice) async {
@@ -26,15 +27,19 @@ Future<Uint8List> makePdf(Invoice invoice) async {
   // var font = Font.ttf(data);
   pdf.addPage(
     MultiPage(
-      maxPages: 100,
       margin: const EdgeInsets.all(20),
-      pageFormat: const PdfPageFormat(600, 600),
+      pageFormat: PdfPageFormat.a4,
+      orientation: PageOrientation.portrait,
       build: (context) {
         return [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              header(invoice.order, 'TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
+              header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี'),
               SizedBox(height: 10),
+              docNo(invoice.order),
+              SizedBox(height: 10),
+
               buyerSellerInfo(invoice.customer, invoice.order),
               SizedBox(height: 10),
               Divider(

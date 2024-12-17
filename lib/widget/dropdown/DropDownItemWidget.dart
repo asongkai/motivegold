@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:motivegold/constants/colors.dart';
 
 
 class DropDownItemWidget extends StatelessWidget {
@@ -37,7 +38,7 @@ class DropDownItemWidget extends StatelessWidget {
                 Text(
                   '${project is int ? project :project!.name}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Colors.black,
+                    color: textColor,
                     fontSize: fontSize,
                   ),
                 ),

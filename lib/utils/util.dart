@@ -9,8 +9,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/location/amphure.dart';
+import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/utils/constants.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
 import '../model/order.dart';
@@ -18,6 +23,91 @@ import 'global.dart';
 
 final formatter = NumberFormat("#,###.##");
 const JsonEncoder encoder = JsonEncoder();
+
+int? filterChungVatByName(String? name) {
+  if (Global.provinceList.isNotEmpty) {
+    var provinces = Global.provinceList.where((e) => e.nameTh == name).toList();
+    if (provinces.isNotEmpty) {
+      Global.provinceModel = provinces.first;
+      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      return provinces.first.id;
+    }
+  }
+  return 0;
+}
+
+int? filterAmpheryName(String? name) {
+  var amphures = Global.amphureList.where((e) => e.nameTh == name).toList();
+  if (amphures.isNotEmpty) {
+    Global.amphureModel = amphures.first;
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(
+        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    return amphures.first.id;
+  }
+  return 0;
+}
+
+int? filterTambonByName(String? name) {
+  var tambons = Global.tambonList.where((e) => e.nameTh == name).toList();
+  if (tambons.isNotEmpty) {
+    Global.tambonModel = tambons.first;
+    Global.tambonNotifier = ValueNotifier<TambonModel>(
+        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    return tambons.first.id;
+  }
+  return 0;
+}
+
+loadAmphureByProvince(int? id) async {
+  try {
+    var result = await ApiServices.post(
+        '/customer/amphure/$id', Global.requestObj(null));
+    if (result?.status == "success") {
+      var data = jsonEncode(result?.data);
+      List<AmphureModel> products = amphureModelFromJson(data);
+      Global.amphureList = products;
+    } else {
+      Global.amphureList = [];
+    }
+  } catch (e) {
+    motivePrint(e.toString());
+  }
+}
+
+loadTambonByAmphure(int? id) async {
+  try {
+    var result =
+        await ApiServices.post('/customer/tambon/$id', Global.requestObj(null));
+    if (result?.status == "success") {
+      var data = jsonEncode(result?.data);
+      List<TambonModel> products = tambonModelFromJson(data);
+      Global.tambonList = products;
+    } else {
+      Global.tambonList = [];
+    }
+  } catch (e) {
+    motivePrint(e.toString());
+  }
+}
+
+void resetPaymentData() {
+  Global.currentPaymentMethod = null;
+  Global.selectedPayment = null;
+  Global.cardNameCtrl.text = "";
+  Global.cardNumberCtrl.text = "";
+  Global.cardExpireDateCtrl.text = "";
+  Global.bankCtrl.text = "";
+  Global.accountNoCtrl.text = "";
+  Global.addressCtrl.text = "";
+  Global.amountCtrl.text = "";
+  Global.refNoCtrl.text = "";
+  Global.paymentDateCtrl.text = Global.formatDateDD(DateTime.now().toString());
+  Global.paymentAttachment = null;
+  Global.selectedAccount = null;
+  Global.selectedBank = null;
+  Global.filterAccountList = [];
+}
 
 class AlwaysDisabledFocusNode extends FocusNode {
   @override
@@ -395,11 +485,137 @@ Widget buildTextField(
     TextEditingController? controller,
     String? suffixText,
     TextInputType? inputType,
+    List<TextInputFormatter>? inputFormat,
+    line,
+    Color? textColor,
+    bool option = false,
+    bool obscureText = false,
+    Function(String value)? onChanged,
+    Function(String value)? onSubmitted,
+    String? placeholder,
+    enabled = true}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: TextFormField(
+      keyboardType: inputType ?? TextInputType.text,
+      inputFormatters: inputFormat ?? [],
+      obscureText: obscureText ?? false,
+      enabled: enabled,
+      maxLines: line ?? 1,
+      style: const TextStyle(fontSize: 20),
+      decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding: const EdgeInsets.all(8),
+        labelText: labelText,
+        labelStyle: TextStyle(
+            fontSize: 20,
+            color: textColor ?? Colors.black,
+            fontWeight: FontWeight.w900),
+        suffixText: suffixText,
+        filled: true,
+        hintText: placeholder,
+        suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
+        fillColor: enabled ? Colors.white70 : Colors.white54,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(0),
+          ),
+          borderSide: const BorderSide(
+            color: kGreyShade3,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(0),
+          ),
+          borderSide: const BorderSide(
+            color: kGreyShade3,
+          ),
+        ),
+      ),
+      validator: validator,
+      controller: controller,
+      onChanged: onChanged,
+      onFieldSubmitted: onSubmitted,
+    ),
+  );
+}
+
+Widget buildTextFieldX(
+    {String? labelText,
+      FormFieldValidator<String>? validator,
+      TextEditingController? controller,
+      String? suffixText,
+      TextInputType? inputType,
       List<TextInputFormatter>? inputFormat,
+      line,
+      Color? textColor,
+      bool option = false,
+      bool obscureText = false,
+      Function(String value)? onChanged,
+      Function(String value)? onSubmitted,
+      String? placeholder,
+      enabled = true}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: TextFormField(
+      keyboardType: inputType ?? TextInputType.text,
+      inputFormatters: inputFormat ?? [],
+      obscureText: obscureText ?? false,
+      enabled: enabled,
+      maxLines: line ?? 1,
+      style: const TextStyle(fontSize: 30),
+      decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding: const EdgeInsets.all(8),
+        labelText: labelText,
+        labelStyle: TextStyle(
+            fontSize: 30,
+            color: textColor ?? Colors.black,
+            fontWeight: FontWeight.w900),
+        suffixText: suffixText,
+        filled: true,
+        hintText: placeholder,
+        suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
+        fillColor: enabled ? Colors.white70 : Colors.white54,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(0),
+          ),
+          borderSide: const BorderSide(
+            color: kGreyShade3,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(0),
+          ),
+          borderSide: const BorderSide(
+            color: kGreyShade3,
+          ),
+        ),
+      ),
+      validator: validator,
+      controller: controller,
+      onChanged: onChanged,
+      onFieldSubmitted: onSubmitted,
+    ),
+  );
+}
+
+Widget buildTextFieldBig(
+    {String? labelText,
+    FormFieldValidator<String>? validator,
+    TextEditingController? controller,
+    String? suffixText,
+    TextInputType? inputType,
+    List<TextInputFormatter>? inputFormat,
     line,
     Color? textColor,
     bool option = false,
     Function(String value)? onChanged,
+    TextAlign? align,
+    bool isPassword = false,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -408,13 +624,18 @@ Widget buildTextField(
       inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 25),
+      style: const TextStyle(fontSize: 50),
+      textAlign: align ?? TextAlign.left,
+      obscureText: isPassword,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: const EdgeInsets.all(8),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
         labelText: labelText,
-        labelStyle: TextStyle( fontSize: 25,
-            color: textColor ?? Colors.black, fontWeight: FontWeight.w900),
+        labelStyle: TextStyle(
+            color: textColor ?? Colors.blue[900],
+            fontWeight: FontWeight.w900,
+            fontSize: 50),
         suffixText: suffixText,
         filled: true,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
@@ -443,7 +664,7 @@ Widget buildTextField(
   );
 }
 
-Widget buildTextFieldBig(
+Widget numberTextField(
     {String? labelText,
     FormFieldValidator<String>? validator,
     TextEditingController? controller,
@@ -452,46 +673,167 @@ Widget buildTextFieldBig(
     List<TextInputFormatter>? inputFormat,
     line,
     Color? textColor,
-    bool option = false,
     Function(String value)? onChanged,
+    Function()? openCalc,
+    Function()? onTap,
+    Function()? clear,
+    FocusNode? focusNode,
     bool isPassword = false,
+    bool readOnly = false,
     enabled = true}) {
   return Padding(
-    padding: const EdgeInsets.only(bottom: 8.0),
+    padding: const EdgeInsets.only(bottom: 0.0),
     child: TextFormField(
       keyboardType: inputType ?? TextInputType.text,
       inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 32),
+      textAlign: TextAlign.right,
+      style: TextStyle(
+        fontSize: 50,
+        color: textColor ?? Colors.blue[900],
+      ),
       obscureText: isPassword,
+      onTap: onTap,
+      readOnly: readOnly ?? false,
+      // showCursor: readOnly ?? true,
+      focusNode: focusNode,
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
         labelText: labelText,
         labelStyle: TextStyle(
-            color: textColor ?? Colors.black,
+            color: textColor ?? Colors.blue[900],
             fontWeight: FontWeight.w900,
-            fontSize: 32),
+            fontSize: 30),
+        prefixIconConstraints:
+            const BoxConstraints(minHeight: 90, minWidth: 90),
+        prefixIcon: IconButton(
+          icon: Icon(
+            size: 80,
+            Icons.calculate_outlined,
+            color: readOnly ? Colors.teal : null,
+          ),
+          onPressed: openCalc,
+        ),
         suffixText: suffixText,
         filled: true,
-        suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
-        fillColor: enabled ? Colors.white70 : Colors.white54,
+        suffixIconConstraints:
+            const BoxConstraints(minHeight: 60, minWidth: 60),
+        suffixIcon: IconButton(
+          icon: const Icon(
+            size: 50,
+            Icons.close,
+            color: Colors.red,
+          ),
+          onPressed: clear,
+        ),
+        fillColor: enabled ? Colors.white54 : Colors.white54,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             getProportionateScreenWidth(2),
           ),
-          borderSide: const BorderSide(
-            color: kGreyShade3,
+          borderSide: BorderSide(
+            color: readOnly ? Colors.teal : kGreyShade3,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             getProportionateScreenWidth(2),
           ),
-          borderSide: const BorderSide(
-            color: kGreyShade3,
+          borderSide: BorderSide(
+            color: readOnly ? Colors.teal : kGreyShade3,
+          ),
+        ),
+      ),
+      validator: validator,
+      controller: controller,
+      onChanged: onChanged,
+    ),
+  );
+}
+
+Widget numberTextFieldBig(
+    {String? labelText,
+    FormFieldValidator<String>? validator,
+    TextEditingController? controller,
+    String? suffixText,
+    TextInputType? inputType,
+    List<TextInputFormatter>? inputFormat,
+    line,
+    Color? textColor,
+    Function(String value)? onChanged,
+    Function()? openCalc,
+    Function()? onTap,
+    Function()? clear,
+    FocusNode? focusNode,
+    bool isPassword = false,
+    bool readOnly = false,
+    enabled = true}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 0.0),
+    child: TextFormField(
+      keyboardType: inputType ?? TextInputType.text,
+      inputFormatters: inputFormat ?? [],
+      enabled: enabled,
+      maxLines: line ?? 1,
+      textAlign: TextAlign.right,
+      style: TextStyle(
+        fontSize: 50,
+        color: textColor ?? Colors.blue[900],
+      ),
+      obscureText: isPassword,
+      onTap: onTap,
+      readOnly: readOnly ?? false,
+      // showCursor: readOnly ?? true,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+        labelText: labelText,
+        labelStyle: TextStyle(
+            color: textColor ?? Colors.blue[900],
+            fontWeight: FontWeight.w900,
+            fontSize: 50),
+        prefixIconConstraints:
+            const BoxConstraints(minHeight: 90, minWidth: 90),
+        prefixIcon: IconButton(
+          icon: Icon(
+            size: 80,
+            Icons.calculate_outlined,
+            color: readOnly ? Colors.teal : null,
+          ),
+          onPressed: openCalc,
+        ),
+        suffixText: suffixText,
+        filled: true,
+        suffixIconConstraints:
+            const BoxConstraints(minHeight: 60, minWidth: 60),
+        suffixIcon: IconButton(
+          icon: const Icon(
+            size: 50,
+            Icons.close,
+            color: Colors.red,
+          ),
+          onPressed: clear,
+        ),
+        fillColor: enabled ? Colors.white54 : Colors.white54,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(2),
+          ),
+          borderSide: BorderSide(
+            color: readOnly ? Colors.teal : kGreyShade3,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            getProportionateScreenWidth(2),
+          ),
+          borderSide: BorderSide(
+            color: readOnly ? Colors.teal : kGreyShade3,
           ),
         ),
       ),
@@ -520,20 +862,14 @@ String generateRandomString(int len) {
 
 String generateProductCode(int len) {
   var r = Random();
-  const chars =
-      '1234567890';
-  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)])
-      .join()
-      .toUpperCase()}';
+  const chars = '1234567890';
+  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)]).join().toUpperCase()}';
 }
 
 String generateOrderId(int len) {
   var r = Random();
-  const chars =
-      '1234567890';
-  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)])
-      .join()
-      .toUpperCase()}';
+  const chars = '1234567890';
+  return 'P-${List.generate(len, (index) => chars[r.nextInt(chars.length)]).join().toUpperCase()}';
 }
 
 String dataType(OrderModel list) {
@@ -631,7 +967,8 @@ sumSellThengTotal() {
   Global.sellThengWeightTotal = 0;
 
   for (int i = 0; i < Global.sellThengOrderDetail!.length; i++) {
-    Global.sellThengSubTotal += Global.sellThengOrderDetail![i].priceIncludeTax!;
+    Global.sellThengSubTotal +=
+        Global.sellThengOrderDetail![i].priceIncludeTax!;
     if (Global.sellThengOrderDetail![i].weight! != 0) {
       Global.sellThengWeightTotal += Global.sellThengOrderDetail![i].weight!;
     }

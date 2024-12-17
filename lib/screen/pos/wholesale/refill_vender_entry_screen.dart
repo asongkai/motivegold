@@ -11,6 +11,7 @@ import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/customer/location.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -129,7 +130,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                             ? [
                                 Container(
                                   margin: const EdgeInsets.only(top: 50.0),
-                                  child: const Center(child: EmptyContent()),
+                                  child: const Center(child: NoDataFoundWidget()),
                                 )
                               ]
                             : customers.map((e) {
@@ -350,7 +351,9 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                     "firstName": firstNameCtrl.text,
                     "lastName": lastNameCtrl.text,
                     "email": emailAddressCtrl.text,
-                    "doB": "2024-04-25T12:59:54.676Z",
+                    "doB": birthDateCtrl.text.isEmpty
+                        ? ""
+                        : Global.convertDate(birthDateCtrl.text).toUtc(),
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),

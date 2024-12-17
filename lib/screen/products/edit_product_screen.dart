@@ -64,10 +64,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    selectedType = productTypes().where((element) => element.code == widget.product.type).first;
+    selectedType = productTypes()
+        .where((element) => element.code == widget.product.type)
+        .first;
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    typeNotifier = ValueNotifier<ProductTypeModel>(selectedType ?? ProductTypeModel(id: 0, name: 'เลือกสถานะสินค้า'));
+    typeNotifier = ValueNotifier<ProductTypeModel>(
+        selectedType ?? ProductTypeModel(id: 0, name: 'เลือกสถานะสินค้า'));
     id = widget.product.id;
     productNameCtrl.text = widget.product.name;
     productCodeCtrl.text = widget.product.productCode!;
@@ -80,21 +83,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/producttype/all', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/producttype/all', Global.requestObj(null));
       // print(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         // print(widget.product.productTypeId);
         List<ProductTypeModel> types = productTypeListModelFromJson(data);
-        var pTypes = types
-            .where((e) => e.id == widget.product.productTypeId)
-            .toList();
+        var pTypes =
+            types.where((e) => e.id == widget.product.productTypeId).toList();
         if (pTypes.isNotEmpty) {
           selectedProductType = pTypes.first;
           productTypeCtrl.text = selectedProductType!.name!;
-          productTypeNotifier =
-              ValueNotifier<ProductTypeModel>(selectedProductType ?? ProductTypeModel(id: 0, name: 'เลือกประเภท'));
-
+          productTypeNotifier = ValueNotifier<ProductTypeModel>(
+              selectedProductType ??
+                  ProductTypeModel(id: 0, name: 'เลือกประเภท'));
         }
 
         setState(() {
@@ -104,7 +107,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
         productTypeList = [];
       }
 
-      var response = await ApiServices.post('/productcategory/all', Global.requestObj(null));
+      var response = await ApiServices.post(
+          '/productcategory/all', Global.requestObj(null));
       // print(response!.toJson());
       if (response?.status == "success") {
         var data = jsonEncode(response?.data);
@@ -116,8 +120,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         if (cTypes.isNotEmpty) {
           selectedCategory = cTypes.first;
           productCategoryCtrl.text = selectedCategory!.name!;
-          productCategoryNotifier =
-              ValueNotifier<ProductCategoryModel>(selectedCategory ?? ProductCategoryModel(id: 0, name: 'เลือกประเภท'));
+          productCategoryNotifier = ValueNotifier<ProductCategoryModel>(
+              selectedCategory ??
+                  ProductCategoryModel(id: 0, name: 'เลือกประเภท'));
         }
 
         setState(() {
@@ -127,7 +132,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
         productCategoryList = [];
       }
 
-      selectedType = productTypes().where((element) => element.code == widget.product.type).first;
+      selectedType = productTypes()
+          .where((element) => element.code == widget.product.type)
+          .first;
       if (selectedType != null) {
         typeCtrl.text = selectedType!.name!;
       }
@@ -172,8 +179,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Column(
                                     children: [
                                       const SizedBox(
@@ -201,65 +208,41 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                  const EdgeInsets
-                                      .all(
-                                      8.0),
-                                  child:
-                                  SizedBox(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
                                     height: 70,
-                                    child: MiraiDropDownMenu<
-                                        ProductTypeModel>(
-                                      key:
-                                      UniqueKey(),
-                                      children:
-                                      productTypeList,
+                                    child: MiraiDropDownMenu<ProductTypeModel>(
+                                      key: UniqueKey(),
+                                      children: productTypeList,
                                       space: 4,
-                                      maxHeight:
-                                      360,
-                                      showSearchTextField:
-                                      true,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
                                       selectedItemBackgroundColor:
-                                      Colors
-                                          .transparent,
+                                          Colors.transparent,
                                       emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor:
-                                      true,
-                                      itemWidgetBuilder:
-                                          (
-                                          int index,
-                                          ProductTypeModel?
-                                          project, {
-                                        bool isItemSelected =
-                                        false,
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductTypeModel? project, {
+                                        bool isItemSelected = false,
                                       }) {
                                         return DropDownItemWidget(
-                                          project:
-                                          project,
-                                          isItemSelected:
-                                          isItemSelected,
-                                          firstSpace:
-                                          10,
-                                          fontSize:
-                                          size.getWidthPx(6),
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(6),
                                         );
                                       },
-                                      onChanged:
-                                          (ProductTypeModel
-                                      value) {
+                                      onChanged: (ProductTypeModel value) {
                                         productTypeCtrl.text = value.name!;
                                         selectedProductType = value;
-                                        productTypeNotifier!.value =
-                                            value;
+                                        productTypeNotifier!.value = value;
                                       },
-                                      child:
-                                      DropDownObjectChildWidget(
-                                        key:
-                                        GlobalKey(),
-                                        fontSize:
-                                        size.getWidthPx(6),
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(6),
                                         projectValueNotifier:
-                                        productTypeNotifier!,
+                                            productTypeNotifier!,
                                       ),
                                     ),
                                   ),
@@ -267,65 +250,42 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                  const EdgeInsets
-                                      .all(
-                                      8.0),
-                                  child:
-                                  SizedBox(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
                                     height: 70,
-                                    child: MiraiDropDownMenu<
-                                        ProductCategoryModel>(
-                                      key:
-                                      UniqueKey(),
-                                      children:
-                                      productCategoryList,
+                                    child:
+                                        MiraiDropDownMenu<ProductCategoryModel>(
+                                      key: UniqueKey(),
+                                      children: productCategoryList,
                                       space: 4,
-                                      maxHeight:
-                                      360,
-                                      showSearchTextField:
-                                      true,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
                                       selectedItemBackgroundColor:
-                                      Colors
-                                          .transparent,
+                                          Colors.transparent,
                                       emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor:
-                                      true,
-                                      itemWidgetBuilder:
-                                          (
-                                          int index,
-                                          ProductCategoryModel?
-                                          project, {
-                                        bool isItemSelected =
-                                        false,
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductCategoryModel? project, {
+                                        bool isItemSelected = false,
                                       }) {
                                         return DropDownItemWidget(
-                                          project:
-                                          project,
-                                          isItemSelected:
-                                          isItemSelected,
-                                          firstSpace:
-                                          10,
-                                          fontSize:
-                                          size.getWidthPx(6),
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(6),
                                         );
                                       },
-                                      onChanged:
-                                          (ProductCategoryModel
-                                      value) {
+                                      onChanged: (ProductCategoryModel value) {
                                         productCategoryCtrl.text = value.name!;
                                         selectedCategory = value;
-                                        productCategoryNotifier!.value =
-                                            value;
+                                        productCategoryNotifier!.value = value;
                                       },
-                                      child:
-                                      DropDownObjectChildWidget(
-                                        key:
-                                        GlobalKey(),
-                                        fontSize:
-                                        size.getWidthPx(6),
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(6),
                                         projectValueNotifier:
-                                        productCategoryNotifier!,
+                                            productCategoryNotifier!,
                                       ),
                                     ),
                                   ),
@@ -342,8 +302,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Column(
                                     children: [
                                       const SizedBox(
@@ -361,65 +321,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                  const EdgeInsets
-                                      .all(
-                                      8.0),
-                                  child:
-                                  SizedBox(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
                                     height: 70,
-                                    child: MiraiDropDownMenu<
-                                        ProductTypeModel>(
-                                      key:
-                                      UniqueKey(),
-                                      children:
-                                      productTypes(),
+                                    child: MiraiDropDownMenu<ProductTypeModel>(
+                                      key: UniqueKey(),
+                                      children: productTypes(),
                                       space: 4,
-                                      maxHeight:
-                                      360,
-                                      showSearchTextField:
-                                      true,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
                                       selectedItemBackgroundColor:
-                                      Colors
-                                          .transparent,
+                                          Colors.transparent,
                                       emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor:
-                                      true,
-                                      itemWidgetBuilder:
-                                          (
-                                          int index,
-                                          ProductTypeModel?
-                                          project, {
-                                        bool isItemSelected =
-                                        false,
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductTypeModel? project, {
+                                        bool isItemSelected = false,
                                       }) {
                                         return DropDownItemWidget(
-                                          project:
-                                          project,
-                                          isItemSelected:
-                                          isItemSelected,
-                                          firstSpace:
-                                          10,
-                                          fontSize:
-                                          size.getWidthPx(6),
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(6),
                                         );
                                       },
-                                      onChanged:
-                                          (ProductTypeModel
-                                      value) {
+                                      onChanged: (ProductTypeModel value) {
                                         typeCtrl.text = value.name!;
                                         selectedType = value;
-                                        typeNotifier!.value =
-                                            value;
+                                        typeNotifier!.value = value;
                                       },
-                                      child:
-                                      DropDownObjectChildWidget(
-                                        key:
-                                        GlobalKey(),
-                                        fontSize:
-                                        size.getWidthPx(6),
-                                        projectValueNotifier:
-                                        typeNotifier!,
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(6),
+                                        projectValueNotifier: typeNotifier!,
                                       ),
                                     ),
                                   ),
@@ -440,11 +375,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -458,7 +392,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                 var object = Global.requestObj({
                   "id": id,
-                  "productCode": widget.product.productCode!.isEmpty ? generateRandomString(10).toUpperCase() : widget.product.productCode,
+                  "productCode": widget.product.productCode!.isEmpty
+                      ? generateRandomString(10).toUpperCase()
+                      : widget.product.productCode,
                   "type": selectedType!.code,
                   "name": productNameCtrl.text,
                   "productTypeId": selectedProductType!.id,
@@ -467,39 +403,40 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   "branchId": Global.user?.branchId
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result = await ApiServices.put('/product', id, object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                        Navigator.of(context).pop();
-                      });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result = await ApiServices.put('/product', id, object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

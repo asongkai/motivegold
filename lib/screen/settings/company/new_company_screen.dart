@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -62,8 +61,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -90,8 +89,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -110,11 +109,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 const SizedBox(
@@ -141,8 +139,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -160,11 +158,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 const SizedBox(
@@ -191,8 +188,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -210,11 +207,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 const SizedBox(
@@ -241,8 +237,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Column(
                               children: [
                                 const SizedBox(
@@ -273,11 +269,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
             width: 150,
             child: ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -300,39 +295,40 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                   "taxNumber": taxNumberCtrl.text
                 });
 
-                // print(object);
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  var result = await ApiServices.post('/company', object);
-                  await pr.hide();
-                  if (result?.status == "success") {
-                    if (mounted) {
-                      Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                          action: () {
-                        Navigator.of(context).pop();
-                      });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result = await ApiServices.post('/company', object);
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(), result!.message!,
+                            'OK'.tr(),
+                            action: () {});
+                      }
                     }
-                  } else {
+                  } catch (e) {
+                    await pr.hide();
                     if (mounted) {
                       Alert.warning(
-                          context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
                           action: () {});
                     }
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
-                  }
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

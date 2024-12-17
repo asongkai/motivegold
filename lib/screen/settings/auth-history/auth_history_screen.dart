@@ -7,6 +7,7 @@ import 'package:motivegold/model/auth_log.dart';
 import 'package:motivegold/screen/settings/auth-history/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -69,7 +70,7 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : productList!.isEmpty ? const EmptyContent() : SingleChildScrollView(
+            : productList!.isEmpty ? const NoDataFoundWidget() : SingleChildScrollView(
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(

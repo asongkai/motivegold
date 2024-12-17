@@ -1,21 +1,21 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/screen/customer/add_customer_screen.dart';
+import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/print_bill_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/button/simple_button.dart';
-import 'package:motivegold/widget/empty.dart';
+import 'package:motivegold/widget/button/kcl_button.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/payment/payment_method.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -24,7 +24,6 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
-import 'refill_vender_entry_screen.dart';
 
 class WholesaleCheckOutScreen extends StatefulWidget {
   const WholesaleCheckOutScreen({super.key});
@@ -68,7 +67,7 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
           },
           child: Global.orders!.isEmpty
               ? const Center(
-                  child: EmptyContent(),
+                  child: NoDataFoundWidget(),
                 )
               : Column(
                   children: [
@@ -108,102 +107,227 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
                                           ),
                                         ]),
                                     child: Global.customer == null
-                                        ? SimpleRoundButton(
-                                            buttonText: Text(
-                                              'เพิ่ม',
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      size.getWidthPx(10)),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.push(
+                                        ? Row(
+                                      children: [
+                                        Expanded(flex: 5, child: Container()),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Column(
+                                            children: [
+                                              KclButton(
+                                                onTap: () {
+                                                  Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
-                                                              const RefillVenderEntryScreen(),
+                                                          const AddCustomerScreen(),
                                                           fullscreenDialog:
-                                                              true))
-                                                  .whenComplete(() {
-                                                setState(() {});
-                                              });
-                                            },
-                                          )
+                                                          true))
+                                                      .whenComplete(() {
+                                                    setState(() {});
+                                                  });
+                                                },
+                                                text: 'เพิ่ม',
+                                                fullWidth: true,
+                                                icon: Icons.add,
+                                              ),
+                                              KclButton(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const CustomerScreen(
+                                                            selected: true,
+                                                          ),
+                                                          fullscreenDialog:
+                                                          true))
+                                                      .whenComplete(() {
+                                                    setState(() {});
+                                                  });
+                                                },
+                                                text: 'ค้นหา',
+                                                icon: Icons.search,
+                                                fullWidth: true,
+                                                color: Colors.teal,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                    // SimpleRoundButton(
+                                    //         buttonText: Text(
+                                    //           'เพิ่ม',
+                                    //           style: TextStyle(
+                                    //               fontSize: size!.getWidthPx(10)),
+                                    //         ),
+                                    //         onPressed: () {
+                                    //           if (Global.orders![0].orderTypeId == 8 ||
+                                    //               Global.orders![0].orderTypeId == 9) {
+                                    //             Navigator.push(
+                                    //                     context,
+                                    //                     MaterialPageRoute(
+                                    //                         builder: (context) =>
+                                    //                             const BrokerEntryScreen(),
+                                    //                         fullscreenDialog: true))
+                                    //                 .whenComplete(() {
+                                    //               setState(() {});
+                                    //             });
+                                    //           } else {
+                                    //             Navigator.push(
+                                    //                     context,
+                                    //                     MaterialPageRoute(
+                                    //                         builder: (context) =>
+                                    //                             const CustomerEntryScreen(),
+                                    //                         fullscreenDialog: true))
+                                    //                 .whenComplete(() {
+                                    //               setState(() {});
+                                    //             });
+                                    //           }
+                                    //         },
+                                    //       )
                                         : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize:
-                                                          size.getWidthPx(6),
-                                                    ),
-                                                  ),
-                                                  const Spacer(),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const RefillVenderEntryScreen(),
-                                                                  fullscreenDialog:
-                                                                      true))
-                                                          .whenComplete(() {
-                                                        setState(() {});
-                                                      });
-                                                    },
-                                                    child: Text(
-                                                      "เปลี่ยน",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          fontSize: size
-                                                              .getWidthPx(6),
-                                                          color: Colors.red),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Text(
-                                                "${Global.customer!.phoneNumber}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  color: Colors.black,
-                                                  fontSize: size.getWidthPx(6),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Text(
-                                                "${Global.customer!.email}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  color: Colors.black,
-                                                  fontSize: size.getWidthPx(6),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 3,
-                                              ),
-                                              Text(
-                                                "${Global.customer!.address}",
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 5,
+                                              child: Text(
+                                                "${Global.customer!.firstName} ${Global.customer!.lastName}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: size.getWidthPx(6),
                                                 ),
                                               ),
-                                            ],
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                                children: [
+                                                  KclButton(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                              const AddCustomerScreen(),
+                                                              fullscreenDialog:
+                                                              true))
+                                                          .whenComplete(() {
+                                                        setState(() {});
+                                                      });
+                                                    },
+                                                    text: 'เพิ่ม',
+                                                    fullWidth: true,
+                                                    icon: Icons.add,
+                                                  ),
+                                                  KclButton(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                              const CustomerScreen(
+                                                                selected:
+                                                                true,
+                                                              ),
+                                                              fullscreenDialog:
+                                                              true))
+                                                          .whenComplete(() {
+                                                        setState(() {});
+                                                      });
+                                                    },
+                                                    text: 'ค้นหา',
+                                                    icon: Icons.search,
+                                                    fullWidth: true,
+                                                    color: Colors.teal,
+                                                  ),
+                                                  // InkWell(
+                                                  //   onTap: () {
+                                                  //     if (Global.orders![0]
+                                                  //                 .orderTypeId ==
+                                                  //             8 ||
+                                                  //         Global.orders![0]
+                                                  //                 .orderTypeId ==
+                                                  //             9) {
+                                                  //       Navigator.push(
+                                                  //               context,
+                                                  //               MaterialPageRoute(
+                                                  //                   builder:
+                                                  //                       (context) =>
+                                                  //                           const BrokerEntryScreen(),
+                                                  //                   fullscreenDialog:
+                                                  //                       true))
+                                                  //           .whenComplete(() {
+                                                  //         setState(() {});
+                                                  //       });
+                                                  //     } else {
+                                                  //       Navigator.push(
+                                                  //               context,
+                                                  //               MaterialPageRoute(
+                                                  //                   builder:
+                                                  //                       (context) =>
+                                                  //                           const CustomerEntryScreen(),
+                                                  //                   fullscreenDialog:
+                                                  //                       true))
+                                                  //           .whenComplete(() {
+                                                  //         setState(() {});
+                                                  //       });
+                                                  //     }
+                                                  //   },
+                                                  //   child: Text(
+                                                  //     "เปลี่ยน",
+                                                  //     style: TextStyle(
+                                                  //         fontWeight:
+                                                  //             FontWeight.normal,
+                                                  //         fontSize:
+                                                  //             size!.getWidthPx(6),
+                                                  //         color: Colors.red),
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "${Global.customer!.phoneNumber}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                            fontSize: size.getWidthPx(6),
                                           ),
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "${Global.customer!.email}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                            fontSize: size.getWidthPx(6),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 3,
+                                        ),
+                                        Text(
+                                          "${Global.customer!.address}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: size.getWidthPx(6),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   const SizedBox(
                                     height: 10,
@@ -289,10 +413,10 @@ class _WholesaleCheckOutScreenState extends State<WholesaleCheckOutScreen> {
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                      WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),

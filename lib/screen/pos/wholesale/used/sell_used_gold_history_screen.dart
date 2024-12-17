@@ -11,7 +11,9 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
+// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -304,7 +306,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                     margin: const EdgeInsets.only(top: 100),
                     child: const LoadingProgress())
                 : filterList!.isEmpty
-                    ? const EmptyContent()
+                    ? const NoDataFoundWidget()
                     : Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),

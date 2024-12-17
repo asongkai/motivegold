@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/empty.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
+// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -85,7 +87,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
         child: loading
             ? const LoadingProgress()
             : sellList!.isEmpty
-                ? const EmptyContent()
+                ? const NoDataFoundWidget()
                 : SingleChildScrollView(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height - 100,
