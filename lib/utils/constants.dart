@@ -125,8 +125,8 @@ class Constants {
   static const String GOLD_URL = "https://motive.kodpay.la/api";
   static const String DOMAIN_GOLD = "https://motive.kodpay.la";
 
-  // static const String BACKEND_URL = "http://testmoes.dyndns.info:5000/api";
-  // static const String DOMAIN_URL = "http://testmoes.dyndns.info:5000";
+  // static const String BACKEND_URL = "http://110.171.172.189:5000/api";
+  // static const String DOMAIN_URL = "http://110.171.172.189:5000";
 
   static String BACKEND_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000/api" : "http://localhost:5000/api";
   static String DOMAIN_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000" : "http://localhost:5000";

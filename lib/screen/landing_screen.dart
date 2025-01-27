@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/auth/signin_screen.dart';
 import 'package:motivegold/screen/tab_screen.dart';
@@ -18,6 +20,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/company.dart';
 import 'package:motivegold/utils/constants.dart';
+import 'package:motivegold/utils/util.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -88,19 +91,22 @@ class _LandingScreenState extends State<LandingScreen> {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if (kIsWeb) {
       Global.deviceDetail = readWebBrowserInfo(await deviceInfo.webBrowserInfo);
-    }
-    else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android) {
+    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android) {
       if (Platform.isAndroid) {
         // AndroidDeviceInfo info = await deviceInfo.androidInfo;
-        Global.deviceDetail = readAndroidBuildData(await deviceInfo.androidInfo);
+        Global.deviceDetail =
+            readAndroidBuildData(await deviceInfo.androidInfo);
         // motivePrint(info.toMap());
       } else if (Platform.isIOS) {
         // IosDeviceInfo info = await deviceInfo.iosInfo;
         Global.deviceDetail = readIosDeviceInfo(await deviceInfo.iosInfo);
         // print(info.toMap());
       }
-    }
-    else if (defaultTargetPlatform == TargetPlatform.linux || defaultTargetPlatform == TargetPlatform.macOS || defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.fuchsia) {
+    } else if (defaultTargetPlatform == TargetPlatform.linux ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.fuchsia) {
       if (Platform.isLinux) {
         // LinuxDeviceInfo info = await deviceInfo.linuxInfo;
         Global.deviceDetail = readLinuxDeviceInfo(await deviceInfo.linuxInfo);
@@ -111,7 +117,8 @@ class _LandingScreenState extends State<LandingScreen> {
         // print(info.toMap());
       } else if (Platform.isWindows) {
         // WindowsDeviceInfo info = await deviceInfo.windowsInfo;
-        Global.deviceDetail = readWindowsDeviceInfo(await deviceInfo.windowsInfo);
+        Global.deviceDetail =
+            readWindowsDeviceInfo(await deviceInfo.windowsInfo);
         // print(info.toMap());
       }
     }
@@ -138,12 +145,12 @@ class _LandingScreenState extends State<LandingScreen> {
         }
       }
 
-      var authObject = Global.requestObj({
-        "deviceDetail": Global.deviceDetail.toString()
-      });
+      var authObject =
+          Global.requestObj({"deviceDetail": Global.deviceDetail.toString()});
 
       try {
-        await ApiServices.post('/user/state/Open/${Global.user!.id}', authObject);
+        await ApiServices.post(
+            '/user/state/Open/${Global.user!.id}', authObject);
       } catch (e) {
         motivePrint(e.toString());
       }
@@ -159,6 +166,33 @@ class _LandingScreenState extends State<LandingScreen> {
         } else {
           Global.branch = null;
         }
+      }
+
+      if (Global.branchList.isEmpty) {
+        var b = await ApiServices.get(
+            '/branch/by-company/${Global.user?.companyId}');
+        // motivePrint(b!.data);
+        if (b?.status == "success") {
+          var data = jsonEncode(b?.data);
+          List<BranchModel> products = branchListModelFromJson(data);
+          setState(() {
+            Global.branchList = products;
+          });
+        } else {
+          Global.branchList = [];
+        }
+      }
+
+      var pos = await ApiServices.get(
+          '/company/configure/pos/id/get/${await getDeviceId()}');
+      // print(result!.data);
+      if (pos?.status == "success") {
+        var data = PosIdModel.fromJson(pos?.data);
+        setState(() {
+          Global.posIdModel = data;
+        });
+      } else {
+        Global.posIdModel = null;
       }
 
       // Navigator.of(context).pushReplacement(

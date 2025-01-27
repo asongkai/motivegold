@@ -32,6 +32,7 @@ class ProductModel {
   WarehouseModel? binLocation;
   DateTime? createdDate;
   DateTime? updatedDate;
+  int? isDefault;
 
   ProductModel({
     this.id,
@@ -48,6 +49,7 @@ class ProductModel {
     this.binLocation,
     this.createdDate,
     this.updatedDate,
+    this.isDefault,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -62,6 +64,7 @@ class ProductModel {
     photoUrl: json["photoUrl"],
     type: json["type"],
     binLocationId: json["binLocationId"],
+    isDefault: json["isDefault"],
     binLocation: json["binLocation"] == null ? null : WarehouseModel.fromJson(json["binLocation"]),
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
@@ -79,6 +82,7 @@ class ProductModel {
     "photoUrl": photoUrl,
     "type": type,
     "binLocationId": binLocationId,
+    "isDefault": isDefault,
     "binLocation": binLocation?.toJson(),
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),

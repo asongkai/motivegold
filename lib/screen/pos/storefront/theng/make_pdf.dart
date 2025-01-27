@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -79,7 +80,7 @@ Future<Uint8List> makeThengPdf(Invoice invoice) async {
                 Text(
                     'ใบเสร็จรับเงินนี้จะสมบูรณ์ต่อเมื่อ  บริษัทฯได้รับเงินอย่างครบถ้วน')
               ]),
-              getThongThengPaymentInfo(invoice.order, invoice.payment!),
+              getThongThengPaymentInfo(invoice.order, invoice.payments ?? []),
               SizedBox(height: 10),
               getThongThengSignatureInfo(invoice.customer, invoice.order.orderTypeId!),
             ],

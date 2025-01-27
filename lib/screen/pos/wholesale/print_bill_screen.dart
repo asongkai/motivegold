@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/utils/global.dart';
@@ -12,7 +13,6 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -323,9 +323,22 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
 
                         var result = await ApiServices.get(
                             '/order/by-order-id/${order.orderId}');
+                        var payment = await ApiServices.post(
+                            '/order/payment/${order.pairId}',
+                            Global.requestObj(null));
+                        Global.paymentList =
+                            paymentListModelFromJson(jsonEncode(payment?.data));
+
                         await pr.hide();
+
                         if (result?.status == "success") {
                           OrderModel order = OrderModel.fromJson(result!.data);
+                          Invoice invoice = Invoice(
+                              order: order,
+                              customer: order.customer!,
+                              payments: Global.paymentList,
+                              orders: orders,
+                              items: order.details!);
                           if (mounted) {
                             if (order.orderTypeId == 5) {
                               Navigator.pushReplacement(
@@ -333,7 +346,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           PreviewRefillGoldPage(
-                                            order: order,
+                                            invoice: invoice,
                                           )));
                             }
 
@@ -343,7 +356,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           PreviewSellUsedGoldPage(
-                                            order: order,
+                                            invoice: invoice,
                                           )));
                             }
                           }
@@ -408,7 +421,7 @@ class PaymentCard extends StatelessWidget {
               bottom: getProportionateScreenHeight(8.0),
             ),
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected! ? Colors.white : Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(
                 getProportionateScreenWidth(
                   4,

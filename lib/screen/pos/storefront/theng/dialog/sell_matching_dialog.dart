@@ -115,14 +115,14 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/BARM', Global.requestObj(null));
+          await ApiServices.post('/product/type/BARM/3', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
                 (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
@@ -136,13 +136,14 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/matching', Global.requestObj(null));
+          '/binlocation/all/type/BARM/3', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
           warehouseList = warehouses;
-          selectedWarehouse = warehouseList.first;
+          selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
+          selectedWarehouse ??= warehouseList.first;
           warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });

@@ -25,6 +25,8 @@ class WarehouseModel {
   int? sell;
   int? matching;
 
+  int? isDefault;
+
   WarehouseModel(
       {this.id,
       this.branchId,
@@ -32,16 +34,19 @@ class WarehouseModel {
       required this.name,
       this.address,
       this.sell,
+      this.isDefault,
       this.matching});
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) => WarehouseModel(
-      id: json["id"],
-      companyId: json["companyId"],
-      branchId: json["branchId"],
-      name: json["name"],
-      address: json["address"],
-      sell: json["sell"],
-      matching: json["matching"]);
+        id: json["id"],
+        companyId: json["companyId"],
+        branchId: json["branchId"],
+        name: json["name"],
+        address: json["address"],
+        sell: json["sell"],
+        matching: json["matching"],
+        isDefault: json["isDefault"],
+      );
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -50,6 +55,7 @@ class WarehouseModel {
         "name": name,
         "address": address,
         "sell": sell,
+        "isDefault": isDefault,
         "matching": matching,
       };
 

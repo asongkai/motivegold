@@ -79,7 +79,7 @@ Future<Uint8List> makeThengBrokerPdf(Invoice invoice) async {
                 Text(
                     'ใบเสร็จรับเงินนี้จะสมบูรณ์ต่อเมื่อ  บริษัทฯได้รับเงินอย่างครบถ้วน')
               ]),
-              getThongThengPaymentInfo(invoice.order, invoice.payment!),
+              getThongThengPaymentInfo(invoice.order, invoice.payments ?? []),
               SizedBox(height: 10),
               getThongThengSignatureInfo(invoice.customer, invoice.order.orderTypeId!),
             ],

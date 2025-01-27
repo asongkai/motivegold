@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/empty.dart';
 // import 'package:pattern_formatter/numeric_formatter.dart';
@@ -108,13 +110,46 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
 
   Widget dataCard(OrderModel sell, int index) {
     return GestureDetector(
-      onTap: () {
+      onTap: ()  async {
+        final ProgressDialog pr = ProgressDialog(context,
+            type: ProgressDialogType.normal,
+            isDismissible: true,
+            showLogs: true);
+        await pr.show();
+        pr.update(message: 'processing'.tr());
+
+        try {
+          var result = await ApiServices.post(
+              '/order/print-order-list/${sell.pairId}',
+              Global.requestObj(null));
+
+          var data = jsonEncode(result?.data);
+          List<OrderModel> orders =
+          orderListModelFromJson(data);
+
+          var payment = await ApiServices.post(
+              '/order/payment/${sell.pairId}',
+              Global.requestObj(null));
+          Global.paymentList = paymentListModelFromJson(
+              jsonEncode(payment?.data));
+
+          await pr.hide();
+          Invoice invoice = Invoice(
+              order: sell,
+              customer: sell.customer!,
+              payments: Global.paymentList,
+              orders: orders,
+              items: sell.details!);
+
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => PreviewSellUsedGoldPage(
-                  order: sell,
+                  invoice: invoice,
                 )));
+        } catch (e) {
+          await pr.hide();
+        }
       },
       child: Stack(
         children: [

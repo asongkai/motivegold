@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/theng_menu.dart';
 import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
@@ -15,7 +16,6 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -41,8 +41,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       loading = true;
     });
-
-
 
     var result = await ApiServices.post(
         '/order/matching/PENDING/clear', Global.requestObj(null));
@@ -79,15 +77,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         automaticallyImplyLeading: false,
         actions: [
           Text(
-            Global.branch != null ? 'สาขา: ${Global.branch!.name}' : '',
-            style: TextStyle(
-              fontSize: size?.getWidthPx(8),
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Text(
             Global.user != null
                 ? 'ผู้ใช้: ${Global.user!.firstName!} ${Global.user!.lastName!}'
                 : '',
@@ -95,6 +84,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
               fontSize: size?.getWidthPx(8),
             ),
           ),
+          const SizedBox(
+            width: 20,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          if (Global.user?.userRole == 'Administrator')
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'สาขา: ',
+                  style: TextStyle(
+                    fontSize: size?.getWidthPx(8),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  margin: const EdgeInsets.only(bottom: 10.0),
+                  child: DropdownButton<BranchModel>(
+                    value: Global.branch,
+                    dropdownColor: Colors.black87,
+                    style: const TextStyle(color: Colors.white),
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_sharp,
+                      color: Colors.white,
+                    ),
+                    items: Global.branchList.map((BranchModel value) {
+                      return DropdownMenuItem<BranchModel>(
+                        value: value,
+                        child: Text(value.name,
+                            style: TextStyle(
+                                fontSize: size?.getWidthPx(10),
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        Global.branch = value;
+                        Global.user?.branchId = value?.id;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+          if (Global.user?.userRole != 'Administrator')
+            Text(
+              Global.branch != null ? 'สาขา: ${Global.branch!.name}' : '',
+              style: TextStyle(
+                fontSize: size?.getWidthPx(8),
+              ),
+            ),
           const SizedBox(
             width: 20,
           ),
@@ -193,15 +237,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       );
 
-  iconDashboard(
-          String title, Image iconData, Color background, dynamic route, {int index = 0}) =>
+  iconDashboard(String title, Image iconData, Color background, dynamic route,
+          {int index = 0}) =>
       GestureDetector(
         onTap: () {
           if (route != null) {
             Global.posIndex = index;
-            setState(() {
-
-            });
+            setState(() {});
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => route));
           }
@@ -309,50 +351,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     orientation == Orientation.portrait ? .74 : .80,
                 children: [
                   iconDashboard(
-                    'ซื้อขายทองหน้าร้าน',
-                    Image.asset('assets/icons/gold/gold-sub-dealer.png'),
-                    Colors.tealAccent,
-                    const PosMenuScreen(title: 'POS'),
-                    index: 0
-                  ),
-                  Stack(children: [
-                    iconDashboard(
-                        'ซื้อขายทองแท่ง ${orientation == Orientation.portrait ? '' : '\n'}',
-                        Image.asset('assets/icons/gold/buy-gold-tang.png'),
-                        Colors.redAccent,
-                        const ThengMenuScreen(),
-                        index: 0
-                    ),
-                    if (list != null && list!.isNotEmpty)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(20.0)),
-                            padding:
-                            const EdgeInsets.only(left: 5.0, right: 5.0),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    (list == null)
-                                        ? 0.toString()
-                                        : list!.length.toString(),
-                                    style:
-                                    const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                                  ),
-                                )
-                              ],
+                      'ซื้อขายทองหน้าร้าน',
+                      Image.asset('assets/icons/gold/gold-sub-dealer.png'),
+                      Colors.tealAccent,
+                      const PosMenuScreen(title: 'POS'),
+                      index: 0),
+                  Stack(
+                    children: [
+                      iconDashboard(
+                          'ซื้อขายทองแท่ง ${orientation == Orientation.portrait ? '' : '\n'}',
+                          Image.asset('assets/icons/gold/buy-gold-tang.png'),
+                          Colors.redAccent,
+                          const ThengMenuScreen(),
+                          index: 0),
+                      if (list != null && list!.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              padding:
+                                  const EdgeInsets.only(left: 5.0, right: 5.0),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      (list == null)
+                                          ? 0.toString()
+                                          : list!.length.toString(),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                  ],),
-
+                    ],
+                  ),
                   itemDashboard(
                     'ออมทอง \n'.tr(),
                     CupertinoIcons.download_circle,

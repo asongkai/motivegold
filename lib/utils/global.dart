@@ -14,7 +14,9 @@ import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/order_type.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/request.dart';
@@ -119,6 +121,7 @@ class Global {
   static List<BankModel> bankList = [];
   static List<BankAccountModel> accountList = [];
   static List<BankAccountModel> filterAccountList = [];
+  static List<OrderTypeModel> orderTypes = [];
 
   static List<ProvinceModel> provinceList = [];
   static List<AmphureModel> amphureList = [];
@@ -135,6 +138,10 @@ class Global {
   static TextEditingController villageCtrl = TextEditingController();
 
   static Color? appBarColor;
+
+  static List<BranchModel> branchList = [];
+
+  static PosIdModel? posIdModel;
 
   static format(double value) {
     String number = formatter.format(value);
@@ -474,10 +481,51 @@ class Global {
 
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
-        ? 'ลูกค้าจ่ายเงินให้กับเรา ${format(amount)} THB'
+        ? 'ลูกค้าจ่าย - ร้านรับเงิน (สุทธิ) : ${format(amount)} THB'
         : amount == 0
             ? 0
-            : 'เราจ่ายเงินให้กับลูกค้า ${format(-amount)} THB';
+            : 'ลูกค้ารับ - ร้านจ่ายเงิน (สุทธิ) : ${format(-amount)} THB';
+  }
+
+  static dynamic payToCustomerOrShopValue(List<OrderModel>? orders) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    double buy = 0;
+    double sell = 0;
+    for (int i = 0; i < orders.length; i++) {
+      for (int j = 0; j < orders[i].details!.length; j++) {
+        double price = orders[i].details![j].priceIncludeTax!;
+        int type = orders[i].orderTypeId!;
+        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+          buy += -price;
+        }
+        if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
+          sell += price;
+        }
+      }
+    }
+    amount = sell + buy;
+
+    amount = discount != 0 ? amount - discount : amount;
+    return amount;
+  }
+
+  static dynamic getPayTittle(double amount) {
+    return amount > 0
+        ? 'ลูกค้าจ่าย - ร้านรับเงิน (สุทธิ)'
+        : amount == 0
+            ? ""
+            : 'ลูกค้ารับ - ร้านจ่ายเงิน (สุทธิ)';
+  }
+
+  static dynamic getRefillPayTittle(double amount) {
+    return amount > 0
+        ? 'รับเงินจาก'
+        : amount == 0
+        ? ""
+        : 'จ่ายเงินให้';
   }
 
   static dynamic payToBrokerOrShop() {
@@ -564,6 +612,17 @@ class Global {
     double sum = 0;
     for (var e in data) {
       sum += e.weight!;
+    }
+    return sum;
+  }
+
+  static double getOrderTotalWeightBaht(List<OrderDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.weightBath!;
     }
     return sum;
   }
@@ -910,6 +969,11 @@ class Global {
     return DateFormat('HH:mm').format(tempDate);
   }
 
+  static String timeOnlyF(String date) {
+    DateTime tempDate = DateTime.parse(date);
+    return DateFormat('HH:mm a').format(tempDate);
+  }
+
   static double removeDecimalZeroFormat(int n) {
     return double.parse(n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1));
   }
@@ -1011,5 +1075,34 @@ class Global {
         status: status,
         token: token,
         message: message));
+  }
+
+  static getOrderTypeCode(int? id) {
+    switch (id) {
+      case 1:
+        return 'NEW';
+      case 2:
+        return 'USED';
+      case 3:
+        return 'BARM';
+      case 33:
+        return 'BARM';
+      case 4:
+        return 'BAR';
+      case 44:
+        return 'BAR';
+      case 5:
+        return 'NEW';
+      case 6:
+        return 'USED';
+      case 7:
+        return 'ALL';
+      case 8:
+        return 'BARM';
+      case 9:
+        return 'BARM';
+      default:
+        return 'NEW';
+    }
   }
 }

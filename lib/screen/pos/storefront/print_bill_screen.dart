@@ -8,6 +8,8 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
 import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
+import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -19,6 +21,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'paphun/preview_pdf.dart';
 
 class PrintBillScreen extends StatefulWidget {
@@ -65,7 +68,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
         List<OrderModel> dump = orderListModelFromJson(data);
         setState(() {
           orders = dump;
-          Global.payment = PaymentModel.fromJson(payment?.data);
+          Global.paymentList = paymentListModelFromJson(payment?.data);
         });
       } else {
         orders = [];
@@ -285,7 +288,8 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),
-                              child: Text('${Global.format(Global.getOrderTotalWeight(order.details!))}',
+                              child: Text(
+                                  '${Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -314,40 +318,84 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Invoice invoice = Invoice(
-                            order: order,
-                            customer: order.customer!,
-                            payment: Global.payment,
-                            items: order.details!);
+                      onTap: () async {
+                        final ProgressDialog pr = ProgressDialog(context,
+                            type: ProgressDialogType.normal,
+                            isDismissible: true,
+                            showLogs: true);
+                        await pr.show();
+                        pr.update(message: 'processing'.tr());
 
-                        if (order.orderTypeId == 1 || order.orderTypeId == 2) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PdfPreviewPage(invoice: invoice),
-                            ),
-                          );
+                        try {
+
+                          var payment = await ApiServices.post(
+                              '/order/payment/${order.pairId}',
+                              Global.requestObj(null));
+                          Global.paymentList = paymentListModelFromJson(
+                              jsonEncode(payment?.data));
+
+                          await pr.hide();
+                          Invoice invoice = Invoice(
+                              order: order,
+                              customer: order.customer!,
+                              payments: Global.paymentList,
+                              orders: orders,
+                              items: order.details!);
+
+                          if (order.orderTypeId == 1 ||
+                              order.orderTypeId == 2) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PdfPreviewPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 5) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewRefillGoldPage(
+                                          invoice: invoice,
+                                        )));
+                          }
+
+                          if (order.orderTypeId == 6) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewSellUsedGoldPage(
+                                          invoice: invoice,
+                                        )));
+                          }
+
+                          if (order.orderTypeId == 3 ||
+                              order.orderTypeId == 4 ||
+                              order.orderTypeId == 8) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PdfThengPreviewPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 33 ||
+                              order.orderTypeId == 44 ||
+                              order.orderTypeId == 9) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PdfThengPreviewPage(invoice: invoice),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          await pr.hide();
                         }
-
-                        if (order.orderTypeId == 3 || order.orderTypeId == 4 || order.orderTypeId == 8) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PdfThengPreviewPage(invoice: invoice),
-                            ),
-                          );
-                        }
-
-                        if (order.orderTypeId == 33 || order.orderTypeId == 44 || order.orderTypeId == 9) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PdfThengPreviewPage(invoice: invoice),
-                            ),
-                          );
-                        }
-
                       },
                       child: Container(
                         height: 80,

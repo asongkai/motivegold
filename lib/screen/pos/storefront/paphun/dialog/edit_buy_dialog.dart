@@ -20,6 +20,7 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/loading/loading_progress.dart';
 // import 'package:pattern_formatter/numeric_formatter.dart';
 
 class EditBuyDialog extends StatefulWidget {
@@ -113,7 +114,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/USED', Global.requestObj(null));
+          await ApiServices.post('/product/type/USED/2', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -138,7 +139,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/sell', Global.requestObj(null));
+          '/binlocation/all/type/USED/2', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -200,7 +201,11 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      body: Stack(
+      body: loading
+          ? const Center(
+        child: LoadingProgress(),
+      )
+          : Stack(
         clipBehavior: Clip.none,
         children: [
           GestureDetector(
@@ -240,71 +245,71 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        const Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'น้ำหนัก',
-                                  style:
-                                      TextStyle(fontSize: 50, color: textColor),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '(บาททอง)',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 30),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.number,
-                              controller: productWeightBahtCtrl,
-                              readOnly: bahtReadOnly,
-                              focusNode: bahtFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productWeightBahtCtrl.text = "";
-                                });
-                                bahtChanged();
-                              },
-                              onTap: () {
-                                txt = 'baht';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'baht';
-                                  bahtFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (String value) {
-                                bahtChanged();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     children: [
+                  //       const Expanded(
+                  //           flex: 6,
+                  //           child: Row(
+                  //             mainAxisAlignment: MainAxisAlignment.end,
+                  //             children: [
+                  //               Text(
+                  //                 'น้ำหนัก',
+                  //                 style:
+                  //                     TextStyle(fontSize: 50, color: textColor),
+                  //               ),
+                  //               SizedBox(
+                  //                 width: 10,
+                  //               ),
+                  //               Text(
+                  //                 '(บาททอง)',
+                  //                 style:
+                  //                     TextStyle(color: textColor, fontSize: 30),
+                  //               ),
+                  //               SizedBox(
+                  //                 width: 10,
+                  //               ),
+                  //             ],
+                  //           )),
+                  //       Expanded(
+                  //         flex: 6,
+                  //         child: numberTextField(
+                  //             labelText: "",
+                  //             inputType: TextInputType.number,
+                  //             controller: productWeightBahtCtrl,
+                  //             readOnly: bahtReadOnly,
+                  //             focusNode: bahtFocus,
+                  //             inputFormat: [
+                  //               ThousandsFormatter(allowFraction: true)
+                  //             ],
+                  //             clear: () {
+                  //               setState(() {
+                  //                 productWeightBahtCtrl.text = "";
+                  //               });
+                  //               bahtChanged();
+                  //             },
+                  //             onTap: () {
+                  //               txt = 'baht';
+                  //               closeCal();
+                  //             },
+                  //             openCalc: () {
+                  //               if (!showCal) {
+                  //                 txt = 'baht';
+                  //                 bahtFocus.requestFocus();
+                  //                 openCal();
+                  //               }
+                  //             },
+                  //             onChanged: (String value) {
+                  //               bahtChanged();
+                  //             }),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   height: 10,
+                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -424,7 +429,21 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                   openCal();
                                 }
                               },
-                              onChanged: (value) {}),
+                              onChanged: (value) {
+                                var realPrice =
+                                Global.toNumber(productPriceBaseCtrl.text);
+                                var price = Global.toNumber(productPriceCtrl.text);
+                                var check = price - realPrice;
+
+                                if (price > realPrice) {
+                                  Alert.warning(
+                                      context,
+                                      'คำเตือน',
+                                      'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
+                                      'OK', action: () {});
+                                  return;
+                                }
+                              }),
                         ),
                       ],
                     ),
@@ -532,6 +551,19 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                 productPriceCtrl.text = value != null
                                     ? "${Global.format(value)}"
                                     : "";
+                                var realPrice =
+                                Global.toNumber(productPriceBaseCtrl.text);
+                                var price = Global.toNumber(productPriceCtrl.text);
+                                var check = price - realPrice;
+
+                                if (price > realPrice) {
+                                  Alert.warning(
+                                      context,
+                                      'คำเตือน',
+                                      'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
+                                      'OK', action: () {});
+                                  // return;
+                                }
                               }
                               FocusScope.of(context).requestFocus(FocusNode());
                               closeCal();
@@ -663,29 +695,19 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                           .toString();
 
                       var realPrice =
-                          Global.toNumber(productPriceBaseCtrl.text);
+                      Global.toNumber(productPriceBaseCtrl.text);
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
 
-                      if (check > 10000) {
+                      if (price > realPrice) {
                         Alert.warning(
                             context,
                             'คำเตือน',
                             'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
-                            'OK');
-
+                            'OK', action: () {});
                         return;
                       }
 
-                      if (price < realPrice) {
-                        Alert.warning(
-                            context,
-                            'คำเตือน',
-                            'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK');
-
-                        return;
-                      }
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
@@ -778,6 +800,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
       productPriceBaseCtrl.text = "";
       productPriceCtrl.text = "";
     }
+    productPriceCtrl.text = "";
   }
 
   void bahtChanged() {
@@ -803,6 +826,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
       productPriceCtrl.text = "";
       productPriceBaseCtrl.text = "";
     }
+    productPriceCtrl.text = "";
   }
 
   resetText() {

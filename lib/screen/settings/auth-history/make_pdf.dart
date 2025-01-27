@@ -29,50 +29,60 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
 
   widgets.add(Center(
       child: Column(children: [
-        Text('${Global.company?.name} (${Global.branch!.name})',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        Text(
-            '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-        Text(
-            'เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber} โทร ${Global.company?.phone}',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-      ])));
+    Text('${Global.company?.name} (${Global.branch!.name})',
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+    Text(
+        '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+    Text(
+        'เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber} โทร ${Global.company?.phone}',
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+  ])));
   widgets.add(height());
   widgets.add(divider());
   widgets.add(Table(
     border: TableBorder.all(color: PdfColors.grey500),
     children: [
       ...invoice.map((e) => TableRow(
-        decoration: const BoxDecoration(),
-        children: [
-          Expanded(
-            flex: 3,
-            child: Padding(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Type: ${e.type!.toUpperCase()}', style: const TextStyle(fontSize: 9),),
-                    Text('User ID: ${e.user?.id!}', style: const TextStyle(fontSize: 9),),
-                    Text('Username: ${e.user?.username!}', style: const TextStyle(fontSize: 9),),
-                    Text(
-                      'Date: ${Global.formatDate(e.date.toString())}', style: const TextStyle(fontSize: 9),
-                    )
-                  ]),
-              padding: const EdgeInsets.all(10),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: paddedText(
-              e.deviceDetail == null ? '' : e.deviceDetail!.toString(),
-              align: TextAlign.center,
-              style: const TextStyle(fontSize: 7),
-            ),
-          ),
-        ],
-      )),
+            decoration: const BoxDecoration(),
+            children: [
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Type: ${e.type!.toUpperCase()}',
+                          style: const TextStyle(fontSize: 9),
+                        ),
+                        Text(
+                          'User ID: ${e.user?.id!}',
+                          style: const TextStyle(fontSize: 9),
+                        ),
+                        Text(
+                          'Username: ${e.user?.username!}',
+                          style: const TextStyle(fontSize: 9),
+                        ),
+                        Text(
+                          'Date: ${Global.formatDate(e.date.toString())}',
+                          style: const TextStyle(fontSize: 9),
+                        )
+                      ]),
+                  padding: const EdgeInsets.all(10),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: paddedText(
+                  e.deviceDetail == null ? '' : e.deviceDetail!.toString(),
+                  align: TextAlign.center,
+                  style: const TextStyle(fontSize: 7),
+                ),
+              ),
+            ],
+          )),
     ],
   ));
   widgets.add(height());
@@ -140,7 +150,8 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
   widgets.add(height());
   widgets.add(divider());
   widgets.add(height());
-  widgets.add(Center(child: Text(
+  widgets.add(Center(
+      child: Text(
     "ตราประทับ",
     style: const TextStyle(fontSize: 30),
   )));
@@ -149,6 +160,7 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
 
   pdf.addPage(
     MultiPage(
+        maxPages: 10000,
         margin: const EdgeInsets.all(20),
         pageFormat: PdfPageFormat.a4,
         orientation: PageOrientation.portrait,

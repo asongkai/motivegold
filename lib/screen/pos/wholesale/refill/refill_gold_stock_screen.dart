@@ -8,6 +8,7 @@ import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/dialog/refill_dialog.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -314,7 +315,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: Colors.white70,
-                                  hintText: 'xx-xx-xxxx',
+                                  hintText: 'dd-mm-yyyy',
                                   labelStyle: TextStyle(
                                       fontSize: 25,
                                       color: Colors.blue[900],
@@ -621,107 +622,108 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
             children: [
               Row(
                 children: [
-                  // Expanded(
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       foregroundColor: Colors.white,
-                  //       backgroundColor: Colors.blue[700],
-                  //       padding: const EdgeInsets.symmetric(vertical: 8),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //     ),
-                  //     onPressed: () async {
-                  //       if (Global.refillOrderDetail!.isEmpty) {
-                  //         return;
-                  //       }
-                  //
-                  //       // final ProgressDialog pr = ProgressDialog(context,
-                  //       //     type: ProgressDialogType.normal,
-                  //       //     isDismissible: true,
-                  //       //     showLogs: true);
-                  //       // await pr.show();
-                  //       // pr.update(message: 'processing'.tr());
-                  //       try {
-                  //         // var result = await ApiServices.post(
-                  //         //     '/order/gen/5', Global.requestObj(null));
-                  //         // await pr.hide();
-                  //         // if (result!.status == "success") {
-                  //           OrderModel order = OrderModel(
-                  //               orderId: "",
-                  //               orderDate: DateTime.now().toUtc(),
-                  //               details: Global.refillOrderDetail!,
-                  //               sellTPrice: Global.toNumber(
-                  //                   productSellThengPriceCtrl.text),
-                  //               buyTPrice: Global.toNumber(
-                  //                   productBuyThengPriceCtrl.text),
-                  //               sellPrice:
-                  //                   Global.toNumber(productSellPriceCtrl.text),
-                  //               buyPrice:
-                  //                   Global.toNumber(productBuyPriceCtrl.text),
-                  //               priceIncludeTax: Global.toNumber(
-                  //                   priceIncludeTaxTotalCtrl.text),
-                  //               priceExcludeTax: Global.toNumber(
-                  //                   priceExcludeTaxTotalCtrl.text),
-                  //               purchasePrice: Global.toNumber(
-                  //                   purchasePriceTotalCtrl.text),
-                  //               priceDiff:
-                  //                   Global.toNumber(priceDiffTotalCtrl.text),
-                  //               taxBase: Global.toNumber(taxBaseTotalCtrl.text),
-                  //               taxAmount:
-                  //                   Global.toNumber(taxAmountTotalCtrl.text),
-                  //               orderTypeId: 5);
-                  //           final data = order.toJson();
-                  //           Global.orders?.add(OrderModel.fromJson(data));
-                  //           widget
-                  //               .refreshCart(Global.orders?.length.toString());
-                  //           Global.refillOrderDetail!.clear();
-                  //           if (mounted) {
-                  //             resetTotal();
-                  //             ScaffoldMessenger.of(context)
-                  //                 .showSnackBar(const SnackBar(
-                  //               content: Text(
-                  //                 "เพิ่มลงรถเข็นสำเร็จ...",
-                  //                 style: TextStyle(fontSize: 22),
-                  //               ),
-                  //               backgroundColor: Colors.teal,
-                  //             ));
-                  //           }
-                  //         // } else {
-                  //         //   if (mounted) {
-                  //         //     Alert.warning(
-                  //         //         context,
-                  //         //         'Warning'.tr(),
-                  //         //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                  //         //         'OK'.tr(),
-                  //         //         action: () {});
-                  //         //   }
-                  //         // }
-                  //       } catch (e) {
-                  //         // await pr.hide();
-                  //         if (mounted) {
-                  //           Alert.warning(context, 'Warning'.tr(), e.toString(),
-                  //               'OK'.tr(),
-                  //               action: () {});
-                  //         }
-                  //       }
-                  //     },
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         const Icon(Icons.add, size: 16),
-                  //         const SizedBox(width: 6),
-                  //         Text(
-                  //           'เพิ่มลงในรถเข็น',
-                  //           style: TextStyle(fontSize: size.getWidthPx(8)),
-                  //         )
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  // const SizedBox(
-                  //   width: 20,
-                  // ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue[700],
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (Global.refillOrderDetail!.isEmpty) {
+                          return;
+                        }
+
+                        // final ProgressDialog pr = ProgressDialog(context,
+                        //     type: ProgressDialogType.normal,
+                        //     isDismissible: true,
+                        //     showLogs: true);
+                        // await pr.show();
+                        // pr.update(message: 'processing'.tr());
+                        try {
+                          // var result = await ApiServices.post(
+                          //     '/order/gen/5', Global.requestObj(null));
+                          // await pr.hide();
+                          // if (result!.status == "success") {
+                            OrderModel order = OrderModel(
+                                orderId: "",
+                                orderDate: DateTime.now().toUtc(),
+                                details: Global.refillOrderDetail!,
+                                referenceNo: referenceNumberCtrl.text,
+                                sellTPrice: Global.toNumber(
+                                    productSellThengPriceCtrl.text),
+                                buyTPrice: Global.toNumber(
+                                    productBuyThengPriceCtrl.text),
+                                sellPrice:
+                                    Global.toNumber(productSellPriceCtrl.text),
+                                buyPrice:
+                                    Global.toNumber(productBuyPriceCtrl.text),
+                                priceIncludeTax: Global.toNumber(
+                                    priceIncludeTaxTotalCtrl.text),
+                                priceExcludeTax: Global.toNumber(
+                                    priceExcludeTaxTotalCtrl.text),
+                                purchasePrice: Global.toNumber(
+                                    purchasePriceTotalCtrl.text),
+                                priceDiff:
+                                    Global.toNumber(priceDiffTotalCtrl.text),
+                                taxBase: Global.toNumber(taxBaseTotalCtrl.text),
+                                taxAmount:
+                                    Global.toNumber(taxAmountTotalCtrl.text),
+                                orderTypeId: 5);
+                            final data = order.toJson();
+                            Global.orders?.add(OrderModel.fromJson(data));
+                            widget
+                                .refreshCart(Global.orders?.length.toString());
+                            Global.refillOrderDetail!.clear();
+                            if (mounted) {
+                              resetTotal();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                  "เพิ่มลงรถเข็นสำเร็จ...",
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                backgroundColor: Colors.teal,
+                              ));
+                            }
+                          // } else {
+                          //   if (mounted) {
+                          //     Alert.warning(
+                          //         context,
+                          //         'Warning'.tr(),
+                          //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                          //         'OK'.tr(),
+                          //         action: () {});
+                          //   }
+                          // }
+                        } catch (e) {
+                          // await pr.hide();
+                          if (mounted) {
+                            Alert.warning(context, 'Warning'.tr(), e.toString(),
+                                'OK'.tr(),
+                                action: () {});
+                          }
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'เพิ่มลงในรถเข็น',
+                            style: TextStyle(fontSize: size.getWidthPx(8)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -787,6 +789,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   orderId: "",
                                   orderDate: DateTime.now().toUtc(),
                                   details: Global.refillOrderDetail!,
+                                  referenceNo: referenceNumberCtrl.text,
                                   sellTPrice: Global.toNumber(
                                       productSellThengPriceCtrl.text),
                                   buyTPrice: Global.toNumber(
@@ -819,7 +822,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const WholesaleCheckOutScreen()))
+                                                const CheckOutScreen()))
                                     .whenComplete(() {
                                   Future.delayed(
                                       const Duration(milliseconds: 500),

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:motivegold/model/invoice.dart';
+import 'package:motivegold/screen/pos/wholesale/refill/bill/make_bill.dart';
 import 'package:printing/printing.dart';
-
-import 'package:motivegold/model/order.dart';
-import 'make_pdf.dart';
 
 
 class PreviewRefillGoldPage extends StatelessWidget {
-  final OrderModel order;
-  const PreviewRefillGoldPage({Key? key, required this.order}) : super(key: key);
+  final Invoice invoice;
+  const PreviewRefillGoldPage({super.key, required this.invoice});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class PreviewRefillGoldPage extends StatelessWidget {
         title: const Text('พิมพ์เอกสาร'),
       ),
       body: PdfPreview(
-        build: (context) => makeRefillGoldPdf(order),
+        build: (context) => makeRefillBill(invoice),
       ),
     );
   }

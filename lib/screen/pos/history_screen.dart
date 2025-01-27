@@ -8,11 +8,11 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
+import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/product_type.dart';
-import 'package:motivegold/model/request.dart';
 import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
@@ -48,6 +48,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
 
   ProductTypeModel? selectedOrderType;
   static ValueNotifier<dynamic>? orderTypeNotifier;
+  BranchModel? selectedBranch;
+  static ValueNotifier<dynamic>? branchNotifier;
 
   @override
   void initState() {
@@ -55,6 +57,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     selectedOrderType = orderTypes()[0];
     orderTypeNotifier = ValueNotifier<ProductTypeModel>(selectedOrderType ??
         ProductTypeModel(id: 0, code: '', name: 'เลือกประเภทธุรกรรม'));
+    branchNotifier = ValueNotifier<BranchModel>(
+        selectedBranch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
     // loadData();
   }
 
@@ -100,293 +104,339 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
       ),
       body: SafeArea(
         child: Column(
-                children: [
-                  SizedBox(
-                    child: Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(
-                            getProportionateScreenWidth(
-                              8,
-                            ),
-                          ),
-                          topRight: Radius.circular(
-                            getProportionateScreenWidth(
-                              8,
-                            ),
-                          ),
-                        ),
+          children: [
+            SizedBox(
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: getProportionateScreenWidth(0),
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text('เลือกประเภทธุรกรรม', style: TextStyle(fontSize: 30, color: textColor),),
-                                        SizedBox(
-                                          height: 90,
-                                          child:
-                                              MiraiDropDownMenu<ProductTypeModel>(
-                                            key: UniqueKey(),
-                                            children: orderTypes(),
-                                            space: 4,
-                                            maxHeight: 360,
-                                            showSearchTextField: true,
-                                            selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                            emptyListMessage: 'ไม่มีข้อมูล',
-                                            showSelectedItemBackgroundColor: true,
-                                            itemWidgetBuilder: (
-                                              int index,
-                                              ProductTypeModel? project, {
-                                              bool isItemSelected = false,
-                                            }) {
-                                              return DropDownItemWidget(
-                                                project: project,
-                                                isItemSelected: isItemSelected,
-                                                firstSpace: 10,
-                                                fontSize: size?.getWidthPx(10),
-                                              );
-                                            },
-                                            onChanged:
-                                                (ProductTypeModel value) async {
-                                              selectedOrderType = value;
-                                              orderTypeNotifier!.value = value;
-                                              search();
-                                            },
-                                            child: DropDownObjectChildWidget(
-                                              key: GlobalKey(),
-                                              fontSize: size?.getWidthPx(10),
-                                              projectValueNotifier:
-                                                  orderTypeNotifier!,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: TextField(
-                                      controller: fromDateCtrl,
-                                      style: const TextStyle(fontSize: 38),
-                                      //editing controller of this TextField
-                                      decoration: InputDecoration(
-                                        prefixIcon:
-                                            const Icon(Icons.calendar_today),
-                                        //icon of text field
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.always,
-                                        suffixIcon: fromDateCtrl.text.isNotEmpty
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    fromDateCtrl.text = "";
-                                                    toDateCtrl.text = "";
-                                                    filterList = list;
-                                                  });
-                                                },
-                                                child: const Icon(Icons.clear))
-                                            : null,
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 10.0,
-                                                horizontal: 10.0),
-                                        labelText: "จากวันที่".tr(),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            getProportionateScreenWidth(8),
-                                          ),
-                                          borderSide: const BorderSide(
-                                            color: kGreyShade3,
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            getProportionateScreenWidth(2),
-                                          ),
-                                          borderSide: const BorderSide(
-                                            color: kGreyShade3,
-                                          ),
-                                        ),
-                                      ),
-                                      readOnly: true,
-                                      //set it true, so that user will not able to edit text
-                                      onTap: () async {
-                                        final pickedDate =
-                                            await showBoardDateTimePicker(
-                                                context: context,
-                                                pickerType:
-                                                    DateTimePickerType.date,
-                                                initialDate: DateTime.now());
-                                        if (pickedDate != null) {
-                                          motivePrint(
-                                              pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                          String formattedDate =
-                                              DateFormat('yyyy-MM-dd')
-                                                  .format(pickedDate);
-                                          motivePrint(
-                                              formattedDate); //formatted date output using intl package =>  2021-03-16
-                                          //you can implement different kind of Date Format here according to your requirement
-                                          setState(() {
-                                            fromDateCtrl.text =
-                                                formattedDate; //set output date to TextField value.
-                                          });
-                                        } else {
-                                          motivePrint("Date is not selected");
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: TextField(
-                                      controller: toDateCtrl,
-                                      //editing controller of this TextField
-                                      style: const TextStyle(fontSize: 38),
-                                      //editing controller of this TextField
-                                      decoration: InputDecoration(
-                                        prefixIcon:
-                                            const Icon(Icons.calendar_today),
-                                        //icon of text field
-                                        suffixIcon: toDateCtrl.text.isNotEmpty
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    toDateCtrl.text = "";
-                                                    fromDateCtrl.text = "";
-                                                    filterList = list;
-                                                  });
-                                                },
-                                                child: const Icon(Icons.clear))
-                                            : null,
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.always,
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                vertical: 10.0,
-                                                horizontal: 10.0),
-                                        labelText: "ถึงวันที่".tr(),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            getProportionateScreenWidth(8),
-                                          ),
-                                          borderSide: const BorderSide(
-                                            color: kGreyShade3,
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            getProportionateScreenWidth(2),
-                                          ),
-                                          borderSide: const BorderSide(
-                                            color: kGreyShade3,
-                                          ),
-                                        ),
-                                      ),
-                                      readOnly: true,
-                                      //set it true, so that user will not able to edit text
-                                      onTap: () async {
-                                        final pickedDate =
-                                            await showBoardDateTimePicker(
-                                                context: context,
-                                                pickerType:
-                                                    DateTimePickerType.date,
-                                                initialDate: DateTime.now());
-                                        if (pickedDate != null) {
-                                          motivePrint(
-                                              pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                          String formattedDate =
-                                              DateFormat('yyyy-MM-dd')
-                                                  .format(pickedDate);
-                                          motivePrint(
-                                              formattedDate); //formatted date output using intl package =>  2021-03-16
-                                          //you can implement different kind of Date Format here according to your requirement
-                                          setState(() {
-                                            toDateCtrl.text =
-                                                formattedDate; //set output date to TextField value.
-                                          });
-                                        } else {
-                                          motivePrint("Date is not selected");
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(3.0),
-                                vertical: getProportionateScreenHeight(5.0),
-                              ),
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                        WidgetStateProperty.all<Color>(
-                                            bgColor3)),
-                                onPressed: search,
-                                child: Text(
-                                  'ค้นหา'.tr(),
-                                  style: const TextStyle(fontSize: 32),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    ),
+                    topRight: Radius.circular(
+                      getProportionateScreenWidth(
+                        8,
                       ),
                     ),
                   ),
-                  const Divider(
-                    thickness: 1.0,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: getProportionateScreenWidth(0),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:loading
-                          ? const LoadingProgress()
-                          : filterList!.isEmpty
-                          ? const NoDataFoundWidget()
-                          : ListView.builder(
-                              itemCount: filterList!.length,
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (BuildContext context, int index) {
-                                return dataCard(filterList![index]!, index);
-                              }),
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'เลือกประเภทธุรกรรม',
+                                    style: TextStyle(
+                                        fontSize: 30, color: textColor),
+                                  ),
+                                  SizedBox(
+                                    height: 90,
+                                    child: MiraiDropDownMenu<ProductTypeModel>(
+                                      key: UniqueKey(),
+                                      children: orderTypes(),
+                                      space: 4,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
+                                      selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductTypeModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                        return DropDownItemWidget(
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size?.getWidthPx(10),
+                                        );
+                                      },
+                                      onChanged:
+                                          (ProductTypeModel value) async {
+                                        selectedOrderType = value;
+                                        orderTypeNotifier!.value = value;
+                                        search();
+                                      },
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size?.getWidthPx(10),
+                                        projectValueNotifier:
+                                            orderTypeNotifier!,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // if (Global.user?.userRole == 'Administrator')
+                          //   Expanded(
+                          //     child: Padding(
+                          //       padding: const EdgeInsets.all(8.0),
+                          //       child: Column(
+                          //         crossAxisAlignment: CrossAxisAlignment.start,
+                          //         children: [
+                          //           const Text(
+                          //             'เลือกสาขา',
+                          //             style: TextStyle(
+                          //                 fontSize: 30, color: textColor),
+                          //           ),
+                          //           SizedBox(
+                          //             height: 90,
+                          //             child: MiraiDropDownMenu<BranchModel>(
+                          //               key: UniqueKey(),
+                          //               children: Global.branchList,
+                          //               space: 4,
+                          //               maxHeight: 360,
+                          //               showSearchTextField: true,
+                          //               selectedItemBackgroundColor:
+                          //                   Colors.transparent,
+                          //               emptyListMessage: 'ไม่มีข้อมูล',
+                          //               showSelectedItemBackgroundColor: true,
+                          //               itemWidgetBuilder: (
+                          //                 int index,
+                          //                 BranchModel? project, {
+                          //                 bool isItemSelected = false,
+                          //               }) {
+                          //                 return DropDownItemWidget(
+                          //                   project: project,
+                          //                   isItemSelected: isItemSelected,
+                          //                   firstSpace: 10,
+                          //                   fontSize: size?.getWidthPx(10),
+                          //                 );
+                          //               },
+                          //               onChanged: (BranchModel value) async {
+                          //                 selectedBranch = value;
+                          //                 branchNotifier!.value = value;
+                          //                 search();
+                          //               },
+                          //               child: DropDownObjectChildWidget(
+                          //                 key: GlobalKey(),
+                          //                 fontSize: size?.getWidthPx(10),
+                          //                 projectValueNotifier: branchNotifier!,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: TextField(
+                                controller: fromDateCtrl,
+                                style: const TextStyle(fontSize: 38),
+                                //editing controller of this TextField
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.calendar_today),
+                                  //icon of text field
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  suffixIcon: fromDateCtrl.text.isNotEmpty
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              fromDateCtrl.text = "";
+                                              toDateCtrl.text = "";
+                                              filterList = list;
+                                            });
+                                          },
+                                          child: const Icon(Icons.clear))
+                                      : null,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  labelText: "จากวันที่".tr(),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(2),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(2),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                ),
+                                readOnly: true,
+                                //set it true, so that user will not able to edit text
+                                onTap: () async {
+                                  final pickedDate =
+                                      await showBoardDateTimePicker(
+                                    context: context,
+                                    pickerType: DateTimePickerType.date,
+                                    initialDate: DateTime.now(),
+                                    breakpoint: 5000,
+                                  );
+                                  if (pickedDate != null) {
+                                    String formattedDate =
+                                        DateFormat('yyyy-MM-dd')
+                                            .format(pickedDate);
+                                    setState(() {
+                                      fromDateCtrl.text =
+                                          formattedDate; //set output date to TextField value.
+                                    });
+                                  } else {
+                                    motivePrint("Date is not selected");
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: TextField(
+                                controller: toDateCtrl,
+                                //editing controller of this TextField
+                                style: const TextStyle(fontSize: 38),
+                                //editing controller of this TextField
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.calendar_today),
+                                  //icon of text field
+                                  suffixIcon: toDateCtrl.text.isNotEmpty
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              toDateCtrl.text = "";
+                                              fromDateCtrl.text = "";
+                                              filterList = list;
+                                            });
+                                          },
+                                          child: const Icon(Icons.clear))
+                                      : null,
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  labelText: "ถึงวันที่".tr(),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(2),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      getProportionateScreenWidth(2),
+                                    ),
+                                    borderSide: const BorderSide(
+                                      color: kGreyShade3,
+                                    ),
+                                  ),
+                                ),
+                                readOnly: true,
+                                //set it true, so that user will not able to edit text
+                                onTap: () async {
+                                  final pickedDate =
+                                      await showBoardDateTimePicker(
+                                    context: context,
+                                    pickerType: DateTimePickerType.date,
+                                    initialDate: DateTime.now(),
+                                    breakpoint: 5000,
+                                    options: const BoardDateTimeOptions(),
+                                  );
+                                  if (pickedDate != null) {
+                                    motivePrint(
+                                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                    String formattedDate =
+                                        DateFormat('yyyy-MM-dd')
+                                            .format(pickedDate);
+                                    motivePrint(
+                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                    //you can implement different kind of Date Format here according to your requirement
+                                    setState(() {
+                                      toDateCtrl.text =
+                                          formattedDate; //set output date to TextField value.
+                                    });
+                                  } else {
+                                    motivePrint("Date is not selected");
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(3.0),
+                          vertical: getProportionateScreenHeight(5.0),
+                        ),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStateProperty.all<Color>(bgColor3)),
+                          onPressed: search,
+                          child: Text(
+                            'ค้นหา'.tr(),
+                            style: const TextStyle(fontSize: 32),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
+            ),
+            const Divider(
+              thickness: 1.0,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: loading
+                    ? const LoadingProgress()
+                    : filterList!.isEmpty
+                        ? const NoDataFoundWidget()
+                        : ListView.builder(
+                            itemCount: filterList!.length,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int index) {
+                              return dataCard(filterList![index]!, index);
+                            }),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -421,6 +471,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                 ? DateTime.parse(toDateCtrl.text).toUtc().toString()
                 : null,
             "orderTypeId": selectedOrderType?.id,
+            "branchId": selectedBranch?.id
           }));
       // Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
@@ -443,7 +494,6 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     setState(() {
       loading = false;
     });
-
   }
 
   Widget dataCard(OrderModel order, int index) {
@@ -595,60 +645,77 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                           onTap: () async {
                             // motivePrint(order.orderTypeId);
                             Global.orderIds!.add(order.orderId);
-                            if (order.orderTypeId == 1 ||
-                                order.orderTypeId == 2) {
-                              Invoice invoice = Invoice(
-                                  order: order,
-                                  customer: order.customer!,
-                                  items: order.details!);
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PdfPreviewPage(invoice: invoice),
-                                ),
-                              );
-                            } else if (order.orderTypeId == 5) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PreviewRefillGoldPage(
-                                            order: order,
-                                          )));
-                            } else if (order.orderTypeId == 6) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PreviewSellUsedGoldPage(
-                                            order: order,
-                                          )));
-                            } else if (order.orderTypeId == 3 ||
-                                order.orderTypeId == 4 ||
-                                order.orderTypeId == 33 ||
-                                order.orderTypeId == 44 ||
-                                order.orderTypeId == 8 ||
-                                order.orderTypeId == 9) {
+
+                            final ProgressDialog pr = ProgressDialog(context,
+                                type: ProgressDialogType.normal,
+                                isDismissible: true,
+                                showLogs: true);
+                            await pr.show();
+                            pr.update(message: 'processing'.tr());
+
+                            try {
+                              var result = await ApiServices.post(
+                                  '/order/print-order-list/${order.pairId}',
+                                  Global.requestObj(null));
+
+                              var data = jsonEncode(result?.data);
+                              List<OrderModel> orders =
+                                  orderListModelFromJson(data);
+
                               var payment = await ApiServices.post(
                                   '/order/payment/${order.pairId}',
                                   Global.requestObj(null));
+                              Global.paymentList = paymentListModelFromJson(
+                                  jsonEncode(payment?.data));
 
-                              PaymentModel paymentModel =
-                                  PaymentModel.fromJson(payment?.data);
-
+                              await pr.hide();
                               Invoice invoice = Invoice(
                                   order: order,
                                   customer: order.customer!,
-                                  payment: paymentModel,
+                                  payments: Global.paymentList,
+                                  orders: orders,
                                   items: order.details!);
-                              if (mounted) {
+                              if (order.orderTypeId == 1 ||
+                                  order.orderTypeId == 2) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PdfThengPreviewPage(invoice: invoice),
+                                        PdfPreviewPage(invoice: invoice),
                                   ),
                                 );
+                              } else if (order.orderTypeId == 5) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PreviewRefillGoldPage(
+                                              invoice: invoice,
+                                            )));
+                              } else if (order.orderTypeId == 6) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PreviewSellUsedGoldPage(
+                                              invoice: invoice,
+                                            )));
+                              } else if (order.orderTypeId == 3 ||
+                                  order.orderTypeId == 4 ||
+                                  order.orderTypeId == 33 ||
+                                  order.orderTypeId == 44 ||
+                                  order.orderTypeId == 8 ||
+                                  order.orderTypeId == 9) {
+                                if (mounted) {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PdfThengPreviewPage(invoice: invoice),
+                                    ),
+                                  );
+                                }
                               }
+                            } catch (e) {
+                              await pr.hide();
                             }
                           },
                           child: Container(

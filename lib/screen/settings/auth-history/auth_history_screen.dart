@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/auth_log.dart';
 import 'package:motivegold/screen/settings/auth-history/preview.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -91,6 +92,7 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
     });
     try {
       var result = await ApiServices.post('/authlog', Global.requestObj(null));
+      motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<AuthLogModel> products = authLogListModelFromJson(data);

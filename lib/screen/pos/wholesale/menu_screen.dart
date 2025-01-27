@@ -2,6 +2,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 
 import 'package:motivegold/utils/global.dart';
 import 'refill/refill_gold_stock_screen.dart';
@@ -75,7 +76,7 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const WholesaleCheckOutScreen()))
+                            builder: (context) => const CheckOutScreen()))
                         .whenComplete(() {
                       init();
                       sideMenu.changePage(Global.posIndex);

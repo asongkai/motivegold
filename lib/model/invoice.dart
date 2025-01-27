@@ -8,12 +8,15 @@ class Invoice {
   final OrderModel order;
   final PaymentModel? payment;
   final List<OrderDetailModel> items;
+  final List<PaymentModel>? payments;
+  final List<OrderModel>? orders;
 
   Invoice({
     required this.customer,
     required this.items,
     required this.order,
-    this.payment
+    this.payment,
+    this.payments,
+    this.orders,
   });
-
 }

@@ -20,11 +20,14 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+
 // import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 
 class PaymentMethodWidget extends StatefulWidget {
-  const PaymentMethodWidget({super.key});
+  const PaymentMethodWidget({super.key, this.index});
+
+  final int? index;
 
   @override
   State<PaymentMethodWidget> createState() => _PaymentMethodWidgetState();
@@ -49,6 +52,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
     Global.paymentDateCtrl.text =
         Global.formatDateDD(DateTime.now().toString());
     init();
+
+    if (widget.index != null) {}
   }
 
   init() async {
@@ -84,6 +89,51 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
           });
         } else {
           Global.accountList = [];
+        }
+      }
+
+      if (widget.index != null) {
+        Global.currentPaymentMethod =
+            Global.paymentList?[widget.index!].paymentMethod;
+        Global.paymentDateCtrl.text = Global.formatDateDD(
+            Global.paymentList![widget.index!].paymentDate.toString());
+        Global.paymentDetailCtrl.text =
+            Global.paymentList![widget.index!].paymentDetail ?? '';
+        Global.amountCtrl.text =
+            Global.format(Global.paymentList![widget.index!].amount ?? 0);
+        Global.selectedPayment = paymentTypes()
+            .where((e) =>
+                e.code == Global.paymentList?[widget.index!].paymentMethod)
+            .first;
+        paymentNotifier = ValueNotifier<ProductTypeModel>(Global
+                .selectedPayment ??
+            ProductTypeModel(name: 'เลือกวิธีการชำระเงิน', code: '', id: 0));
+
+        if (Global.paymentList?[widget.index!].paymentMethod == 'TR') {
+          Global.selectedBank = Global.bankList
+              .where((e) => e.id == Global.paymentList?[widget.index!].bankId)
+              .first;
+          Global.selectedAccount = Global.accountList
+              .where((e) =>
+                  e.accountNo == Global.paymentList?[widget.index!].accountNo)
+              .first;
+          filterAccount(Global.selectedBank?.id);
+          Global.refNoCtrl.text =
+              Global.paymentList?[widget.index!].referenceNumber ?? '';
+          bankNotifier = ValueNotifier<BankModel>(Global.selectedBank ??
+              BankModel(name: 'เลือกธนาคาร', code: '', id: 0));
+          accountNotifier = ValueNotifier<BankAccountModel>(
+              Global.selectedAccount ??
+                  BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0));
+        }
+
+        if (Global.paymentList?[widget.index!].paymentMethod == 'CR') {
+          Global.cardNameCtrl.text =
+              Global.paymentList?[widget.index!].cardName ?? '';
+          Global.cardNumberCtrl.text =
+              Global.paymentList?[widget.index!].cardNo ?? '';
+          Global.cardExpireDateCtrl.text = Global.formatDateDD(
+              Global.paymentList![widget.index!].cardExpiryDate.toString());
         }
       }
     } catch (e) {
@@ -303,8 +353,9 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ],
                 ),
+              if (Global.currentPaymentMethod == 'TR')
               const SizedBox(
-                height: 20,
+                height: 30,
               ),
               if (Global.currentPaymentMethod == 'TR')
                 Row(
@@ -333,8 +384,9 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ],
                 ),
+              if (Global.currentPaymentMethod == 'CR')
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
               if (Global.currentPaymentMethod == 'CR')
                 Row(
@@ -366,17 +418,17 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                         child: TextField(
                           controller: Global.cardExpireDateCtrl,
                           //editing controller of this TextField
-                          style: const TextStyle(fontSize: 35),
+                          style: const TextStyle(fontSize: 38),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.calendar_today),
                             //icon of text field
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 3.0, horizontal: 10.0),
+                                vertical: 18.0, horizontal: 15.0),
                             labelText: "วันหมดอายุบัตร".tr(),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                getProportionateScreenWidth(8),
+                                getProportionateScreenWidth(2),
                               ),
                               borderSide: const BorderSide(
                                 color: kGreyShade3,
@@ -520,7 +572,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 ),
               if (Global.currentPaymentMethod != null)
                 const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
               if (Global.currentPaymentMethod != null)
                 Row(
@@ -579,7 +631,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ],
                 ),
-              if (Global.currentPaymentMethod != null)
+              if (Global.currentPaymentMethod != null &&
+                  Global.currentPaymentMethod != "CA")
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -587,7 +640,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),
-              if (Global.currentPaymentMethod != null)
+              if (Global.currentPaymentMethod != null &&
+                  Global.currentPaymentMethod != "CA")
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
@@ -604,7 +658,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ),
                 ),
-              if (Global.currentPaymentMethod != null)
+              if (Global.currentPaymentMethod != null &&
+                  Global.currentPaymentMethod != "CA")
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(

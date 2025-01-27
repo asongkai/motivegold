@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
@@ -16,7 +15,6 @@ import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -396,7 +394,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     0: FlexColumnWidth(1),
                     1: FlexColumnWidth(4),
                     2: FlexColumnWidth(4),
-                    3: FlexColumnWidth(2)
+                    3: FlexColumnWidth(3)
                   },
                   children: [
                     TableRow(children: [
@@ -444,7 +442,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                                                 c: ods[i]!),
                                                         fullscreenDialog: true))
                                                 .whenComplete(() {
-                                              setState(() {});
+                                                  loadData();
+                                              setState(() {
+
+                                              });
                                             });
                                           },
                                           child: Container(

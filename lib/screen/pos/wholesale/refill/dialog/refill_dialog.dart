@@ -114,7 +114,7 @@ class _RefillDialogState extends State<RefillDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/refill', Global.requestObj(null));
+          await ApiServices.post('/product/type/NEW/1', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         // motivePrint(data);
@@ -122,7 +122,7 @@ class _RefillDialogState extends State<RefillDialog> {
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productNotifier = ValueNotifier<ProductModel>(
                 selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
             productCodeCtrl.text =
@@ -136,12 +136,15 @@ class _RefillDialogState extends State<RefillDialog> {
       }
 
       var warehouse =
-          await ApiServices.post('/binlocation/all', Global.requestObj(null));
+          await ApiServices.post('/binlocation/all/type/NEW/5', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
           warehouseList = warehouses;
+          selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
+          warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
+              WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
       } else {
         warehouseList = [];
@@ -233,7 +236,11 @@ class _RefillDialogState extends State<RefillDialog> {
     final formKey = GlobalKey();
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      body: Stack(
+      body: loading
+          ? const Center(
+        child: LoadingProgress(),
+      )
+          :  Stack(
         children: [
           GestureDetector(
             onTap: () {
@@ -706,7 +713,7 @@ class _RefillDialogState extends State<RefillDialog> {
                       ],
                     ),
                     onPressed: () async {
-                      if (warehouseCtrl.text.isEmpty) {
+                      if (selectedWarehouse == null) {
                         Alert.warning(
                             context, 'คำเตือน', 'กรุณาเลือกคลังสินค้า', 'OK');
                         return;

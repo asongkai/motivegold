@@ -30,7 +30,7 @@ dependencies:
   location: ^6.0.2
   easy_localization: ^3.0.0
 
-  getwidget: ^4.0.0
+  getwidget: ^5.0.0
   ripple_button: ^3.4.1
   flutter_fast_forms: ^17.1.0
 
@@ -61,7 +61,7 @@ dependencies:
   thai_idcard_reader_flutter: ^0.0.7
   mirai_dropdown_menu: ^0.0.8+2
   substring_highlight: ^1.0.33
-  board_datetime_picker: ^2.1.1
+  board_datetime_picker: ^2.2.1
   quiver: ^3.2.1
   flutter_to_pdf: ^0.2.0
   masked_text: ^1.1.2
@@ -72,6 +72,7 @@ dependencies:
   math_expressions: ^2.3.0
   table_desk: ^0.0.1
   dropdown_button2: ^3.0.0-beta.19
+  mobile_device_identifier: ^0.0.3
 
 dev_dependencies:
   flutter_test:

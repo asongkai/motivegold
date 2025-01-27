@@ -5,12 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order_detail.dart';
+import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty.dart';
+
 // import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -326,13 +329,44 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
 
   Widget dataCard(OrderModel sell, int index) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => PreviewSellUsedGoldPage(
-                      order: sell,
-                    )));
+      onTap: () async {
+        final ProgressDialog pr = ProgressDialog(context,
+            type: ProgressDialogType.normal,
+            isDismissible: true,
+            showLogs: true);
+        await pr.show();
+        pr.update(message: 'processing'.tr());
+
+        try {
+          var result = await ApiServices.post(
+              '/order/print-order-list/${sell.pairId}',
+              Global.requestObj(null));
+
+          var data = jsonEncode(result?.data);
+          List<OrderModel> orders = orderListModelFromJson(data);
+
+          var payment = await ApiServices.post(
+              '/order/payment/${sell.pairId}', Global.requestObj(null));
+          Global.paymentList =
+              paymentListModelFromJson(jsonEncode(payment?.data));
+
+          await pr.hide();
+          Invoice invoice = Invoice(
+              order: sell,
+              customer: sell.customer!,
+              payments: Global.paymentList,
+              orders: orders,
+              items: sell.details!);
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PreviewSellUsedGoldPage(
+                        invoice: invoice,
+                      )));
+        } catch (e) {
+          await pr.hide();
+        }
       },
       child: Stack(
         children: [
@@ -394,7 +428,8 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                           color: Colors.orange)),
                                 ),
                               ),
-                              if (sell.orderStatus != null && sell.orderStatus == 'PENDING')
+                              if (sell.orderStatus != null &&
+                                  sell.orderStatus == 'PENDING')
                                 Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
@@ -409,20 +444,22 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                               children: [
                                 paddedText(e.productName,
                                     align: TextAlign.center,
-                                    style:
-                                        TextStyle(fontSize: size?.getWidthPx(7))),
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(7))),
                                 paddedText(formatter.format(e.weight!),
                                     align: TextAlign.center,
-                                    style:
-                                        TextStyle(fontSize: size?.getWidthPx(7))),
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(7))),
                                 paddedText(
                                     '${e.binLocationName} - ${e.toBinLocationName}',
                                     align: TextAlign.center,
-                                    style:
-                                        TextStyle(fontSize: size?.getWidthPx(7))),
-                                if (sell.orderStatus != null && sell.orderStatus == 'PENDING')
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(7))),
+                                if (sell.orderStatus != null &&
+                                    sell.orderStatus == 'PENDING')
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       GestureDetector(
@@ -437,7 +474,8 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                             productWeightBahtCtrl.text =
                                                 formatter.format(e.weightBath);
                                             productEntryWeightCtrl.text = "";
-                                            productEntryWeightBahtCtrl.text = "";
+                                            productEntryWeightBahtCtrl.text =
+                                                "";
                                             selectedDetail = e;
                                           });
                                           motivePrint(e.toJson());
@@ -453,7 +491,8 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(8)),
                                             child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               child: Row(
                                                 children: [
                                                   const Icon(
@@ -462,8 +501,8 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                                   ),
                                                   Text('ยืนยัน',
                                                       style: TextStyle(
-                                                          fontSize:
-                                                              size!.getWidthPx(6),
+                                                          fontSize: size!
+                                                              .getWidthPx(6),
                                                           color: Colors.white))
                                                 ],
                                               ),

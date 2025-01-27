@@ -9,17 +9,23 @@ import 'package:motivegold/screen/pos/wholesale/refill/refill_gold_history_scree
 import 'package:motivegold/screen/settings/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
 import 'package:motivegold/screen/settings/company/company_list_screen.dart';
+import 'package:motivegold/screen/settings/master/orderType/order_type_list_screen.dart';
 import 'package:motivegold/screen/settings/master/warehouse/location_list_screen.dart';
 import 'package:motivegold/screen/settings/master_data_screen.dart';
+import 'package:motivegold/screen/settings/pos-id/pos_id_screen.dart';
 import 'package:motivegold/screen/settings/prefix/order_id_prefix.dart';
+import 'package:motivegold/screen/settings/reports/buy-used-gold-gov-reports/buy_used_gold_gov_report_screen.dart';
 import 'package:motivegold/screen/settings/reports/buy-used-gold-reports/buy_used_gold_report_screen.dart';
 import 'package:motivegold/screen/settings/reports/sell-new-gold-reports/sell_new_gold_report_screen.dart';
 import 'package:motivegold/screen/settings/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/settings/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
 import 'package:motivegold/screen/settings/reports/stock-reports/stock_report_list_screen.dart';
+import 'package:motivegold/screen/settings/reports/vat-reports/make_pdf.dart';
+import 'package:motivegold/screen/settings/reports/vat-reports/vat_report_screen.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/used/sell_used_gold_history_screen.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -43,8 +49,8 @@ class _SettingScreenState extends State<SettingScreen> {
       backgroundColor: Colors.white.withOpacity(.94),
       appBar: AppBar(
         title: const Text(
-          "Settings",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          "การตั้งค่า",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 32),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -128,6 +134,29 @@ class _SettingScreenState extends State<SettingScreen> {
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),
                 if (Global.user?.userType == 'COMPANY' && Global.user?.userRole == 'Administrator')
+                  SettingsItem(
+                    onTap: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const PosIdScreen()));
+                      // Alert.success(context, 'title', '${await getDeviceId()}', 'OK', action: () {});
+                    },
+                    icons: CupertinoIcons.italic,
+                    iconStyle: IconStyle(
+                        backgroundColor: Colors.teal
+                    ),
+                    title:
+                    'POS ID',
+                    subtitle:
+                    "การตั้งค่า POS ID",
+                    titleMaxLine: 1,
+                    subtitleMaxLine: 1,
+                    titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  ),
+                if (Global.user?.userType == 'COMPANY' && Global.user?.userRole == 'Administrator')
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
@@ -186,21 +215,25 @@ class _SettingScreenState extends State<SettingScreen> {
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: CupertinoIcons.pencil_outline,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.orange
-                //   ),
-                //   title:
-                //   'Gold Products',
-                //   subtitle:
-                //   "Manage Gold Products",
-                //   titleMaxLine: 1,
-                //   subtitleMaxLine: 1,
-                // ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const OrderTypeListScreen()));
+                  },
+                  icons: CupertinoIcons.pencil_outline,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.orange
+                  ),
+                  title:
+                  'จัดการค่าเริ่มต้นของหน้าจอ',
+                  subtitle:
+                  "ตั้งค่าค่าเริ่มต้น",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
                 // SettingsItem(
                 //   onTap: () {
                 //
@@ -397,32 +430,38 @@ class _SettingScreenState extends State<SettingScreen> {
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: Icons.checklist_rtl_outlined,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green,
-                //   ),
-                //   title: 'รายงาน 001',
-                //   subtitle: "รายงาน 001",
-                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                // ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: Icons.checklist_rtl_outlined,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green,
-                //   ),
-                //   title: 'รายงาน 002',
-                //   subtitle: "รายงาน 002",
-                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                // ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const VatReportScreen()));
+                  },
+                  icons: Icons.checklist_rtl_outlined,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.green,
+                  ),
+                  title: 'รายงานภาษี',
+                  subtitle: "ขายทองคำรูปพรรณใหม่ 96.5%",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BuyUsedGoldGovReportScreen()));
+                  },
+                  icons: Icons.checklist_rtl_outlined,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.green,
+                  ),
+                  title: 'บัญชีสำหรับผู้ทำการค้าของเก่า',
+                  subtitle: "รายงานบัญชีสำหรับผู้ทำการค้าของเก่า",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
                 // SettingsItem(
                 //   onTap: () {
                 //

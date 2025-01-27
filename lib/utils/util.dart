@@ -9,8 +9,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
@@ -23,6 +25,28 @@ import 'global.dart';
 
 final formatter = NumberFormat("#,###.##");
 const JsonEncoder encoder = JsonEncoder();
+
+getPaymentType(String? paymentMethod) {
+  return paymentTypes().where((e) => e.code == paymentMethod).first.name;
+}
+
+Future<String?> getDeviceId() {
+  final mobileDeviceIdentifier = MobileDeviceIdentifier().getDeviceId();
+  return mobileDeviceIdentifier;
+}
+
+int? filterChungVatById(int? id) {
+  if (Global.provinceList.isNotEmpty) {
+    var provinces = Global.provinceList.where((e) => e.id == id).toList();
+    if (provinces.isNotEmpty) {
+      Global.provinceModel = provinces.first;
+      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      return provinces.first.id;
+    }
+  }
+  return 0;
+}
 
 int? filterChungVatByName(String? name) {
   if (Global.provinceList.isNotEmpty) {
@@ -37,6 +61,17 @@ int? filterChungVatByName(String? name) {
   return 0;
 }
 
+int? filterAmpheryId(int? id) {
+  var amphures = Global.amphureList.where((e) => e.id == id).toList();
+  if (amphures.isNotEmpty) {
+    Global.amphureModel = amphures.first;
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(
+        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    return amphures.first.id;
+  }
+  return 0;
+}
+
 int? filterAmpheryName(String? name) {
   var amphures = Global.amphureList.where((e) => e.nameTh == name).toList();
   if (amphures.isNotEmpty) {
@@ -44,6 +79,18 @@ int? filterAmpheryName(String? name) {
     Global.amphureNotifier = ValueNotifier<AmphureModel>(
         Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
     return amphures.first.id;
+  }
+  return 0;
+}
+
+int? filterTambonById(int? id) {
+  motivePrint(Global.tambonList.length);
+  var tambons = Global.tambonList.where((e) => e.id == id).toList();
+  if (tambons.isNotEmpty) {
+    Global.tambonModel = tambons.first;
+    Global.tambonNotifier = ValueNotifier<TambonModel>(
+        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    return tambons.first.id;
   }
   return 0;
 }
@@ -543,19 +590,19 @@ Widget buildTextField(
 
 Widget buildTextFieldX(
     {String? labelText,
-      FormFieldValidator<String>? validator,
-      TextEditingController? controller,
-      String? suffixText,
-      TextInputType? inputType,
-      List<TextInputFormatter>? inputFormat,
-      line,
-      Color? textColor,
-      bool option = false,
-      bool obscureText = false,
-      Function(String value)? onChanged,
-      Function(String value)? onSubmitted,
-      String? placeholder,
-      enabled = true}) {
+    FormFieldValidator<String>? validator,
+    TextEditingController? controller,
+    String? suffixText,
+    TextInputType? inputType,
+    List<TextInputFormatter>? inputFormat,
+    line,
+    Color? textColor,
+    bool option = false,
+    bool obscureText = false,
+    Function(String value)? onChanged,
+    Function(String value)? onSubmitted,
+    String? placeholder,
+    enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
     child: TextFormField(
@@ -624,7 +671,7 @@ Widget buildTextFieldBig(
       inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 50),
+      style: const TextStyle(fontSize: 40),
       textAlign: align ?? TextAlign.left,
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -635,7 +682,7 @@ Widget buildTextFieldBig(
         labelStyle: TextStyle(
             color: textColor ?? Colors.blue[900],
             fontWeight: FontWeight.w900,
-            fontSize: 50),
+            fontSize: 40),
         suffixText: suffixText,
         filled: true,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
@@ -764,6 +811,7 @@ Widget numberTextFieldBig(
     line,
     Color? textColor,
     Function(String value)? onChanged,
+    Function(bool)? onFocusChange,
     Function()? openCalc,
     Function()? onTap,
     Function()? clear,
@@ -773,73 +821,76 @@ Widget numberTextFieldBig(
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
-    child: TextFormField(
-      keyboardType: inputType ?? TextInputType.text,
-      inputFormatters: inputFormat ?? [],
-      enabled: enabled,
-      maxLines: line ?? 1,
-      textAlign: TextAlign.right,
-      style: TextStyle(
-        fontSize: 50,
-        color: textColor ?? Colors.blue[900],
+    child: Focus(
+      onFocusChange: onFocusChange,
+      child: TextFormField(
+        keyboardType: inputType ?? TextInputType.text,
+        inputFormatters: inputFormat ?? [],
+        enabled: enabled,
+        maxLines: line ?? 1,
+        textAlign: TextAlign.right,
+        style: TextStyle(
+          fontSize: 50,
+          color: textColor ?? Colors.blue[900],
+        ),
+        obscureText: isPassword,
+        onTap: onTap,
+        readOnly: readOnly ?? false,
+        // showCursor: readOnly ?? true,
+        focusNode: focusNode,
+        decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+          labelText: labelText,
+          labelStyle: TextStyle(
+              color: textColor ?? Colors.blue[900],
+              fontWeight: FontWeight.w900,
+              fontSize: 50),
+          prefixIconConstraints:
+              const BoxConstraints(minHeight: 90, minWidth: 90),
+          prefixIcon: IconButton(
+            icon: Icon(
+              size: 80,
+              Icons.calculate_outlined,
+              color: readOnly ? Colors.teal : null,
+            ),
+            onPressed: openCalc,
+          ),
+          suffixText: suffixText,
+          filled: true,
+          suffixIconConstraints:
+              const BoxConstraints(minHeight: 60, minWidth: 60),
+          suffixIcon: IconButton(
+            icon: const Icon(
+              size: 50,
+              Icons.close,
+              color: Colors.red,
+            ),
+            onPressed: clear,
+          ),
+          fillColor: enabled ? Colors.white54 : Colors.white54,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              getProportionateScreenWidth(2),
+            ),
+            borderSide: BorderSide(
+              color: readOnly ? Colors.teal : kGreyShade3,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              getProportionateScreenWidth(2),
+            ),
+            borderSide: BorderSide(
+              color: readOnly ? Colors.teal : kGreyShade3,
+            ),
+          ),
+        ),
+        validator: validator,
+        controller: controller,
+        onChanged: onChanged,
       ),
-      obscureText: isPassword,
-      onTap: onTap,
-      readOnly: readOnly ?? false,
-      // showCursor: readOnly ?? true,
-      focusNode: focusNode,
-      decoration: InputDecoration(
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
-        labelText: labelText,
-        labelStyle: TextStyle(
-            color: textColor ?? Colors.blue[900],
-            fontWeight: FontWeight.w900,
-            fontSize: 50),
-        prefixIconConstraints:
-            const BoxConstraints(minHeight: 90, minWidth: 90),
-        prefixIcon: IconButton(
-          icon: Icon(
-            size: 80,
-            Icons.calculate_outlined,
-            color: readOnly ? Colors.teal : null,
-          ),
-          onPressed: openCalc,
-        ),
-        suffixText: suffixText,
-        filled: true,
-        suffixIconConstraints:
-            const BoxConstraints(minHeight: 60, minWidth: 60),
-        suffixIcon: IconButton(
-          icon: const Icon(
-            size: 50,
-            Icons.close,
-            color: Colors.red,
-          ),
-          onPressed: clear,
-        ),
-        fillColor: enabled ? Colors.white54 : Colors.white54,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenWidth(2),
-          ),
-          borderSide: BorderSide(
-            color: readOnly ? Colors.teal : kGreyShade3,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenWidth(2),
-          ),
-          borderSide: BorderSide(
-            color: readOnly ? Colors.teal : kGreyShade3,
-          ),
-        ),
-      ),
-      validator: validator,
-      controller: controller,
-      onChanged: onChanged,
     ),
   );
 }

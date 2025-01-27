@@ -28,7 +28,7 @@ Future<Uint8List> makeRefillGoldPdf(OrderModel sell) async {
         return [
           Column(
             children: [
-              headerRefill(sell.customer!, sell,
+              headerRefill(sell,
                   'ใบกำกับภาษี / ใบ้แจ้งหนี้ / ใบส่งสินค้า'),
               height(),
               Container(
@@ -197,7 +197,7 @@ Future<Uint8List> makeRefillGoldPdf(OrderModel sell) async {
                     paddedText('หักราคารับซื้อทองประจำวัน',
                         align: TextAlign.right),
                     paddedText(
-                        '${Global.format(sell.buyPrice! * sell.details![0].weight! / 15.16)}',
+                        '${Global.format(sell.buyPrice ?? 0 * sell.details![0].weight! / 15.16)}',
                         align: TextAlign.right),
                   ]),
                   TableRow(children: [

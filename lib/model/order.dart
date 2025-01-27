@@ -50,38 +50,39 @@ class OrderModel {
   DateTime? bookDate;
   String? orderStatus;
   GoldDataModel? goldDataModel;
+  String? referenceNo;
 
-  OrderModel({
-    this.id,
-    required this.orderId,
-    this.orderDate,
-    this.customerId,
-    this.status,
-    this.orderTypeId,
-    this.orderTypeName,
-    this.sellTPrice,
-    this.buyTPrice,
-    this.sellPrice,
-    this.buyPrice,
-    this.weight,
-    this.priceIncludeTax,
-    this.purchasePrice,
-    this.priceDiff,
-    this.taxAmount,
-    this.taxBase,
-    this.priceExcludeTax,
-    this.discount,
-    this.attachement,
-    this.details,
-    this.customer,
-    this.createdDate,
-    this.updatedDate,
-    this.pairId,
-    this.paymentMethod,
-    this.bookDate,
-    this.orderStatus,
-    this.goldDataModel,
-  });
+  OrderModel(
+      {this.id,
+      required this.orderId,
+      this.orderDate,
+      this.customerId,
+      this.status,
+      this.orderTypeId,
+      this.orderTypeName,
+      this.sellTPrice,
+      this.buyTPrice,
+      this.sellPrice,
+      this.buyPrice,
+      this.weight,
+      this.priceIncludeTax,
+      this.purchasePrice,
+      this.priceDiff,
+      this.taxAmount,
+      this.taxBase,
+      this.priceExcludeTax,
+      this.discount,
+      this.attachement,
+      this.details,
+      this.customer,
+      this.createdDate,
+      this.updatedDate,
+      this.pairId,
+      this.paymentMethod,
+      this.bookDate,
+      this.orderStatus,
+      this.goldDataModel,
+      this.referenceNo});
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
         id: json["id"],
@@ -128,6 +129,7 @@ class OrderModel {
         goldDataModel: json["goldDataModel"] == null
             ? null
             : GoldDataModel.fromJson(json["goldDataModel"]),
+        referenceNo: json['referenceNo'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -162,6 +164,7 @@ class OrderModel {
         "bookDate": bookDate?.toIso8601String(),
         "orderStatus": orderStatus,
         "goldDataModel": goldDataModel?.toJson(),
+        "referenceNo": referenceNo
       };
 
   @override

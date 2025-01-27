@@ -4,6 +4,7 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
@@ -18,45 +19,47 @@ Widget height({double h = 10}) {
   return SizedBox(height: h);
 }
 
-Widget header(OrderModel order, String? title) {
+Widget header(OrderModel order, String? title, {bool? showPosId}) {
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
-      Expanded(flex: 2, child: Center(child: Text('LOGO'))),
+      Expanded(flex: 1, child: Center(child: Text('LOGO'))),
       Expanded(
-          flex: 8,
+          flex: 9,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('${Global.company?.name} (${Global.branch!.name})',
-                style: const TextStyle(fontSize: 16)),
+                style: const TextStyle(fontSize: 9)),
             Text(
-                '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-            Text('โทรศัพท์/Phone : ${Global.company?.phone} โทรสาร/Fax : '),
+                '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
+                style: const TextStyle(fontSize: 9)),
+            Text('โทรศัพท์/Phone : ${Global.company?.phone} โทรสาร/Fax : ',
+                style: const TextStyle(fontSize: 9)),
             Text(
-                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}'),
+                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
+                style: const TextStyle(fontSize: 9)),
           ]))
     ]),
     SizedBox(
-      height: 10,
+      height: 0,
     ),
     if (title != null)
       Center(
           child: Column(children: [
-        Text(title, style: const TextStyle(fontSize: 14)),
-        Text('เลขรหัสประจําเครื่อง POS ID : A0120000000X000',
-            style: const TextStyle(fontSize: 12))
+        Text(title, style: const TextStyle(fontSize: 9)),
+        if (showPosId != null)
+          Text('เลขรหัสประจําเครื่อง POS ID : ${Global.posIdModel?.posId}',
+              style: const TextStyle(fontSize: 9))
       ])),
   ]);
 }
 
-Widget headerRefill(CustomerModel customer, OrderModel order, String? title) {
+Widget headerRefill(OrderModel order, String? title) {
   return Center(
       child: Column(children: [
-    Text('${customer.firstName} ${customer.lastName} (สำนักงานใหญ่)',
-        style: const TextStyle(fontSize: 16)),
-    Text('${customer.address} ${customer.amphureId} ${customer.provinceId}'),
-    Text(
-        'โทร: ${customer.phoneNumber}    เลขประจําตัวผู้เสียภาษี : ${customer.taxNumber}'),
-    if (title != null) Text(title, style: const TextStyle(fontSize: 16)),
+    Text('${Global.company?.name}  (${Global.branch?.name})',
+        style: const TextStyle(fontSize: 10)),
+    if (title != null)
+      Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
   ]));
 }
 
@@ -65,41 +68,79 @@ Widget docNo(OrderModel order) {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text('เลขที่ : ${order.orderId}'),
-        Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} '),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('เลขที่ : ${order.orderId}',
+                style: const TextStyle(fontSize: 9)),
+            if (order.orderTypeId == 5 || order.orderTypeId == 6)
+              Text('เลขที่อ้างอิง : ${order.referenceNo}',
+                  style: const TextStyle(fontSize: 9)),
+          ],
+        ),
+        Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} ',
+            style: const TextStyle(fontSize: 9)),
       ]);
 }
 
 Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
-  return Column(children: [
-    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(
-          '${getNameTitle(order)} : ${customer.firstName} ${customer.lastName}'),
-      Text('เลขที่ : ${order.orderId}'),
-    ]),
-    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(
-          'โทร: ${customer.phoneNumber}    ${customer.isCustomer == 1 ? 'หมายเลขบัตรประชาชน' : 'เลขประจําตัวผู้เสียภาษี'} : ${customer.taxNumber}'),
-      Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} '),
-    ]),
-    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text('ที่อยู่ : '),
-      if (order.orderTypeId == 3 ||
-          order.orderTypeId == 4 ||
-          order.orderTypeId == 33 ||
-          order.orderTypeId == 44 ||
-          order.orderTypeId == 9)
-        Text('อ้างถึงเอกสาร : ${order.orderId}'),
-    ]),
-    Row(children: [
-      Expanded(
-          flex: 8,
-          child: Text(
-              '${customer.address}, ${customer.amphureId}, ${customer.provinceId}')),
-      SizedBox(width: 30),
-      Expanded(flex: 3, child: Container())
-    ])
-  ]);
+  return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        Expanded(
+            child: Column(children: [
+          Table(children: [
+            TableRow(children: [
+              Text('${getNameTitle(order)} : ',
+                  style: const TextStyle(fontSize: 9)),
+              Text('${customer.firstName} ${customer.lastName}',
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+              Text(
+                  '${customer.address}, ${customer.amphureId}, ${customer.provinceId}',
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text(''),
+              Text(
+                  'โทร: ${customer.phoneNumber}    ${customer.isCustomer == 1 ? 'หมายเลขบัตรประชาชน' : 'เลขประจําตัวผู้เสียภาษี'} : ${customer.taxNumber}',
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+          ]),
+        ])),
+        Expanded(
+            child: Column(children: [
+          Table(children: [
+            TableRow(children: [
+              Text('ทองคําแท่งขายออกบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.details![0].sellTPrice ?? 0)}',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.details![0].buyPrice ?? 0)}',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  '${Global.format((order.details![0].buyPrice ?? 0) / 15.16)}',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+          ]),
+        ])),
+      ]));
 }
 
 String getNameTitle(OrderModel order) {
@@ -158,45 +199,19 @@ Widget getThongThengTable(OrderModel order) {
   ]);
 }
 
-Widget getThongThengPaymentInfo(OrderModel order, PaymentModel payment) =>
+Widget getThongThengPaymentInfo(
+        OrderModel order, List<PaymentModel> payments) =>
     Table(children: [
-      TableRow(
-        children: [
-          Text('1)  เงินสด',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-          Text('${Global.format(Global.getOrderTotal(order))}'),
-          Text('บาท'),
-          Text(''),
-          Text('วันที่'),
-          Text(payment.paymentMethod == 'CA'
-              ? Global.formatDateM(payment.paymentDate.toString())
-              : ''),
-        ],
-      ),
-      TableRow(children: [
-        Container(
-            child: Text('2)  โอนเข้าบัญชีธนาคาร',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-        Container(child: Text('${payment.bankName}')),
-        Container(child: Text('เลขที่ ')),
-        Text('${payment.referenceNumber}'),
-        Text('วันที่'),
-        Container(
-            child: Text(payment.paymentMethod == 'TR'
-                ? Global.formatDateM(payment.paymentDate.toString())
-                : ''))
-      ]),
-      TableRow(children: [
-        Text('3)  อื่นๆ',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        Text(payment.paymentMethod == 'OTH' ? '${payment.paymentDetail}' : ''),
-        Text(''),
-        Text(''),
-        Text('วันที่'),
-        Text(payment.paymentMethod == 'OTH'
-            ? Global.formatDateM(payment.paymentDate.toString())
-            : '')
-      ])
+      for (int i = 0; i < payments.length; i++)
+        TableRow(
+          children: [
+            Text('${i + 1})  ${getPaymentType(payments[i].paymentMethod)}',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            Text('${Global.format(payments[i].amount ?? 0)} บาท'),
+            Text('วันที่'),
+            Text(Global.formatDateNT(payments[i].paymentDate.toString())),
+          ],
+        ),
     ]);
 
 Widget getThongThengSignatureInfo(CustomerModel customer, int orderTypeId) =>

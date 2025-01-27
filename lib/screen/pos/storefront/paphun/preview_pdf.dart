@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/invoice.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/bill/make_bill.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/bill/make_used_bill.dart';
 import 'package:printing/printing.dart';
-
-import 'make_pdf.dart';
 
 class PdfPreviewPage extends StatelessWidget {
   final Invoice invoice;
-  const PdfPreviewPage({Key? key, required this.invoice}) : super(key: key);
+  const PdfPreviewPage({super.key, required this.invoice});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class PdfPreviewPage extends StatelessWidget {
         title: const Text('พิมพ์เอกสาร'),
       ),
       body: PdfPreview(
-        build: (context) => makePdf(invoice),
+        build: (context) => invoice.order.orderTypeId == 1 ? makeBill(invoice) : makeUsedBill(invoice),
       ),
     );
   }
