@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -445,7 +444,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   height: 10,
                                 ),
                                 buildTextFieldBig(
-                                  labelText: getIdTitle(),
+                                  labelText: getIdTitle(selectedType),
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: idCardCtrl,
@@ -646,7 +645,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   DateTime? pickedDate = await showDatePicker(
                                       context: context,
                                       initialDate: DateTime.now(),
-                                      firstDate: DateTime.now(),
+                                      firstDate: DateTime(DateTime.now().year - 200),
                                       //DateTime.now() - not to allow to choose before today.
                                       lastDate: DateTime(2101));
                                   if (pickedDate != null) {
@@ -725,12 +724,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
-                if (idCardCtrl.text.isEmpty) {
-                  Alert.warning(
-                      context, 'คำเตือน', 'กรุณากรอก${getIdTitle()}', 'OK',
-                      action: () {});
-                  return;
-                }
+                // if (idCardCtrl.text.isEmpty) {
+                //   Alert.warning(
+                //       context, 'คำเตือน', 'กรุณากรอก${getIdTitle(selectedType)}', 'OK',
+                //       action: () {});
+                //   return;
+                // }
 
                 if (selectedCustomer == null) {
                   var customerObject = Global.requestObj({
@@ -741,7 +740,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     "email": emailAddressCtrl.text,
                     "doB": birthDateCtrl.text.isEmpty
                         ? ""
-                        : DateTime.parse(birthDateCtrl.text).toUtc().toString(),
+                        : DateTime.parse(birthDateCtrl.text).toString(),
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),
@@ -874,11 +873,5 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       return 'ลูกค้า';
     }
     return 'ลูกค้า';
-  }
-
-  getIdTitle() {
-    return selectedType?.code == 'company'
-        ? 'เลขบัตรประจำตัวภาษี'
-        : 'เลขบัตรประจำตัวประชาชน';
   }
 }

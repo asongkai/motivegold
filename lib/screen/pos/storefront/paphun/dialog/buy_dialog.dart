@@ -642,11 +642,17 @@ class _BuyDialogState extends State<BuyDialog> {
                       ],
                     ),
                     onPressed: () {
-                      if (productCodeCtrl.text.isEmpty) {
+                      if (selectedProduct == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK');
+                            context, 'คำเตือน', getDefaultProductMessage(), 'OK');
                         return;
                       }
+
+                      // if (selectedWarehouse == null) {
+                      //   Alert.warning(
+                      //       context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK');
+                      //   return;
+                      // }
 
                       if (productWeightBahtCtrl.text.isEmpty) {
                         Alert.warning(
@@ -748,7 +754,7 @@ class _BuyDialogState extends State<BuyDialog> {
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text =
-          Global.format(Global.toNumber(productWeightCtrl.text) / 15.16);
+          Global.format(Global.toNumber(productWeightCtrl.text) / getUnitWeightValue());
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -768,7 +774,7 @@ class _BuyDialogState extends State<BuyDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
     } else {
       productWeightCtrl.text = "";
     }

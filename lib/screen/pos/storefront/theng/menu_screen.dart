@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:motivegold/screen/pos/storefront/theng/sell_theng_screen.dart';
+import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui/buy_theng_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui/sell_theng_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
-
-import '../checkout_screen.dart';
-import 'buy_theng_screen.dart';
 
 class ThengSaleMenuScreen extends StatefulWidget {
   const ThengSaleMenuScreen({Key? key, required this.title}) : super(key: key);

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -361,7 +362,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                   return;
                 }
 
-                var object = encoder.convert({
+                var object = Global.requestObj({
                   "id": id,
                   "companyId": widget.branch.companyId,
                   "name": nameCtrl.text,

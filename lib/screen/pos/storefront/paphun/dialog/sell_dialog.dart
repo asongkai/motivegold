@@ -179,7 +179,7 @@ class _SaleDialogState extends State<SaleDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -229,7 +229,7 @@ class _SaleDialogState extends State<SaleDialog> {
   void gramChanged() {
     if (productWeightGramCtrl.text != "") {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightGramCtrl.text) / 15.16).toPrecision(2));
+          (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(
@@ -281,7 +281,7 @@ class _SaleDialogState extends State<SaleDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightGramCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(
@@ -848,13 +848,13 @@ class _SaleDialogState extends State<SaleDialog> {
                     onPressed: () async {
                       if (selectedProduct == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK');
+                            context, 'คำเตือน', getDefaultProductMessage(), 'OK');
                         return;
                       }
 
                       if (selectedWarehouse == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'โปรดตั้งค่าคลังสินค้าเริ่มต้นสำหรับหน้าจอก่อน', 'OK');
+                            context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK');
                         return;
                       }
 

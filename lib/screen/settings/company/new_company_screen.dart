@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -284,7 +285,7 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                   return;
                 }
 
-                var object = encoder.convert({
+                var object = Global.requestObj({
                   "name": nameCtrl.text,
                   "email": emailCtrl.text,
                   "phone": phoneCtrl.text,

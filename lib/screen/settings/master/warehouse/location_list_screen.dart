@@ -39,7 +39,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
       loading = true;
     });
     try {
-      motivePrint(Global.user?.companyId);
+      // motivePrint(Global.user?.companyId);
       var result = await ApiServices.post(
           Global.user?.userRole == 'Administrator'
               ? '/binlocation/all'
@@ -110,7 +110,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
+                      height: MediaQuery.of(context).size.height - 120,
                       child: ListView.builder(
                           itemCount: locationList!.length,
                           scrollDirection: Axis.vertical,

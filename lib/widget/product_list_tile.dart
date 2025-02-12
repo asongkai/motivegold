@@ -9,13 +9,12 @@ class ProductListTileData extends StatelessWidget {
   bool showTotal;
 
   ProductListTileData(
-      {Key? key,
+      {super.key,
       this.orderId,
       this.weight,
       this.totalPrice,
         this.type,
-      this.showTotal = false})
-      : super(key: key);
+      this.showTotal = false});
 
   @override
   Widget build(BuildContext context) {

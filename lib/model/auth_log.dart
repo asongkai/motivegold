@@ -35,7 +35,7 @@ class AuthLogModel {
     id: json["id"],
     userId: json["userId"],
     type: json["type"],
-    date: json["date"] == null ? null : DateTime.parse(json["date"]),
+    date: json["date"] == null ? null : DateTime.parse(json["date"]).toLocal(),
     deviceDetail: json["deviceDetail"],
     user: json["user"] == null ? null : UserModel.fromJson(json["user"]),
   );

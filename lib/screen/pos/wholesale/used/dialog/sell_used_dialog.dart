@@ -2,14 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -222,7 +219,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -528,7 +525,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                         //                     (Global.toNumber(
                         //                             productWeightBahtCtrl
                         //                                 .text) *
-                        //                         15.16));
+                        //                         getUnitWeightValue()));
                         //               } else {
                         //                 productWeightCtrl.text = "";
                         //               }
@@ -578,7 +575,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                         //                 productWeightBahtCtrl.text =
                         //                     Global.format((Global.toNumber(
                         //                             productWeightCtrl.text) /
-                        //                         15.16));
+                        //                         getUnitWeightValue()));
                         //               } else {
                         //                 productWeightBahtCtrl.text = "";
                         //               }
@@ -1046,7 +1043,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
       productEntryWeightCtrl.text = Global.format(
-          (Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16));
+          (Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue()));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -1055,7 +1052,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
   void gramChanged() {
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16));
+          Global.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue()));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }

@@ -200,20 +200,25 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-                flex: 1,
+                flex: 3,
                 child: Container(
                   decoration: const BoxDecoration(
                     border: Border(),
                   ),
-                  child: paddedText(' ', align: TextAlign.center),
+                  child: paddedText(
+                      '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())}บาทถ้วน -',
+                      align: TextAlign.center,
+                      style: const TextStyle(fontSize: 8)),
                 )),
             Expanded(
-                flex: 4,
+                flex: 2,
                 child: Container(
                   decoration: const BoxDecoration(
                     border: Border(),
                   ),
-                  child: paddedText('รวมน้ำหนักทอง', align: TextAlign.right),
+                  child: paddedText('รวมน้ำหนักทอง',
+                      align: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
                 )),
             Expanded(
                 flex: 2,
@@ -292,14 +297,14 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
                 Expanded(
                   flex: 3,
                   child: Text(
-                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders))} :  ',
+                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} :  ',
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
                 Expanded(
                   flex: 2,
                   child: Text(
-                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders) : -Global.payToCustomerOrShopValue(invoice.orders))}',
+                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
@@ -380,8 +385,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
   pdf.addPage(
     MultiPage(
       margin: const EdgeInsets.all(20),
-      pageFormat: PdfPageFormat.a5,
-      orientation: PageOrientation.landscape,
+      pageFormat: PdfPageFormat.a4,
       build: (context) => widgets,
     ),
   );

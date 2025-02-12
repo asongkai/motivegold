@@ -105,20 +105,18 @@ class _UserListScreenState extends State<UserListScreen> {
             ? const LoadingProgress()
             : list!.isEmpty
                 ? const NoDataFoundWidget()
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                            itemCount: list!.length,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dataCard(list![index], index);
-                            }),
-                      ),
-                    ),
+                : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height + 100,
+                    child: ListView.builder(
+                        itemCount: list!.length,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (BuildContext context, int index) {
+                          return dataCard(list![index], index);
+                        }),
                   ),
+                ),
       ),
     );
   }

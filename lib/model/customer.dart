@@ -75,7 +75,7 @@ class CustomerModel {
     firstName: json["firstName"],
     lastName: json["lastName"],
     email: json["email"],
-    doB: json["doB"] == null ? null : DateTime.parse(json["doB"]),
+    doB: json["doB"] == null ? null : DateTime.parse(json["doB"]).toLocal(),
     phoneNumber: json["phoneNumber"],
     username: json["username"],
     password: json["password"],
@@ -94,8 +94,8 @@ class CustomerModel {
     isBuyer: json["isBuyer"],
     customerType: json["customerType"],
     remark: json["remark"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {

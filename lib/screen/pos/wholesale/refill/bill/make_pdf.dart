@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -124,7 +125,7 @@ Future<Uint8List> makeRefillGoldPdf(OrderModel sell) async {
                       Expanded(
                           flex: 2,
                           child: Text(
-                              '${Global.format((sell.buyPrice ?? 0) / 15.16)}',
+                              '${Global.format((sell.buyPrice ?? 0) / getUnitWeightValue())}',
                               textAlign: TextAlign.center)),
                       Expanded(flex: 1, child: Text('บาท')),
                     ]))
@@ -197,7 +198,7 @@ Future<Uint8List> makeRefillGoldPdf(OrderModel sell) async {
                     paddedText('หักราคารับซื้อทองประจำวัน',
                         align: TextAlign.right),
                     paddedText(
-                        '${Global.format(sell.buyPrice ?? 0 * sell.details![0].weight! / 15.16)}',
+                        '${Global.format(sell.buyPrice ?? 0 * sell.details![0].weight! / getUnitWeightValue())}',
                         align: TextAlign.right),
                   ]),
                   TableRow(children: [

@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:motivegold/screen/pos/storefront/theng/sell_theng_matching_screen.dart';
+import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui-matching/buy_theng_matching_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui-matching/sell_theng_matching_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
-
-import '../checkout_screen.dart';
-import 'buy_theng_matching_screen.dart';
 
 class ThengSaleMatchingMenuScreen extends StatefulWidget {
   const ThengSaleMatchingMenuScreen({Key? key, required this.title}) : super(key: key);
@@ -82,10 +81,10 @@ class ThengSaleMatchingMenuScreenState extends State<ThengSaleMatchingMenuScreen
                         .whenComplete(() {
                       init();
                       if (Global.posIndex == 0) {
-                        sumSellThengTotal();
+                        sumSellThengTotalMatching();
                       }
                       if (Global.posIndex == 1) {
-                        sumBuyThengTotal();
+                        sumBuyThengTotalMatching();
                       }
                       sideMenu.changePage(Global.posIndex);
                       pageController.jumpToPage(Global.posIndex);

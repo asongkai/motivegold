@@ -11,6 +11,7 @@ import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/dialog/refill_dialog.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 // import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -92,6 +93,21 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   void initState() {
     // implement initState
     super.initState();
+
+    // Sample data
+    // orderDateCtrl.text = "01-02-2025";
+    // referenceNumberCtrl.text = "90803535";
+    // productSellThengPriceCtrl.text = "45000";
+    // productBuyThengPriceCtrl.text = "44000";
+    // productSellPriceCtrl.text = "45000";
+    // productBuyPriceCtrl.text = "44000";
+    // priceExcludeTaxTotalCtrl.text = "89000";
+    // purchasePriceTotalCtrl.text = "88000";
+    // priceDiffTotalCtrl.text = "2000";
+    // taxBaseTotalCtrl.text = "1000";
+    // taxAmountTotalCtrl.text = "500";
+    // priceIncludeTaxTotalCtrl.text = "90000";
+
     calc = SimpleCalculator(
       value: _currentValue!,
       hideExpression: false,
@@ -139,16 +155,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
               value != null ? "${Global.format(value)}" : "";
         }
 
-        if (mode == 'baht') {
-          productWeightBahtCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-          bahtChanged();
-        }
-        if (mode == 'gram') {
-          productWeightCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-          gramChanged();
-        }
         if (mode == 'price') {
           priceIncludeTaxCtrl.text =
               value != null ? "${Global.format(value)}" : "";
@@ -188,7 +194,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    loadProducts();
   }
 
   @override
@@ -274,7 +279,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
             ? const LoadingProgress()
             : SingleChildScrollView(
                 child: Container(
-                  height: size.hp(75),
+                  height: size.hp(110),
                   margin: const EdgeInsets.all(8),
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -291,7 +296,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                         child: Text(
                           'HEADER [ส่วนหัว]',
                           style: TextStyle(fontSize: 20),
-                        ),
+                        )
                       ),
                       const SizedBox(
                         height: 20,
@@ -650,7 +655,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                           // if (result!.status == "success") {
                             OrderModel order = OrderModel(
                                 orderId: "",
-                                orderDate: DateTime.now().toUtc(),
+                                orderDate: Global.convertDate(orderDateCtrl.text),
                                 details: Global.refillOrderDetail!,
                                 referenceNo: referenceNumberCtrl.text,
                                 sellTPrice: Global.toNumber(
@@ -787,7 +792,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             // if (result!.status == "success") {
                               OrderModel order = OrderModel(
                                   orderId: "",
-                                  orderDate: DateTime.now().toUtc(),
+                                  orderDate: Global.convertDate(orderDateCtrl.text),
                                   details: Global.refillOrderDetail!,
                                   referenceNo: referenceNumberCtrl.text,
                                   sellTPrice: Global.toNumber(
@@ -812,6 +817,8 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                       Global.toNumber(taxAmountTotalCtrl.text),
                                   orderTypeId: 5);
                               final data = order.toJson();
+                              // motivePrint(data);
+                              // return;
                               Global.orders?.add(OrderModel.fromJson(data));
                               widget.refreshCart(
                                   Global.orders?.length.toString());
@@ -873,78 +880,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         ),
       ],
     );
-  }
-
-  void gramChanged() {
-    if (productWeightCtrl.text.isNotEmpty) {
-      // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
-      // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
-      productWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productWeightCtrl.text) / 15.16));
-    } else {
-      productWeightBahtCtrl.text = "";
-    }
-  }
-
-  void bahtChanged() {
-    if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text =
-          Global.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16));
-      // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
-      // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
-    } else {
-      productWeightCtrl.text = "";
-    }
-  }
-
-  void loadProducts() async {
-    setState(() {
-      loading = true;
-    });
-    try {
-      var result =
-          await ApiServices.post('/product/refill', Global.requestObj(null));
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-        // motivePrint(data);
-        List<ProductModel> products = productListModelFromJson(data);
-        setState(() {
-          productList = products;
-          if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
-            productNotifier = ValueNotifier<ProductModel>(
-                selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
-            productCodeCtrl.text =
-                (selectedProduct != null ? selectedProduct!.productCode : '')!;
-            productNameCtrl.text =
-                selectedProduct != null ? selectedProduct!.name : '';
-          }
-        });
-      } else {
-        productList = [];
-      }
-
-      var warehouse =
-          await ApiServices.post('/binlocation/all', Global.requestObj(null));
-      if (warehouse?.status == "success") {
-        var data = jsonEncode(warehouse?.data);
-        List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
-        setState(() {
-          warehouseList = warehouses;
-        });
-      } else {
-        warehouseList = [];
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-    if (mounted) {
-      setState(() {
-        loading = false;
-      });
-    }
   }
 
   resetText() {

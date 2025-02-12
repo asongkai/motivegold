@@ -7,7 +7,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
-import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/global.dart';
@@ -22,7 +22,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'paphun/preview_pdf.dart';
+import 'paphun/bill/preview_pdf.dart';
 
 class PrintBillScreen extends StatefulWidget {
   const PrintBillScreen({super.key});
@@ -63,12 +63,13 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
         payment = await ApiServices.post(
             '/order/payment/${Global.pairId}', Global.requestObj(null));
       }
+      // motivePrint(payment?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> dump = orderListModelFromJson(data);
         setState(() {
           orders = dump;
-          Global.paymentList = paymentListModelFromJson(payment?.data);
+          Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
         });
       } else {
         orders = [];
@@ -319,6 +320,8 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                   children: [
                     GestureDetector(
                       onTap: () async {
+                        // loadOrder();
+                        // return;
                         final ProgressDialog pr = ProgressDialog(context,
                             type: ProgressDialogType.normal,
                             isDismissible: true,

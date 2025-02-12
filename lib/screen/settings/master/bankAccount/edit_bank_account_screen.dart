@@ -2,11 +2,16 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/bank/bank.dart';
 import 'package:motivegold/model/bank/bank_account.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -18,7 +23,8 @@ class EditBankAccountScreen extends StatefulWidget {
   final BankAccountModel account;
   final int index;
 
-  const EditBankAccountScreen({super.key, required this.account, required this.index});
+  const EditBankAccountScreen(
+      {super.key, required this.account, required this.index});
 
   @override
   State<EditBankAccountScreen> createState() => _EditBankAccountScreenState();
@@ -28,11 +34,15 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
   final TextEditingController nameCtrl = TextEditingController();
   final TextEditingController codeCtrl = TextEditingController();
 
-  BankModel? selectedBank;
   bool loading = false;
 
   List<BankModel> bankList = [];
+
+  BankModel? selectedBank;
   ValueNotifier<dynamic>? bankNotifier;
+
+  ProductTypeModel? selectedBankAccountType;
+  ValueNotifier<dynamic>? bankAccountTypeNotifier;
 
   @override
   void initState() {
@@ -42,6 +52,13 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
     codeCtrl.text = widget.account.accountNo ?? '';
     bankNotifier =
         ValueNotifier<BankModel>(BankModel(id: 0, name: 'เลือกธนาคาร'));
+    var ls = bankAccountTypes()
+        .where((e) => e.code == widget.account.accountType)
+        .toList();
+    selectedBankAccountType = ls.isNotEmpty ? ls.first : null;
+    bankAccountTypeNotifier = ValueNotifier<ProductTypeModel>(
+        selectedBankAccountType ??
+            ProductTypeModel(id: 0, name: 'เลือกประเภทบัญชีเงินฝาก'));
     loadData();
   }
 
@@ -58,14 +75,14 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
         List<BankModel> products = bankModelFromJson(data);
         setState(() {
           bankList = products;
-          selectedBank = bankList.first;
-          bankNotifier =
-              ValueNotifier<BankModel>(selectedBank ?? BankModel(id: 0, name: 'เลือกธนาคาร'));
+          selectedBank =
+              bankList.where((e) => e.id == widget.account.bankId).first;
+          bankNotifier = ValueNotifier<BankModel>(
+              selectedBank ?? BankModel(id: 0, name: 'เลือกธนาคาร'));
         });
       } else {
         bankList = [];
       }
-
     } catch (e) {
       motivePrint(e.toString());
     }
@@ -76,82 +93,184 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("แก้ไขบัญชีธนาคาร"),
       ),
-      body: loading ? const Center(child: LoadingProgress()) : SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: SingleChildScrollView(
-            child: SizedBox(
-              // height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ชื่อธนาคาร'.tr(),
-                                  textColor: Colors.orange,
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: nameCtrl,
-                                ),
-                              ],
-                            ),
+      body: loading
+          ? const Center(child: LoadingProgress())
+          : SafeArea(
+              child: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+                child: SingleChildScrollView(
+                  child: SizedBox(
+                    // height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 20,
                           ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: 70,
+                                    child: MiraiDropDownMenu<BankModel>(
+                                      key: UniqueKey(),
+                                      children: bankList,
+                                      space: 4,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
+                                      selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        BankModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                        return DropDownItemWidget(
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(6),
+                                        );
+                                      },
+                                      onChanged: (BankModel value) {
+                                        selectedBank = value;
+                                        bankNotifier!.value = value;
+                                      },
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(6),
+                                        projectValueNotifier: bankNotifier!,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'รหัสธนาคาร'.tr(),
-                                  textColor: Colors.orange,
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: codeCtrl,
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: 70,
+                                    child: MiraiDropDownMenu<ProductTypeModel>(
+                                      key: UniqueKey(),
+                                      children: bankAccountTypes(),
+                                      space: 4,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
+                                      selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductTypeModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                        return DropDownItemWidget(
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(6),
+                                        );
+                                      },
+                                      onChanged: (ProductTypeModel value) {
+                                        selectedBankAccountType = value;
+                                        bankAccountTypeNotifier!.value = value;
+                                      },
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(6),
+                                        projectValueNotifier:
+                                            bankAccountTypeNotifier!,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'ชื่อบัญชีธนาคาร'.tr(),
+                                        textColor: Colors.orange,
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: nameCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'หมายเลขบัญชีธนาคาร'.tr(),
+                                        textColor: Colors.orange,
+                                        validator: null,
+                                        inputType: TextInputType.text,
+                                        controller: codeCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
       persistentFooterButtons: [
         SizedBox(
             height: 70,
@@ -174,15 +293,15 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                 }
 
                 if (nameCtrl.text.trim() == "") {
-                  Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกชื่อบัญชีธนาคาร', 'OK'.tr(),
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกชื่อบัญชีธนาคาร', 'OK'.tr(),
                       action: () {});
                   return;
                 }
 
                 if (codeCtrl.text.trim() == "") {
-                  Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกหมายเลขบัญชีธนาคาร', 'OK'.tr(),
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกหมายเลขบัญชีธนาคาร', 'OK'.tr(),
                       action: () {});
                   return;
                 }
@@ -192,7 +311,9 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                   "name": nameCtrl.text,
                   "accountNo": codeCtrl.text,
                   "bankId": selectedBank?.id,
+                  "bankCode": selectedBank?.code,
                   "branchId": Global.branch?.id,
+                  "accountType": selectedBankAccountType?.code,
                   "companyId": Global.company?.id
                 });
 
@@ -206,8 +327,8 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                   await pr.show();
                   pr.update(message: 'processing'.tr());
                   try {
-                    var result =
-                        await ApiServices.put('/bankaccount', widget.account.id, object);
+                    var result = await ApiServices.put(
+                        '/bankaccount', widget.account.id, object);
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {

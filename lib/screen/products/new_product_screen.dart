@@ -350,30 +350,38 @@ class _NewProductScreenState extends State<NewProductScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
+
+                if (productCodeCtrl.text.trim() == "") {
+                  Alert.warning(
+                      context, 'warning'.tr(), 'กรุณากรอกรหัสสินค้า', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
                 if (productNameCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณากรอกชื่อสินค้า', 'OK'.tr(),
                       action: () {});
                   return;
                 }
 
                 if (productTypeCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณาเลือกประเภทสินค้า', 'OK'.tr(),
                       action: () {});
                   return;
                 }
 
                 if (productCategoryCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณาเลือกหมวดหมู่สินค้า', 'OK'.tr(),
                       action: () {});
                   return;
                 }
 
                 if (typeCtrl.text.trim() == "") {
                   Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                      context, 'warning'.tr(), 'กรุณาเลือกสถานะสินค้า', 'OK'.tr(),
                       action: () {});
                   return;
                 }

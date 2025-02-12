@@ -7,7 +7,6 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/stockmovement.dart';
 import 'package:motivegold/screen/settings/reports/stock-movement-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -26,10 +25,12 @@ class StockMovementReportListScreen extends StatefulWidget {
   const StockMovementReportListScreen({super.key});
 
   @override
-  State<StockMovementReportListScreen> createState() => _StockMovementReportListScreenState();
+  State<StockMovementReportListScreen> createState() =>
+      _StockMovementReportListScreenState();
 }
 
-class _StockMovementReportListScreenState extends State<StockMovementReportListScreen> {
+class _StockMovementReportListScreenState
+    extends State<StockMovementReportListScreen> {
   bool loading = false;
   List<StockMovementModel>? dataList = [];
   List<StockMovementModel>? filterList = [];
@@ -49,18 +50,19 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
     super.initState();
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
     search();
   }
 
   void loadProducts() async {
-    setState(() {
-      loading = true;
-    });
+    // setState(() {
+    //   loading = true;
+    // });
     try {
-
-      var result = await ApiServices.post('/product/all', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/product/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -71,7 +73,8 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
         productList = [];
       }
 
-      var warehouse = await ApiServices.post('/binlocation/all', Global.requestObj(null));
+      var warehouse = await ApiServices.post(
+          '/binlocation/all/branch', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -81,30 +84,28 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
       } else {
         warehouseList = [];
       }
-
-
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
     }
-    setState(() {
-      loading = false;
-    });
+    // setState(() {
+    //   loading = false;
+    // });
   }
 
   void search() async {
-
     setState(() {
       loading = true;
     });
 
-    var location =
-    await ApiServices.post('/stockmovement/search', Global.requestObj({
-      "productId": selectedProduct?.id,
-      "binLocationId": selectedWarehouse?.id
-    }));
-    motivePrint(location?.toJson());
+    var location = await ApiServices.post(
+        '/stockmovement/search',
+        Global.requestObj({
+          "productId": selectedProduct?.id,
+          "binLocationId": selectedWarehouse?.id
+        }));
+    // motivePrint(location?.toJson());
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
       List<StockMovementModel> products = stockMovementListModelFromJson(data);
@@ -137,8 +138,10 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
               }
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      PreviewStockMovementReportPage(list: filterList!, type: 1,),
+                  builder: (context) => PreviewStockMovementReportPage(
+                    list: filterList!,
+                    type: 1,
+                  ),
                 ),
               );
             },
@@ -162,292 +165,263 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
       ),
       body: SafeArea(
         child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        getProportionateScreenWidth(
+                          8,
+                        ),
+                      ),
+                      topRight: Radius.circular(
+                        getProportionateScreenWidth(
+                          8,
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: getProportionateScreenWidth(0),
+                    ),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SizedBox(
-                          child: Container(
-                            margin: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  getProportionateScreenWidth(
-                                    8,
-                                  ),
-                                ),
-                                topRight: Radius.circular(
-                                  getProportionateScreenWidth(
-                                    8,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                top: getProportionateScreenWidth(0),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 8.0, right: 8.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    'สินค้า',
-                                                    style: TextStyle(
-                                                        fontSize: size.getWidthPx(6)),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 80,
-                                                    child: MiraiDropDownMenu<
-                                                        ProductModel>(
-                                                      key:
-                                                      UniqueKey(),
-                                                      children:
-                                                      productList,
-                                                      space: 4,
-                                                      maxHeight:
-                                                      360,
-                                                      showSearchTextField:
-                                                      true,
-                                                      selectedItemBackgroundColor:
-                                                      Colors
-                                                          .transparent,
-                                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                                      showSelectedItemBackgroundColor:
-                                                      true,
-                                                      itemWidgetBuilder:
-                                                          (
-                                                          int index,
-                                                          ProductModel?
-                                                          project, {
-                                                        bool isItemSelected =
-                                                        false,
-                                                      }) {
-                                                        return DropDownItemWidget(
-                                                          project:
-                                                          project,
-                                                          isItemSelected:
-                                                          isItemSelected,
-                                                          firstSpace:
-                                                          10,
-                                                          fontSize:
-                                                          size.getWidthPx(6),
-                                                        );
-                                                      },
-                                                      onChanged:
-                                                          (ProductModel
-                                                      value) {
-                                                        productCtrl.text =
-                                                            value.name;
-                                                        selectedProduct = value;
-                                                        productNotifier!.value =
-                                                            value;
-                                                        search();
-                                                      },
-                                                      child:
-                                                      DropDownObjectChildWidget(
-                                                        key:
-                                                        GlobalKey(),
-                                                        fontSize:
-                                                        size.getWidthPx(6),
-                                                        projectValueNotifier:
-                                                        productNotifier!,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 8.0, right: 8.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                   Text(
-                                                    'คลังสินค้า',
-                                                    style: TextStyle(
-                                                        fontSize: size.getWidthPx(6)),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 80,
-                                                    child: MiraiDropDownMenu<
-                                                        WarehouseModel>(
-                                                      key:
-                                                      UniqueKey(),
-                                                      children:
-                                                      warehouseList,
-                                                      space: 4,
-                                                      maxHeight:
-                                                      360,
-                                                      showSearchTextField:
-                                                      true,
-                                                      selectedItemBackgroundColor:
-                                                      Colors
-                                                          .transparent,
-                                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                                      showSelectedItemBackgroundColor:
-                                                      true,
-                                                      itemWidgetBuilder:
-                                                          (
-                                                          int index,
-                                                          WarehouseModel?
-                                                          project, {
-                                                        bool isItemSelected =
-                                                        false,
-                                                      }) {
-                                                        return DropDownItemWidget(
-                                                          project:
-                                                          project,
-                                                          isItemSelected:
-                                                          isItemSelected,
-                                                          firstSpace:
-                                                          10,
-                                                          fontSize:
-                                                          size.getWidthPx(6),
-                                                        );
-                                                      },
-                                                      onChanged:
-                                                          (WarehouseModel
-                                                      value) {
-                                                        warehouseCtrl.text = value
-                                                            .name
-                                                            .toString();
-                                                        selectedWarehouse =
-                                                            value;
-                                                        warehouseNotifier!.value =
-                                                            value;
-                                                        search();
-                                                      },
-                                                      child:
-                                                      DropDownObjectChildWidget(
-                                                        key:
-                                                        GlobalKey(),
-                                                        fontSize:
-                                                        size.getWidthPx(6),
-                                                        projectValueNotifier:
-                                                        warehouseNotifier!,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: getProportionateScreenWidth(3.0),
-                                      vertical: getProportionateScreenHeight(5.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                    child: Row(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                          flex: 8,
-                                          child: ElevatedButton(
-                                            style: ButtonStyle(
-                                                backgroundColor:
-                                                WidgetStateProperty.all<Color>(bgColor3)),
-                                            onPressed: search,
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                const Icon(Icons.search),
-                                                Text(
-                                                  'ค้นหา'.tr(),
-                                                  style: const TextStyle(fontSize: 20),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        Text(
+                                          'สินค้า',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(6)),
                                         ),
-                                        const SizedBox(width: 10,),
-                                        Expanded(
-                                          flex: 2,
-                                          child: ElevatedButton(
-                                            style: ButtonStyle(
-                                                backgroundColor:
-                                                WidgetStateProperty.all<Color>(Colors.red)),
-                                            onPressed: () {
-                                              productNotifier =
-                                                  ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-                                              warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-                                              productCtrl.text = "";
-                                              warehouseCtrl.text = "";
-                                              selectedProduct = null;
-                                              selectedWarehouse = null;
-                                              search();
-                                              setState(() {
-
-                                              });
+                                        SizedBox(
+                                          height: 80,
+                                          child:
+                                              MiraiDropDownMenu<ProductModel>(
+                                            key: UniqueKey(),
+                                            children: productList,
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              ProductModel? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(6),
+                                              );
                                             },
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                const Icon(Icons.clear),
-                                                Text(
-                                                  'Reset'.tr(),
-                                                  style: const TextStyle(fontSize: 20),
-                                                ),
-                                              ],
+                                            onChanged: (ProductModel value) {
+                                              productCtrl.text = value.name;
+                                              selectedProduct = value;
+                                              productNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(6),
+                                              projectValueNotifier:
+                                                  productNotifier!,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'คลังสินค้า',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(6)),
+                                        ),
+                                        SizedBox(
+                                          height: 80,
+                                          child:
+                                              MiraiDropDownMenu<WarehouseModel>(
+                                            key: UniqueKey(),
+                                            children: warehouseList,
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              WarehouseModel? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(6),
+                                              );
+                                            },
+                                            onChanged: (WarehouseModel value) {
+                                              warehouseCtrl.text =
+                                                  value.name.toString();
+                                              selectedWarehouse = value;
+                                              warehouseNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(6),
+                                              projectValueNotifier:
+                                                  warehouseNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: getProportionateScreenWidth(3.0),
+                            vertical: getProportionateScreenHeight(5.0),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 8,
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              bgColor3)),
+                                  onPressed: search,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.search),
+                                      Text(
+                                        'ค้นหา'.tr(),
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              Colors.red)),
+                                  onPressed: () {
+                                    productNotifier =
+                                        ValueNotifier<ProductModel>(
+                                            ProductModel(
+                                                name: 'เลือกสินค้า', id: 0));
+                                    warehouseNotifier =
+                                        ValueNotifier<WarehouseModel>(
+                                            WarehouseModel(
+                                                id: 0,
+                                                name: 'เลือกคลังสินค้า'));
+                                    productCtrl.text = "";
+                                    warehouseCtrl.text = "";
+                                    selectedProduct = null;
+                                    selectedWarehouse = null;
+                                    search();
+                                    setState(() {});
+                                  },
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.clear),
+                                      Text(
+                                        'Reset'.tr(),
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const Divider(
-                          thickness: 1.0,
-                        ),
-                        loading
-                            ? Container(
-                            margin: const EdgeInsets.only(top: 100),
-                            child: const LoadingProgress())
-                            :  productCard(filterList),
                       ],
                     ),
                   ),
+                ),
+              ),
+              const Divider(
+                thickness: 1.0,
+              ),
+              loading
+                  ? Container(
+                      margin: const EdgeInsets.only(top: 100),
+                      child: const LoadingProgress())
+                  : productCard(filterList),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -480,7 +454,8 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                             decoration: const BoxDecoration(),
                             children: [
                               paddedTextBig(e.orderId!),
-                              paddedTextBig(Global.dateOnly(e.createdDate.toString())),
+                              paddedTextBig(
+                                  Global.dateOnly(e.createdDate.toString())),
                               paddedTextBig(
                                   e.product == null ? "" : e.product!.name),
                               paddedTextBig(e.binLocation == null
@@ -491,11 +466,11 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                               paddedTextBig(' ${Global.format(e.weight ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
-                              paddedTextBig(' ${Global.format(e.unitCost ?? 0)}',
+                              paddedTextBig(
+                                  ' ${Global.format(e.unitCost ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
-                              paddedTextBig(' ${Global.format(e.weight! * e.unitCost!)}'
-                                  ,
+                              paddedTextBig(' ${Global.format(e.price ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
                             ],

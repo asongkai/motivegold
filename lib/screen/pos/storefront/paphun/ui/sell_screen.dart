@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
@@ -12,26 +10,16 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/sell_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/calculator/calculator.dart';
-import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-
-// import 'package:pattern_formatter/pattern_formatter.dart';
-import 'package:motivegold/utils/helps/numeric_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class PaphunSellScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -81,7 +69,6 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumSellTotal();
-    loadProducts();
   }
 
   @override
@@ -99,92 +86,6 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
     productPriceTotalCtrl.dispose();
     marketPriceTotalCtrl.dispose();
     warehouseCtrl.dispose();
-  }
-
-  void loadProducts() async {
-    setState(() {
-      loading = true;
-    });
-    try {
-      // ApiServices api = ApiServices();
-      // Global.goldDataModel = await api.getGoldPrice(context);
-
-      var result =
-          await ApiServices.post('/product/type/NEW', Global.requestObj(null));
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-        List<ProductModel> products = productListModelFromJson(data);
-        setState(() {
-          productList = products;
-          if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
-            productCodeCtrl.text =
-                (selectedProduct != null ? selectedProduct?.productCode! : "")!;
-            productNameCtrl.text =
-                (selectedProduct != null ? selectedProduct?.name : "")!;
-            productNotifier = ValueNotifier<ProductModel>(
-                selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
-          }
-        });
-      } else {
-        productList = [];
-      }
-
-      var warehouse = await ApiServices.post(
-          '/binlocation/all/sell', Global.requestObj(null));
-      if (warehouse?.status == "success") {
-        var data = jsonEncode(warehouse?.data);
-        List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
-        warehouseList = warehouses;
-        selectedWarehouse = warehouseList.first;
-        warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
-            WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-        await loadQtyByLocation(selectedWarehouse!.id!);
-        setState(() {});
-      } else {
-        warehouseList = [];
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-    setState(() {
-      loading = false;
-    });
-  }
-
-  Future<void> loadQtyByLocation(int id) async {
-    // final ProgressDialog pr = ProgressDialog(context,
-    //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-    // await pr.show();
-    // pr.update(message: 'processing'.tr());
-    try {
-      var result = await ApiServices.get(
-          '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-        List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
-        setState(() {
-          qtyLocationList = qtys;
-        });
-      } else {
-        qtyLocationList = [];
-      }
-      // await pr.hide();
-
-      productWeightRemainCtrl.text =
-          formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
-      setState(() {});
-      setState(() {});
-    } catch (e) {
-      // await pr.hide();
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
   }
 
   @override
@@ -488,7 +389,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                             OrderModel order = OrderModel(
                                                 orderId: "",
                                                 orderDate:
-                                                    DateTime.now().toUtc(),
+                                                    DateTime.now(),
                                                 details:
                                                     Global.sellOrderDetail!,
                                                 orderTypeId: 1);
@@ -574,7 +475,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
 
                                         OrderModel order = OrderModel(
                                             orderId: "",
-                                            orderDate: DateTime.now().toUtc(),
+                                            orderDate: DateTime.now(),
                                             details: Global.sellOrderDetail!,
                                             orderTypeId: 1);
 
@@ -662,7 +563,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                               OrderModel order = OrderModel(
                                                   orderId: '',
                                                   orderDate:
-                                                      DateTime.now().toUtc(),
+                                                      DateTime.now(),
                                                   details:
                                                       Global.sellOrderDetail!,
                                                   orderTypeId: 1);
@@ -756,7 +657,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
   void gramChanged() {
     if (productWeightGramCtrl.text != "") {
       productWeightBahtCtrl.text = formatter.format(
-          (Global.toNumber(productWeightGramCtrl.text) / 15.16).toPrecision(2));
+          (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(
@@ -802,7 +703,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightGramCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(

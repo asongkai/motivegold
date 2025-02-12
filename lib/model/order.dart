@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
+import 'package:motivegold/utils/global.dart';
 
 import 'order_detail.dart';
 
@@ -89,7 +90,7 @@ class OrderModel {
         orderId: json["orderId"],
         orderDate: json["orderDate"] == null
             ? null
-            : DateTime.parse(json["orderDate"]),
+            : Global.apiDate(json["orderDate"]),
         customerId: json["customerId"],
         status:
             json["status"] is int ? json['status'].toString() : json['status'],
@@ -117,14 +118,15 @@ class OrderModel {
             : CustomerModel.fromJson(json["customer"]),
         createdDate: json["createdDate"] == null
             ? null
-            : DateTime.parse(json["createdDate"]),
+            : DateTime.parse(json["createdDate"]).toLocal(),
         updatedDate: json["updatedDate"] == null
             ? null
-            : DateTime.parse(json["updatedDate"]),
+            : DateTime.parse(json["updatedDate"]).toLocal(),
         pairId: json['pairId'],
         paymentMethod: json['paymentMethod'],
-        bookDate:
-            json["bookDate"] == null ? null : DateTime.parse(json["bookDate"]),
+        bookDate: json["bookDate"] == null
+            ? null
+            : DateTime.parse(json["bookDate"]).toLocal(),
         orderStatus: json['orderStatus'],
         goldDataModel: json["goldDataModel"] == null
             ? null

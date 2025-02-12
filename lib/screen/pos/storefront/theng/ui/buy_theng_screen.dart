@@ -226,7 +226,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -457,7 +457,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                           // if (result!.status == "success") {
                           OrderModel order = OrderModel(
                               orderId: "",
-                              orderDate: DateTime.now().toUtc(),
+                              orderDate: DateTime.now(),
                               details: Global.buyThengOrderDetail!,
                               orderTypeId: 44);
                           final data = order.toJson();
@@ -531,7 +531,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
 
                         OrderModel order = OrderModel(
                             orderId: "",
-                            orderDate: DateTime.now().toUtc(),
+                            orderDate: DateTime.now(),
                             details: Global.buyThengOrderDetail!,
                             orderTypeId: 44);
 
@@ -607,7 +607,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                             // if (result!.status == "success") {
                             OrderModel order = OrderModel(
                                 orderId: "",
-                                orderDate: DateTime.now().toUtc(),
+                                orderDate: DateTime.now(),
                                 details: Global.buyThengOrderDetail!,
                                 orderTypeId: 44);
                             final data = order.toJson();
@@ -704,7 +704,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
       productPriceCtrl.text = marketPriceTotalCtrl.text;
@@ -786,7 +786,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                 leftTitle: order.productName,
                 leftValue: Global.format(order.priceIncludeTax!),
                 rightTitle: 'น้ำหนัก',
-                rightValue: '${Global.format(order.weight! / 15.16)} บาท',
+                rightValue: '${Global.format(order.weight! / getUnitWeightValue())} บาท',
               ),
             ),
           ),

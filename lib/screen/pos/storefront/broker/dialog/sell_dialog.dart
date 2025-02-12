@@ -74,7 +74,7 @@ class _SellDialogState extends State<SellDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumSellThengTotal();
+    sumSellThengTotalBroker();
     loadProducts();
   }
 
@@ -101,15 +101,15 @@ class _SellDialogState extends State<SellDialog> {
       loading = true;
     });
     try {
-      var result =
-          await ApiServices.post('/product/type/BARM', Global.requestObj(null));
+      var result = await ApiServices.post(
+          '/product/type/BARM/8', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
                 (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
@@ -123,13 +123,15 @@ class _SellDialogState extends State<SellDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/sell', Global.requestObj(null));
+          '/binlocation/all/type/BARM/8', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
           warehouseList = warehouses;
-          selectedWarehouse = warehouseList.first;
+          selectedWarehouse =
+              warehouseList.where((e) => e.isDefault == 1).first;
+          // motivePrint(selectedWarehouse?.toJson());
           warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
@@ -171,7 +173,7 @@ class _SellDialogState extends State<SellDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -226,6 +228,7 @@ class _SellDialogState extends State<SellDialog> {
           GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
+              closeCal();
             },
             child: SingleChildScrollView(
               child: Column(
@@ -267,7 +270,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -275,7 +278,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -330,9 +333,10 @@ class _SellDialogState extends State<SellDialog> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'ราคาขายทองคำแท่ง',
+                                  'ราคาขายทอง\nคำแท่ง',
+                                  textAlign: TextAlign.right,
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -340,7 +344,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -395,7 +399,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ค่าบล็อกทอง',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -403,7 +407,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -457,7 +461,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'รวมราคาขาย',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -465,7 +469,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -519,7 +523,7 @@ class _SellDialogState extends State<SellDialog> {
                                 bahtChanged();
                               }
                               if (txt == 'price') {
-                                productPriceTotalCtrl.text = value != null
+                                productPriceCtrl.text = value != null
                                     ? "${Global.format(value)}"
                                     : "";
                                 priceChanged();
@@ -616,21 +620,27 @@ class _SellDialogState extends State<SellDialog> {
                       ],
                     ),
                     onPressed: () async {
-                      if (productCodeCtrl.text.isEmpty) {
+                      if (selectedProduct == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK');
+                            context, 'คำเตือน', getDefaultProductMessage(), 'OK', action: () {});
+                        return;
+                      }
+
+                      if (selectedWarehouse == null) {
+                        Alert.warning(
+                            context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK', action: () {});
                         return;
                       }
 
                       if (productWeightBahtCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK');
+                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK', action: (){});
                         return;
                       }
 
                       if (productPriceTotalCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK');
+                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK', action: (){});
                         return;
                       }
 
@@ -655,7 +665,7 @@ class _SellDialogState extends State<SellDialog> {
                             context,
                             'คำเตือน',
                             'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK');
+                            'OK', action: (){});
 
                         return;
                       }
@@ -663,7 +673,7 @@ class _SellDialogState extends State<SellDialog> {
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
-                        Global.sellThengOrderDetail!.add(
+                        Global.sellThengOrderDetailBroker!.add(
                           OrderDetailModel(
                               productName: productNameCtrl.text,
                               productId: selectedProduct!.id,
@@ -677,7 +687,7 @@ class _SellDialogState extends State<SellDialog> {
                                   Global.toNumber(productPriceTotalCtrl.text),
                               bookDate: null),
                         );
-                        sumSellThengTotal();
+                        sumSellThengTotalBroker();
                         setState(() {});
                         Navigator.of(context).pop();
                       });
@@ -693,21 +703,23 @@ class _SellDialogState extends State<SellDialog> {
   }
 
   void comChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
+    if (productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-          "${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}";
+      "${Global.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)))}";
+      // productPriceTotalCtrl.text =
+      //     "${Global.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)) * Global.toNumber(productWeightBahtCtrl.text))}";
       setState(() {});
     }
   }
 
   void priceChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
+    if (productPriceCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text = Global.format(
           (Global.toNumber(productCommissionCtrl.text) +
-                  Global.toNumber(productPriceCtrl.text))
-              .toPrecision(2));
+                  Global.toNumber(productPriceCtrl.text)));
+      // productPriceTotalCtrl.text = Global.format(
+      //     (Global.toNumber(productCommissionCtrl.text) +
+      //         Global.toNumber(productPriceCtrl.text)) * Global.toNumber(productWeightBahtCtrl.text));
       setState(() {});
     }
   }
@@ -715,7 +727,7 @@ class _SellDialogState extends State<SellDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
       productPriceCtrl.text = marketPriceTotalCtrl.text;

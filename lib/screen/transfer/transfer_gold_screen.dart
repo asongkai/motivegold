@@ -12,8 +12,6 @@ import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/model/transfer_detail.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_checkout.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -45,6 +43,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
   List<WarehouseModel> fromWarehouseList = [];
   List<WarehouseModel> toWarehouseList = [];
   List<QtyLocationModel> qtyLocationList = [];
+  QtyLocationModel? qtyLocation;
   WarehouseModel? selectedFromLocation;
   WarehouseModel? selectedToLocation;
 
@@ -105,8 +104,8 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
         productList = [];
       }
 
-      var warehouse =
-          await ApiServices.post('/binlocation/all', Global.requestObj(null));
+      var warehouse = await ApiServices.post(
+          '/binlocation/all/branch', Global.requestObj(null));
       // print(warehouse!.data);
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
@@ -136,6 +135,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
           '/qtybylocation/by-product-location/$id/${int.parse(productCodeCtrl.text)}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
+        // motivePrint(data);
         List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
         setState(() {
           qtyLocationList = qtys;
@@ -148,7 +148,9 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      qtyLocation = qtyLocationList.isNotEmpty ? qtyLocationList.first : null;
+      // motivePrint(qtyLocation?.toJson());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -159,14 +161,14 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
   }
 
   void loadToWarehouse(int id) async {
-    motivePrint(id);
+    // motivePrint(id);
     try {
       final ProgressDialog pr = ProgressDialog(context,
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
       await pr.show();
       pr.update(message: 'processing'.tr());
       var result = await ApiServices.get('/binlocation/by-branch/$id');
-      print(result!.data);
+      // motivePrint(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         setState(() {
@@ -578,7 +580,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                     if (result!.status == "success") {
                                       TransferModel transfer = TransferModel(
                                           transferId: result.data,
-                                          transferDate: DateTime.now().toUtc(),
+                                          transferDate: DateTime.now(),
                                           binLocationId:
                                               int.parse(warehouseCtrl.text),
                                           toBinLocationId:
@@ -774,7 +776,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                           onChanged:
                                                                               (String value) {
                                                                             if (productWeightCtrl.text.isNotEmpty) {
-                                                                              productWeightBahtCtrl.text = formatter.format((Global.toNumber(productWeightCtrl.text) / 15.16).toPrecision(2));
+                                                                              productWeightBahtCtrl.text = formatter.format((Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()).toPrecision(2));
                                                                             } else {
                                                                               productWeightBahtCtrl.text = "";
                                                                             }
@@ -802,7 +804,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                           onChanged:
                                                                               (String value) {
                                                                             if (productWeightBahtCtrl.text.isNotEmpty) {
-                                                                              productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+                                                                              productWeightCtrl.text = formatter.format((Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()).toPrecision(2));
                                                                             } else {
                                                                               productWeightCtrl.text = "";
                                                                             }
@@ -837,7 +839,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                           onChanged:
                                                                               (String value) {
                                                                             if (productEntryWeightCtrl.text.isNotEmpty) {
-                                                                              productEntryWeightBahtCtrl.text = formatter.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16).toPrecision(2));
+                                                                              productEntryWeightBahtCtrl.text = formatter.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue()).toPrecision(2));
                                                                             } else {
                                                                               productEntryWeightBahtCtrl.text = "";
                                                                             }
@@ -863,7 +865,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                           onChanged:
                                                                               (String value) {
                                                                             if (productEntryWeightBahtCtrl.text.isNotEmpty) {
-                                                                              productEntryWeightCtrl.text = formatter.format((Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16).toPrecision(2));
+                                                                              productEntryWeightCtrl.text = formatter.format((Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue()).toPrecision(2));
                                                                             } else {
                                                                               productEntryWeightCtrl.text = "";
                                                                             }
@@ -907,32 +909,69 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                   return;
                                                                 }
 
-                                                                Global
-                                                                    .transferDetail!
-                                                                    .add(
-                                                                  TransferDetailModel(
-                                                                    productName:
-                                                                        productNameCtrl
-                                                                            .text,
-                                                                    productId: int.parse(
-                                                                        productCodeCtrl
-                                                                            .text),
-                                                                    weight: Global.toNumber(
-                                                                        productEntryWeightCtrl
-                                                                            .text),
-                                                                    weightBath:
-                                                                        Global.toNumber(
-                                                                            productEntryWeightBahtCtrl.text),
-                                                                  ),
-                                                                );
-                                                                Global.transfer!
-                                                                        .details =
-                                                                    Global
-                                                                        .transferDetail;
-                                                                setState(() {});
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
+                                                                Alert.info(
+                                                                    context,
+                                                                    'ต้องการบันทึกข้อมูลหรือไม่?',
+                                                                    '',
+                                                                    'ตกลง',
+                                                                    action:
+                                                                        () async {
+                                                                  Global
+                                                                      .transferDetail!
+                                                                      .add(
+                                                                    TransferDetailModel(
+                                                                      productName:
+                                                                          productNameCtrl
+                                                                              .text,
+                                                                      productId:
+                                                                          int.parse(
+                                                                              productCodeCtrl.text),
+                                                                      weight: Global.toNumber(
+                                                                          productEntryWeightCtrl
+                                                                              .text),
+                                                                      weightBath:
+                                                                          Global.toNumber(
+                                                                              productEntryWeightBahtCtrl.text),
+                                                                      unitCost:
+                                                                          qtyLocation?.unitCost ??
+                                                                              0,
+                                                                      price: qtyLocation!
+                                                                              .unitCost! *
+                                                                          Global.toNumber(
+                                                                              productEntryWeightCtrl.text),
+                                                                    ),
+                                                                  );
+                                                                  // motivePrint(TransferDetailModel(
+                                                                  //   productName:
+                                                                  //   productNameCtrl
+                                                                  //       .text,
+                                                                  //   productId:
+                                                                  //   int.parse(
+                                                                  //       productCodeCtrl.text),
+                                                                  //   weight: Global.toNumber(
+                                                                  //       productEntryWeightCtrl
+                                                                  //           .text),
+                                                                  //   weightBath:
+                                                                  //   Global.toNumber(
+                                                                  //       productEntryWeightBahtCtrl.text),
+                                                                  //   unitCost:
+                                                                  //   qtyLocation!.unitCost ??
+                                                                  //       0,
+                                                                  //   price: qtyLocation!
+                                                                  //       .unitCost! *
+                                                                  //       Global.toNumber(
+                                                                  //           productEntryWeightCtrl.text),
+                                                                  // ).toJson());
+                                                                  Global.transfer!
+                                                                          .details =
+                                                                      Global
+                                                                          .transferDetail;
+                                                                  setState(
+                                                                      () {});
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                });
                                                               },
                                                             ),
                                                           )
@@ -1019,7 +1058,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                           ),
                                           const Spacer(),
                                           Text(
-                                            "${formatter.format(Global.getTransferWeightTotalAmount() / 15.16)} บาททอง",
+                                            "${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue())} บาททอง",
                                             style: TextStyle(
                                                 fontSize: size!.getWidthPx(8),
                                                 fontWeight: FontWeight.bold,

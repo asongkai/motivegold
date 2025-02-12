@@ -1,24 +1,15 @@
 import 'dart:convert';
 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
-import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
@@ -29,7 +20,6 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class RefillDialog extends StatefulWidget {
@@ -114,7 +104,7 @@ class _RefillDialogState extends State<RefillDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/NEW/1', Global.requestObj(null));
+          await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         // motivePrint(data);
@@ -774,7 +764,7 @@ class _RefillDialogState extends State<RefillDialog> {
       // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
       // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
       productWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productWeightCtrl.text) / 15.16));
+          Global.format((Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -783,7 +773,7 @@ class _RefillDialogState extends State<RefillDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format((Global.toNumber(productWeightBahtCtrl.text) * 15.16));
+          Global.format((Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
       // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
     } else {

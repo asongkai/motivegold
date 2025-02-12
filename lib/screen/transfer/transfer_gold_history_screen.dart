@@ -20,7 +20,8 @@ class TransferGoldHistoryScreen extends StatefulWidget {
   const TransferGoldHistoryScreen({super.key});
 
   @override
-  State<TransferGoldHistoryScreen> createState() => _TransferGoldHistoryScreenState();
+  State<TransferGoldHistoryScreen> createState() =>
+      _TransferGoldHistoryScreenState();
 }
 
 class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
@@ -39,7 +40,8 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/transfer/all', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/transfer/all', Global.requestObj(null));
       motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -66,157 +68,269 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายการประวัติการโอนทอง'),
-        actions: const [
-
-        ],
+        actions: const [],
       ),
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : list!.isEmpty ? const Center(child: NoDataFoundWidget()) : SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                  itemCount: list!.length,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (BuildContext context, int index) {
-                    return dataCard(list![index], index);
-                  }),
-            ),
-          ),
-        ),
+            : list!.isEmpty
+                ? const Center(child: NoDataFoundWidget())
+                : SingleChildScrollView(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                            itemCount: list!.length,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int index) {
+                              return dataCard(list![index], index);
+                            }),
+                      ),
+                    ),
+                  ),
       ),
     );
   }
 
   Widget dataCard(TransferModel list, int index) {
-    return Card(
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              // leading: SizedBox(
-              //   width: 100,
-              //   child: Image.asset(
-              //     'assets/images/Gold-Chain-PNG.png',
-              //     fit: BoxFit.fitHeight,
-              //   ),
-              // ),
-              trailing: Text(
-                Global.formatDate(list.transferDate.toString()),
-                style: TextStyle(color: Colors.green, fontSize: size?.getWidthPx(6)),
-              ),
-              title: Text(
-                '#${list.transferId.toString()}',
-                style: TextStyle(fontSize: size?.getWidthPx(8)),
-              ),
-              subtitle: Table(
-                children: [
-                  TableRow(
+    return Stack(
+      children: [
+        Card(
+          color:
+              list.status == 'PENDING' ? Colors.orange.shade50 : Colors.white,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 8,
+                child: ListTile(
+                  title: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(
-                            'สินค้า',
-                            textAlign: TextAlign.left,
-                            style:
-                            TextStyle(fontSize: size?.getWidthPx(8), color: Colors.orange)
+                      Text(
+                        '#${list.transferId.toString()}',
+                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                      ),
+                      Text(
+                        Global.formatDate(list.transferDate.toString()),
+                        style: TextStyle(
+                            color: Colors.green, fontSize: size?.getWidthPx(6)),
+                      )
+                    ],
+                  ),
+                  subtitle: Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text('สินค้า',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    color: Colors.orange)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text('น้ำหนัก',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    color: Colors.orange)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text('คลังสินค้า',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    color: Colors.orange)),
+                          ),
+                        ],
+                      ),
+                      ...list.details!.map(
+                        (e) => TableRow(
+                          decoration: const BoxDecoration(),
+                          children: [
+                            paddedText(e.product!.name,
+                                style:
+                                    TextStyle(fontSize: size?.getWidthPx(7))),
+                            paddedText(formatter.format(e.weight!),
+                                align: TextAlign.center,
+                                style:
+                                    TextStyle(fontSize: size?.getWidthPx(7))),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    paddedText('ต้นทาง:',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7),
+                                            fontWeight: FontWeight.w900)),
+                                    paddedText(
+                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.fromBinLocation!.name}',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7))),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    paddedText('ปลายทาง:',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7),
+                                            fontWeight: FontWeight.w900)),
+                                    paddedText(
+                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.toBinLocation!.name}',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7))),
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text('น้ำหนัก',
-                            textAlign: TextAlign.center,
-                            style:
-                            TextStyle(fontSize: size?.getWidthPx(8), color: Colors.orange)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text('คลังสินค้า',
-                            textAlign: TextAlign.center,
-                            style:
-                            TextStyle(fontSize: size?.getWidthPx(8), color: Colors.orange)),
                       ),
                     ],
                   ),
-                  ...list.details!.map(
-                        (e) => TableRow(
-                      decoration: const BoxDecoration(),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (list.toBranchId != null &&
+                          list.toBranchId != 0 &&
+                          list.status == 'PENDING')
+                        GestureDetector(
+                          onTap: () {
+                            cancel(list);
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(8)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'ยกเลิก',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: Center(
+            child: Row(
+              children: [
+                if (list.status == 'PENDING' || list.status == 'CANCEL' || list.status == 'REJECT')
+                Container(
+                  decoration: BoxDecoration(
+                      color: list.status == 'PENDING'
+                          ? Colors.deepOrange
+                          : Colors.red,
+                      borderRadius: BorderRadius.circular(10.0)),
+                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
                       children: [
-                        paddedText(e.product!.name, style:
-                        TextStyle(fontSize: size?.getWidthPx(7))),
-                        paddedText(
-                            formatter.format(e.weight!),
-                            align: TextAlign.center,
-                            style:
-                            TextStyle(fontSize: size?.getWidthPx(7))),
-                        paddedText('ต้นทาง: ${list.fromBinLocation!.name} \nปลายทาง: ${list.toBinLocation!.name}',
-                            align: TextAlign.left,
-                            style:
-                            TextStyle(fontSize: size?.getWidthPx(7))),
+                        ClipOval(
+                          child: SizedBox(
+                            width: 30.0,
+                            height: 30.0,
+                            child: RawMaterialButton(
+                              elevation: 10.0,
+                              child: const Icon(
+                                Icons.pending_actions,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ),
+                        Text('${list.status}',
+                          style: const TextStyle(color: Colors.white, fontSize: 20),
+                        )
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 20,),
+                Container(
+                  decoration: BoxDecoration(
+                      color: list.toBranchId != null && list.toBranchId != 0
+                          ? Colors.teal.shade900
+                          : Colors.blue.shade900,
+                      borderRadius: BorderRadius.circular(10.0)),
+                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        ClipOval(
+                          child: SizedBox(
+                            width: 30.0,
+                            height: 30.0,
+                            child: RawMaterialButton(
+                              elevation: 10.0,
+                              child: const Icon(
+                                Icons.transform_outlined,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ),
+                        Text(
+                          list.toBranchId != null && list.toBranchId != 0
+                              ? 'โอนระหว่างสาขา'
+                              : 'โอนภายใน',
+                          style: const TextStyle(color: Colors.white, fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          // Expanded(
-          //   flex: 1,
-          //   child: Row(
-          //     children: [
-          //       GestureDetector(
-          //         onTap: () {
-          //           // Navigator.push(
-          //           //     context,
-          //           //     MaterialPageRoute(
-          //           //         builder: (context) => EditProductScreen(
-          //           //             showBackButton: true,
-          //           //             product: refillList[index],
-          //           //             index: index
-          //           //         ),
-          //           //         fullscreenDialog: true))
-          //           //     .whenComplete(() {
-          //           //   loadData();
-          //           // });
-          //         },
-          //         child: Container(
-          //           height: 50,
-          //           width: 60,
-          //           decoration: BoxDecoration(
-          //               color: Colors.teal,
-          //               borderRadius: BorderRadius.circular(8)),
-          //           child: const Icon(
-          //             Icons.edit,
-          //             color: Colors.white,
-          //           ),
-          //         ),
-          //       ),
-          //       const Spacer(),
-          //       GestureDetector(
-          //         onTap: () {
-          //           removeProduct(refillList[index].id!, index);
-          //         },
-          //         child: Container(
-          //           height: 50,
-          //           width: 60,
-          //           decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(8)),
-          //           child: const Icon(
-          //             Icons.delete,
-          //             color: Colors.white,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // )
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -230,8 +344,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
       await pr.hide();
       if (result?.status == "success") {
         list!.removeAt(i);
-        setState(() {
-        });
+        setState(() {});
       } else {
         if (mounted) {
           Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
@@ -243,6 +356,35 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
       if (mounted) {
         Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
             action: () {});
+      }
+    }
+  }
+
+  void cancel(TransferModel list) async {
+    try {
+      // motivePrint(list.toJson());
+      // return;
+      Alert.info(
+          context, 'คุณแน่ใจที่จะยกเลิกการทำธุรกรรมนี้หรือไม่?', '', 'ตกลง',
+          action: () async {
+            final ProgressDialog pr = ProgressDialog(context,
+                type: ProgressDialogType.normal,
+                isDismissible: true,
+                showLogs: true);
+            await pr.show();
+            pr.update(message: 'processing'.tr());
+            var result = await ApiServices.post(
+                '/transfer/between-branch-cancel', Global.requestObj(list));
+            await pr.hide();
+            if (result?.status == "success") {
+              loadData();
+            } else {
+              if (mounted) {}
+            }
+          });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
       }
     }
   }

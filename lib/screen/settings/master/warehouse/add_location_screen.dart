@@ -34,6 +34,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
   ValueNotifier<dynamic>? branchNotifier;
   bool sell = false;
   bool matching = false;
+  bool transit = false;
 
   @override
   void initState() {
@@ -289,6 +290,24 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                           .leading, //  <-- leading Checkbox
                                     ),
                                   ),
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text(
+                                        "Transit",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      value: transit,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          transit = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
+                                    ),
+                                  ),
                                 ],
                               )
                             ],
@@ -328,6 +347,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                   "companyId": Global.user!.companyId.toString(),
                   "sell": sell ? 1 : 0,
                   "matching": matching ? 1 : 0,
+                  "transit": transit ? 1 : 0
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

@@ -3,15 +3,12 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/buy_dialog.dart';
@@ -20,15 +17,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/utils/extentions.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-
-// import 'package:pattern_formatter/numeric_formatter.dart';
-import 'package:motivegold/utils/helps/numeric_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class PaphunBuyScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -441,7 +430,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             OrderModel order = OrderModel(
                                                 orderId: "",
                                                 orderDate:
-                                                    DateTime.now().toUtc(),
+                                                    DateTime.now(),
                                                 details: Global.buyOrderDetail!,
                                                 orderTypeId: 2);
                                             final data = order.toJson();
@@ -526,7 +515,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
 
                                           OrderModel order = OrderModel(
                                               orderId: "",
-                                              orderDate: DateTime.now().toUtc(),
+                                              orderDate: DateTime.now(),
                                               details: Global.buyOrderDetail!,
                                               orderTypeId: 2);
 
@@ -619,7 +608,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               OrderModel order = OrderModel(
                                                   orderId: "",
                                                   orderDate:
-                                                      DateTime.now().toUtc(),
+                                                      DateTime.now(),
                                                   details:
                                                       Global.buyOrderDetail!,
                                                   orderTypeId: 2);

@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
-import 'package:motivegold/model/transfer.dart';
-import 'package:motivegold/screen/pos/storefront/theng/buy_theng_matching_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -19,7 +17,6 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class MatchingPendingScreen extends StatefulWidget {
@@ -211,7 +208,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
               if (list.orderStatus == 'PENDING')
                 Container(
                   decoration: const BoxDecoration(color: Colors.white),
-                  width: 170,
+                  width: 180,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -356,8 +353,8 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
     Global.posOrder = order;
     Global.posOrder?.orderTypeId = typeId;
     Global.customer = order.customer;
-    Global.sellThengOrderDetail!.clear();
-    Global.buyThengOrderDetail!.clear();
+    Global.sellThengOrderDetailMatching!.clear();
+    Global.buyThengOrderDetailMatching!.clear();
     if (order.orderTypeId == 1) {
       Global.posIndex = 0;
       Global.sellOrderDetail = order.details;
@@ -366,16 +363,16 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
       Global.buyOrderDetail = order.details;
     } else if (order.orderTypeId == 3 || order.orderTypeId == 4) {
       Global.posIndex = 0;
-      Global.sellThengOrderDetail =  orderDetailListModelFromJson(jsonEncode(order.details));
+      Global.sellThengOrderDetailMatching =  orderDetailListModelFromJson(jsonEncode(order.details));
       // Global.buyThengOrderDetail = orderDetailListModelFromJson(jsonEncode(order.details));
     } else if (order.orderTypeId == 33 || order.orderTypeId == 44) {
       Global.posIndex = 1;
-      Global.buyThengOrderDetail = orderDetailListModelFromJson(jsonEncode(order.details));
+      Global.buyThengOrderDetailMatching = orderDetailListModelFromJson(jsonEncode(order.details));
       // Global.sellThengOrderDetail = orderDetailListModelFromJson(jsonEncode(order.details));
     }
     // OrderModel _order = OrderModel(
     //     orderId: result.data,
-    //     orderDate: DateTime.now().toUtc(),
+    //     orderDate: DateTime.now(),
     //     details: Global.sellThengOrderDetail!,
     //     orderTypeId: 3,
     //     orderStatus: 'PENDING');
@@ -410,10 +407,10 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
     } else if (order.orderTypeId == 3 || order.orderTypeId == 4) {
       Global.posIndex = 0;
       Global.sellThengOrderDetail = order.details;
-      Global.buyThengOrderDetail = order.details;
+      // Global.buyThengOrderDetail = order.details;
     } else if (order.orderTypeId == 33 || order.orderTypeId == 44) {
       Global.posIndex = 1;
-      Global.buyThengOrderDetail = order.details;
+      // Global.buyThengOrderDetail = order.details;
       Global.sellThengOrderDetail = order.details;
     }
     Navigator.push(

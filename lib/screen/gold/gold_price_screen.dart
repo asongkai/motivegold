@@ -3,6 +3,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/title_tile.dart';
@@ -32,8 +33,13 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
     setState(() {
       loading = true;
     });
-    Global.goldDataModel =
-        Global.goldDataModel ?? await api.getGoldPrice(context);
+    try{
+      Global.goldDataModel =
+          Global.goldDataModel ?? await api.getGoldPrice(context);
+    } catch (e) {
+      motivePrint(e.toString());
+    }
+
     setState(() {
       loading = false;
     });

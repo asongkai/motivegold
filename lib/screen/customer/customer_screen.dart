@@ -60,40 +60,51 @@ class _CustomerScreenState extends State<CustomerScreen> {
       loading = true;
     });
 
-    // try {
-    var result = await ApiServices.post(
-        '/customer/search',
-        Global.requestObj({
-          "customerType": selectedCustomerType?.code,
-          "idCard":
-              selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
-          "taxNumber":
-              selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
-          "firstName": firstNameCtrl.text,
-          "lastName": lastNameCtrl.text,
-          "companyName": companyNameCtrl.text,
-          "email": emailCtrl.text,
-          "phoneNumber": phoneCtrl.text,
-        }));
-    if (result?.status == "success") {
-      var data = jsonEncode(result?.data);
-      List<CustomerModel> products = customerListModelFromJson(data);
-      if (products.isNotEmpty) {
-        customers = products;
-        filterList = products;
+    // motivePrint({
+    //   "customerType": selectedCustomerType?.code,
+    //   "idCard":
+    //   selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+    //   "taxNumber":
+    //   selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+    //   "firstName": firstNameCtrl.text,
+    //   "lastName": lastNameCtrl.text,
+    //   "companyName": companyNameCtrl.text,
+    //   "email": emailCtrl.text,
+    //   "phoneNumber": phoneCtrl.text,
+    // });
+
+    try {
+      var result = await ApiServices.post(
+          '/customer/search',
+          Global.requestObj({
+            "customerType": selectedCustomerType?.code,
+            "idCard":
+                selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+            "taxNumber":
+                selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+            "firstName": firstNameCtrl.text,
+            "lastName": lastNameCtrl.text,
+            "companyName": companyNameCtrl.text,
+            "email": emailCtrl.text,
+            "phoneNumber": phoneCtrl.text,
+          }));
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+        List<CustomerModel> products = customerListModelFromJson(data);
+        if (products.isNotEmpty) {
+          customers = products;
+          filterList = products;
+        } else {
+          customers!.clear();
+          filterList!.clear();
+        }
+        setState(() {});
       } else {
-        customers!.clear();
-        filterList!.clear();
+        customers = [];
       }
-      setState(() {});
-    } else {
-      customers = [];
+    } catch (e) {
+      motivePrint(e.toString());
     }
-    // } catch (e) {
-    //   if (kDebugMode) {
-    //     print(e.toString());
-    //   }
-    // }
     setState(() {
       loading = false;
     });
@@ -228,18 +239,20 @@ class _CustomerScreenState extends State<CustomerScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextField(
-                                    labelText: getIdTitle(),
-                                    textColor: Colors.deepPurple[700],
-                                    onSubmitted: (value) {
-                                      search();
-                                    },
-                                    controller: idCardCtrl),
+                            if (selectedCustomerType?.code == 'general')
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: buildTextField(
+                                      labelText:
+                                          getIdTitle(selectedCustomerType),
+                                      textColor: Colors.deepPurple[700],
+                                      onSubmitted: (value) {
+                                        search();
+                                      },
+                                      controller: idCardCtrl),
+                                ),
                               ),
-                            ),
                             if (selectedCustomerType?.code == 'general')
                               Expanded(
                                 child: Padding(
@@ -372,12 +385,6 @@ class _CustomerScreenState extends State<CustomerScreen> {
     );
   }
 
-  getIdTitle() {
-    return selectedCustomerType?.code == 'company'
-        ? 'เลขบัตรประจำตัวภาษี'
-        : 'เลขบัตรประจำตัวประชาชน';
-  }
-
   Widget productCard(List<CustomerModel?> ods) {
     return filterList!.isEmpty
         ? Container(
@@ -415,7 +422,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         children: [
                           paddedTextBigL('${i + 1}', align: TextAlign.center),
                           paddedTextBigL(
-                              'ชื่อ: \n${ods[i]?.firstName} ${ods[i]?.lastName} \nเลขประจําตัวผู้เสียภาษี: \n${ods[i]?.taxNumber}',
+                              'ชื่อ: \n${ods[i]?.firstName} ${ods[i]?.lastName} \n${getIdTitle(selectedCustomerType)}: \n${selectedCustomerType?.code == 'general' ? ods[i]?.idCard : ods[i]?.taxNumber}',
                               align: TextAlign.left),
                           paddedTextBigL(
                               'Email: \n${ods[i]?.email} \nโทรศัพท์: \n${ods[i]?.phoneNumber}',
@@ -442,10 +449,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                                                 c: ods[i]!),
                                                         fullscreenDialog: true))
                                                 .whenComplete(() {
-                                                  loadData();
-                                              setState(() {
-
-                                              });
+                                              loadData();
+                                              setState(() {});
                                             });
                                           },
                                           child: Container(

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:motivegold/screen/pos/storefront/broker/buy_theng_screen.dart';
-import 'package:motivegold/screen/pos/storefront/broker/sell_theng_screen.dart';
+import 'package:motivegold/screen/pos/storefront/broker/ui/buy_theng_screen.dart';
+import 'package:motivegold/screen/pos/storefront/broker/ui/sell_theng_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
 
 class ThengBrokerMenuScreen extends StatefulWidget {
-  const ThengBrokerMenuScreen({Key? key, required this.title}) : super(key: key);
+  const ThengBrokerMenuScreen({super.key, required this.title});
 
   final String title;
 
@@ -81,10 +81,10 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                         .whenComplete(() {
                       init();
                       if (Global.posIndex == 0) {
-                        sumSellThengTotal();
+                        sumSellThengTotalBroker();
                       }
                       if (Global.posIndex == 1) {
-                        sumBuyThengTotal();
+                        sumBuyThengTotalBroker();
                       }
                       sideMenu.changePage(Global.posIndex);
                       pageController.jumpToPage(Global.posIndex);

@@ -1,0 +1,318 @@
+import 'dart:convert';
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/master/setting_value.dart';
+import 'package:motivegold/model/pos_id.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+
+import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+
+class SettingValueScreen extends StatefulWidget {
+  const SettingValueScreen({super.key, this.posIdModel});
+
+  final PosIdModel? posIdModel;
+
+  @override
+  State<SettingValueScreen> createState() => _SettingValueScreenState();
+}
+
+class _SettingValueScreenState extends State<SettingValueScreen> {
+  final TextEditingController vatDefaultValue = TextEditingController();
+  final TextEditingController unitDefaultValue = TextEditingController();
+  final TextEditingController maxKycValue = TextEditingController();
+  final TextEditingController deviceIdCtrl = TextEditingController();
+
+  bool loading = false;
+  SettingsValueModel? settingsValueModel;
+
+  @override
+  void initState() {
+    // implement initState
+    super.initState();
+    loadData();
+  }
+
+  void loadData() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      deviceIdCtrl.text = (await getDeviceId())!;
+      var result =
+          await ApiServices.post('/settings/all', Global.requestObj(null));
+      // print(result!.toJson());
+      if (result?.status == "success") {
+        settingsValueModel = SettingsValueModel.fromJson(result?.data);
+        Global.settingValueModel = settingsValueModel;
+        // motivePrint(settingsValueModel?.toJson());
+        vatDefaultValue.text = Global.format(settingsValueModel!.vatValue ?? 0);
+        unitDefaultValue.text =
+            Global.format(settingsValueModel!.unitWeight ?? 0);
+        maxKycValue.text = Global.format(settingsValueModel!.maxKycValue ?? 0);
+        setState(() {});
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text("Set Default Value"),
+      ),
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: loading
+              ? const LoadingProgress()
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 7 / 10,
+                        width: MediaQuery.of(context).size.width,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'ค่าภาษีมูลค่าเพิ่ม',
+                                            textColor: Colors.orange,
+                                            inputType: TextInputType.phone,
+                                            controller: vatDefaultValue,
+                                            inputFormat: [
+                                              ThousandsFormatter(
+                                                  allowFraction: true)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'น้ำหนักหน่วยกรัม',
+                                            textColor: Colors.orange,
+                                            inputType: TextInputType.phone,
+                                            controller: unitDefaultValue,
+                                            inputFormat: [
+                                              ThousandsFormatter(
+                                                  allowFraction: true)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'มูลค่าสูงสุดของ KYC',
+                                            textColor: Colors.orange,
+                                            inputType: TextInputType.phone,
+                                            controller: maxKycValue,
+                                            inputFormat: [
+                                              ThousandsFormatter(
+                                                  allowFraction: true)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
+      persistentFooterButtons: [
+        SizedBox(
+            height: 70,
+            width: 150,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                  backgroundColor:
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                          side: BorderSide(color: Colors.teal[700]!)))),
+              onPressed: () async {
+                if (vatDefaultValue.text.trim() == "") {
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกค่าภาษีมูลค่าเพิ่ม', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (unitDefaultValue.text.trim() == "") {
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกน้ำหนักหน่วยกรัม', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                if (maxKycValue.text.trim() == "") {
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกมูลค่าสูงสุดของ KYC', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
+                var object = Global.requestObj({
+                  "vatValue": Global.toNumber(vatDefaultValue.text),
+                  "unitWeight": Global.toNumber(unitDefaultValue.text),
+                  "maxKycValue": Global.toNumber(maxKycValue.text)
+                });
+
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    var result =
+                        await ApiServices.post('/settings/create', object);
+                    motivePrint(result?.toJson());
+                    await pr.hide();
+                    if (result?.status == "success") {
+                      loadData();
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                            action: () {});
+                      }
+                    } else {
+                      if (mounted) {
+                        Alert.warning(context, 'Warning'.tr(),
+                            result!.message ?? result.data, 'OK'.tr(),
+                            action: () {});
+                      }
+                    }
+                  } catch (e) {
+                    await pr.hide();
+                    if (mounted) {
+                      Alert.warning(
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                          action: () {});
+                    }
+                  }
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "บันทึก".tr(),
+                    style: const TextStyle(color: Colors.white, fontSize: 32),
+                  ),
+                  const SizedBox(
+                    width: 2,
+                  ),
+                  const Icon(
+                    Icons.save,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ],
+              ),
+            )),
+      ],
+    );
+  }
+
+  saveRow() {
+    setState(() {});
+  }
+}

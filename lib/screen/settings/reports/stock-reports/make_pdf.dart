@@ -58,13 +58,21 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
   widgets.add(height());
   widgets.add(Table(
     border: TableBorder.all(color: PdfColors.grey500),
+    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+    columnWidths: {
+      0: const FlexColumnWidth(2),
+      1: const FlexColumnWidth(3),
+      2: const FlexColumnWidth(2),
+      3: const FlexColumnWidth(2),
+      4: const FlexColumnWidth(3)
+    },
     children: [
       TableRow(children: [
         paddedTextBigXL('สินค้า'),
         paddedTextBigXL('คลังสินค้า'),
-        paddedTextBigXL('น้ำหนักรวม'),
-        paddedTextBigXL('ราคาต่อหน่วย'),
-        paddedTextBigXL('ราคารวม'),
+        paddedTextBigXL('น้ำหนักรวม', align: TextAlign.right),
+        paddedTextBigXL('ราคาต่อ\nหน่วย', align: TextAlign.right),
+        paddedTextBigXL('ราคารวม', align: TextAlign.right),
       ]),
       ...list.map((e) => TableRow(
         decoration: const BoxDecoration(),
@@ -78,14 +86,11 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
           paddedTextBigXL(
-              Global.format(
-                  Global.getBuyPrice(e.weight ?? 0) /
-                      e.weight!),
+              Global.format(e.unitCost ?? 0),
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
           paddedTextBigXL(
-              Global.format(
-                  Global.getBuyPrice(e.weight ?? 0)),
+              Global.format(e.price ?? 0),
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
         ],

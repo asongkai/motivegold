@@ -211,7 +211,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -261,7 +261,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
   void gramChanged() {
     if (productWeightGramCtrl.text != "") {
       productWeightBahtCtrl.text = formatter.format(
-          (Global.toNumber(productWeightGramCtrl.text) / 15.16).toPrecision(2));
+          (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(Global.getBuyPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
@@ -318,7 +318,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightGramCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(Global.getBuyPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null

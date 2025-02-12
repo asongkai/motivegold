@@ -16,7 +16,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:table_desk/table_desk.dart';
 
 Future<Uint8List> makeBill(Invoice invoice) async {
-  motivePrint(invoice.payments?.length);
+  // motivePrint(invoice.payments?.length);
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -274,12 +274,12 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                             Text('หมายเหตุ :',
                                 style: const TextStyle(fontSize: 9)),
                             Row(children: [
-                              SizedBox(width: 20),
+                              // SizedBox(width: 20),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
+                                  padding: const EdgeInsets.all(6.0),
                                   child: Container(
-                                      padding: const EdgeInsets.all(16.0),
+                                      padding: const EdgeInsets.all(8.0),
                                       decoration: BoxDecoration(
                                           border: Border.all(),
                                           borderRadius: const BorderRadius.all(
@@ -293,7 +293,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                                                 style: const TextStyle(
                                                     fontSize: 9)),
                                             Text(
-                                                'กิจการได้รับชําระค่าสินค่าครบถ่วนเรียบร่อย',
+                                                'กิจการได้รับชำระค่าสินค้าครบถ้วนเรียบร้อย',
                                                 style: const TextStyle(
                                                     fontSize: 9))
                                           ])),
@@ -301,7 +301,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                               ),
                             ]),
                             Text(
-                                '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())} -',
+                                '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())}บาทถ้วน -',
                                 style: const TextStyle(fontSize: 9)),
                           ])),
                 )),
@@ -319,7 +319,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                         children: [
                           Text(
                               'ราคาสินค้ารวมค่ากําเหน็จและอื่นๆ (รวมภาษีมูลค่าเพิ่ม) :',
-                              textAlign: TextAlign.right,
+                              textAlign: TextAlign.right, overflow: TextOverflow.clip,
                               style: const TextStyle(fontSize: 9)),
                           Text('หัก ราคารับซื้อทองประจําวัน :',
                               textAlign: TextAlign.right,
@@ -370,11 +370,11 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * 0.07)}',
+                              '${Global.format(((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue())}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - (((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * 0.07))}',
+                              '${Global.format(Global.getOrderTotal(invoice.order) - (((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue()))}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -404,14 +404,14 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                 Expanded(
                   flex: 3,
                   child: Text(
-                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders))} :  ',
+                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} :  ',
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
                 Expanded(
                   flex: 2,
                   child: Text(
-                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders) : -Global.payToCustomerOrShopValue(invoice.orders))}',
+                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
@@ -437,8 +437,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
   pdf.addPage(
     MultiPage(
       margin: const EdgeInsets.all(20),
-      pageFormat: PdfPageFormat.a5,
-      orientation: PageOrientation.landscape,
+      pageFormat: PdfPageFormat.a4,
       build: (context) => widgets,
     ),
   );

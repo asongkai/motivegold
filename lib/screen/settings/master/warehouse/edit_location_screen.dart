@@ -41,6 +41,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
 
   bool sell = false;
   bool matching = false;
+  bool transit = false;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
     addressCtrl.text = widget.location.address!;
     sell = widget.location.sell == 1 ? true : false;
     matching = widget.location.matching == 1 ? true : false;
+    transit = widget.location.transit == 1 ? true : false;
     branchNotifier = ValueNotifier<BranchModel>(
         selectedBranch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
     loadData();
@@ -291,6 +293,24 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                                       .leading, //  <-- leading Checkbox
                                 ),
                               ),
+                              Expanded(
+                                child: CheckboxListTile(
+                                  title: const Text(
+                                    "Transit",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  value: transit,
+                                  visualDensity: VisualDensity.standard,
+                                  activeColor: Colors.teal,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      transit = newValue!;
+                                    });
+                                  },
+                                  controlAffinity: ListTileControlAffinity
+                                      .leading, //  <-- leading Checkbox
+                                ),
+                              ),
                             ],
                           )
                         ],
@@ -329,6 +349,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                   "address": addressCtrl.text,
                   "sell": sell ? 1 : 0,
                   "matching": matching ? 1 : 0,
+                  "transit": transit ? 1 : 0
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

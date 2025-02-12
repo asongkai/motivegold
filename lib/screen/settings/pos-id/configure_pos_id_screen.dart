@@ -338,7 +338,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                   return;
                 }
 
-                var object = encoder.convert({
+                var object = Global.requestObj({
                   "posId": posIdCtrl.text,
                   "detail": detailCtrl.text,
                   "deviceId": await getDeviceId(),

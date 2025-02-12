@@ -24,7 +24,7 @@ class WarehouseModel {
   String? address;
   int? sell;
   int? matching;
-
+  int? transit;
   int? isDefault;
 
   WarehouseModel(
@@ -35,6 +35,7 @@ class WarehouseModel {
       this.address,
       this.sell,
       this.isDefault,
+      this.transit,
       this.matching});
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) => WarehouseModel(
@@ -45,6 +46,7 @@ class WarehouseModel {
         address: json["address"],
         sell: json["sell"],
         matching: json["matching"],
+        transit: json["transit"],
         isDefault: json["isDefault"],
       );
 
@@ -57,6 +59,7 @@ class WarehouseModel {
         "sell": sell,
         "isDefault": isDefault,
         "matching": matching,
+        "transit": transit,
       };
 
   @override

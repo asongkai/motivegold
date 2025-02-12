@@ -22,6 +22,8 @@ class TransferModel {
   int? customerId;
   int? companyId;
   int? branchId;
+  BranchModel? fromBranch;
+  String? fromBranchName;
   DateTime? transferDate;
   String? status;
   int? orderTypeId;
@@ -47,6 +49,8 @@ class TransferModel {
     this.customerId,
     this.companyId,
     this.branchId,
+    this.fromBranch,
+    this.fromBranchName,
     this.transferDate,
     this.status,
     this.orderTypeId,
@@ -73,7 +77,9 @@ class TransferModel {
     customerId: json["customerId"],
     companyId: json["companyId"],
     branchId: json["branchId"],
-    transferDate: json["transferDate"] == null ? null : DateTime.parse(json["transferDate"]),
+    fromBranchName: json["fromBranchName"],
+    fromBranch: json["fromBranch"] == null ? null : BranchModel.fromJson(json["fromBranch"]),
+    transferDate: json["transferDate"] == null ? null : DateTime.parse(json["transferDate"]).toLocal(),
     status: json["status"],
     orderTypeId: json["orderTypeId"],
     userId: json["userId"],
@@ -88,8 +94,8 @@ class TransferModel {
     toBranchName: json["toBranchName"],
     toBranch: json["toBranch"] == null ? null : BranchModel.fromJson(json["toBranch"]),
     transferType: json["transferType"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
     details: json["details"] == null ? [] : List<TransferDetailModel>.from(json["details"]!.map((x) => TransferDetailModel.fromJson(x))),
   );
 
@@ -99,6 +105,8 @@ class TransferModel {
     "customerId": customerId,
     "companyId": companyId,
     "branchId": branchId,
+    "fromBranchName": fromBranchName,
+    "fromBranch": fromBranch?.toJson(),
     "transferDate": transferDate?.toIso8601String(),
     "status": status,
     "orderTypeId": orderTypeId,

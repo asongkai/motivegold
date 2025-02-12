@@ -47,6 +47,14 @@ List<ProductTypeModel> customerTypes() {
   return data;
 }
 
+List<ProductTypeModel> bankAccountTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'SA', name: 'ออมทรัพย์ (Savings Account)'));
+  data.add(ProductTypeModel(id: 2, code: 'FA', name: 'ฝากประจำ (Fixed Deposit Account)'));
+  data.add(ProductTypeModel(id: 3, code: 'CA', name: 'กระแสรายวัน (Current Account)'));
+  return data;
+}
+
 List<ProductTypeModel> orderTypes() {
   List<ProductTypeModel> data = [];
   data.add(ProductTypeModel(id: null, code: null, name: "ทั้งหมด"));

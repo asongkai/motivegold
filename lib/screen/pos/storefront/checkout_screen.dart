@@ -4,13 +4,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/screen/customer/add_customer_screen.dart';
 import 'package:motivegold/screen/customer/customer_screen.dart';
-import 'package:motivegold/screen/pos/storefront/broker/broker_entry_screen.dart';
-import 'package:motivegold/screen/pos/storefront/customer_entry_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
@@ -21,15 +20,11 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
-import 'package:motivegold/widget/button/simple_button.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
+import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/payment/payment_method.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
-import 'package:motivegold/widget/product_list_tile.dart';
 
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -45,6 +40,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   TextEditingController discountCtrl = TextEditingController();
   Screen? size;
 
+  int? selectedOption = 0;
+  bool loading = false;
+
   @override
   void initState() {
     // implement initState
@@ -58,6 +56,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.refNoCtrl.text = "";
     Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.paymentDetailCtrl.text = "";
+    Global.paymentList?.clear();
   }
 
   @override
@@ -91,244 +90,269 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 25),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(.1),
-                                  blurRadius: 1,
-                                  spreadRadius: 1,
-                                  offset: const Offset(2, 2),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedOption = 1;
+                                  loadCustomer();
+                                });
+                              },
+                              child: ListTile(
+                                title: const Text(
+                                  'ไม่สำแดงตน',
+                                  style: TextStyle(fontSize: 20),
                                 ),
-                              ]),
-                          child: Global.customer == null
-                              ? Row(
-                                  children: [
-                                    Expanded(flex: 5, child: Container()),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Column(
-                                        children: [
-                                          KclButton(
-                                            onTap: () {
-                                              Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const AddCustomerScreen(),
-                                                          fullscreenDialog:
-                                                              true))
-                                                  .whenComplete(() {
-                                                setState(() {});
-                                              });
-                                            },
-                                            text: 'เพิ่ม',
-                                            fullWidth: true,
-                                            icon: Icons.add,
-                                          ),
-                                          KclButton(
-                                            onTap: () {
-                                              Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const CustomerScreen(
-                                                                selected: true,
-                                                              ),
-                                                          fullscreenDialog:
-                                                              true))
-                                                  .whenComplete(() {
-                                                setState(() {});
-                                              });
-                                            },
-                                            text: 'ค้นหา',
-                                            icon: Icons.search,
-                                            fullWidth: true,
-                                            color: Colors.teal,
-                                          ),
-                                        ],
+                                leading: Radio<int>(
+                                  value: 1,
+                                  groupValue: selectedOption,
+                                  activeColor: Colors.blue[700],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedOption = value!;
+                                      loadCustomer();
+                                      // print("Button value: $value");
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedOption = 0;
+                                  Global.customer = null;
+                                });
+                              },
+                              child: ListTile(
+                                title: const Text('สำแดงตน',
+                                    style: TextStyle(fontSize: 20)),
+                                leading: Radio<int>(
+                                  value: 0,
+                                  groupValue: selectedOption,
+                                  activeColor: Colors.blue[700],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedOption = value!;
+                                      Global.customer = null;
+                                      // print("Button value: $value");
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (loading)
+                          const SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: LoadingProgress(),
+                            ),
+                          ),
+                        if (selectedOption == 0)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 25),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withValues(alpha: 0.1),
+                                    blurRadius: 1,
+                                    spreadRadius: 1,
+                                    offset: const Offset(2, 2),
+                                  ),
+                                ]),
+                            child: Global.customer == null
+                                ? Row(
+                                    children: [
+                                      Expanded(flex: 5, child: Container()),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                          children: [
+                                            KclButton(
+                                              onTap: () {
+                                                Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const AddCustomerScreen(),
+                                                            fullscreenDialog:
+                                                                true))
+                                                    .whenComplete(() {
+                                                  setState(() {});
+                                                });
+                                              },
+                                              text: 'เพิ่ม',
+                                              fullWidth: true,
+                                              icon: Icons.add,
+                                            ),
+                                            KclButton(
+                                              onTap: () {
+                                                Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const CustomerScreen(
+                                                                  selected:
+                                                                      true,
+                                                                ),
+                                                            fullscreenDialog:
+                                                                true))
+                                                    .whenComplete(() {
+                                                  setState(() {});
+                                                });
+                                              },
+                                              text: 'ค้นหา',
+                                              icon: Icons.search,
+                                              fullWidth: true,
+                                              color: Colors.teal,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                )
-                              // SimpleRoundButton(
-                              //         buttonText: Text(
-                              //           'เพิ่ม',
-                              //           style: TextStyle(
-                              //               fontSize: size!.getWidthPx(10)),
-                              //         ),
-                              //         onPressed: () {
-                              //           if (Global.orders![0].orderTypeId == 8 ||
-                              //               Global.orders![0].orderTypeId == 9) {
-                              //             Navigator.push(
-                              //                     context,
-                              //                     MaterialPageRoute(
-                              //                         builder: (context) =>
-                              //                             const BrokerEntryScreen(),
-                              //                         fullscreenDialog: true))
-                              //                 .whenComplete(() {
-                              //               setState(() {});
-                              //             });
-                              //           } else {
-                              //             Navigator.push(
-                              //                     context,
-                              //                     MaterialPageRoute(
-                              //                         builder: (context) =>
-                              //                             const CustomerEntryScreen(),
-                              //                         fullscreenDialog: true))
-                              //                 .whenComplete(() {
-                              //               setState(() {});
-                              //             });
-                              //           }
-                              //         },
-                              //       )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 5,
-                                          child: Text(
-                                            "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: size!.getWidthPx(6),
+                                    ],
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 5,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "${Global.customer!.phoneNumber}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.black,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Text(
+                                                  "${Global.customer!.email}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.black,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 3,
+                                                ),
+                                                Text(
+                                                  "${Global.customer!.address}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 3,
+                                                ),
+                                                Text(
+                                                  "${getIdTitleCustomer(Global.customer)}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 3,
+                                                ),
+                                                Text(
+                                                  "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              KclButton(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const AddCustomerScreen(),
-                                                              fullscreenDialog:
-                                                                  true))
-                                                      .whenComplete(() {
-                                                    setState(() {});
-                                                  });
-                                                },
-                                                text: 'เพิ่ม',
-                                                fullWidth: true,
-                                                icon: Icons.add,
-                                              ),
-                                              KclButton(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const CustomerScreen(
-                                                                    selected:
-                                                                        true,
-                                                                  ),
-                                                              fullscreenDialog:
-                                                                  true))
-                                                      .whenComplete(() {
-                                                    setState(() {});
-                                                  });
-                                                },
-                                                text: 'ค้นหา',
-                                                icon: Icons.search,
-                                                fullWidth: true,
-                                                color: Colors.teal,
-                                              ),
-                                              // InkWell(
-                                              //   onTap: () {
-                                              //     if (Global.orders![0]
-                                              //                 .orderTypeId ==
-                                              //             8 ||
-                                              //         Global.orders![0]
-                                              //                 .orderTypeId ==
-                                              //             9) {
-                                              //       Navigator.push(
-                                              //               context,
-                                              //               MaterialPageRoute(
-                                              //                   builder:
-                                              //                       (context) =>
-                                              //                           const BrokerEntryScreen(),
-                                              //                   fullscreenDialog:
-                                              //                       true))
-                                              //           .whenComplete(() {
-                                              //         setState(() {});
-                                              //       });
-                                              //     } else {
-                                              //       Navigator.push(
-                                              //               context,
-                                              //               MaterialPageRoute(
-                                              //                   builder:
-                                              //                       (context) =>
-                                              //                           const CustomerEntryScreen(),
-                                              //                   fullscreenDialog:
-                                              //                       true))
-                                              //           .whenComplete(() {
-                                              //         setState(() {});
-                                              //       });
-                                              //     }
-                                              //   },
-                                              //   child: Text(
-                                              //     "เปลี่ยน",
-                                              //     style: TextStyle(
-                                              //         fontWeight:
-                                              //             FontWeight.normal,
-                                              //         fontSize:
-                                              //             size!.getWidthPx(6),
-                                              //         color: Colors.red),
-                                              //   ),
-                                              // ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      "${Global.customer!.phoneNumber}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                        fontSize: size!.getWidthPx(6),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                KclButton(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        const AddCustomerScreen(),
+                                                                fullscreenDialog:
+                                                                    true))
+                                                        .whenComplete(() {
+                                                      setState(() {});
+                                                    });
+                                                  },
+                                                  text: 'เพิ่ม',
+                                                  fullWidth: true,
+                                                  icon: Icons.add,
+                                                ),
+                                                KclButton(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        const CustomerScreen(
+                                                                          selected:
+                                                                              true,
+                                                                        ),
+                                                                fullscreenDialog:
+                                                                    true))
+                                                        .whenComplete(() {
+                                                      setState(() {});
+                                                    });
+                                                  },
+                                                  text: 'ค้นหา',
+                                                  icon: Icons.search,
+                                                  fullWidth: true,
+                                                  color: Colors.teal,
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      "${Global.customer!.email}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                        fontSize: size!.getWidthPx(6),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 3,
-                                    ),
-                                    Text(
-                                      "${Global.customer!.address}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: size!.getWidthPx(6),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
+                                    ],
+                                  ),
+                          ),
                         const SizedBox(
                           height: 10,
                         ),
@@ -349,7 +373,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           child: Column(
                             children: [
                               for (int i = 0; i < Global.orders!.length; i++)
-                                _itemOrderList(order: Global.orders![i], index: i)
+                                _itemOrderList(
+                                    order: Global.orders![i], index: i)
                               // ...Global.orders!.map((e) {
                               //   return _itemOrderList(order: e, index: 0);
                               // })
@@ -388,11 +413,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               PriceBreakdown(
                                 title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                 price:
-                                    '${Global.format(Global.getPaymentTotal())} THB',
+                                    '${Global.format(Global.getPaymentTotal(Global.orders))} THB',
                               ),
                               PriceBreakdown(
                                 title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
-                                price: '${Global.payToCustomerOrShop()}',
+                                price:
+                                    '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.discount))} ${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
                               ),
                             ],
                           ),
@@ -649,20 +675,53 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     return;
                   }
                 }
-
-                if (getPaymentTotal() > Global.getPaymentTotal()) {
-                  if (mounted) {
-                    Alert.warning(context, 'Warning'.tr(),
-                        'จำนวนเงินที่ต้องชำระมากกว่าจำนวนเงินรวม', 'OK'.tr(),
+                var amount = Global.payToCustomerOrShopValue(
+                    Global.orders, Global.discount);
+                // motivePrint(selectedOption);
+                if (amount > getMaxKycValue()) {
+                  if (selectedOption == 0 && Global.customer == null) {
+                    Alert.warning(
+                        context,
+                        'Warning'.tr(),
+                        'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
+                        'OK'.tr(),
+                        action: () {});
+                    return;
+                  }
+                  if (selectedOption == 1) {
+                    Alert.warning(
+                        context,
+                        'Warning'.tr(),
+                        'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
+                        'OK'.tr(),
                         action: () {});
                     return;
                   }
                 }
 
-                if (getPaymentTotal() < Global.getPaymentTotal()) {
+                if (getPaymentTotal() > Global.getPaymentTotal(Global.orders)) {
                   if (mounted) {
-                    Alert.warning(context, 'Warning'.tr(),
-                        'จำนวนเงินที่ต้องชำระน้อยกว่าจำนวนเงินรวม', 'OK'.tr(),
+                    Alert.warning(
+                        context,
+                        'Warning'.tr(),
+                        amount >= 0
+                            ? 'ยอดชำระมากกว่าจำนวนเงินรวม'
+                            : 'ยอดจ่ายมากกว่าจำนวนเงินรวม',
+                        'OK'.tr(),
+                        action: () {});
+                    return;
+                  }
+                }
+
+                if (getPaymentTotal() < Global.getPaymentTotal(Global.orders)) {
+                  if (mounted) {
+                    Alert.warning(
+                        context,
+                        'Warning'.tr(),
+                        amount >= 0
+                            ? 'ยอดชำระน้อยกว่าจำนวนเงินรวม'
+                            : 'ยอดจ่ายน้อยกว่าจำนวนเงินรวม',
+                        'OK'.tr(),
                         action: () {});
                     return;
                   }
@@ -670,54 +729,62 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                 for (var i = 0; i < Global.orders!.length; i++) {
                   Global.orders![i].id = 0;
-                  Global.orders![i].createdDate = DateTime.now().toUtc();
-                  Global.orders![i].updatedDate = DateTime.now().toUtc();
+                  Global.orders![i].createdDate = DateTime.now();
+                  Global.orders![i].updatedDate = DateTime.now();
                   Global.orders![i].customerId = Global.customer!.id!;
                   Global.orders![i].status = "0";
                   Global.orders![i].discount = Global.discount;
                   Global.orders![i].paymentMethod = Global.currentPaymentMethod;
                   Global.orders![i].attachement = null;
-                  Global.orders![i].priceIncludeTax =
-                      Global.getOrderTotal(Global.orders![i]);
-                  Global.orders![i].purchasePrice =
-                      Global.orders![i].orderTypeId == 2
-                          ? 0
-                          : Global.getPapunTotal(Global.orders![i]);
-                  Global.orders![i].priceDiff =
-                      Global.orders![i].orderTypeId == 2
-                          ? 0
-                          : Global.getOrderTotal(Global.orders![i]) -
-                              Global.getPapunTotal(Global.orders![i]);
-                  Global.orders![i].taxBase = Global.orders![i].orderTypeId == 2
-                      ? 0
-                      : (Global.getOrderTotal(Global.orders![i]) -
-                              Global.getPapunTotal(Global.orders![i])) *
-                          100 /
-                          107;
-                  Global.orders![i].taxAmount =
-                      Global.orders![i].orderTypeId == 2
-                          ? 0
-                          : ((Global.getOrderTotal(Global.orders![i]) -
-                                      Global.getPapunTotal(Global.orders![i])) *
-                                  100 /
-                                  107) *
-                              0.07;
-                  Global.orders![i].priceExcludeTax = Global
-                              .orders![i].orderTypeId ==
-                          2
-                      ? 0
-                      : Global.getOrderTotal(Global.orders![i]) -
-                          (((Global.getOrderTotal(Global.orders![i]) -
-                                      Global.getPapunTotal(Global.orders![i])) *
-                                  100 /
-                                  107) *
-                              0.07);
+                  if (Global.orders![i].orderTypeId != 5 &&
+                      Global.orders![i].orderTypeId != 6) {
+                    Global.orders![i].priceIncludeTax =
+                        Global.getOrderTotal(Global.orders![i]);
+
+                    Global.orders![i].purchasePrice =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : Global.getPapunTotal(Global.orders![i]);
+
+                    Global.orders![i].priceDiff =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : Global.getOrderTotal(Global.orders![i]) -
+                                Global.getPapunTotal(Global.orders![i]);
+                    Global.orders![i].taxBase =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : (Global.getOrderTotal(Global.orders![i]) -
+                                    Global.getPapunTotal(Global.orders![i])) *
+                                100 /
+                                107;
+                    Global.orders![i].taxAmount = Global
+                                .orders![i].orderTypeId ==
+                            2
+                        ? 0
+                        : ((Global.getOrderTotal(Global.orders![i]) -
+                                    Global.getPapunTotal(Global.orders![i])) *
+                                100 /
+                                107) *
+                            getVatValue();
+                    Global.orders![i].priceExcludeTax =
+                        Global.orders![i].orderTypeId == 2
+                            ? 0
+                            : Global.getOrderTotal(Global.orders![i]) -
+                                (((Global.getOrderTotal(Global.orders![i]) -
+                                            Global.getPapunTotal(
+                                                Global.orders![i])) *
+                                        100 /
+                                        107) *
+                                    getVatValue());
+                  }
                   for (var j = 0; j < Global.orders![i].details!.length; j++) {
                     Global.orders![i].details![j].id = 0;
                     Global.orders![i].details![j].orderId =
                         Global.orders![i].id;
                     Global.orders![i].details![j].unitCost =
-                        Global.orders![i].details![j].priceIncludeTax! / 15.16;
+                        Global.orders![i].details![j].priceIncludeTax! /
+                            Global.orders![i].details![j].weight!;
                     Global.orders![i].details![j].purchasePrice =
                         Global.orders![i].orderTypeId == 2
                             ? 0
@@ -746,7 +813,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                             .orders![i].details![j].weight!)) *
                                     100 /
                                     107) *
-                                0.07;
+                                getVatValue();
                     Global.orders![i].details![j].priceExcludeTax =
                         Global.orders![i].orderTypeId == 2
                             ? 0
@@ -757,11 +824,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 .details![j].weight!)) *
                                         100 /
                                         107) *
-                                    0.07)));
-                    Global.orders![i].details![j].createdDate =
-                        DateTime.now().toUtc();
-                    Global.orders![i].details![j].updatedDate =
-                        DateTime.now().toUtc();
+                                    getVatValue())));
+                    Global.orders![i].details![j].createdDate = DateTime.now();
+                    Global.orders![i].details![j].updatedDate = DateTime.now();
                   }
                 }
 
@@ -782,7 +847,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         '/order/gen-pair/${Global.orders?.first.orderTypeId}',
                         Global.requestObj(null));
 
-                    // print(detail!.data);
+                    // print(pair?.toJson());
+                    // return;
                     if (pair?.status == "success") {
                       await postPayment(pair?.data);
                       await postOrder(pair?.data);
@@ -795,7 +861,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         Global.discount = 0;
                         Global.customer = null;
                         Global.posOrder = null;
-                        Global.paymentList = [];
+                        Global.paymentList?.clear();
                         setState(() {});
                         Navigator.pushReplacement(
                             context,
@@ -1001,7 +1067,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     pairId: pairId,
                     paymentId: payment?.data,
                     paymentMethod: Global.paymentList![i].paymentMethod,
-                    paymentDate: Global.paymentList![i].paymentDate!.toUtc(),
+                    paymentDate: Global.paymentList![i].paymentDate!,
                     bankId: Global.paymentList![i].bankId,
                     bankName: Global.paymentList![i].bankName,
                     accountName: Global.paymentList![i].accountName,
@@ -1010,12 +1076,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     referenceNumber: Global.paymentList![i].referenceNumber,
                     cardName: Global.paymentList![i].cardName,
                     cardNo: Global.paymentList![i].cardNo,
-                    cardExpiryDate:
-                        Global.paymentList![i].cardExpiryDate?.toUtc(),
+                    cardExpiryDate: Global.paymentList![i].cardExpiryDate,
                     paymentDetail: Global.paymentList![i].paymentDetail,
                     attachement: Global.paymentList![i].attachement,
-                    createdDate: DateTime.now().toUtc(),
-                    updatedDate: DateTime.now().toUtc()),
+                    createdDate: DateTime.now(),
+                    updatedDate: DateTime.now()),
               ));
           // motivePrint(result?.toJson());
           if (result?.status == "success") {
@@ -1047,145 +1112,180 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   Widget _itemOrderList({required OrderModel order, required index}) {
-    motivePrint(index);
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              flex: 8,
-              child: ProductListTileData(
-                  orderId: order.orderId,
-                  weight:
-                      Global.format(Global.getOrderTotalWeight(order.details!)),
-                  showTotal: true,
-                  totalPrice:
-                      Global.format(Global.getOrderTotalAmount(order.details!)),
-                  type: null //order.orderTypeId.toString(),
-                  ),
-            ),
-            const Expanded(
-              flex: 1,
-              child: Column(
+    // motivePrint(index);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  flex: 8,
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: Text(
+                        '${getOrderListTitle(order)}',
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      )),
+                      Expanded(
+                          child: Text(
+                        '${Global.format(Global.getOrderTotalAmount(order.details!))} บาท',
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      ))
+                    ],
+                  )),
+            ],
+          ),
+          Table(
+            border: TableBorder.all(color: Colors.grey.shade300),
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            columnWidths: const {
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(4),
+              2: FlexColumnWidth(2),
+              3: FlexColumnWidth(3),
+              4: FlexColumnWidth(4),
+            },
+            children: [
+              TableRow(
                 children: [
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     removeProduct(index);
-                  //   },
-                  //   child: Container(
-                  //     height: 60,
-                  //     width: 80,
-                  //     decoration: BoxDecoration(
-                  //         color: Colors.red,
-                  //         borderRadius: BorderRadius.circular(8)),
-                  //     child: const Icon(
-                  //       Icons.close,
-                  //       color: Colors.white,
-                  //     ),
-                  //   ),
-                  // ),
+                  const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      '',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      '',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('น้ำหนัก',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('ราคา',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text('',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                  ),
                 ],
               ),
-            )
-          ],
-        ),
-        Table(
-          border: TableBorder.all(color: Colors.grey.shade300),
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          children: [
-            TableRow(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    '',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text('น้ำหนัก',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text('ราคา',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text('',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                ),
-              ],
-            ),
-            for (int j = 0; j < order.details!.length; j++)
-              TableRow(
-                decoration: const BoxDecoration(),
-                children: [
-                  paddedTextBigL(order.details![j].productName,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                  paddedTextBigL(Global.format(order.details![j].weight!),
-                      align: TextAlign.center,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                  paddedTextBigL(
-                      Global.format(order.details![j].priceIncludeTax!),
-                      align: TextAlign.center,
-                      style: TextStyle(fontSize: size?.getWidthPx(8))),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (order.orderTypeId == 1 || order.orderTypeId == 2)
+              for (int j = 0; j < order.details!.length; j++)
+                TableRow(
+                  decoration: const BoxDecoration(),
+                  children: [
+                    paddedTextBigL('${j + 1}',
+                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        align: TextAlign.center),
+                    paddedTextBigL(order.details![j].productName,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                    paddedTextBigL(Global.format(order.details![j].weight!),
+                        align: TextAlign.right,
+                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                    paddedTextBigL(
+                        Global.format(order.details![j].priceIncludeTax!) +
+                            '  บาท',
+                        align: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: size?.getWidthPx(8),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (order.orderTypeId == 1 || order.orderTypeId == 2)
+                            GestureDetector(
+                              onTap: () {
+                                if (order.orderTypeId == 1) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditSaleDialog(
+                                                    index: index,
+                                                    j: j,
+                                                  ),
+                                              fullscreenDialog: true))
+                                      .whenComplete(() {
+                                    setState(() {});
+                                  });
+                                } else {
+                                  // motivePrint('${index} ${j}');
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditBuyDialog(
+                                                    index: index,
+                                                    j: j,
+                                                  ),
+                                              fullscreenDialog: true))
+                                      .whenComplete(() {
+                                    setState(() {});
+                                  });
+                                }
+                              },
+                              child: Container(
+                                height: 60,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                    color: Colors.blue[700],
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      'แก้ไข',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          const SizedBox(
+                            width: 20,
+                          ),
                           GestureDetector(
                             onTap: () {
-                              if (order.orderTypeId == 1) {
-                                Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditSaleDialog(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
-                                    .whenComplete(() {
-                                  setState(() {});
-                                });
-                              } else {
-                                motivePrint('${index} ${j}');
-                                Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EditBuyDialog(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
-                                    .whenComplete(() {
-                                  setState(() {});
-                                });
-                              }
+                              removeItem(index, j);
                             },
                             child: Container(
                               height: 60,
                               width: 80,
                               decoration: BoxDecoration(
-                                  color: Colors.blue[700],
+                                  color: Colors.red[700],
                                   borderRadius: BorderRadius.circular(8)),
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    Icons.edit,
+                                    Icons.close,
                                     color: Colors.white,
                                   ),
                                   Text(
-                                    'แก้ไข',
+                                    'ลบ',
                                     style: TextStyle(
                                         fontSize: 20, color: Colors.white),
                                   )
@@ -1193,43 +1293,29 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               ),
                             ),
                           ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            removeItem(index, j);
-                          },
-                          child: Container(
-                            height: 60,
-                            width: 80,
-                            decoration: BoxDecoration(
-                                color: Colors.red[700],
-                                borderRadius: BorderRadius.circular(8)),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  'ลบ',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ],
+                  ],
+                ),
+            ],
+          ),
+          if (index < Global.orders!.length - 1)
+            Container(
+              height: 10,
+              color: Colors.white,
+            ),
+          // ProductListTileData(
+          //     orderId: order.orderId,
+          //     weight:
+          //         Global.format(Global.getOrderTotalWeight(order.details!)),
+          //     showTotal: true,
+          //     totalPrice:
+          //         Global.format(Global.getOrderTotalAmount(order.details!)),
+          //     type: null //order.orderTypeId.toString(),
+          //     ),
+        ],
+      ),
     );
   }
 
@@ -1237,6 +1323,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.orders!.removeAt(i);
     if (Global.orders!.isEmpty) {
       Global.customer = null;
+      Global.paymentList?.clear();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});
@@ -1279,16 +1366,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 100,
+                          height: 150,
                           decoration: const BoxDecoration(color: snBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'เลือกวิธีการชำระเงิน',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: size?.getWidthPx(15),
-                                  color: Colors.white),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'เลือกวิธีการชำระเงิน',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: size?.getWidthPx(15),
+                                      color: Colors.white),
+                                ),
+                                Text(
+                                    '${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(8),
+                                        color: Colors.white)),
+                              ],
                             ),
                           ),
                         ),
@@ -1334,20 +1430,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       accountName: Global.selectedAccount?.name,
                                       cardName: Global.cardNameCtrl.text,
                                       cardNo: Global.cardNumberCtrl.text,
-                                      cardExpiryDate: Global
-                                              .cardExpireDateCtrl.text.isNotEmpty
-                                          ? DateTime.parse(Global
-                                                  .cardExpireDateCtrl.text)
-                                              .toUtc()
+                                      cardExpiryDate: Global.cardExpireDateCtrl
+                                              .text.isNotEmpty
+                                          ? DateTime.parse(
+                                              Global.cardExpireDateCtrl.text)
                                           : null,
                                       amount: Global.toNumber(
                                           Global.amountCtrl.text),
                                       referenceNumber: Global.refNoCtrl.text,
-                                      attachement:
-                                          Global.paymentAttachment != null
-                                              ? Global.imageToBase64(
-                                                  Global.paymentAttachment!)
-                                              : null);
+                                      attachement: Global.paymentAttachment !=
+                                              null
+                                          ? Global.imageToBase64(
+                                              Global.paymentAttachment!)
+                                          : null);
 
                                   Global.paymentList?[i] = payment;
 
@@ -1409,16 +1504,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 100,
+                          height: 150,
                           decoration: const BoxDecoration(color: snBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'เลือกวิธีการชำระเงิน',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: size?.getWidthPx(15),
-                                  color: Colors.white),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'เลือกวิธีการชำระเงิน',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: size?.getWidthPx(15),
+                                      color: Colors.white),
+                                ),
+                                Text(
+                                    '${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(8),
+                                        color: Colors.white)),
+                              ],
                             ),
                           ),
                         ),
@@ -1462,20 +1566,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       accountName: Global.selectedAccount?.name,
                                       cardName: Global.cardNameCtrl.text,
                                       cardNo: Global.cardNumberCtrl.text,
-                                      cardExpiryDate: Global
-                                              .cardExpireDateCtrl.text.isNotEmpty
-                                          ? DateTime.parse(Global
-                                                  .cardExpireDateCtrl.text)
-                                              .toUtc()
+                                      cardExpiryDate: Global.cardExpireDateCtrl
+                                              .text.isNotEmpty
+                                          ? DateTime.parse(
+                                              Global.cardExpireDateCtrl.text)
                                           : null,
                                       amount: Global.toNumber(
                                           Global.amountCtrl.text),
                                       referenceNumber: Global.refNoCtrl.text,
-                                      attachement:
-                                          Global.paymentAttachment != null
-                                              ? Global.imageToBase64(
-                                                  Global.paymentAttachment!)
-                                              : null);
+                                      attachement: Global.paymentAttachment !=
+                                              null
+                                          ? Global.imageToBase64(
+                                              Global.paymentAttachment!)
+                                          : null);
 
                                   Global.paymentList?.add(payment);
 
@@ -1523,6 +1626,28 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
     return amount;
   }
+
+  void loadCustomer() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      var result = await ApiServices.get('/customer/walkin');
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+        setState(() {
+          Global.customer = customerModelFromJson(data);
+        });
+      } else {
+        Global.customer = null;
+      }
+    } catch (e) {
+      motivePrint(e.toString());
+    }
+    setState(() {
+      loading = false;
+    });
+  }
 }
 
 class PaymentCard extends StatelessWidget {
@@ -1550,7 +1675,9 @@ class PaymentCard extends StatelessWidget {
               bottom: getProportionateScreenHeight(8.0),
             ),
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected!
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(
                 getProportionateScreenWidth(
                   4,

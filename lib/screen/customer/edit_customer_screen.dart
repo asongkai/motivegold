@@ -498,7 +498,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: getIdTitle(),
+                                        labelText: getIdTitle(selectedType),
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: idCardCtrl,
@@ -707,7 +707,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                         DateTime? pickedDate = await showDatePicker(
                                             context: context,
                                             initialDate: DateTime.now(),
-                                            firstDate: DateTime.now(),
+                                            firstDate: DateTime(DateTime.now().year - 200),
                                             //DateTime.now() - not to allow to choose before today.
                                             lastDate: DateTime(2101));
                                         if (pickedDate != null) {
@@ -955,12 +955,12 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
-                if (idCardCtrl.text.isEmpty) {
-                  Alert.warning(
-                      context, 'คำเตือน', 'กรุณากรอก${getIdTitle()}', 'OK',
-                      action: () {});
-                  return;
-                }
+                // if (idCardCtrl.text.isEmpty) {
+                //   Alert.warning(
+                //       context, 'คำเตือน', 'กรุณากรอก${getIdTitle(selectedType)}', 'OK',
+                //       action: () {});
+                //   return;
+                // }
 
                 var customerObject = Global.requestObj({
                   "id": widget.c.id,
@@ -971,7 +971,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                   "email": emailAddressCtrl.text,
                   "doB": birthDateCtrl.text.isEmpty
                       ? ""
-                      : DateTime.parse(birthDateCtrl.text).toUtc().toString(),
+                      : DateTime.parse(birthDateCtrl.text).toString(),
                   "phoneNumber": phoneCtrl.text,
                   "username": generateRandomString(8),
                   "password": generateRandomString(10),
@@ -1097,12 +1097,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
       return 'ลูกค้า';
     }
     return 'ลูกค้า';
-  }
-
-  getIdTitle() {
-    return selectedType?.code == 'company'
-        ? 'เลขบัตรประจำตัวภาษี'
-        : 'เลขบัตรประจำตัวประชาชน';
   }
 
 // loadAmphureByProvince(int? id) async {

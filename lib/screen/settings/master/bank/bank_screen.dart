@@ -65,7 +65,7 @@ class _BankListScreenState extends State<BankListScreen> {
                   size: 50,
                 ),
                 Text(
-                  'เพิ่มประเภทสินค้า',
+                  'เพิ่มธนาคาร',
                   style: TextStyle(fontSize: size.getWidthPx(6)),
                 )
               ],

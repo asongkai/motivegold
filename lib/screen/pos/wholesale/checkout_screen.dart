@@ -440,8 +440,8 @@
 //
 //                 for (var i = 0; i < Global.orders!.length; i++) {
 //                   Global.orders![i].id = 0;
-//                   Global.orders![i].createdDate = DateTime.now().toUtc();
-//                   Global.orders![i].updatedDate = DateTime.now().toUtc();
+//                   Global.orders![i].createdDate = DateTime.now();
+//                   Global.orders![i].updatedDate = DateTime.now();
 //                   Global.orders![i].customerId = Global.customer!.id!;
 //                   Global.orders![i].status = "0";
 //                   Global.orders![i].discount = Global.discount;
@@ -457,11 +457,11 @@
 //                     Global.orders![i].details![j].id = 0;
 //                     Global.orders![i].details![j].orderId = Global.orders![i].id;
 //                     Global.orders![i].details![j].unitCost =
-//                         Global.orders![i].details![j].priceIncludeTax! / 15.16;
+//                         Global.orders![i].details![j].priceIncludeTax! / getUnitWeightValue();
 //                     Global.orders![i].details![j].createdDate =
-//                         DateTime.now().toUtc();
+//                         DateTime.now();
 //                     Global.orders![i].details![j].updatedDate =
-//                         DateTime.now().toUtc();
+//                         DateTime.now();
 //                   }
 //                 }
 //                 // print(orderListModelToJson(Global.order!));
@@ -548,19 +548,19 @@
 //               id: 0,
 //               pairId: pairId,
 //               paymentMethod: Global.currentPaymentMethod,
-//               paymentDate: DateTime.parse(Global.paymentDateCtrl.text).toUtc(),
+//               paymentDate: DateTime.parse(Global.paymentDateCtrl.text),
 //               bankName: Global.bankCtrl.text,
 //               referenceNumber: Global.refNoCtrl.text,
 //               cardName: Global.cardNameCtrl.text,
 //               cardExpiryDate: Global.cardExpireDateCtrl.text.trim() != ""
-//                   ? DateTime.parse(Global.cardExpireDateCtrl.text).toUtc()
+//                   ? DateTime.parse(Global.cardExpireDateCtrl.text)
 //                   : null,
 //               paymentDetail: Global.paymentDetailCtrl.text,
 //               attachement: Global.paymentAttachment != null
 //                   ? Global.imageToBase64(Global.paymentAttachment!)
 //                   : null,
-//               createdDate: DateTime.now().toUtc(),
-//               updatedDate: DateTime.now().toUtc()),
+//               createdDate: DateTime.now(),
+//               updatedDate: DateTime.now()),
 //         ));
 //     motivePrint(result?.toJson());
 //     if (result?.status == "success") {

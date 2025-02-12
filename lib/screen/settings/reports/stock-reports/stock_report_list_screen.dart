@@ -7,7 +7,6 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/settings/reports/stock-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -55,9 +54,9 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
   }
 
   void loadProducts() async {
-    setState(() {
-      loading = true;
-    });
+    // setState(() {
+    //   loading = true;
+    // });
     try {
 
       var result = await ApiServices.post('/product/all', Global.requestObj(null));
@@ -71,7 +70,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
         productList = [];
       }
 
-      var warehouse = await ApiServices.post('/binlocation/all', Global.requestObj(null));
+      var warehouse = await ApiServices.post('/binlocation/all/branch', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -88,9 +87,9 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
         print(e.toString());
       }
     }
-    setState(() {
-      loading = false;
-    });
+    // setState(() {
+    //   loading = false;
+    // });
   }
 
   void search() async {
@@ -106,7 +105,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
     }));
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
-      motivePrint(data);
+      // motivePrint(data);
       List<QtyLocationModel> products = qtyLocationListModelFromJson(data);
       setState(() {
         dataList = products;
@@ -488,7 +487,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                   style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                               paddedTextBig(
-                                  Global.format(e.weight! * e.unitCost!),
+                                  Global.format(e.price ?? 0),
                                   style: const TextStyle(fontSize: 20),
                                   align: TextAlign.right),
                             ],

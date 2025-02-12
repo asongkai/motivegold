@@ -13,7 +13,6 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class TransferGoldPendingScreen extends StatefulWidget {
@@ -112,7 +111,8 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
                       ),
                       Text(
                         Global.formatDate(list.transferDate.toString()),
-                        style: TextStyle(color: Colors.green, fontSize: size!.getWidthPx(5)),
+                        style: TextStyle(
+                            color: Colors.green, fontSize: size!.getWidthPx(5)),
                       ),
                     ],
                   ),
@@ -164,11 +164,44 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
                                 align: TextAlign.center,
                                 style:
                                     TextStyle(fontSize: size?.getWidthPx(7))),
-                            paddedText(
-                                '${list.fromBinLocation!.name} - ${list.toBinLocation!.name}',
-                                align: TextAlign.center,
-                                style:
-                                    TextStyle(fontSize: size?.getWidthPx(7))),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    paddedText('ต้นทาง:',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7),
+                                            fontWeight: FontWeight.w900)),
+                                    paddedText(
+                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.fromBinLocation!.name}',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7))),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    paddedText('ปลายทาง:',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7),
+                                            fontWeight: FontWeight.w900)),
+                                    paddedText(
+                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.toBinLocation!.name}',
+                                        align: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: size?.getWidthPx(7))),
+                                  ],
+                                )
+                              ],
+                            )
                           ],
                         ),
                       ),
@@ -176,47 +209,62 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
                   ),
                 ),
               ),
-              if (list.status == 'PENDING')
-              Expanded(
-                flex: 1,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        confirm(list);
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            color: Colors.teal,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(
-                          Icons.check,
-                          color: Colors.white,
+
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (list.status == 'PENDING')
+                      GestureDetector(
+                        onTap: () {
+                          confirm(list);
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: Colors.teal,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  'รับสินค้า',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        reject(list);
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
+                      // const SizedBox(width: 10,),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     reject(list);
+                      //   },
+                      //   child: Container(
+                      //     height: 50,
+                      //     width: 60,
+                      //     decoration: BoxDecoration(
+                      //         color: Colors.red,
+                      //         borderRadius: BorderRadius.circular(8)),
+                      //     child: const Icon(
+                      //       Icons.refresh,
+                      //       color: Colors.white,
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                )
             ],
           ),
         ),
@@ -226,7 +274,9 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
           child: Center(
             child: Container(
               decoration: BoxDecoration(
-                  color: (list.status == 'SUCCESS') ? Colors.teal : Colors.orange, borderRadius: BorderRadius.circular(10.0)),
+                  color:
+                      (list.status == 'SUCCESS') ? Colors.teal : Colors.orange,
+                  borderRadius: BorderRadius.circular(10.0)),
               padding: const EdgeInsets.only(left: 5.0, right: 5.0),
               child: Row(
                 children: [
@@ -237,7 +287,9 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
                       child: RawMaterialButton(
                         elevation: 10.0,
                         child: Icon(
-                          (list.status == 'SUCCESS') ? Icons.check : Icons.pending_actions,
+                          (list.status == 'SUCCESS')
+                              ? Icons.check
+                              : Icons.pending_actions,
                           color: Colors.white,
                         ),
                         onPressed: () {},
@@ -283,45 +335,26 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
     }
   }
 
-  void reject(TransferModel list) async {
-    try {
-      // motivePrint(list.toJson());
-      // return;
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      var result = await ApiServices.post(
-          '/transfer/between-branch-reject',
-          Global.requestObj(list));
-      await pr.hide();
-      if (result?.status == "success") {
-        loadData();
-      } else {
-        if (mounted) {}
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-  }
-
   void confirm(TransferModel list) async {
+    motivePrint(list.toJson());
     try {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      var result = await ApiServices.post(
-          '/transfer/between-branch-confirm',
-          Global.requestObj(list));
-      await pr.hide();
-      if (result?.status == "success") {
-        loadData();
-      } else {
-        if (mounted) {}
-      }
+      Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+          action: () async {
+        final ProgressDialog pr = ProgressDialog(context,
+            type: ProgressDialogType.normal,
+            isDismissible: true,
+            showLogs: true);
+        await pr.show();
+        pr.update(message: 'processing'.tr());
+        var result = await ApiServices.post(
+            '/transfer/between-branch-confirm', Global.requestObj(list));
+        await pr.hide();
+        if (result?.status == "success") {
+          loadData();
+        } else {
+          if (mounted) {}
+        }
+      });
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());

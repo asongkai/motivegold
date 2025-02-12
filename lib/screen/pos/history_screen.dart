@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/product_type.dart';
-import 'package:motivegold/screen/pos/storefront/theng/preview_pdf.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/alert.dart';
@@ -29,7 +28,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'checkout_summary_history_screen.dart';
-import 'storefront/paphun/preview_pdf.dart';
+import 'storefront/paphun/bill/preview_pdf.dart';
 
 class PosOrderHistoryScreen extends StatefulWidget {
   const PosOrderHistoryScreen({super.key});
@@ -49,7 +48,6 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
   ProductTypeModel? selectedOrderType;
   static ValueNotifier<dynamic>? orderTypeNotifier;
   BranchModel? selectedBranch;
-  static ValueNotifier<dynamic>? branchNotifier;
 
   @override
   void initState() {
@@ -57,8 +55,6 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     selectedOrderType = orderTypes()[0];
     orderTypeNotifier = ValueNotifier<ProductTypeModel>(selectedOrderType ??
         ProductTypeModel(id: 0, code: '', name: 'เลือกประเภทธุรกรรม'));
-    branchNotifier = ValueNotifier<BranchModel>(
-        selectedBranch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
     // loadData();
   }
 
@@ -296,17 +292,40 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 readOnly: true,
                                 //set it true, so that user will not able to edit text
                                 onTap: () async {
-                                  final pickedDate =
-                                      await showBoardDateTimePicker(
-                                    context: context,
-                                    pickerType: DateTimePickerType.date,
-                                    initialDate: DateTime.now(),
-                                    breakpoint: 5000,
-                                  );
+                                  // final pickedDate =
+                                  //     await showBoardDateTimePicker(
+                                  //   context: context,
+                                  //   pickerType: DateTimePickerType.date,
+                                  //   initialDate: DateTime.now(),
+                                  //   breakpoint: 5000,
+                                  // );
+                                  // if (pickedDate != null) {
+                                  //   String formattedDate =
+                                  //       DateFormat('yyyy-MM-dd')
+                                  //           .format(pickedDate);
+                                  //   setState(() {
+                                  //     fromDateCtrl.text =
+                                  //         formattedDate; //set output date to TextField value.
+                                  //   });
+                                  // } else {
+                                  //   motivePrint("Date is not selected");
+                                  // }
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate:
+                                          DateTime(DateTime.now().year - 200),
+                                      //DateTime.now() - not to allow to choose before today.
+                                      lastDate: DateTime(2101));
                                   if (pickedDate != null) {
+                                    motivePrint(
+                                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                                     String formattedDate =
                                         DateFormat('yyyy-MM-dd')
                                             .format(pickedDate);
+                                    motivePrint(
+                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                    //you can implement different kind of Date Format here according to your requirement
                                     setState(() {
                                       fromDateCtrl.text =
                                           formattedDate; //set output date to TextField value.
@@ -366,14 +385,37 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 readOnly: true,
                                 //set it true, so that user will not able to edit text
                                 onTap: () async {
-                                  final pickedDate =
-                                      await showBoardDateTimePicker(
-                                    context: context,
-                                    pickerType: DateTimePickerType.date,
-                                    initialDate: DateTime.now(),
-                                    breakpoint: 5000,
-                                    options: const BoardDateTimeOptions(),
-                                  );
+                                  // final pickedDate =
+                                  //     await showBoardDateTimePicker(
+                                  //   context: context,
+                                  //   pickerType: DateTimePickerType.date,
+                                  //   initialDate: DateTime.now(),
+                                  //   breakpoint: 5000,
+                                  //   options: const BoardDateTimeOptions(),
+                                  // );
+                                  // if (pickedDate != null) {
+                                  //   motivePrint(
+                                  //       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                  //   String formattedDate =
+                                  //       DateFormat('yyyy-MM-dd')
+                                  //           .format(pickedDate);
+                                  //   motivePrint(
+                                  //       formattedDate); //formatted date output using intl package =>  2021-03-16
+                                  //   //you can implement different kind of Date Format here according to your requirement
+                                  //   setState(() {
+                                  //     toDateCtrl.text =
+                                  //         formattedDate; //set output date to TextField value.
+                                  //   });
+                                  // } else {
+                                  //   motivePrint("Date is not selected");
+                                  // }
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate:
+                                          DateTime(DateTime.now().year - 200),
+                                      //DateTime.now() - not to allow to choose before today.
+                                      lastDate: DateTime(2101));
                                   if (pickedDate != null) {
                                     motivePrint(
                                         pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
@@ -458,6 +500,18 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
       Global.pairId = null;
       Global.orderIds!.clear();
     });
+    // motivePrint({
+    //   "year": 0,
+    //   "month": 0,
+    //   "fromDate": fromDateCtrl.text.isNotEmpty
+    //       ? DateTime.parse(fromDateCtrl.text).toString()
+    //       : null,
+    //   "toDate": toDateCtrl.text.isNotEmpty
+    //       ? DateTime.parse(toDateCtrl.text).toString()
+    //       : null,
+    //   "orderTypeId": selectedOrderType?.id,
+    //   "branchId": selectedBranch?.id
+    // });
     try {
       var result = await ApiServices.post(
           '/order/all/search',
@@ -465,10 +519,10 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
             "year": 0,
             "month": 0,
             "fromDate": fromDateCtrl.text.isNotEmpty
-                ? DateTime.parse(fromDateCtrl.text).toUtc().toString()
+                ? DateTime.parse(fromDateCtrl.text).toString()
                 : null,
             "toDate": toDateCtrl.text.isNotEmpty
-                ? DateTime.parse(toDateCtrl.text).toUtc().toString()
+                ? DateTime.parse(toDateCtrl.text).toString()
                 : null,
             "orderTypeId": selectedOrderType?.id,
             "branchId": selectedBranch?.id
@@ -592,7 +646,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                   ),
                 ),
                 SizedBox(
-                  width: 170,
+                  width: 190,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -643,7 +697,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            // motivePrint(order.orderTypeId);
+                            // motivePrint(order.customer?.toJson());
                             Global.orderIds!.add(order.orderId);
 
                             final ProgressDialog pr = ProgressDialog(context,

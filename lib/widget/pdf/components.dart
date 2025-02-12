@@ -30,12 +30,12 @@ Widget header(OrderModel order, String? title, {bool? showPosId}) {
             Text('${Global.company?.name} (${Global.branch!.name})',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
+                '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
                 style: const TextStyle(fontSize: 9)),
-            Text('โทรศัพท์/Phone : ${Global.company?.phone} โทรสาร/Fax : ',
+            Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
+                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
                 style: const TextStyle(fontSize: 9)),
           ]))
     ]),
@@ -78,7 +78,7 @@ Widget docNo(OrderModel order) {
                   style: const TextStyle(fontSize: 9)),
           ],
         ),
-        Text('วันที่ : ${Global.formatDate(DateTime.now().toString())} ',
+        Text('วันที่ : ${Global.formatDateNT(order.orderDate.toString())} ',
             style: const TextStyle(fontSize: 9)),
       ]);
 }
@@ -88,28 +88,41 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(children: [
         Expanded(
-            child: Column(children: [
-          Table(children: [
-            TableRow(children: [
-              Text('${getNameTitle(order)} : ',
-                  style: const TextStyle(fontSize: 9)),
-              Text('${customer.firstName} ${customer.lastName}',
-                  style: const TextStyle(fontSize: 9)),
-            ]),
-            TableRow(children: [
-              Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
-              Text(
-                  '${customer.address}, ${customer.amphureId}, ${customer.provinceId}',
-                  style: const TextStyle(fontSize: 9)),
-            ]),
-            TableRow(children: [
-              Text(''),
-              Text(
-                  'โทร: ${customer.phoneNumber}    ${customer.isCustomer == 1 ? 'หมายเลขบัตรประชาชน' : 'เลขประจําตัวผู้เสียภาษี'} : ${customer.taxNumber}',
-                  style: const TextStyle(fontSize: 9)),
-            ]),
-          ]),
-        ])),
+          child: Column(
+            children: [
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('${getNameTitle(order)} : ',
+                          style: const TextStyle(fontSize: 9)),
+                      Text('${customer.firstName} ${customer.lastName}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+                      Text('${customer.address}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(''),
+                      Text('โทร: ${customer.phoneNumber}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         Expanded(
             child: Column(children: [
           Table(children: [
@@ -117,7 +130,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
               Text('ทองคําแท่งขายออกบาทละ : ',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
-              Text('${Global.format(order.details![0].sellTPrice ?? 0)}',
+              Text('${Global.format(order.details![0].sellTPrice ?? 0)} บาท',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
             ]),
@@ -125,7 +138,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
               Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
-              Text('${Global.format(order.details![0].buyPrice ?? 0)}',
+              Text('${Global.format(order.details![0].buyPrice ?? 0)} บาท',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
             ]),
@@ -134,12 +147,85 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
               Text(
-                  '${Global.format((order.details![0].buyPrice ?? 0) / 15.16)}',
+                  '${Global.format((order.details![0].buyPrice ?? 0) / getUnitWeightValue())} บาท',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
             ]),
           ]),
         ])),
+      ]));
+}
+
+Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
+  return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            children: [
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('${getNameTitle(order)} : ',
+                          style: const TextStyle(fontSize: 9)),
+                      Text('${customer.firstName} ${customer.lastName}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+                      Text('${customer.address}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(''),
+                      Text('โทร: ${customer.phoneNumber}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+            child: Column(children: [
+              Table(children: [
+                TableRow(children: [
+                  Text('ทองคําแท่งขายออกบาทละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text('${Global.format(order.sellTPrice ?? 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+                TableRow(children: [
+                  Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text('${Global.format(order.buyPrice ?? 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+                TableRow(children: [
+                  Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text(
+                      '${Global.format((order.buyPrice ?? 0) / getUnitWeightValue())} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+              ]),
+            ])),
       ]));
 }
 
@@ -183,7 +269,7 @@ Widget getThongThengTable(OrderModel order) {
               align: TextAlign.center,
             ),
             paddedText(
-              Global.format((e.priceIncludeTax! / e.weight!) * 15.16),
+              Global.format((e.priceIncludeTax! / e.weight!) * getUnitWeightValue()),
               align: TextAlign.right,
             ),
             paddedText(

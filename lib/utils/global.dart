@@ -13,6 +13,7 @@ import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
+import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/order_type.dart';
 import 'package:motivegold/model/payment.dart';
@@ -72,9 +73,17 @@ class Global {
 
   // POS
   static List<OrderDetailModel>? sellOrderDetail = [];
+  static List<OrderDetailModel>? buyOrderDetail = [];
+
   static List<OrderDetailModel>? buyThengOrderDetail = [];
   static List<OrderDetailModel>? sellThengOrderDetail = [];
-  static List<OrderDetailModel>? buyOrderDetail = [];
+
+  static List<OrderDetailModel>? buyThengOrderDetailMatching = [];
+  static List<OrderDetailModel>? sellThengOrderDetailMatching = [];
+
+  static List<OrderDetailModel>? buyThengOrderDetailBroker = [];
+  static List<OrderDetailModel>? sellThengOrderDetailBroker = [];
+
   static OrderModel? posOrder;
   static int posIndex = 0;
 
@@ -88,6 +97,11 @@ class Global {
   static double sellTax = 0;
   static double sellTotal = 0;
 
+  static double buySubTotal = 0;
+  static double buyWeightTotal = 0;
+  static double buyTax = 0;
+  static double buyTotal = 0;
+
   static double buyThengSubTotal = 0;
   static double buyThengWeightTotal = 0;
   static double buyThengTax = 0;
@@ -98,10 +112,26 @@ class Global {
   static double sellThengTax = 0;
   static double sellThengTotal = 0;
 
-  static double buySubTotal = 0;
-  static double buyWeightTotal = 0;
-  static double buyTax = 0;
-  static double buyTotal = 0;
+  static double buyThengSubTotalMatching = 0;
+  static double buyThengWeightTotalMatching = 0;
+  static double buyThengTaxMatching = 0;
+  static double buyThengTotalMatching = 0;
+
+  static double sellThengSubTotalMatching = 0;
+  static double sellThengWeightTotalMatching = 0;
+  static double sellThengTaxMatching = 0;
+  static double sellThengTotalMatching = 0;
+
+
+  static double buyThengSubTotalBroker = 0;
+  static double buyThengWeightTotalBroker = 0;
+  static double buyThengTaxBroker = 0;
+  static double buyThengTotalBroker = 0;
+
+  static double sellThengSubTotalBroker = 0;
+  static double sellThengWeightTotalBroker = 0;
+  static double sellThengTaxBroker = 0;
+  static double sellThengTotalBroker = 0;
 
   static double discount = 0;
   static CustomerModel? customer;
@@ -142,6 +172,8 @@ class Global {
   static List<BranchModel> branchList = [];
 
   static PosIdModel? posIdModel;
+
+  static SettingsValueModel? settingValueModel;
 
   static format(double value) {
     String number = formatter.format(value);
@@ -192,14 +224,14 @@ class Global {
       return 0;
     }
     double taxRate = toNumber(goldDataModel!.paphun!.buy!);
-    return taxRate / 15.16;
+    return taxRate / getUnitWeightValue();
   }
 
   static double getSellPriceTotal(double weight, double commission) {
     if (goldDataModel == null) {
       return 0;
     }
-    return (toNumber(goldDataModel!.theng!.sell!) * weight / 15.16) +
+    return (toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue()) +
         commission;
   }
 
@@ -211,49 +243,49 @@ class Global {
   }
 
   static double taxAmount(double taxBase) {
-    return taxBase * 0.07;
+    return taxBase * getVatValue();
   }
 
   static double getSellPrice(double weight) {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.sell!) * weight / 15.16;
+    return toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue();
   }
 
   static double getSellPriceUsePrice(double weight, double price) {
     if (goldDataModel == null) {
       return 0;
     }
-    return price * weight / 15.16;
+    return price * weight / getUnitWeightValue();
   }
 
   static double getBuyPrice(double weight) {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.paphun!.buy!) * weight / 15.16;
+    return toNumber(goldDataModel!.paphun!.buy!) * weight / getUnitWeightValue();
   }
 
   static double getBuyPriceUsePrice(double weight, double price) {
     if (goldDataModel == null) {
       return 0;
     }
-    return price * weight / 15.16;
+    return price * weight / getUnitWeightValue();
   }
 
   static double getBuyThengPrice(double weight) {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.buy!) * weight / 15.16;
+    return toNumber(goldDataModel!.theng!.buy!) * weight / getUnitWeightValue();
   }
 
   static double getSellThengPrice(double weight) {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.sell!) * weight / 15.16;
+    return toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue();
   }
 
   static double getOrderSubTotalAmount() {
@@ -458,36 +490,19 @@ class Global {
     return amount;
   }
 
-  static dynamic payToCustomerOrShop() {
+  static dynamic payToCustomerOrShop(List<OrderModel>? orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
-    double amount = 0;
-    double buy = 0;
-    double sell = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        double price = orders![i].details![j].priceIncludeTax!;
-        int type = orders![i].orderTypeId!;
-        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
-          buy += -price;
-        }
-        if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
-          sell += price;
-        }
-      }
-    }
-    amount = sell + buy;
-
-    amount = discount != 0 ? amount - discount : amount;
+    double amount = payToCustomerOrShopValue(orders, discount);
     return amount > 0
-        ? 'ลูกค้าจ่าย - ร้านรับเงิน (สุทธิ) : ${format(amount)} THB'
+        ? '${format(amount)} THB'
         : amount == 0
             ? 0
-            : 'ลูกค้ารับ - ร้านจ่ายเงิน (สุทธิ) : ${format(-amount)} THB';
+            : '${format(-amount)} THB';
   }
 
-  static dynamic payToCustomerOrShopValue(List<OrderModel>? orders) {
+  static dynamic payToCustomerOrShopValue(List<OrderModel>? orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -557,15 +572,15 @@ class Global {
             : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
   }
 
-  static double getPaymentTotal() {
+  static double getPaymentTotal(List<OrderModel>? orders) {
     if (orders!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        double price = orders![i].details![j].priceIncludeTax!;
-        int type = orders![i].orderTypeId!;
+    for (int i = 0; i < orders.length; i++) {
+      for (int j = 0; j < orders[i].details!.length; j++) {
+        double price = orders[i].details![j].priceIncludeTax!;
+        int type = orders[i].orderTypeId!;
         if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           price = -price;
         }
@@ -861,9 +876,12 @@ class Global {
 
   static DateTime convertDate(String date) {
     List<String> parts = date.split("-");
-    // motivePrint("${parts[2]}-${parts[1]}-${parts[0]}");
-    DateTime tempDate = DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}");
+    DateTime tempDate = DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}").toLocal();
     return tempDate;
+  }
+
+  static DateTime apiDate(String date) {
+    return DateTime.parse(date).toLocal();
   }
 
   static String formatDate(String date) {
@@ -872,6 +890,7 @@ class Global {
   }
 
   static String formatDateNT(String date) {
+    // motivePrint(date);
     DateTime tempDate = DateTime.parse(date);
     return DateFormat('dd/MM/yyyy').format(tempDate);
   }
@@ -1008,7 +1027,7 @@ class Global {
 
   static bool validateEmail(email) {
     bool emailValid = RegExp(
-            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+            r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(email);
     if (emailValid) {
       return true;

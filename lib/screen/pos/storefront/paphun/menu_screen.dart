@@ -2,8 +2,8 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/buy_screen.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/sell_screen.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/ui/buy_screen.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/ui/sell_screen.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
@@ -11,7 +11,7 @@ import 'package:motivegold/utils/util.dart';
 import '../checkout_screen.dart';
 
 class PosMenuScreen extends StatefulWidget {
-  const PosMenuScreen({Key? key, required this.title}) : super(key: key);
+  const PosMenuScreen({super.key, required this.title});
 
   final String title;
 

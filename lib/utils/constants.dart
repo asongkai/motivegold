@@ -1,7 +1,8 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:motivegold/utils/config.dart';
+import 'package:motivegold/utils/util.dart';
 
 const kGrey1 = Color(0xFF9F9F9F);
 const kGrey2 = Color(0xFF6D6D6D);
@@ -109,7 +110,7 @@ class Constants {
   static Color colorCurve =
       Colors.blue[700]!; //Color.fromRGBO(97, 10, 165, 0.8);
   static Color colorCurveSecondary =
-      Colors.blue[700]!.withOpacity(0.8); //Color.fromRGBO(97, 10, 155, 0.6);
+      Colors.blue[700]!.withValues(alpha: 0.8); //Color.fromRGBO(97, 10, 155, 0.6);
   static Color backgroundColor = Colors.grey.shade200;
   static Color textPrimaryColor = Colors.black87;
 
@@ -125,13 +126,20 @@ class Constants {
   static const String GOLD_URL = "https://motive.kodpay.la/api";
   static const String DOMAIN_GOLD = "https://motive.kodpay.la";
 
-  // static const String BACKEND_URL = "http://110.171.172.189:5000/api";
-  // static const String DOMAIN_URL = "http://110.171.172.189:5000";
-
-  static String BACKEND_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000/api" : "http://localhost:5000/api";
-  static String DOMAIN_URL = defaultTargetPlatform == TargetPlatform.android ? "http://10.0.2.2:5000" : "http://localhost:5000";
+  static String BACKEND_URL = "${getBackendUrl()}/api";
+  static String DOMAIN_URL = "${getBackendUrl()}";
 
   static const String STORAGE_URL = "gs://app-name.appspot.com";
 
   static const kGoogleApiKey = "AIzaSyBeTEo6O-FqFeEtrrCqjpcKnBo8iipVnBc";
+
+  static getBackendUrl() {
+    if (env == ENV.PRO) {
+      return "http://110.171.172.189:5000";
+    } else {
+      return defaultTargetPlatform == TargetPlatform.android
+          ? "http://10.0.2.2:5000"
+          : "http://localhost:5000";
+    }
+  }
 }

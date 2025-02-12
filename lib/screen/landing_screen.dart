@@ -6,6 +6,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/auth/signin_screen.dart';
@@ -145,6 +147,12 @@ class _LandingScreenState extends State<LandingScreen> {
         }
       }
 
+      var settings = await ApiServices.post('/settings/all', Global.requestObj(null));
+      if (settings?.status == "success") {
+        var settingsValueModel = SettingsValueModel.fromJson(settings?.data);
+        Global.settingValueModel = settingsValueModel;
+      }
+
       var authObject =
           Global.requestObj({"deviceDetail": Global.deviceDetail.toString()});
 
@@ -155,18 +163,18 @@ class _LandingScreenState extends State<LandingScreen> {
         motivePrint(e.toString());
       }
 
-      if (Global.user!.branchId != null) {
-        var b = await ApiServices.get('/branch/${Global.user?.branchId}');
-        // motivePrint(c!.data);
-        if (b?.status == "success") {
-          var bn = BranchModel.fromJson(b?.data);
-          setState(() {
-            Global.branch = bn;
-          });
-        } else {
-          Global.branch = null;
-        }
+      // if (Global.user!.branchId != null) {
+      var b = await ApiServices.get('/branch/${Global.user?.branchId}');
+      // motivePrint(c!.data);
+      if (b?.status == "success") {
+        var bn = BranchModel.fromJson(b?.data);
+        setState(() {
+          Global.branch = bn;
+        });
+      } else {
+        Global.branch = null;
       }
+      // }
 
       if (Global.branchList.isEmpty) {
         var b = await ApiServices.get(
@@ -193,6 +201,19 @@ class _LandingScreenState extends State<LandingScreen> {
         });
       } else {
         Global.posIdModel = null;
+      }
+
+      var province =
+      await ApiServices.post('/customer/province', Global.requestObj(null));
+      // motivePrint(province!.toJson());
+      if (province?.status == "success") {
+        var data = jsonEncode(province?.data);
+        List<ProvinceModel> products = provinceModelFromJson(data);
+        setState(() {
+          Global.provinceList = products;
+        });
+      } else {
+        Global.provinceList = [];
       }
 
       // Navigator.of(context).pushReplacement(

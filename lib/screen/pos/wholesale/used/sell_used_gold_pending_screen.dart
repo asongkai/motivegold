@@ -465,7 +465,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                               Global.format((Global.toNumber(
                                                           productEntryWeightCtrl
                                                               .text) /
-                                                      15.16));
+                                                      getUnitWeightValue()));
                                         } else {
                                           productEntryWeightBahtCtrl.text = "";
                                         }
@@ -505,7 +505,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                               Global.format((Global.toNumber(
                                                           productEntryWeightBahtCtrl
                                                               .text) *
-                                                      15.16));
+                                                      getUnitWeightValue()));
                                         } else {
                                           productEntryWeightCtrl.text = "";
                                         }

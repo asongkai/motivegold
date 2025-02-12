@@ -100,7 +100,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
     MultiPage(
       margin: const EdgeInsets.all(20),
       pageFormat: const PdfPageFormat(1000, 1000),
-      orientation: PageOrientation.landscape,
+      // orientation: PageOrientation.landscape,
       build: (context) => widgets,
       footer: (context) {
         return Row(

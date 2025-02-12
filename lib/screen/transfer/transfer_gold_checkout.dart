@@ -12,12 +12,10 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 
@@ -25,10 +23,12 @@ class TransferGoldCheckOutScreen extends StatefulWidget {
   const TransferGoldCheckOutScreen({super.key});
 
   @override
-  State<TransferGoldCheckOutScreen> createState() => _TransferGoldCheckOutScreenState();
+  State<TransferGoldCheckOutScreen> createState() =>
+      _TransferGoldCheckOutScreenState();
 }
 
-class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen> {
+class _TransferGoldCheckOutScreenState
+    extends State<TransferGoldCheckOutScreen> {
   int currentIndex = 1;
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
@@ -105,147 +105,147 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
           },
           child: Global.transfer == null
               ? const Center(
-            child: NoDataFoundWidget(),
-          )
+                  child: NoDataFoundWidget(),
+                )
               : Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(8.0),
-                        ),
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'รายการสินค้า',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            SingleChildScrollView(
-                              child: Container(
-                                height:
-                                MediaQuery.of(context).size.height *
-                                    2 /
-                                    5,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  color: bgColor2,
-                                ),
-                                child: ListView.builder(
-                                    itemCount:
-                                    Global.transfer!.details!.length,
-                                    itemBuilder: (context, index) {
-                                      return _itemOrderList(
-                                        transfer: Global.transfer!,
-                                          detail: Global
-                                              .transfer!.details![index],
-                                          index: index);
-                                    }),
-                              ),
-                            ),
-                            PriceBreakdown(
-                              title: 'ยอดรวม'.tr(),
-                              price:
-                              '${formatter.format(Global.getTransferWeightTotalAmount())} กรัม',
-                            ),
-                            PriceBreakdown(
-                              title: ''.tr(),
-                              price:
-                              '${formatter.format(Global.getTransferWeightTotalAmount() / 15.16)} บาททอง',
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Divider(),
                             Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'เอกสารที่แนบมา'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(8.0),
                               ),
-                            ),
-                            Column(
-                              children: [
-                                TextButton(
-                                  onPressed: showOptions,
-                                  child: Text(
-                                    'เลือกรูปภาพ',
-                                    style: TextStyle(
-                                        fontSize: size.getWidthPx(8)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
                                   ),
-                                ),
-                                Center(
-                                  child: _image == null
-                                      ? Text(
-                                    'ไม่ได้เลือกรูปภาพ',
-                                    style: TextStyle(
-                                        fontSize:
-                                        size.getWidthPx(6)),
-                                  )
-                                      : SizedBox(
-                                      width: MediaQuery.of(context)
-                                          .size
-                                          .width /
-                                          4,
-                                      child: Stack(
-                                        children: [
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.all(
-                                                8.0),
-                                            child:
-                                            Image.file(_image!),
-                                          ),
-                                          Positioned(
-                                            right: 0.0,
-                                            top: 0.0,
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  _image = null;
-                                                });
-                                              },
-                                              child:
-                                              const CircleAvatar(
-                                                backgroundColor:
-                                                Colors.red,
-                                                child:
-                                                Icon(Icons.close),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
+                                  Text(
+                                    'รายการสินค้า',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  SingleChildScrollView(
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              2 /
+                                              5,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 10),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(14),
+                                        color: bgColor2,
+                                      ),
+                                      child: ListView.builder(
+                                          itemCount:
+                                              Global.transfer!.details!.length,
+                                          itemBuilder: (context, index) {
+                                            return _itemOrderList(
+                                                transfer: Global.transfer!,
+                                                detail: Global
+                                                    .transfer!.details![index],
+                                                index: index);
+                                          }),
+                                    ),
+                                  ),
+                                  PriceBreakdown(
+                                    title: 'ยอดรวม'.tr(),
+                                    price:
+                                        '${formatter.format(Global.getTransferWeightTotalAmount())} กรัม',
+                                  ),
+                                  PriceBreakdown(
+                                    title: ''.tr(),
+                                    price:
+                                        '${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue())} บาททอง',
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  const Divider(),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'เอกสารที่แนบมา'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      TextButton(
+                                        onPressed: showOptions,
+                                        child: Text(
+                                          'เลือกรูปภาพ',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                      ),
+                                      Center(
+                                        child: _image == null
+                                            ? Text(
+                                                'ไม่ได้เลือกรูปภาพ',
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        size.getWidthPx(6)),
+                                              )
+                                            : SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    4,
+                                                child: Stack(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child:
+                                                          Image.file(_image!),
+                                                    ),
+                                                    Positioned(
+                                                      right: 0.0,
+                                                      top: 0.0,
+                                                      child: InkWell(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            _image = null;
+                                                          });
+                                                        },
+                                                        child:
+                                                            const CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors.red,
+                                                          child:
+                                                              Icon(Icons.close),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
       persistentFooterButtons: [
@@ -255,10 +255,10 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.white),
+                      WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
@@ -285,57 +285,88 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                 //   }
                 // }
 
-                Global.transfer!.id = 0;
-                Global.transfer!.createdDate = DateTime.now().toUtc();
-                Global.transfer!.updatedDate = DateTime.now().toUtc();
-                Global.transfer!.customerId = Global.customer == null ? 0 : Global.customer!.id!;
-                Global.transfer!.attachement =
-                _image == null ? null : Global.imageToBase64(_image!);
-                for (var j = 0; j < Global.transfer!.details!.length; j++) {
-                  Global.transfer!.details![j].id = 0;
-                  Global.transfer!.details![j].transferId = Global.transfer!.id;
-                  Global.transfer!.details![j].createdDate =
-                      DateTime.now().toUtc();
-                  Global.transfer!.details![j].updatedDate =
-                      DateTime.now().toUtc();
-                }
-                // print(orderListModelToJson(Global.transfer!));
-                // return;
-                final ProgressDialog pr = ProgressDialog(context,
-                    type: ProgressDialogType.normal,
-                    isDismissible: true,
-                    showLogs: true);
-                await pr.show();
-                pr.update(message: 'processing'.tr());
-                try {
-                  await postOrder();
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.success(context, 'Success'.tr(), "", 'OK'.tr(),
-                        action: () {
-                          Global.transfer!.details!.clear();
-                          Global.transfer = null;
-                          Global.transferDetail!.clear();
-                          Global.discount = 0;
-                          Global.customer = null;
-                          setState(() {});
-                          Navigator.of(context).pop();
-                        });
+                // motivePrint(Global.transfer?.toJson());
+
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                  Global.transfer!.id = 0;
+                  Global.transfer!.createdDate = DateTime.now();
+                  Global.transfer!.updatedDate = DateTime.now();
+                  Global.transfer!.customerId =
+                      Global.customer == null ? 0 : Global.customer!.id!;
+                  Global.transfer!.attachement =
+                      _image == null ? null : Global.imageToBase64(_image!);
+                  for (var j = 0; j < Global.transfer!.details!.length; j++) {
+                    Global.transfer!.details![j].id = 0;
+                    Global.transfer!.details![j].transferId =
+                        Global.transfer!.id;
+                    Global.transfer!.details![j].createdDate = DateTime.now();
+                    Global.transfer!.details![j].updatedDate = DateTime.now();
+                    // motivePrint(Global.transfer!.details![j].toJson());
                   }
-                } catch (e) {
-                  await pr.hide();
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                        action: () {});
+                  // motivePrint(Global.transfer?.toJson());
+                  // return;
+                  final ProgressDialog pr = ProgressDialog(context,
+                      type: ProgressDialogType.normal,
+                      isDismissible: true,
+                      showLogs: true);
+                  await pr.show();
+                  pr.update(message: 'processing'.tr());
+                  try {
+                    // await postOrder();
+                    var result =
+                    await ApiServices.post('/transfer', Global.requestObj(Global.transfer));
+                    // print(result!.toJson());
+                    // return;
+                    await pr.hide();
+                    if (result!.status == "success") {
+                      var transfer = transferModelFromJson(jsonEncode(result.data));
+                      int? transferId = transfer.id;
+                      await Future.forEach<TransferDetailModel>(Global.transfer!.details!,
+                              (f) async {
+                            f.transferId = transferId;
+                            var detail = (transfer.transferType == 'INTERNAL')
+                                ? await ApiServices.post('/transferdetail', Global.requestObj(f))
+                                : await ApiServices.post(
+                                '/transferdetail/between-branch', Global.requestObj(f));
+                            // print(detail!.data);
+                            if (detail?.status == "success") {
+                              print("Order completed");
+                            }
+                          });
+                      if (mounted) {
+                        Alert.success(context, 'Success'.tr(), "", 'OK'.tr(),
+                            action: () {
+                              Global.transfer!.details!.clear();
+                              Global.transfer = null;
+                              Global.transferDetail!.clear();
+                              Global.discount = 0;
+                              Global.customer = null;
+                              setState(() {});
+                              Navigator.of(context).pop();
+                            });
+                      }
+                    } else {
+                      Alert.warning(
+                          context, 'Warning'.tr(), result.message ?? '', 'OK'.tr(),
+                          action: () {});
+                    }
+
+
+                  } catch (e) {
+                    await pr.hide();
+                    if (mounted) {
+                      Alert.warning(
+                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                          action: () {});
+                    }
+                    return;
                   }
-                  return;
-                }
+                });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   const Icon(
                     Icons.save_alt_outlined,
                     color: Colors.white,
@@ -349,8 +380,6 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                     style: TextStyle(
                         color: Colors.white, fontSize: size.getWidthPx(8)),
                   ),
-
-
                 ],
               ),
             )),
@@ -360,15 +389,19 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
 
   Future postOrder() async {
     var result =
-    await ApiServices.post('/transfer', Global.requestObj(Global.transfer));
-    print(result!.data);
+        await ApiServices.post('/transfer', Global.requestObj(Global.transfer));
+    // print(result!.data);
+    // return;
     if (result!.status == "success") {
       var transfer = transferModelFromJson(jsonEncode(result.data));
       int? transferId = transfer.id;
-      await Future.forEach<TransferDetailModel>(Global.transfer!.details!, (f) async {
+      await Future.forEach<TransferDetailModel>(Global.transfer!.details!,
+          (f) async {
         f.transferId = transferId;
-        var detail = (transfer.transferType == 'INTERNAL') ?
-        await ApiServices.post('/transferdetail', Global.requestObj(f)) : await ApiServices.post('/transferdetail/between-branch', Global.requestObj(f));
+        var detail = (transfer.transferType == 'INTERNAL')
+            ? await ApiServices.post('/transferdetail', Global.requestObj(f))
+            : await ApiServices.post(
+                '/transferdetail/between-branch', Global.requestObj(f));
         // print(detail!.data);
         if (detail?.status == "success") {
           print("Order completed");
@@ -381,7 +414,10 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
     setState(() {});
   }
 
-  Widget _itemOrderList({required TransferModel transfer, required TransferDetailModel detail, required index}) {
+  Widget _itemOrderList(
+      {required TransferModel transfer,
+      required TransferDetailModel detail,
+      required index}) {
     return Row(
       children: [
         Expanded(
@@ -389,7 +425,7 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
           child: ListTile(
             title: ListTileData(
               leftTitle:
-              '${transfer.fromBinLocationName} --- ${transfer.toBinLocationName}',
+                  '${transfer.fromBinLocationName} --- ${transfer.toBinLocationName}',
               leftValue: detail.weight!.toString(),
               rightTitle: '',
               rightValue: '',
@@ -460,7 +496,7 @@ class PaymentCard extends StatelessWidget {
               bottom: getProportionateScreenHeight(8.0),
             ),
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected! ? Colors.white : Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(
                 getProportionateScreenWidth(
                   4,
@@ -469,13 +505,13 @@ class PaymentCard extends StatelessWidget {
               boxShadow: [
                 isSelected!
                     ? BoxShadow(
-                  color: kShadowColor,
-                  offset: Offset(
-                    getProportionateScreenWidth(2),
-                    getProportionateScreenWidth(4),
-                  ),
-                  blurRadius: 80,
-                )
+                        color: kShadowColor,
+                        offset: Offset(
+                          getProportionateScreenWidth(2),
+                          getProportionateScreenWidth(4),
+                        ),
+                        blurRadius: 80,
+                      )
                     : const BoxShadow(color: Colors.transparent),
               ],
             ),
@@ -494,17 +530,17 @@ class PaymentCard extends StatelessWidget {
                   ),
                   child: image != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.asset(image!,
-                        fit: BoxFit.cover, width: 1000.0),
-                  )
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(image!,
+                              fit: BoxFit.cover, width: 1000.0),
+                        )
                       : ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        "assets/images/no_image.png",
-                        fit: BoxFit.cover,
-                        width: 1000.0,
-                      )),
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            "assets/images/no_image.png",
+                            fit: BoxFit.cover,
+                            width: 1000.0,
+                          )),
                 ),
                 SizedBox(
                   width: getProportionateScreenWidth(8),

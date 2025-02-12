@@ -5,15 +5,13 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
-import 'package:motivegold/screen/pos/storefront/theng/matching_pending_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui-matching/matching_pending_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
-import 'package:motivegold/screen/transfer/transfer_gold_pending_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
-import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/utils/global.dart';
 
 class ThengMenuScreen extends StatefulWidget {
@@ -123,7 +121,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
               boxShadow: [
                 BoxShadow(
                     offset: const Offset(0, 5),
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                     spreadRadius: 2,
                     blurRadius: 5)
               ]),
@@ -171,7 +169,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
               boxShadow: [
                 BoxShadow(
                     offset: const Offset(0, 5),
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
+                    color: Theme.of(context).primaryColor.withValues(alpha: .2),
                     spreadRadius: 2,
                     blurRadius: 5)
               ]),
@@ -220,7 +218,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
               boxShadow: [
                 BoxShadow(
                     offset: const Offset(0, 5),
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
+                    color: Theme.of(context).primaryColor.withValues(alpha: .2),
                     spreadRadius: 2,
                     blurRadius: 5)
               ]),

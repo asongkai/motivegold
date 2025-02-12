@@ -51,8 +51,8 @@ class QtyLocationModel {
     weight: json["weight"],
     unitCost: json["unitCost"],
     price: json["price"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
     product: json["product"] == null ? null : ProductModel.fromJson(json["product"]),
     binLocation: json["binLocation"] == null ? null : WarehouseModel.fromJson(json["binLocation"]),
   );

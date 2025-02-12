@@ -108,13 +108,13 @@ class OrderDetailModel {
         priceExcludeTax: json["priceExcludeTax"],
         createdDate: json["createdDate"] == null
             ? null
-            : DateTime.parse(json["createdDate"]),
+            : DateTime.parse(json["createdDate"]).toLocal(),
         updatedDate: json["updatedDate"] == null
             ? null
-            : DateTime.parse(json["updatedDate"]),
+            : DateTime.parse(json["updatedDate"]).toLocal(),
         bookDate: json["reserveDate"] == null
             ? null
-            : DateTime.parse(json["reserveDate"]),
+            : DateTime.parse(json["reserveDate"]).toLocal(),
         toBranchId: json["toBranchId"],
         toBranchName: json["toBranchName"],
         transferType: json["transferType"],

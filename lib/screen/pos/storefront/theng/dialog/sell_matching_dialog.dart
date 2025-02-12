@@ -88,7 +88,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
 
-    sumSellThengTotal();
+    sumSellThengTotalMatching();
     loadProducts();
   }
 
@@ -143,7 +143,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
         setState(() {
           warehouseList = warehouses;
           selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
-          selectedWarehouse ??= warehouseList.first;
+          // selectedWarehouse ??= warehouseList.first;
           warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
@@ -183,7 +183,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -446,7 +446,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                    TextStyle(fontSize: 50, color: textColor),
+                                    TextStyle(fontSize: 40, color: textColor),
                               ),
                               SizedBox(
                                 width: 10,
@@ -454,7 +454,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               Text(
                                 '',
                                 style:
-                                    TextStyle(color: textColor, fontSize: 30),
+                                    TextStyle(color: textColor, fontSize: 20),
                               ),
                               SizedBox(
                                 width: 10,
@@ -485,7 +485,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -493,7 +493,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -549,7 +549,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -557,7 +557,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -609,7 +609,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -617,7 +617,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -751,7 +751,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                         ],
                       ),
@@ -784,7 +784,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: 30),
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ],
                     ),
@@ -795,9 +795,15 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         return;
                       }
 
-                      if (productCodeCtrl.text.isEmpty) {
+                      if (selectedProduct == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK');
+                            context, 'คำเตือน', 'กรุณาตั้งค่าผลิตภัณฑ์เป็นค่าเริ่มต้นก่อน', 'OK');
+                        return;
+                      }
+
+                      if (selectedWarehouse == null) {
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณาตั้งค่าคลังสินค้าเป็นค่าเริ่มต้นก่อน', 'OK');
                         return;
                       }
 
@@ -849,7 +855,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
-                        Global.sellThengOrderDetail!.add(
+                        Global.sellThengOrderDetailMatching!.add(
                           OrderDetailModel(
                               productName: selectedProduct!.name,
                               productId: selectedProduct!.id,
@@ -862,15 +868,11 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               unitCost: Global.toNumber(unitPriceCtrl.text),
                               priceIncludeTax:
                                   Global.toNumber(productPriceCtrl.text),
-                              bookDate: Global.convertDate(bookDateCtrl.text)
-                                  .toUtc()),
+                              bookDate: Global.convertDate(bookDateCtrl.text)),
                         );
 
-                        motivePrint(orderDetailListModelToJson(
-                            Global.sellThengOrderDetail!));
-
                         // return;
-                        sumSellThengTotal();
+                        sumSellThengTotalMatching();
                         setState(() {});
 
                         Navigator.of(context).pop();
@@ -900,8 +902,8 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * 15.16);
-      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(15.16));
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(
             Global.toNumber(unitPriceCtrl.text) *

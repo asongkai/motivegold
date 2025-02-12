@@ -49,6 +49,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
         List<BranchModel> products = branchListModelFromJson(data);
         setState(() {
           list = products;
+          Global.branchList = products;
         });
       } else {
         list = [];
@@ -152,8 +153,10 @@ class _BranchListScreenState extends State<BranchListScreen> {
               ),
             ),
             Expanded(
-              flex: (Global.user!.userType == 'ADMIN') ? 1 : 0,
+              flex: (Global.user!.userType == 'ADMIN') ? 2 : 0,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (Global.user!.userRole == 'Administrator')
                     GestureDetector(
@@ -182,7 +185,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
                         ),
                       ),
                     ),
-                  if (Global.user!.userType == 'ADMIN') const Spacer(),
+                  if (Global.user!.userType == 'ADMIN') const SizedBox(width: 10,),
                   if (Global.user!.userType == 'ADMIN')
                     GestureDetector(
                       onTap: () {

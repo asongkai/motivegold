@@ -36,8 +36,8 @@ class PosIdModel {
     deviceId: json["deviceId"],
     branchId: json["branchId"],
     companyId: json["companyId"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updateddDate: json["updateddDate"] == null ? null : DateTime.parse(json["updateddDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updateddDate: json["updateddDate"] == null ? null : DateTime.parse(json["updateddDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {

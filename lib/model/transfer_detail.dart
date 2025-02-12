@@ -18,6 +18,8 @@ class TransferDetailModel {
   int? transferId;
   double? weight;
   double? weightBath;
+  double? unitCost;
+  double? price;
   DateTime? createdDate;
   DateTime? updatedDate;
 
@@ -29,6 +31,8 @@ class TransferDetailModel {
     this.transferId,
     this.weight,
     this.weightBath,
+    this.unitCost,
+    this.price,
     this.createdDate,
     this.updatedDate,
   });
@@ -41,8 +45,10 @@ class TransferDetailModel {
     transferId: json["transferId"],
     weight: json["weight"]?.toDouble(),
     weightBath: json["weightBath"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    unitCost: json["unitCost"],
+    price: json["price"],
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +59,8 @@ class TransferDetailModel {
     "transferId": transferId,
     "weight": weight,
     "weightBath": weightBath,
+    "unitCost": unitCost,
+    "price": price,
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
   };

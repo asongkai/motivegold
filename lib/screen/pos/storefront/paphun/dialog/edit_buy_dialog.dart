@@ -431,7 +431,9 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                               },
                               onChanged: (value) {
                                 var realPrice =
-                                Global.toNumber(productPriceBaseCtrl.text);
+                                Global.getBuyPrice(
+                                    Global.toNumber(productWeightCtrl
+                                        .text));
                                 var price = Global.toNumber(productPriceCtrl.text);
                                 var check = price - realPrice;
 
@@ -551,8 +553,9 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                 productPriceCtrl.text = value != null
                                     ? "${Global.format(value)}"
                                     : "";
-                                var realPrice =
-                                Global.toNumber(productPriceBaseCtrl.text);
+                                var realPrice = Global.getBuyPrice(
+                                    Global.toNumber(productWeightCtrl
+                                        .text));
                                 var price = Global.toNumber(productPriceCtrl.text);
                                 var check = price - realPrice;
 
@@ -694,8 +697,9 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                   ?.buy))
                           .toString();
 
-                      var realPrice =
-                      Global.toNumber(productPriceBaseCtrl.text);
+                      var realPrice = Global.getBuyPrice(
+                          Global.toNumber(productWeightCtrl
+                              .text));
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
 
@@ -779,8 +783,8 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
 
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
-      productWeightBahtCtrl.text = formatter.format(
-          (Global.toNumber(productWeightCtrl.text) / 15.16).toPrecision(2));
+      productWeightBahtCtrl.text = Global.format(
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -806,7 +810,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()).toPrecision(2));
     } else {
       productWeightCtrl.text = "";
     }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -180,7 +181,7 @@ Future<Uint8List> makePdf(Invoice invoice) async {
                         Global.getPapunTotal(invoice.order)) *
                         100 /
                         107) *
-                        0.07)),
+                        getVatValue())),
                   ],
                 ),
               if (invoice.order.orderTypeId == 1)
@@ -193,7 +194,7 @@ Future<Uint8List> makePdf(Invoice invoice) async {
                             Global.getPapunTotal(invoice.order)) *
                             100 /
                             107) *
-                            0.07))),
+                            getVatValue()))),
                   ],
                 ),
               if (invoice.order.orderTypeId == 1)

@@ -5,7 +5,6 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
-import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
@@ -104,10 +103,10 @@ class _HoldListModalState extends State<HoldListModal> {
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                      WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.red[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.red[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.red[700]!)))),
@@ -194,12 +193,24 @@ class _HoldListModalState extends State<HoldListModal> {
                   } else if (order.orderTypeId == 2) {
                     Global.posIndex = 1;
                     Global.buyOrderDetail = order.details;
-                  } else if (order.orderTypeId == 3 || order.orderTypeId == 4) {
+                  } else if (order.orderTypeId == 3) {
+                    Global.posIndex = 0;
+                    Global.sellThengOrderDetailMatching = order.details;
+                  } else if (order.orderTypeId == 4) {
                     Global.posIndex = 0;
                     Global.sellThengOrderDetail = order.details;
-                  } else if (order.orderTypeId == 33 || order.orderTypeId == 44) {
+                  } else if (order.orderTypeId == 33) {
+                    Global.posIndex = 1;
+                    Global.buyThengOrderDetailMatching = order.details;
+                  } else if (order.orderTypeId == 44){
                     Global.posIndex = 1;
                     Global.buyThengOrderDetail = order.details;
+                  } else if (order.orderTypeId == 8) {
+                    Global.posIndex = 0;
+                    Global.sellThengOrderDetailBroker = order.details;
+                  } else if (order.orderTypeId == 9){
+                    Global.posIndex = 1;
+                    Global.buyThengOrderDetailBroker = order.details;
                   }
                   Future.delayed(const Duration(milliseconds: 500), () async {
                     setState(() {});
@@ -263,7 +274,7 @@ class PaymentCard extends StatelessWidget {
               bottom: getProportionateScreenHeight(8.0),
             ),
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected! ? Colors.white : Colors.white.withValues(alpha: .5),
               borderRadius: BorderRadius.circular(
                 getProportionateScreenWidth(
                   4,

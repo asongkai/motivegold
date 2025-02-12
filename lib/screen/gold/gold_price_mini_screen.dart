@@ -7,6 +7,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/gold_data.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/title_tile.dart';
 
 import 'package:motivegold/widget/gold_price_data.dart';
@@ -128,7 +129,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
                       title: '',
                       subTitle: "รับซื้อกรัมละ",
                       value:
-                          "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / 15.16)} บาท",
+                          "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue())} บาท",
                     ),
                   ],
                 ),

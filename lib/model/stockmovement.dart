@@ -69,10 +69,10 @@ class StockMovementModel {
         price: json["price"]?.toDouble(),
         createdDate: json["createdDate"] == null
             ? null
-            : DateTime.parse(json["createdDate"]),
+            : DateTime.parse(json["createdDate"]).toLocal(),
         updatedDate: json["updatedDate"] == null
             ? null
-            : DateTime.parse(json["updatedDate"]),
+            : DateTime.parse(json["updatedDate"]).toLocal(),
         product: json["product"] == null
             ? null
             : ProductModel.fromJson(json["product"]),

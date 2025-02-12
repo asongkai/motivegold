@@ -5,16 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:masked_text/masked_text.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/used/dialog/sell_used_dialog.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/branch.dart';
@@ -26,8 +22,6 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
@@ -96,6 +90,20 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   @override
   void initState() {
     // implement initState
+    // Sample data
+    // orderDateCtrl.text = "01-02-2025";
+    // referenceNumberCtrl.text = "90803535";
+    // productSellThengPriceCtrl.text = "45000";
+    // productBuyThengPriceCtrl.text = "44000";
+    // productSellPriceCtrl.text = "45000";
+    // productBuyPriceCtrl.text = "44000";
+    // priceExcludeTaxTotalCtrl.text = "89000";
+    // purchasePriceTotalCtrl.text = "88000";
+    // priceDiffTotalCtrl.text = "2000";
+    // taxBaseTotalCtrl.text = "1000";
+    // taxAmountTotalCtrl.text = "500";
+    // priceIncludeTaxTotalCtrl.text = "90000";
+
     super.initState();
     calc = SimpleCalculator(
       value: _currentValue!,
@@ -300,7 +308,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -376,7 +384,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
             ? const LoadingProgress()
             : SingleChildScrollView(
                 child: Container(
-                  height: size!.hp(75),
+                  height: size!.hp(110),
                   margin: const EdgeInsets.all(8),
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -741,7 +749,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                           // if (result!.status == "success") {
                           OrderModel order = OrderModel(
                               orderId: "",
-                              orderDate: DateTime.now().toUtc(),
+                              orderDate: DateTime.now(),
                               details: Global.usedSellDetail!,
                               referenceNo: referenceNumberCtrl.text,
                               sellTPrice: Global.toNumber(
@@ -879,7 +887,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                             // if (result!.status == "success") {
                             OrderModel order = OrderModel(
                                 orderId: "",
-                                orderDate: DateTime.now().toUtc(),
+                                orderDate: DateTime.now(),
                                 details: Global.usedSellDetail!,
                                 referenceNo: referenceNumberCtrl.text,
                                 sellTPrice: Global.toNumber(
@@ -970,7 +978,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
       productEntryWeightCtrl.text = Global.format(
-          (Global.toNumber(productEntryWeightBahtCtrl.text) * 15.16));
+          (Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue()));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -979,7 +987,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   void gramChanged() {
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productEntryWeightCtrl.text) / 15.16));
+          Global.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue()));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }

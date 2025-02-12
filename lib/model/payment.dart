@@ -58,7 +58,7 @@ class PaymentModel {
     pairId: json["pairId"],
     paymentId: json["paymentId"],
     paymentMethod: json["paymentMethod"],
-    paymentDate: json["paymentDate"] == null ? null : DateTime.parse(json["paymentDate"]),
+    paymentDate: json["paymentDate"] == null ? null : DateTime.parse(json["paymentDate"]).toLocal(),
     bankId: json["bankId"],
     bankName: json["bankName"],
     accountName: json["accountName"],
@@ -66,12 +66,12 @@ class PaymentModel {
     referenceNumber: json["referenceNumber"],
     cardName: json["cardName"],
     cardNo: json["cardNo"],
-    cardExpiryDate: json["cardExpiryDate"] == null ? null : DateTime.parse(json["cardExpiryDate"]),
+    cardExpiryDate: json["cardExpiryDate"] == null ? null : DateTime.parse(json["cardExpiryDate"]).toLocal(),
     paymentDetail: json["paymentDetail"],
     attachement: json["attachement"],
     amount: json["amount"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {

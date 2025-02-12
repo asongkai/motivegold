@@ -15,6 +15,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
@@ -79,7 +80,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumBuyThengTotal();
+    sumBuyThengTotalMatching();
     loadProducts();
   }
 
@@ -107,14 +108,15 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/BARM', Global.requestObj(null));
+          await ApiServices.post('/product/type/BARM/33', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            // selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
                 (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
@@ -128,12 +130,14 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/matching', Global.requestObj(null));
+          '/binlocation/all/type/BARM/33', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         warehouseList = warehouses;
-        selectedWarehouse = warehouseList.first;
+        selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
+        // motivePrint(selectedWarehouse?.toJson());
+        // selectedWarehouse = warehouseList.first;
         warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
             WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         await loadQtyByLocation(selectedWarehouse!.id!);
@@ -173,7 +177,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -228,6 +232,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
           GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
+              closeCal();
             },
             child: SingleChildScrollView(
               child: Column(
@@ -262,7 +267,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                TextStyle(fontSize: 50, color: textColor),
+                                TextStyle(fontSize: 40, color: textColor),
                               ),
                               SizedBox(
                                 width: 10,
@@ -270,7 +275,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                               Text(
                                 '',
                                 style:
-                                TextStyle(color: textColor, fontSize: 30),
+                                TextStyle(color: textColor, fontSize: 20),
                               ),
                               SizedBox(
                                 width: 10,
@@ -301,7 +306,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -309,7 +314,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -365,7 +370,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -373,7 +378,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -425,7 +430,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -433,7 +438,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -599,7 +604,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                           Text(
                             "ยกเลิก",
                             style: TextStyle(
-                                color: Colors.white, fontSize: 30),
+                                color: Colors.white, fontSize: 20),
                           ),
                         ],
                       ),
@@ -633,7 +638,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                         Text(
                           "บันทึก",
                           style: TextStyle(
-                              color: Colors.white, fontSize: 30),
+                              color: Colors.white, fontSize: 20),
                         ),
                       ],
                     ),
@@ -700,7 +705,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                           'ต้องการบันทึกข้อมูลหรือไม่?',
                           '',
                           'ตกลง', action: () async {
-                        Global.buyThengOrderDetail!.add(
+                        Global.buyThengOrderDetailMatching!.add(
                           OrderDetailModel(
                               productName: selectedProduct!.name,
                               productId: selectedProduct!.id,
@@ -717,10 +722,9 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                               bookDate: bookDate.text != ""
                                   ? Global.convertDate(
                                   bookDate.text)
-                                  .toUtc()
                                   : null),
                         );
-                        sumBuyThengTotal();
+                        sumBuyThengTotalMatching();
                         setState(() {});
                         Navigator.of(context).pop();
                       });
@@ -749,8 +753,8 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * 15.16);
-      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(15.16));
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(
             Global.toNumber(unitPriceCtrl.text) *

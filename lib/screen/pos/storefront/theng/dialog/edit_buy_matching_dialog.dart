@@ -82,19 +82,19 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
 
     bookDateCtrl.text = Global.formatDateD(
-        Global.buyThengOrderDetail![widget.index].bookDate != null
-            ? Global.sellThengOrderDetail![widget.index].bookDate.toString()
+        Global.buyThengOrderDetailMatching![widget.index].bookDate != null
+            ? Global.buyThengOrderDetailMatching![widget.index].bookDate.toString()
             : DateTime.now().toString());
     productWeightCtrl.text =
-        Global.format(Global.buyThengOrderDetail![widget.index].weight ?? 0);
+        Global.format(Global.buyThengOrderDetailMatching![widget.index].weight ?? 0);
     productWeightBahtCtrl.text =
-        Global.format(Global.buyThengOrderDetail![widget.index].weightBath ?? 0);
+        Global.format(Global.buyThengOrderDetailMatching![widget.index].weightBath ?? 0);
     unitPriceCtrl.text =
-        Global.format(Global.buyThengOrderDetail![widget.index].priceIncludeTax! / Global.buyThengOrderDetail![widget.index].weightBath! ?? 0);
+        Global.format(Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax! / Global.buyThengOrderDetailMatching![widget.index].weightBath! ?? 0);
     productPriceCtrl.text =
-        Global.format(Global.buyThengOrderDetail![widget.index].priceIncludeTax ?? 0);
+        Global.format(Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax ?? 0);
 
-    sumBuyThengTotal();
+    sumBuyThengTotalMatching();
     loadProducts();
   }
 
@@ -122,14 +122,15 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
     });
     try {
       var result =
-      await ApiServices.post('/product/type/BARM', Global.requestObj(null));
+      await ApiServices.post('/product/type/BARM/33', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            // selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
             (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
@@ -143,12 +144,13 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/matching', Global.requestObj(null));
+          '/binlocation/all/type/BARM/33', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         warehouseList = warehouses;
-        selectedWarehouse = warehouseList.first;
+        // selectedWarehouse = warehouseList.first;
+        selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
         warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
             WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         await loadQtyByLocation(selectedWarehouse!.id!);
@@ -188,7 +190,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -278,7 +280,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                TextStyle(fontSize: 50, color: textColor),
+                                TextStyle(fontSize: 40, color: textColor),
                               ),
                               SizedBox(
                                 width: 10,
@@ -286,7 +288,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                               Text(
                                 '',
                                 style:
-                                TextStyle(color: textColor, fontSize: 30),
+                                TextStyle(color: textColor, fontSize: 20),
                               ),
                               SizedBox(
                                 width: 10,
@@ -317,7 +319,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -325,7 +327,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -381,7 +383,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -389,7 +391,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -441,7 +443,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style: TextStyle(
-                                      fontSize: 50, color: textColor),
+                                      fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -449,7 +451,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 30),
+                                      color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -615,7 +617,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                           Text(
                             "ยกเลิก",
                             style: TextStyle(
-                                color: Colors.white, fontSize: 30),
+                                color: Colors.white, fontSize: 20),
                           ),
                         ],
                       ),
@@ -649,7 +651,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                         Text(
                           "บันทึก",
                           style: TextStyle(
-                              color: Colors.white, fontSize: 30),
+                              color: Colors.white, fontSize: 20),
                         ),
                       ],
                     ),
@@ -716,7 +718,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                           'ต้องการบันทึกข้อมูลหรือไม่?',
                           '',
                           'ตกลง', action: () async {
-                        Global.buyThengOrderDetail![widget.index] =
+                        Global.buyThengOrderDetailMatching![widget.index] =
                             OrderDetailModel(
                                 productName:
                                 selectedProduct!.name,
@@ -737,9 +739,8 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 bookDate: bookDate.text !=
                                     ""
                                     ? Global.convertDate(bookDate.text)
-                                    .toUtc()
                                     : null);
-                        sumBuyThengTotal();
+                        sumBuyThengTotalMatching();
                         setState(() {});
                         Navigator.of(context).pop();
                       });
@@ -768,8 +769,8 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * 15.16);
-      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(15.16));
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(
             Global.toNumber(unitPriceCtrl.text) *

@@ -13,9 +13,11 @@ import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
+import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
+import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -546,7 +548,7 @@ Widget buildTextField(
     child: TextFormField(
       keyboardType: inputType ?? TextInputType.text,
       inputFormatters: inputFormat ?? [],
-      obscureText: obscureText ?? false,
+      obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
       style: const TextStyle(fontSize: 20),
@@ -608,7 +610,7 @@ Widget buildTextFieldX(
     child: TextFormField(
       keyboardType: inputType ?? TextInputType.text,
       inputFormatters: inputFormat ?? [],
-      obscureText: obscureText ?? false,
+      obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
       style: const TextStyle(fontSize: 30),
@@ -737,12 +739,12 @@ Widget numberTextField(
       maxLines: line ?? 1,
       textAlign: TextAlign.right,
       style: TextStyle(
-        fontSize: 50,
+        fontSize: 40,
         color: textColor ?? Colors.blue[900],
       ),
       obscureText: isPassword,
       onTap: onTap,
-      readOnly: readOnly ?? false,
+      readOnly: readOnly,
       // showCursor: readOnly ?? true,
       focusNode: focusNode,
       decoration: InputDecoration(
@@ -835,7 +837,7 @@ Widget numberTextFieldBig(
         ),
         obscureText: isPassword,
         onTap: onTap,
-        readOnly: readOnly ?? false,
+        readOnly: readOnly,
         // showCursor: readOnly ?? true,
         focusNode: focusNode,
         decoration: InputDecoration(
@@ -1029,6 +1031,86 @@ sumSellThengTotal() {
   Global.sellThengTotal = Global.sellThengSubTotal + Global.sellThengTax;
 }
 
+sumBuyThengTotalBroker() {
+  Global.buyThengSubTotalBroker = 0;
+  Global.buyThengTaxBroker = 0;
+  Global.buyThengTotalBroker = 0;
+  Global.buyThengWeightTotalBroker = 0;
+
+  for (int i = 0; i < Global.buyThengOrderDetailBroker!.length; i++) {
+    Global.buyThengSubTotalBroker +=
+        Global.buyThengOrderDetailBroker![i].priceIncludeTax!;
+    if (Global.buyThengOrderDetailBroker![i].weight! != 0) {
+      Global.buyThengWeightTotalBroker +=
+          Global.buyThengOrderDetailBroker![i].weight!;
+    }
+  }
+  Global.buyThengTaxBroker = Global.taxAmount(Global.taxBase(
+      Global.buyThengSubTotalBroker, Global.buyThengWeightTotalBroker));
+  Global.buyThengTotalBroker =
+      Global.buyThengSubTotalBroker + Global.buyThengTaxBroker;
+}
+
+sumSellThengTotalBroker() {
+  Global.sellThengSubTotalBroker = 0;
+  Global.sellThengTaxBroker = 0;
+  Global.sellThengTotalBroker = 0;
+  Global.sellThengWeightTotalBroker = 0;
+
+  for (int i = 0; i < Global.sellThengOrderDetailBroker!.length; i++) {
+    Global.sellThengSubTotalBroker +=
+        Global.sellThengOrderDetailBroker![i].priceIncludeTax!;
+    if (Global.sellThengOrderDetailBroker![i].weight! != 0) {
+      Global.sellThengWeightTotalBroker +=
+          Global.sellThengOrderDetailBroker![i].weight!;
+    }
+  }
+  Global.sellThengTaxBroker = Global.taxAmount(Global.taxBase(
+      Global.sellThengSubTotalBroker, Global.sellThengWeightTotalBroker));
+  Global.sellThengTotalBroker =
+      Global.sellThengSubTotalBroker + Global.sellThengTaxBroker;
+}
+
+sumBuyThengTotalMatching() {
+  Global.buyThengSubTotalMatching = 0;
+  Global.buyThengTaxMatching = 0;
+  Global.buyThengTotalMatching = 0;
+  Global.buyThengWeightTotal = 0;
+
+  for (int i = 0; i < Global.buyThengOrderDetailMatching!.length; i++) {
+    Global.buyThengSubTotalMatching +=
+        Global.buyThengOrderDetailMatching![i].priceIncludeTax!;
+    if (Global.buyThengOrderDetailMatching![i].weight! != 0) {
+      Global.buyThengWeightTotalMatching +=
+          Global.buyThengOrderDetailMatching![i].weight!;
+    }
+  }
+  Global.buyThengTaxMatching = Global.taxAmount(Global.taxBase(
+      Global.buyThengSubTotalMatching, Global.buyThengWeightTotalMatching));
+  Global.buyThengTotalMatching =
+      Global.buyThengSubTotalMatching + Global.buyThengTaxMatching;
+}
+
+sumSellThengTotalMatching() {
+  Global.sellThengSubTotalMatching = 0;
+  Global.sellThengTaxMatching = 0;
+  Global.sellThengTotalMatching = 0;
+  Global.sellThengWeightTotalMatching = 0;
+
+  for (int i = 0; i < Global.sellThengOrderDetailMatching!.length; i++) {
+    Global.sellThengSubTotalMatching +=
+        Global.sellThengOrderDetailMatching![i].priceIncludeTax!;
+    if (Global.sellThengOrderDetailMatching![i].weight! != 0) {
+      Global.sellThengWeightTotalMatching +=
+          Global.sellThengOrderDetailMatching![i].weight!;
+    }
+  }
+  Global.sellThengTaxMatching = Global.taxAmount(Global.taxBase(
+      Global.sellThengSubTotalMatching, Global.sellThengWeightTotalMatching));
+  Global.sellThengTotalMatching =
+      Global.sellThengSubTotalMatching + Global.sellThengTaxMatching;
+}
+
 sumBuyTotal() {
   Global.buySubTotal = 0;
   Global.buyTax = 0;
@@ -1045,3 +1127,85 @@ sumBuyTotal() {
   Global.buyTax = 0;
   Global.buyTotal = Global.buySubTotal + Global.buyTax;
 }
+
+getIdTitle(ProductTypeModel? selectedType) {
+  return selectedType?.code == 'company'
+      ? 'เลขบัตรประจำตัวภาษี'
+      : 'เลขบัตรประจำตัวประชาชน';
+}
+
+getIdTitleCustomer(CustomerModel? selectedType) {
+  return selectedType?.customerType == 'company'
+      ? 'เลขบัตรประจำตัวภาษี'
+      : 'เลขบัตรประจำตัวประชาชน';
+}
+
+getOrderListTitle(OrderModel order) {
+  if (order.orderTypeId == 1) {
+    return "ลูกค้าซื้อ - ร้านขาย";
+  }
+  if (order.orderTypeId == 2) {
+    return "ลูกค้าขาย - ร้านซื้อ";
+  }
+  if (order.orderTypeId == 3) {
+    return "ขายทองแท่ง (จับคู่)";
+  }
+  if (order.orderTypeId == 5) {
+    return "เติมทอง";
+  }
+  if (order.orderTypeId == 6) {
+    return "ขายทองเก่าร้านขายส่ง";
+  }
+  if (order.orderTypeId == 33) {
+    return "ซื้อทองแท่ง (จับคู่)";
+  }
+  if (order.orderTypeId == 4) {
+    return "ขายทองแท่ง";
+  }
+  if (order.orderTypeId == 44) {
+    return "ซื้อทองแท่ง";
+  }
+  if (order.orderTypeId == 8) {
+    return "ขายทองแท่งกับโบรกเกอร์";
+  }
+  if (order.orderTypeId == 9) {
+    return "ซื้อทองแท่งกับโบรกเกอร์";
+  }
+  return "รายการสินค้า";
+}
+
+getDefaultProductMessage() {
+  return "โปรดตั้งค่าสินค้าเริ่มต้นสำหรับหน้าจอก่อน";
+}
+
+getDefaultWarehouseMessage() {
+  return "โปรดตั้งค่าคลังสินค้าเริ่มต้นสำหรับหน้าจอก่อน";
+}
+
+getVatValue() {
+  if (Global.settingValueModel == null) {
+    return 7.00 / 100.00;
+  }
+  var vat = Global.settingValueModel?.vatValue ?? 7.00;
+  return vat / 100.00;
+}
+
+getUnitWeightValue() {
+  if (Global.settingValueModel == null) {
+    return 15.16;
+  }
+  return Global.settingValueModel?.unitWeight ?? 15.16;
+}
+
+getMaxKycValue() {
+  if (Global.settingValueModel == null) {
+    return 200000;
+  }
+  return Global.settingValueModel?.maxKycValue ?? 200000;
+}
+
+getTaxAmount(double? amount) {}
+
+getTaxBase(double? amount) {}
+
+enum ENV { PRO, DEV }

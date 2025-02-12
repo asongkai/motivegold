@@ -1,16 +1,12 @@
 import 'dart:convert';
 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
-import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
@@ -21,12 +17,9 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
-import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class SellDialog extends StatefulWidget {
   const SellDialog({super.key});
@@ -111,14 +104,15 @@ class _SellDialogState extends State<SellDialog> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/BARM', Global.requestObj(null));
+          await ApiServices.post('/product/type/BAR/4', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
-            selectedProduct = productList.first;
+            // selectedProduct = productList.first;
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
                 (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
@@ -132,13 +126,14 @@ class _SellDialogState extends State<SellDialog> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/sell', Global.requestObj(null));
+          '/binlocation/all/type/BAR/4', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
           warehouseList = warehouses;
-          selectedWarehouse = warehouseList.first;
+          // selectedWarehouse = warehouseList.first;
+          selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
           warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
@@ -178,7 +173,7 @@ class _SellDialogState extends State<SellDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -487,7 +482,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -495,7 +490,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -550,9 +545,9 @@ class _SellDialogState extends State<SellDialog> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'ราคาขายทองคำแท่ง',
+                                  'ราคาขายทอง\nคำแท่ง', textAlign: TextAlign.right,
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -560,7 +555,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -615,7 +610,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ค่าบล็อกทอง',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -623,7 +618,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -677,7 +672,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'รวมราคาขาย',
                                   style:
-                                      TextStyle(fontSize: 50, color: textColor),
+                                      TextStyle(fontSize: 40, color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -685,7 +680,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 30),
+                                      TextStyle(color: textColor, fontSize: 20),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -734,7 +729,7 @@ class _SellDialogState extends State<SellDialog> {
                                     Text(
                                       "ยกเลิก",
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 30),
+                                          color: Colors.white, fontSize: 20),
                                     ),
                                   ],
                                 ),
@@ -768,26 +763,32 @@ class _SellDialogState extends State<SellDialog> {
                                   Text(
                                     "บันทึก",
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 30),
+                                        color: Colors.white, fontSize: 20),
                                   ),
                                 ],
                               ),
                               onPressed: () async {
-                                if (productCodeCtrl.text.isEmpty) {
-                                  Alert.warning(context, 'คำเตือน',
-                                      'กรุณาเลือกสินค้า', 'OK');
+                                if (selectedProduct == null) {
+                                  Alert.warning(
+                                      context, 'คำเตือน', getDefaultProductMessage(), 'OK', action: () {});
+                                  return;
+                                }
+
+                                if (selectedWarehouse == null) {
+                                  Alert.warning(
+                                      context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK', action: () {});
                                   return;
                                 }
 
                                 if (productWeightBahtCtrl.text.isEmpty) {
                                   Alert.warning(context, 'คำเตือน',
-                                      'กรุณาใส่น้ำหนัก', 'OK');
+                                      'กรุณาใส่น้ำหนัก', 'OK', action: (){});
                                   return;
                                 }
 
                                 if (productPriceTotalCtrl.text.isEmpty) {
                                   Alert.warning(context, 'คำเตือน',
-                                      'กรุณากรอกราคา', 'OK');
+                                      'กรุณากรอกราคา', 'OK', action: (){});
                                   return;
                                 }
 
@@ -813,7 +814,7 @@ class _SellDialogState extends State<SellDialog> {
                                       context,
                                       'คำเตือน',
                                       'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                                      'OK');
+                                      'OK', action: (){});
 
                                   return;
                                 }
@@ -938,7 +939,7 @@ class _SellDialogState extends State<SellDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
           Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
       productPriceCtrl.text = marketPriceTotalCtrl.text;

@@ -94,11 +94,12 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
       loading = true;
     });
     try {
+      // motivePrint(Global.requestObj(null));
       var result =
           await ApiServices.post('/ordertype/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        motivePrint(data);
+        // motivePrint(data);
         List<OrderTypeModel> products = orderTypeModelFromJson(data);
         setState(() {
           dataList = products;
@@ -524,9 +525,11 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
       await pr.show();
       pr.update(message: 'processing'.tr());
       try {
+        // motivePrint(Global.requestObj(model));
         var result = await ApiServices.put(
             '/ordertype', model.id, Global.requestObj(model));
         await pr.hide();
+        // motivePrint(result?.toJson());
         if (result?.status == "success") {
           if (mounted) {
             loadData();

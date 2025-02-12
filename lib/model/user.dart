@@ -56,8 +56,8 @@ class UserModel {
     phoneNumber: json["phoneNumber"],
     state: json["state"],
     deviceToken: json["deviceToken"],
-    lastLogin: json["lastLogin"] == null ? null : DateTime.parse(json["lastLogin"]),
-    lastLogout: json["lastLogout"] == null ? null : DateTime.parse(json["lastLogout"]),
+    lastLogin: json["lastLogin"] == null ? null : DateTime.parse(json["lastLogin"]).toLocal(),
+    lastLogout: json["lastLogout"] == null ? null : DateTime.parse(json["lastLogout"]).toLocal(),
     userRole: json["userRole"],
     userType: json["userType"],
   );

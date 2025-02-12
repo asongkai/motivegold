@@ -353,7 +353,7 @@ class _RefillVenderEntryScreenState extends State<RefillVenderEntryScreen> {
                     "email": emailAddressCtrl.text,
                     "doB": birthDateCtrl.text.isEmpty
                         ? ""
-                        : Global.convertDate(birthDateCtrl.text).toUtc(),
+                        : Global.convertDate(birthDateCtrl.text),
                     "phoneNumber": phoneCtrl.text,
                     "username": generateRandomString(8),
                     "password": generateRandomString(10),

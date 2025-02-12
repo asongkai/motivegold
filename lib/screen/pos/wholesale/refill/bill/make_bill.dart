@@ -16,7 +16,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:table_desk/table_desk.dart';
 
 Future<Uint8List> makeRefillBill(Invoice invoice) async {
-  motivePrint(invoice.payments?.length);
+  motivePrint(invoice.order?.toJson());
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -44,7 +44,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
       decoration: BoxDecoration(
         border: Border.all(),
       ),
-      child: buyerSellerInfo(invoice.customer, invoice.order),
+      child: buyerSellerInfoRefill(invoice.customer, invoice.order),
     ),
   );
   widgets.add(
@@ -226,7 +226,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-                flex: 5,
+                flex: 3,
                 child: Container(
                   decoration: const BoxDecoration(
                     border: Border(),
@@ -300,21 +300,19 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - (((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * 0.07))}',
+                              '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
-                                  color: (Global.getOrderTotal(invoice.order) -
-                                              Global.getPapunTotal(
-                                                  invoice.order)) <
+                                  color: (invoice.order.priceDiff ?? 0) <
                                           0
                                       ? PdfColors.red
                                       : PdfColors.black)),
@@ -323,11 +321,11 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                           //     textAlign: TextAlign.right,
                           //     style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * 0.07)}',
+                              '${Global.format(invoice.order.taxAmount ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order))}',
+                              '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -360,14 +358,14 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                       Expanded(
                         flex: 3,
                         child: Text(
-                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValue(invoice.orders))} ${invoice.order.customer?.firstName} ${invoice.order.customer?.lastName} :  ',
+                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} ${invoice.order.customer?.firstName} ${invoice.order.customer?.lastName} :  ',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
-                            '${Global.format(Global.payToCustomerOrShopValue(invoice.orders) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders) : -Global.payToCustomerOrShopValue(invoice.orders))}',
+                            '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
@@ -406,8 +404,8 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
   pdf.addPage(
     MultiPage(
       margin: const EdgeInsets.all(20),
-      pageFormat: PdfPageFormat.a5,
-      orientation: PageOrientation.landscape,
+      pageFormat: PdfPageFormat.a4,
+      // orientation: PageOrientation.landscape,
       build: (context) => widgets,
     ),
   );

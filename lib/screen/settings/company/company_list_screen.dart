@@ -154,8 +154,10 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
               ),
             ),
             Expanded(
-              flex: Global.user!.userType == 'ADMIN' ? 1 : 0,
+              flex: Global.user!.userType == 'ADMIN' ? 2 : 0,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   if (Global.user!.userRole == 'Administrator')
                     GestureDetector(
@@ -184,7 +186,7 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
                         ),
                       ),
                     ),
-                  if (Global.user!.userType == 'ADMIN') const Spacer(),
+                  if (Global.user!.userType == 'ADMIN') const SizedBox(width: 10,),
                   if (Global.user!.userType == 'ADMIN')
                     GestureDetector(
                       onTap: () {

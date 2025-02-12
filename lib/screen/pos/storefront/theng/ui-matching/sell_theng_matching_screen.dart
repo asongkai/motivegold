@@ -4,50 +4,42 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
-import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/broker/dialog/sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/dialog/sell_matching_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-// import 'package:pattern_formatter/pattern_formatter.dart';
-import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
-class SellThengBrokerScreen extends StatefulWidget {
+class SellThengMatchingScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
   final Function(dynamic value) refreshHold;
   int cartCount;
 
-  SellThengBrokerScreen(
+  SellThengMatchingScreen(
       {super.key,
       required this.refreshCart,
       required this.refreshHold,
       required this.cartCount});
 
   @override
-  State<SellThengBrokerScreen> createState() => _SellThengBrokerScreenState();
+  State<SellThengMatchingScreen> createState() =>
+      _SellThengMatchingScreenState();
 }
 
-class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
+class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
   bool loading = false;
   List<ProductModel> productList = [];
   List<WarehouseModel> warehouseList = [];
@@ -65,12 +57,11 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
   TextEditingController productWeightBahtRemainCtrl = TextEditingController();
   TextEditingController productCommissionCtrl = TextEditingController();
   TextEditingController productPriceCtrl = TextEditingController();
-  TextEditingController productPriceTotalCtrl = TextEditingController();
-  TextEditingController reserveDateCtrl = TextEditingController();
-  TextEditingController marketPriceTotalCtrl = TextEditingController();
+  TextEditingController bookDateCtrl = TextEditingController();
+  TextEditingController unitPriceCtrl = TextEditingController();
   TextEditingController warehouseCtrl = TextEditingController();
 
-  final controller = BoardDateTimeController();
+  final boardCtrl = BoardDateTimeController();
 
   DateTime date = DateTime.now();
 
@@ -78,11 +69,13 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
   void initState() {
     // implement initState
     super.initState();
+    Global.appBarColor = stmBgColor;
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumSellThengTotal();
+
+    sumSellThengTotalMatching();
     loadProducts();
   }
 
@@ -98,9 +91,8 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
     productWeightBahtRemainCtrl.dispose();
     productCommissionCtrl.dispose();
     productPriceCtrl.dispose();
-    productPriceTotalCtrl.dispose();
-    reserveDateCtrl.dispose();
-    marketPriceTotalCtrl.dispose();
+    bookDateCtrl.dispose();
+    unitPriceCtrl.dispose();
     warehouseCtrl.dispose();
   }
 
@@ -110,7 +102,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/BAR', Global.requestObj(null));
+          await ApiServices.post('/product/type/BARM', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -131,7 +123,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/sell', Global.requestObj(null));
+          '/binlocation/all/matching', Global.requestObj(null));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -142,7 +134,6 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
         await loadQtyByLocation(selectedWarehouse!.id!);
-        setState(() {});
       } else {
         warehouseList = [];
       }
@@ -157,16 +148,15 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
   }
 
   Future<void> loadQtyByLocation(int id) async {
+    // final ProgressDialog pr = ProgressDialog(context,
+    //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+    // await pr.show();
+    // pr.update(message: 'processing'.tr());
     try {
-      // final ProgressDialog pr = ProgressDialog(context,
-      //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      // await pr.show();
-      // pr.update(message: 'processing'.tr());
       var result = await ApiServices.get(
           '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        motivePrint(data);
         List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
         setState(() {
           qtyLocationList = qtys;
@@ -179,10 +169,11 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / 15.16);
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
+      // await pr.hide();
       if (kDebugMode) {
         print(e.toString());
       }
@@ -191,15 +182,15 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey();
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: stmBgColor,
         centerTitle: true,
         title: const Text(
-          'ขายทองแท่งกับโบรกเกอร์',
-          style: TextStyle(fontSize: 25),
+          'ขายทองแท่ง (จับคู่)',
+          style: TextStyle(fontSize: 32),
         ),
         // backgroundColor: bgColor,
         actions: [
@@ -247,7 +238,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                             vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          color: bgColor3.withAlpha(80),
+                          color: stmBgColorLight,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -258,7 +249,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  backgroundColor: Colors.orange,
+                                  backgroundColor: stmBgColor,
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8),
                                   shape: RoundedRectangleBorder(
@@ -270,7 +261,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                          const SellDialog(),
+                                          const SellMatchingDialog(),
                                           fullscreenDialog: true))
                                       .whenComplete(() {
                                     setState(() {});
@@ -298,15 +289,15 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                     vertical: 10, horizontal: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14),
-                                  color: bgColor2,
+                                  color: stmBgColorLight,
                                 ),
                                 child: ListView.builder(
                                     itemCount:
-                                        Global.sellThengOrderDetail!.length,
+                                        Global.sellThengOrderDetailMatching!.length,
                                     itemBuilder: (context, index) {
                                       return _itemOrderList(
                                           order: Global
-                                              .sellThengOrderDetail![index],
+                                              .sellThengOrderDetailMatching![index],
                                           index: index);
                                     }),
                               ),
@@ -316,7 +307,25 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                               margin: const EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(14),
-                                color: bgColor4,
+                                color: stmBgColorLight,
+                                border: const Border(
+                                  bottom: BorderSide(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  left: BorderSide(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  right: BorderSide(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                  top: BorderSide(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
                               ),
                               child: Column(
                                 children: [
@@ -329,14 +338,14 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                         style: TextStyle(
                                             fontSize: size.getWidthPx(8),
                                             fontWeight: FontWeight.bold,
-                                            color: const Color(0xFF636564)),
+                                            color: Colors.blue[900]),
                                       ),
                                       Text(
                                         "${Global.format(Global.sellThengSubTotal)} บาท",
                                         style: TextStyle(
                                             fontSize: size.getWidthPx(8),
                                             fontWeight: FontWeight.bold,
-                                            color: textColor2),
+                                            color: Colors.blue[900]),
                                       ),
                                     ],
                                   ),
@@ -357,7 +366,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
           margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: bgColor4,
+            color: stmBgColorLight,
           ),
           child: Column(
             children: [
@@ -374,31 +383,33 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
+                        if (Global.sellThengOrderDetailMatching!.isEmpty) {
                           return;
                         }
 
-                        // final ProgressDialog pr = ProgressDialog(context,
-                        //     type: ProgressDialogType.normal,
-                        //     isDismissible: true,
-                        //     showLogs: true);
-                        // await pr.show();
-                        // pr.update(message: 'processing'.tr());
+                        final ProgressDialog pr = ProgressDialog(context,
+                            type: ProgressDialogType.normal,
+                            isDismissible: true,
+                            showLogs: true);
+                        await pr.show();
+                        pr.update(message: 'processing'.tr());
                         try {
-                          // var result = await ApiServices.post(
-                          //     '/order/gen/8', Global.requestObj(null));
-                          // await pr.hide();
-                          // if (result!.status == "success") {
+                          var result = await ApiServices.post(
+                              '/order/gen/3', Global.requestObj(null));
+                          await pr.hide();
+                          if (result!.status == "success") {
                             OrderModel order = OrderModel(
-                                orderId: "",
-                                orderDate: DateTime.now().toUtc(),
-                                details: Global.sellThengOrderDetail!,
-                                orderTypeId: 8);
+                                orderId: result.data,
+                                orderDate: DateTime.now(),
+                                bookDate: DateTime.now(),
+                                details: Global.sellThengOrderDetailMatching!,
+                                orderTypeId: 3,
+                                orderStatus: 'PENDING');
                             final data = order.toJson();
                             Global.orders?.add(OrderModel.fromJson(data));
                             widget
                                 .refreshCart(Global.orders?.length.toString());
-                            Global.sellThengOrderDetail!.clear();
+                            Global.sellThengOrderDetailMatching!.clear();
                             setState(() {
                               Global.sellThengSubTotal = 0;
                               Global.sellThengTax = 0;
@@ -414,18 +425,18 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                 backgroundColor: Colors.teal,
                               ));
                             }
-                          // } else {
-                          //   if (mounted) {
-                          //     Alert.warning(
-                          //         context,
-                          //         'Warning'.tr(),
-                          //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                          //         'OK'.tr(),
-                          //         action: () {});
-                          //   }
-                          // }
+                          } else {
+                            if (mounted) {
+                              Alert.warning(
+                                  context,
+                                  'Warning'.tr(),
+                                  'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                  'OK'.tr(),
+                                  action: () {});
+                            }
+                          }
                         } catch (e) {
-                          // await pr.hide();
+                          await pr.hide();
                           if (mounted) {
                             Alert.warning(context, 'Warning'.tr(), e.toString(),
                                 'OK'.tr(),
@@ -460,15 +471,16 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
+                        if (Global.sellThengOrderDetailMatching!.isEmpty) {
                           return;
                         }
 
                         OrderModel order = OrderModel(
                             orderId: "",
-                            orderDate: DateTime.now().toUtc(),
-                            details: Global.sellThengOrderDetail!,
-                            orderTypeId: 8);
+                            orderDate: DateTime.now(),
+                            details: Global.sellThengOrderDetailMatching!,
+                            orderTypeId: 3,
+                            orderStatus: 'PENDING');
 
                         final data = order.toJson();
                         Global.holdOrder(OrderModel.fromJson(data));
@@ -481,7 +493,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                           setState(() {});
                         });
 
-                        Global.sellThengOrderDetail!.clear();
+                        Global.sellThengOrderDetailMatching!.clear();
                         setState(() {
                           Global.sellThengSubTotal = 0;
                           Global.sellThengTax = 0;
@@ -516,14 +528,14 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.teal,
+                        backgroundColor: stmBgColor,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
+                        if (Global.sellThengOrderDetailMatching!.isEmpty) {
                           return;
                         }
 
@@ -537,19 +549,20 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                           // pr.update(message: 'processing'.tr());
                           try {
                             // var result = await ApiServices.post(
-                            //     '/order/gen/8', Global.requestObj(null));
+                            //     '/order/gen/3', Global.requestObj(null));
                             // await pr.hide();
                             // if (result!.status == "success") {
                               OrderModel order = OrderModel(
                                   orderId: "",
-                                  orderDate: DateTime.now().toUtc(),
-                                  details: Global.sellThengOrderDetail!,
-                                  orderTypeId: 8);
+                                  orderDate: DateTime.now(),
+                                  details: Global.sellThengOrderDetailMatching!,
+                                  orderTypeId: 3,
+                                  orderStatus: 'PENDING');
                               final data = order.toJson();
                               Global.orders?.add(OrderModel.fromJson(data));
                               widget.refreshCart(
                                   Global.orders?.length.toString());
-                              Global.sellThengOrderDetail!.clear();
+                              Global.sellThengOrderDetailMatching!.clear();
                               setState(() {
                                 Global.sellThengSubTotal = 0;
                                 Global.sellThengTax = 0;
@@ -620,41 +633,31 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
     );
   }
 
-  void comChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
-      productPriceTotalCtrl.text =
-          "${Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)}";
-      setState(() {});
-    }
-  }
-
-  void priceChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
-      productPriceTotalCtrl.text = formatter.format(
-          (Global.toNumber(productCommissionCtrl.text) +
-                  Global.toNumber(productPriceCtrl.text))
-              .toPrecision(2));
-      setState(() {});
+  void unitChanged() {
+    if (productWeightBahtCtrl.text.isNotEmpty &&
+        unitPriceCtrl.text.isNotEmpty) {
+      productPriceCtrl.text = Global.format(
+          Global.toNumber(unitPriceCtrl.text) *
+              Global.toNumber(productWeightBahtCtrl.text));
+    } else {
+      productPriceCtrl.text = "";
     }
   }
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * 15.16).toPrecision(2));
-      marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
-      productPriceCtrl.text = marketPriceTotalCtrl.text;
-      productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-          ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-          : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
+      productWeightCtrl.text =
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+      // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
+      if (unitPriceCtrl.text.isNotEmpty) {
+        productPriceCtrl.text = Global.format(
+            Global.toNumber(unitPriceCtrl.text) *
+                Global.toNumber(productWeightBahtCtrl.text));
+      }
     } else {
       productWeightCtrl.text = "";
-      marketPriceTotalCtrl.text = "";
+      unitPriceCtrl.text = "";
       productPriceCtrl.text = "";
-      productPriceTotalCtrl.text = "";
     }
   }
 
@@ -664,73 +667,95 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
     productWeightCtrl.text = "";
     productCommissionCtrl.text = "";
     productPriceCtrl.text = "";
-    productPriceTotalCtrl.text = "";
     productWeightBahtCtrl.text = "";
-    reserveDateCtrl.text = "";
+    bookDateCtrl.text = "";
     productWeightRemainCtrl.text = "";
     productWeightBahtRemainCtrl.text = "";
-    marketPriceTotalCtrl.text = "";
+    unitPriceCtrl.text = "";
     warehouseCtrl.text = "";
+    productNotifier = ValueNotifier<ProductModel>(
+        selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
     productCodeCtrl.text =
         (selectedProduct != null ? selectedProduct?.productCode! : "")!;
     productNameCtrl.text =
         (selectedProduct != null ? selectedProduct?.name : "")!;
-    productNotifier = ValueNotifier<ProductModel>(
-        selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    bookDateCtrl.text = Global.formatDateD(DateTime.now().toString());
   }
 
   removeProduct(index) {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-      Global.sellThengOrderDetail!.removeAt(index);
-      if (Global.sellThengOrderDetail!.isEmpty) {
-        Global.sellThengOrderDetail!.clear();
+      Global.sellThengOrderDetailMatching!.removeAt(index);
+      if (Global.sellThengOrderDetailMatching!.isEmpty) {
+        Global.sellThengOrderDetailMatching!.clear();
       }
-      sumSellThengTotal();
+      sumSellThengTotalMatching();
       setState(() {});
     });
   }
 
   Widget _itemOrderList({required OrderDetailModel order, required index}) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 8,
-          child: ListTile(
-            title: ListTileData(
-              leftTitle: order.productName,
-              leftValue: Global.format(order.priceIncludeTax!),
-              rightTitle: 'น้ำหนัก',
-              rightValue: '${Global.format(order.weight! / 15.16)} บาท',
-            ),
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          left: BorderSide(
+            color: Colors.white,
+            width: 2,
+          ),
+          right: BorderSide(
+            color: Colors.white,
+            width: 2,
           ),
         ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  removeProduct(index);
-                },
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 8,
+            child: ListTile(
+              title: ListTileData(
+                leftTitle: order.productName,
+                leftValue: Global.format(order.priceIncludeTax!),
+                rightTitle: 'น้ำหนัก',
+                rightValue: '${Global.format(order.weight! / getUnitWeightValue())} บาท',
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    removeProduct(index);
+                  },
+                  child: Container(
+                    height: 70,
+                    width: 80,
+                    decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        )
-      ],
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

@@ -22,6 +22,7 @@ import 'package:motivegold/screen/settings/reports/stock-movement-reports/stock_
 import 'package:motivegold/screen/settings/reports/stock-reports/stock_report_list_screen.dart';
 import 'package:motivegold/screen/settings/reports/vat-reports/make_pdf.dart';
 import 'package:motivegold/screen/settings/reports/vat-reports/vat_report_screen.dart';
+import 'package:motivegold/screen/settings/setting-value/setting_value.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/used/sell_used_gold_history_screen.dart';
@@ -231,6 +232,26 @@ class _SettingScreenState extends State<SettingScreen> {
                   'จัดการค่าเริ่มต้นของหน้าจอ',
                   subtitle:
                   "ตั้งค่าค่าเริ่มต้น",
+                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                ),
+                if (Global.user?.userType == 'ADMIN')
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const SettingValueScreen()));
+                  },
+                  icons: CupertinoIcons.pencil_outline,
+                  iconStyle: IconStyle(
+                      backgroundColor: Colors.blue.shade900
+                  ),
+                  title:
+                  'Value Initial Setting',
+                  subtitle:
+                  "การตั้งค่ามูลค่า",
                   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
                   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
                 ),

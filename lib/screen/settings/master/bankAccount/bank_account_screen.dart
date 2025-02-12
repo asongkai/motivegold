@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/bank/bank.dart';
 import 'package:motivegold/model/bank/bank_account.dart';
 import 'package:motivegold/model/product_type.dart';
@@ -47,7 +48,7 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('จัดการธนาคาร'),
+        title: const Text('จัดการบัญชีธนาคาร'),
         actions: [
           GestureDetector(
             onTap: () {
@@ -68,7 +69,7 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
                   size: 50,
                 ),
                 Text(
-                  'เพิ่มประเภทสินค้า',
+                  'เพิ่มบัญชีธนาคาร',
                   style: TextStyle(fontSize: size.getWidthPx(6)),
                 )
               ],
@@ -88,12 +89,56 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
             child: Card(
               child: SizedBox(
                 height: MediaQuery.of(context).size.height,
-                child: ListView.builder(
-                    itemCount: dataList!.length,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (BuildContext context, int index) {
-                      return productCard(dataList, index);
-                    }),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 50, child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(flex: 2,
+                            child: Text(
+                              "รหัสธนาคาร",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(flex: 2,
+                            child: Text(
+                              "เลขที่บัญชี",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(flex: 2,
+                            child: Text(
+                              "ชื่อบัญชี",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(flex: 2,
+                            child: Text(
+                              "ประเภทบัญชี",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Expanded(flex: 2,
+                            child: Text(
+                              " ",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),),
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: dataList!.length,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (BuildContext context, int index) {
+                            return productCard(dataList, index);
+                          }),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -129,75 +174,99 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
   }
 
   Widget productCard(List<BankAccountModel>? list, int index) {
-    return Card(
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              title: Text(
-                "${list![index].name}",
-                style: const TextStyle(fontSize: 20),
-              ),
-              subtitle: Text(
-                list[index].accountNo!,
-                style: const TextStyle(fontSize: 20),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              flex: 8,
+              child: ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(flex: 2,
+                      child: Text(
+                        "${list![index].bankCode}",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Expanded(flex: 2,
+                      child: Text(
+                        "${list[index].accountNo}",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Expanded(flex: 2,
+                      child: Text(
+                        "${list[index].name}",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    Expanded(flex: 2,
+                      child: Text(
+                        "${displayAccountType(list[index].accountType)}",
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditBankAccountScreen(
-                                account: list[index],
-                                index: index
-                            ),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      loadData();
-                    });
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditBankAccountScreen(
+                                  account: list[index],
+                                  index: index
+                              ),
+                              fullscreenDialog: true))
+                          .whenComplete(() {
+                        loadData();
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10,),
-                GestureDetector(
-                  onTap: () {
-                    remove(list[index].id!, index);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
+                  const SizedBox(width: 10,),
+                  GestureDetector(
+                    onTap: () {
+                      remove(list[index].id!, index);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+                ],
+              ),
+            )
+          ],
+        ),
+        const Divider(thickness: 1, height: 5,)
+      ],
     );
   }
 
@@ -232,5 +301,13 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
     });
 
 
+  }
+
+  displayAccountType(String? accountType) {
+    var data = bankAccountTypes().where((e) => e.code == accountType).toList();
+    if (data.isNotEmpty) {
+      return data.first.name;
+    }
+    return null;
   }
 }
