@@ -27,19 +27,22 @@ class BranchModel {
   String? province;
   String? branchCode;
   String? branchId;
+  String? oldGoldLicenseNumber;
 
-  BranchModel(
-      {this.id,
-      this.companyId,
-      required this.name,
-      this.phone,
-      this.email,
-      this.address,
-      this.village,
-      this.district,
-      this.province,
-      this.branchId,
-      this.branchCode});
+  BranchModel({
+    this.id,
+    this.companyId,
+    required this.name,
+    this.phone,
+    this.email,
+    this.address,
+    this.village,
+    this.district,
+    this.province,
+    this.branchId,
+    this.branchCode,
+    this.oldGoldLicenseNumber,
+  });
 
   factory BranchModel.fromJson(Map<String, dynamic> json) => BranchModel(
         id: json["id"],
@@ -53,6 +56,7 @@ class BranchModel {
         province: json["province"],
         branchId: json["branchId"],
         branchCode: json["branchCode"],
+        oldGoldLicenseNumber: json["oldGoldLicenseNumber"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -67,6 +71,7 @@ class BranchModel {
         "province": province,
         "branchCode": branchCode,
         "branchId": branchId,
+        "oldGoldLicenseNumber": oldGoldLicenseNumber,
       };
 
   @override

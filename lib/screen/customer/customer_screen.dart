@@ -24,9 +24,10 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class CustomerScreen extends StatefulWidget {
-  const CustomerScreen({super.key, this.selected});
+  const CustomerScreen({super.key, this.selected, this.type});
 
   final bool? selected;
+  final String? type;
 
   @override
   State<CustomerScreen> createState() => _CustomerScreenState();
@@ -60,18 +61,19 @@ class _CustomerScreenState extends State<CustomerScreen> {
       loading = true;
     });
 
-    // motivePrint({
-    //   "customerType": selectedCustomerType?.code,
-    //   "idCard":
-    //   selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
-    //   "taxNumber":
-    //   selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
-    //   "firstName": firstNameCtrl.text,
-    //   "lastName": lastNameCtrl.text,
-    //   "companyName": companyNameCtrl.text,
-    //   "email": emailCtrl.text,
-    //   "phoneNumber": phoneCtrl.text,
-    // });
+    motivePrint({
+      "customerType": selectedCustomerType?.code,
+      "idCard":
+      selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+      "taxNumber":
+      selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+      "firstName": firstNameCtrl.text,
+      "lastName": lastNameCtrl.text,
+      "companyName": companyNameCtrl.text,
+      "email": emailCtrl.text,
+      "phoneNumber": phoneCtrl.text,
+      "type": widget.type ?? "",
+    });
 
     try {
       var result = await ApiServices.post(
@@ -87,6 +89,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             "companyName": companyNameCtrl.text,
             "email": emailCtrl.text,
             "phoneNumber": phoneCtrl.text,
+            "type": widget.type ?? "",
           }));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -435,9 +438,50 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
-                                if (widget.selected != true)
+
                                   Row(
                                     children: [
+
+                                      if (widget.selected == true)
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                Global.customer = ods[i];
+                                              });
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Container(
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.teal[700],
+                                                  borderRadius:
+                                                  BorderRadius.circular(8)),
+                                              child: const Row(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.check_outlined,
+                                                    color: Colors.white,
+                                                  ),
+                                                  Text(
+                                                    'เลือก',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      if (widget.selected == true)
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
                                       Expanded(
                                         child: GestureDetector(
                                           onTap: () {
@@ -480,9 +524,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           ),
                                         ),
                                       ),
+                                      if (widget.selected != true)
                                       const SizedBox(
                                         width: 10,
                                       ),
+                                      if (widget.selected != true)
                                       Expanded(
                                         child: GestureDetector(
                                           onTap: () {
@@ -516,46 +562,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           ),
                                         ),
                                       ),
+
                                     ],
                                   ),
-                                if (widget.selected == true)
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                if (widget.selected == true)
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        Global.customer = ods[i];
-                                      });
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          color: Colors.teal[700],
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.check_outlined,
-                                            color: Colors.white,
-                                          ),
-                                          Text(
-                                            'เลือก',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+
                               ],
                             ),
                           )

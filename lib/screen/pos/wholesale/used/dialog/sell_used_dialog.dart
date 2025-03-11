@@ -299,6 +299,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                 GestureDetector(
                   onTap: () {
                     FocusScope.of(context).requestFocus(FocusNode());
+                    closeCal();
                   },
                   child: SingleChildScrollView(
                     child: Column(
@@ -974,27 +975,33 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                       ],
                     ),
                     onPressed: () async {
+                      if (selectedProduct == null) {
+                        Alert.warning(
+                            context, 'คำเตือน', 'Cannot load product please close and try again', 'OK', action: () {});
+                        return;
+                      }
+
                       if (selectedFromLocation == null) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาเลือกคลังสินค้า', 'OK');
+                            context, 'คำเตือน', 'กรุณาเลือกคลังสินค้า', 'OK', action: () {});
                         return;
                       }
 
                       if (productEntryWeightCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกน้ำหนัก', 'OK');
+                            context, 'คำเตือน', 'กรุณากรอกน้ำหนัก', 'OK', action: () {});
                         return;
                       }
 
                       if (priceIncludeTaxCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK');
+                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK', action: () {});
                         return;
                       }
 
                       if (selectedToLocation == null) {
                         Alert.warning(context, 'คำเตือน',
-                            'กรุณาเลือกคลังสินค้าปลายทาง', 'OK');
+                            'กรุณาเลือกคลังสินค้าปลายทาง', 'OK', action: () {});
                         return;
                       }
                       Alert.info(

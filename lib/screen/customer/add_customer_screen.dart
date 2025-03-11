@@ -46,6 +46,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   TextEditingController companyNameCtrl = TextEditingController();
   TextEditingController remarkCtrl = TextEditingController();
 
+  final TextEditingController workPermitCtrl = TextEditingController();
+  final TextEditingController passportNoCtrl = TextEditingController();
+  final TextEditingController taxNumberCtrl = TextEditingController();
+  final TextEditingController postalCodeCtrl = TextEditingController();
+
   final ImagePicker imagePicker = ImagePicker();
   List<File>? imageFiles = [];
 
@@ -58,6 +63,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   List<CustomerModel> customers = [];
   bool loading = false;
   CustomerModel? selectedCustomer;
+  String? nationality;
 
   ThaiIDCard? _data;
   String? _error;
@@ -368,308 +374,461 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       height: 10,
                     ),
                     Card(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: const Text(
-                                "คือลูกค้า",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              value: isCustomer,
-                              visualDensity: VisualDensity.standard,
-                              activeColor: Colors.teal,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isCustomer = newValue!;
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity
-                                  .leading, //  <-- leading Checkbox
-                            ),
-                          ),
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: const Text(
-                                "เป็นผู้ซื้อ",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              value: isBuyer,
-                              visualDensity: VisualDensity.standard,
-                              activeColor: Colors.teal,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isBuyer = newValue!;
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity
-                                  .leading, //  <-- leading Checkbox
-                            ),
-                          ),
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: const Text(
-                                "เป็นผู้ขาย",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              value: isSeller,
-                              visualDensity: VisualDensity.standard,
-                              activeColor: Colors.teal,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  isSeller = newValue!;
-                                });
-                              },
-                              controlAffinity: ListTileControlAffinity
-                                  .leading, //  <-- leading Checkbox
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: const Text(
+                                      'สัญชาติไทย',
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                    value: 'Thai',
+                                    groupValue: nationality,
+                                    visualDensity: VisualDensity.standard,
+                                    activeColor: Colors.teal,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        nationality = value;
+                                      });
+                                    },
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: getIdTitle(selectedType),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: idCardCtrl,
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: const Text(
+                                      'ต่างชาติ',
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                    value: 'Foreigner',
+                                    groupValue: nationality,
+                                    visualDensity: VisualDensity.standard,
+                                    activeColor: Colors.teal,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        nationality = value;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        if (selectedType?.code == 'company')
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  buildTextFieldBig(
-                                    labelText: 'รหัสสาขา'.tr(),
-                                    validator: null,
-                                    inputType: TextInputType.text,
-                                    controller: branchCodeCtrl,
-                                  ),
-                                ],
-                              ),
+                            const Divider(),
+                            const SizedBox(
+                              height: 15,
                             ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (selectedType?.code == 'general')
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  buildTextFieldBig(
-                                    labelText: 'ชื่อ'.tr(),
-                                    validator: null,
-                                    inputType: TextInputType.text,
-                                    controller: firstNameCtrl,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (selectedType?.code == 'general')
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  buildTextFieldBig(
-                                    labelText: 'นามสกุล'.tr(),
-                                    validator: null,
-                                    inputType: TextInputType.text,
-                                    controller: lastNameCtrl,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (selectedType?.code == 'company')
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  buildTextFieldBig(
-                                    labelText: 'ชื่อบริษัท'.tr(),
-                                    validator: null,
-                                    inputType: TextInputType.text,
-                                    controller: lastNameCtrl,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'อีเมล'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.emailAddress,
-                                  controller: emailAddressCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const SizedBox(
-                                  height: 10,
+                                if (nationality == 'Thai')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: getIdTitle(selectedType),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: idCardCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (nationality == 'Foreigner')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'Work Permit',
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: workPermitCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (nationality == 'Foreigner')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'Passport ID',
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: passportNoCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (nationality == 'Foreigner')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'Tax ID',
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: taxNumberCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (selectedType?.code == 'company')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'รหัสสาขา'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: branchCodeCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (selectedType?.code == 'general')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'ชื่อ'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: firstNameCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (selectedType?.code == 'general')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'นามสกุล'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: lastNameCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (selectedType?.code == 'company')
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'ชื่อบริษัท'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: lastNameCtrl,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        buildTextFieldBig(
+                                          labelText: 'อีเมล'.tr(),
+                                          validator: null,
+                                          inputType: TextInputType.emailAddress,
+                                          controller: emailAddressCtrl,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                buildTextFieldBig(
-                                  labelText: 'โทรศัพท์'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.phone,
-                                  controller: phoneCtrl,
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        buildTextFieldBig(
+                                          labelText: 'โทรศัพท์'.tr(),
+                                          validator: null,
+                                          inputType: TextInputType.phone,
+                                          controller: phoneCtrl,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (selectedType?.code == 'general')
-                      const SizedBox(
-                        height: 15,
-                      ),
-                    if (selectedType?.code == 'general')
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: TextField(
-                                controller: birthDateCtrl,
-                                //editing controller of this TextField
-                                style: const TextStyle(fontSize: 38),
-                                decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.calendar_today),
-                                  //icon of text field
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  labelText: "วันเกิด".tr(),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(8),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
+                            if (selectedType?.code == 'general')
+                              const SizedBox(
+                                height: 15,
+                              ),
+                            if (selectedType?.code == 'general')
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: TextField(
+                                        controller: birthDateCtrl,
+                                        //editing controller of this TextField
+                                        style: const TextStyle(fontSize: 38),
+                                        decoration: InputDecoration(
+                                          prefixIcon:
+                                              const Icon(Icons.calendar_today),
+                                          //icon of text field
+                                          floatingLabelBehavior:
+                                              FloatingLabelBehavior.always,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 10.0,
+                                                  horizontal: 10.0),
+                                          labelText: "วันเกิด".tr(),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              getProportionateScreenWidth(8),
+                                            ),
+                                            borderSide: const BorderSide(
+                                              color: kGreyShade3,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              getProportionateScreenWidth(2),
+                                            ),
+                                            borderSide: const BorderSide(
+                                              color: kGreyShade3,
+                                            ),
+                                          ),
+                                        ),
+                                        readOnly: true,
+                                        //set it true, so that user will not able to edit text
+                                        onTap: () async {
+                                          DateTime? pickedDate =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(
+                                                      DateTime.now().year -
+                                                          200),
+                                                  //DateTime.now() - not to allow to choose before today.
+                                                  lastDate: DateTime(2101));
+                                          if (pickedDate != null) {
+                                            motivePrint(
+                                                pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                            String formattedDate =
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(pickedDate);
+                                            motivePrint(
+                                                formattedDate); //formatted date output using intl package =>  2021-03-16
+                                            //you can implement different kind of Date Format here according to your requirement
+                                            setState(() {
+                                              birthDateCtrl.text =
+                                                  formattedDate; //set output date to TextField value.
+                                            });
+                                          } else {
+                                            motivePrint("Date is not selected");
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
+                                ],
+                              ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        buildTextFieldBig(
+                                          labelText:
+                                              'รหัสไปรษณีย์ / Postal Code',
+                                          inputType: TextInputType.phone,
+                                          controller: postalCodeCtrl,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                                readOnly: true,
-                                //set it true, so that user will not able to edit text
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(DateTime.now().year - 200),
-                                      //DateTime.now() - not to allow to choose before today.
-                                      lastDate: DateTime(2101));
-                                  if (pickedDate != null) {
-                                    motivePrint(
-                                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    motivePrint(
-                                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                                    //you can implement different kind of Date Format here according to your requirement
-                                    setState(() {
-                                      birthDateCtrl.text =
-                                          formattedDate; //set output date to TextField value.
-                                    });
-                                  } else {
-                                    motivePrint("Date is not selected");
-                                  }
-                                },
+                              ],
+                            ),
+                            Card(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text(
+                                        "คือลูกค้า",
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                      value: isCustomer,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          isCustomer = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text(
+                                        "เป็นผู้ซื้อ",
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                      value: isBuyer,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          isBuyer = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: CheckboxListTile(
+                                      title: const Text(
+                                        "เป็นผู้ขาย",
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                      value: isSeller,
+                                      visualDensity: VisualDensity.standard,
+                                      activeColor: Colors.teal,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          isSeller = newValue!;
+                                        });
+                                      },
+                                      controlAffinity: ListTileControlAffinity
+                                          .leading, //  <-- leading Checkbox
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
                     const SizedBox(
                       height: 15,
                     ),
@@ -724,12 +883,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
-                // if (idCardCtrl.text.isEmpty) {
-                //   Alert.warning(
-                //       context, 'คำเตือน', 'กรุณากรอก${getIdTitle(selectedType)}', 'OK',
-                //       action: () {});
-                //   return;
-                // }
+                if (nationality == null || nationality == "") {
+                  Alert.warning(context, 'คำเตือน', 'กรุณาเลือกสัญชาติ', 'OK',
+                      action: () {});
+                  return;
+                }
 
                 if (selectedCustomer == null) {
                   var customerObject = Global.requestObj({
@@ -748,61 +906,72 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     "tambonId": Global.tambonModel?.id,
                     "amphureId": Global.amphureModel?.id,
                     "provinceId": Global.provinceModel?.id,
-                    "nationality    ": '',
-                    "postalCode": '',
+                    "nationality": nationality,
+                    "postalCode": postalCodeCtrl.text,
                     "photoUrl": '',
                     "branchCode": branchCodeCtrl.text,
                     "idCard":
                         selectedType?.code == "general" ? idCardCtrl.text : "",
-                    "taxNumber":
-                        selectedType?.code == "company" ? idCardCtrl.text : "",
+                    "taxNumber": selectedType?.code == "company"
+                        ? nationality == 'Thai'
+                            ? idCardCtrl.text
+                            : taxNumberCtrl.text
+                        : nationality == 'Thai'
+                            ? idCardCtrl.text
+                            : taxNumberCtrl.text,
                     "isSeller": isSeller ? 1 : 0,
                     "isBuyer": isBuyer ? 1 : 0,
                     "isCustomer": isCustomer ? 1 : 0,
-                    "remark": remarkCtrl.text,
+                    "workPermit": workPermitCtrl.text,
+                    "passportId": passportNoCtrl.text,
+                    "remark": remarkCtrl.text
                   });
 
-                  print(customerObject);
+                  // print(customerObject);
                   // return;
-                  final ProgressDialog pr = ProgressDialog(context,
-                      type: ProgressDialogType.normal,
-                      isDismissible: true,
-                      showLogs: true);
-                  await pr.show();
-                  pr.update(message: 'processing'.tr());
-                  // try {
+
+                  Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                    final ProgressDialog pr = ProgressDialog(context,
+                        type: ProgressDialogType.normal,
+                        isDismissible: true,
+                        showLogs: true);
+                    await pr.show();
+                    pr.update(message: 'processing'.tr());
+                    // try {
                     var result = await ApiServices.post(
                         '/customer/create', customerObject);
-                    motivePrint(result?.toJson());
+                    // motivePrint(result?.toJson());
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
                         CustomerModel customer =
-                            customerModelFromJson(jsonEncode(result!.data!));
+                        customerModelFromJson(jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
                         });
                         Alert.success(context, 'Success'.tr(),
                             "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
-                          Navigator.of(context).pop();
-                        });
+                              Navigator.of(context).pop();
+                            });
                       }
                     } else {
                       if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(), result!.message ?? result.data,
-                            'OK'.tr(),
+                        Alert.warning(context, 'Warning'.tr(),
+                            result!.message ?? result.data, 'OK'.tr(),
                             action: () {});
                       }
                     }
-                  // } catch (e) {
-                  //   await pr.hide();
-                  //   if (mounted) {
-                  //     Alert.warning(
-                  //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                  //         action: () {});
-                  //   }
-                  // }
+                    // } catch (e) {
+                    //   await pr.hide();
+                    //   if (mounted) {
+                    //     Alert.warning(
+                    //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                    //         action: () {});
+                    //   }
+                    // }
+                  });
                 } else {
                   setState(() {
                     Global.customer = selectedCustomer;

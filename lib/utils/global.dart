@@ -84,13 +84,14 @@ class Global {
   static List<OrderDetailModel>? buyThengOrderDetailBroker = [];
   static List<OrderDetailModel>? sellThengOrderDetailBroker = [];
 
-  static OrderModel? posOrder;
-  static int posIndex = 0;
-
   static List<OrderDetailModel>? refillOrderDetail = [];
   static List<OrderDetailModel>? usedSellDetail = [];
   static List<TransferDetailModel>? transferDetail = [];
   static TransferModel? transfer;
+
+
+  static OrderModel? posOrder;
+  static int posIndex = 0;
 
   static double sellSubTotal = 0;
   static double sellWeightTotal = 0;
@@ -121,7 +122,6 @@ class Global {
   static double sellThengWeightTotalMatching = 0;
   static double sellThengTaxMatching = 0;
   static double sellThengTotalMatching = 0;
-
 
   static double buyThengSubTotalBroker = 0;
   static double buyThengWeightTotalBroker = 0;
@@ -188,6 +188,50 @@ class Global {
     }
   }
 
+  static format4(double value) {
+    String number = formatter4.format(value);
+    var part = number.split('.');
+    if (part.length > 1) {
+      if (part[1].length == 1) {
+        return '${number}000';
+      }
+      if (part[1].length == 2) {
+        return '${number}00';
+      }
+      if (part[1].length == 3) {
+        return '${number}0';
+      }
+      return number;
+    } else {
+      return '$number.0000';
+    }
+  }
+
+  static format6(double value) {
+    String number = formatter6.format(value);
+    var part = number.split('.');
+    if (part.length > 1) {
+      if (part[1].length == 1) {
+        return '${number}00000';
+      }
+      if (part[1].length == 2) {
+        return '${number}0000';
+      }
+      if (part[1].length == 3) {
+        return '${number}000';
+      }
+      if (part[1].length == 4) {
+        return '${number}00';
+      }
+      if (part[1].length == 5) {
+        return '${number}0';
+      }
+      return number;
+    } else {
+      return '$number.000000';
+    }
+  }
+
   static holdOrder(OrderModel orderModel) async {
     String? json = await LocalStorage.sharedInstance.readValue('holds');
     List<OrderModel>? holds = json == null ? [] : orderListModelFromJson(json);
@@ -231,7 +275,9 @@ class Global {
     if (goldDataModel == null) {
       return 0;
     }
-    return (toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue()) +
+    return (toNumber(goldDataModel!.theng!.sell!) *
+            weight /
+            getUnitWeightValue()) +
         commission;
   }
 
@@ -250,7 +296,9 @@ class Global {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue();
+    return toNumber(goldDataModel!.theng!.sell!) *
+        weight /
+        getUnitWeightValue();
   }
 
   static double getSellPriceUsePrice(double weight, double price) {
@@ -264,7 +312,9 @@ class Global {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.paphun!.buy!) * weight / getUnitWeightValue();
+    return toNumber(goldDataModel!.paphun!.buy!) *
+        weight /
+        getUnitWeightValue();
   }
 
   static double getBuyPriceUsePrice(double weight, double price) {
@@ -285,7 +335,9 @@ class Global {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.sell!) * weight / getUnitWeightValue();
+    return toNumber(goldDataModel!.theng!.sell!) *
+        weight /
+        getUnitWeightValue();
   }
 
   static double getOrderSubTotalAmount() {
@@ -308,6 +360,20 @@ class Global {
     double amount = 0;
     for (int j = 0; j < details.length; j++) {
       amount += details[j].priceIncludeTax!;
+    }
+    return amount;
+  }
+
+  static double getOrderSubTotalAmountApiWholeSale(
+      int orderTypeId, List<OrderDetailModel>? details) {
+    if (details!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < details.length; j++) {
+      amount += orderTypeId == 5
+          ? details[j].priceExcludeTax!
+          : details[j].priceIncludeTax!;
     }
     return amount;
   }
@@ -490,7 +556,8 @@ class Global {
     return amount;
   }
 
-  static dynamic payToCustomerOrShop(List<OrderModel>? orders, double discount) {
+  static dynamic payToCustomerOrShop(
+      List<OrderModel>? orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -502,7 +569,21 @@ class Global {
             : '${format(-amount)} THB';
   }
 
-  static dynamic payToCustomerOrShopValue(List<OrderModel>? orders, double discount) {
+  static dynamic payToCustomerOrShopWholeSale(
+      List<OrderModel>? orders, double discount) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = payToCustomerOrShopValueWholeSale(orders, discount);
+    return amount > 0
+        ? '${format(amount)} THB'
+        : amount == 0
+            ? 0
+            : '${format(-amount)} THB';
+  }
+
+  static dynamic payToCustomerOrShopValue(
+      List<OrderModel>? orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -511,14 +592,41 @@ class Global {
     double sell = 0;
     for (int i = 0; i < orders.length; i++) {
       for (int j = 0; j < orders[i].details!.length; j++) {
-        double price = orders[i].details![j].priceIncludeTax!;
         int type = orders[i].orderTypeId!;
+        double price = orders[i].details![j].priceIncludeTax!;
+
         if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           buy += -price;
         }
         if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
           sell += price;
         }
+      }
+    }
+    amount = sell + buy;
+
+    amount = discount != 0 ? amount - discount : amount;
+    return amount;
+  }
+
+  static dynamic payToCustomerOrShopValueWholeSale(
+      List<OrderModel>? orders, double discount) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    double buy = 0;
+    double sell = 0;
+    for (int i = 0; i < orders.length; i++) {
+      int type = orders[i].orderTypeId!;
+      // double price = type == 5 ? orders[i].priceExcludeTax ?? 0 : orders[i].priceIncludeTax ?? 0;
+      double price = orders[i].priceIncludeTax ?? 0;
+
+      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+        buy += -price;
+      }
+      if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
+        sell += price;
       }
     }
     amount = sell + buy;
@@ -537,10 +645,10 @@ class Global {
 
   static dynamic getRefillPayTittle(double amount) {
     return amount > 0
-        ? 'รับเงินจาก'
+        ? 'ค้าส่งจ่าย - ร้านรับเงิน (สุทธิ)'
         : amount == 0
-        ? ""
-        : 'จ่ายเงินให้';
+            ? ""
+            : 'ค้าส่งรับ - ร้านจ่ายเงิน (สุทธิ)';
   }
 
   static dynamic payToBrokerOrShop() {
@@ -587,7 +695,30 @@ class Global {
         amount += price;
       }
     }
+    // motivePrint(discount);
     amount = discount != 0 ? amount - discount : amount;
+    // motivePrint(amount);
+    return amount < 0 ? -amount : amount;
+  }
+
+  static double getPaymentTotalWholeSale(List<OrderModel>? orders) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < orders.length; i++) {
+      int type = orders[i].orderTypeId!;
+      // double price =
+      //     type == 5 ? orders[i].priceExcludeTax ?? 0 : orders[i].priceIncludeTax ?? 0;
+      double price = orders[i].priceIncludeTax ?? 0;
+      if (type == 5) {
+        price = -price;
+      }
+      amount += price;
+    }
+    // motivePrint(discount);
+    amount = discount != 0 ? amount - discount : amount;
+    // motivePrint(amount);
     return amount < 0 ? -amount : amount;
   }
 
@@ -609,12 +740,46 @@ class Global {
     return amount < 0 ? -amount : amount;
   }
 
+  static double getOrderTotalWholeSale(OrderModel? order) {
+    if (order == null) {
+      return 0;
+    }
+    double amount = 0;
+    for (int j = 0; j < order.details!.length; j++) {
+      int type = order.orderTypeId!;
+      double price = type == 5
+          ? order.details![j].priceExcludeTax!
+          : order.details![j].priceIncludeTax!;
+      // double price = order.details![j].priceIncludeTax!;
+      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+        price = -price;
+      }
+      amount += price;
+    }
+
+    // amount = discount != 0 ? amount - discount : amount;
+    return amount < 0 ? -amount : amount;
+  }
+
   static double getOrderTotalAmount(List<OrderDetailModel> data) {
     if (data.isEmpty) {
       return 0;
     }
     double sum = 0;
     for (var e in data) {
+      sum += e.priceIncludeTax!;
+    }
+    return sum;
+  }
+
+  static double getOrderTotalAmountWholeSale(
+      int orderTypeId, List<OrderDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      // sum += orderTypeId == 5 ? e.priceExcludeTax! : e.priceIncludeTax!;
       sum += e.priceIncludeTax!;
     }
     return sum;
@@ -876,7 +1041,8 @@ class Global {
 
   static DateTime convertDate(String date) {
     List<String> parts = date.split("-");
-    DateTime tempDate = DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}").toLocal();
+    DateTime tempDate =
+        DateTime.parse("${parts[2]}-${parts[1]}-${parts[0]}").toLocal();
     return tempDate;
   }
 

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/model/invoice.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
 import 'package:motivegold/widget/pdf/components.dart';
@@ -42,7 +43,7 @@ Future<Uint8List> makeThengBrokerPdf(Invoice invoice) async {
                     flex: 6,
                     child: Center(
                       child: Text(
-                        '( ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())} )',
+                        '( ${NumberToThaiWords.convertDouble(Global.getOrderTotal(invoice.order))} )',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

@@ -5,6 +5,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
@@ -114,6 +115,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
     ),
   );
   for (int i = 0; i < invoice.items.length; i++) {
+    motivePrint(invoice.items[i].priceIncludeTax);
+    motivePrint(NumberToThaiWords.convertDouble(invoice.items[i].priceIncludeTax ?? 0));
     widgets.add(Container(
       height: 20,
       child: Row(
@@ -206,7 +209,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
                     border: Border(),
                   ),
                   child: paddedText(
-                      '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())}บาทถ้วน -',
+                      '- ${NumberToThaiWords.convertDouble(Global.getOrderTotal(invoice.order))} -',
                       align: TextAlign.center,
                       style: const TextStyle(fontSize: 8)),
                 )),

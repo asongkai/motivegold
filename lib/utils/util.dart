@@ -8,16 +8,20 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
+import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/company.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/model/user.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -26,7 +30,31 @@ import '../model/order.dart';
 import 'global.dart';
 
 final formatter = NumberFormat("#,###.##");
+final formatter4 = NumberFormat("#,###.####");
+final formatter6 = NumberFormat("#,###.######");
 const JsonEncoder encoder = JsonEncoder();
+
+void resetAtLogout() {
+  Global.isLoggedIn = false;
+  Global.user = UserModel();
+  Global.company = null;
+  Global.branch = null;
+  Global.orders?.clear();
+  Global.order = null;
+  Global.orderDetail?.clear();
+  Global.sellOrderDetail = [];
+  Global.buyOrderDetail = [];
+  Global.buyThengOrderDetail = [];
+  Global.sellThengOrderDetail = [];
+  Global.buyThengOrderDetailMatching = [];
+  Global.sellThengOrderDetailMatching = [];
+  Global.buyThengOrderDetailBroker = [];
+  Global.sellThengOrderDetailBroker = [];
+  Global.refillOrderDetail = [];
+  Global.usedSellDetail = [];
+  Global.transferDetail = [];
+  Global.branchList = [];
+}
 
 getPaymentType(String? paymentMethod) {
   return paymentTypes().where((e) => e.code == paymentMethod).first.name;
@@ -757,24 +785,32 @@ Widget numberTextField(
             fontWeight: FontWeight.w900,
             fontSize: 30),
         prefixIconConstraints:
-            const BoxConstraints(minHeight: 90, minWidth: 90),
-        prefixIcon: IconButton(
-          icon: Icon(
-            size: 80,
-            Icons.calculate_outlined,
-            color: readOnly ? Colors.teal : null,
+            const BoxConstraints(minHeight: 50, minWidth: 50),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+                // shape: BoxShape.circle,
+                border: Border.all(width: 0.5, color: readOnly ? Colors.teal : Colors.orange.shade900,)),
+            child: IconButton(
+              icon:
+              Image.asset(
+                'assets/icons/icons8-plus-slash-minus-50.png',
+                color: readOnly ? Colors.teal : Colors.orange.shade500,
+                width: 50,
+              ),
+              onPressed: openCalc,
+            ),
           ),
-          onPressed: openCalc,
         ),
         suffixText: suffixText,
         filled: true,
         suffixIconConstraints:
             const BoxConstraints(minHeight: 60, minWidth: 60),
         suffixIcon: IconButton(
-          icon: const Icon(
-            size: 50,
-            Icons.close,
-            color: Colors.red,
+          icon: Image.asset(
+            'assets/icons/icons8-sort-left-50.png',
+            color: Colors.red.shade500,
           ),
           onPressed: clear,
         ),
@@ -850,24 +886,32 @@ Widget numberTextFieldBig(
               fontWeight: FontWeight.w900,
               fontSize: 50),
           prefixIconConstraints:
-              const BoxConstraints(minHeight: 90, minWidth: 90),
-          prefixIcon: IconButton(
-            icon: Icon(
-              size: 80,
-              Icons.calculate_outlined,
-              color: readOnly ? Colors.teal : null,
+          const BoxConstraints(minHeight: 50, minWidth: 50),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: readOnly ? Colors.teal : Colors.red.shade500)),
+              child: IconButton(
+                icon:
+                Image.asset(
+                  'assets/icons/icons8-plus-slash-minus-50.png',
+                  color: readOnly ? Colors.teal : Colors.red.shade500,
+                  width: 50,
+                ),
+                onPressed: openCalc,
+              ),
             ),
-            onPressed: openCalc,
           ),
           suffixText: suffixText,
           filled: true,
           suffixIconConstraints:
               const BoxConstraints(minHeight: 60, minWidth: 60),
           suffixIcon: IconButton(
-            icon: const Icon(
-              size: 50,
-              Icons.close,
-              color: Colors.red,
+            icon: Image.asset(
+              'assets/icons/icons8-sort-left-50.png',
+              color: Colors.red.shade500,
             ),
             onPressed: clear,
           ),

@@ -1,22 +1,15 @@
-import 'dart:convert';
-
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:masked_text/masked_text.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/checkout_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/wholesale_print_bill_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/dialog/refill_dialog.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
-// import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
@@ -27,8 +20,6 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -95,18 +86,18 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     super.initState();
 
     // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text = "45000";
-    // productBuyThengPriceCtrl.text = "44000";
-    // productSellPriceCtrl.text = "45000";
-    // productBuyPriceCtrl.text = "44000";
+    orderDateCtrl.text = "01-02-2025";
+    referenceNumberCtrl.text = "90803535";
+    productSellThengPriceCtrl.text = "45000";
+    productBuyThengPriceCtrl.text = "44000";
+    productSellPriceCtrl.text = "45000";
+    productBuyPriceCtrl.text = "44000";
     // priceExcludeTaxTotalCtrl.text = "89000";
     // purchasePriceTotalCtrl.text = "88000";
     // priceDiffTotalCtrl.text = "2000";
     // taxBaseTotalCtrl.text = "1000";
     // taxAmountTotalCtrl.text = "500";
-    // priceIncludeTaxTotalCtrl.text = "90000";
+    // priceIncludeTaxTotalCtrl.text = "92000";
 
     calc = SimpleCalculator(
       value: _currentValue!,
@@ -292,12 +283,11 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'HEADER [ส่วนหัว]',
-                          style: TextStyle(fontSize: 20),
-                        )
-                      ),
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            'HEADER [ส่วนหัว]',
+                            style: TextStyle(fontSize: 20),
+                          )),
                       const SizedBox(
                         height: 20,
                       ),
@@ -375,7 +365,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                 child: buildTextFieldX(
                                   labelText: "ทองคำแท่งขายออก",
                                   inputType: TextInputType.phone,
-
                                   controller: productSellThengPriceCtrl,
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
@@ -473,10 +462,12 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                       "หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)",
                                   inputType: TextInputType.phone,
                                   controller: purchasePriceTotalCtrl,
-
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
                                   ],
+                                  onChanged: (value) {
+                                    calTotal();
+                                  }
                                 ),
                               ),
                             ),
@@ -493,7 +484,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   labelText: "ผลต่าง (ฐานภาษี)",
                                   inputType: TextInputType.phone,
                                   controller: priceDiffTotalCtrl,
-
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
                                   ],
@@ -507,7 +497,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   labelText: "มูลค่าฐานภาษีมูลค่าเพิ่ม",
                                   inputType: TextInputType.phone,
                                   controller: taxBaseTotalCtrl,
-
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
                                   ],
@@ -527,7 +516,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   labelText: "ภาษีมูลค่าเพิ่ม",
                                   inputType: TextInputType.phone,
                                   controller: taxAmountTotalCtrl,
-
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
                                   ],
@@ -562,13 +550,19 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             ),
                           ),
                           onPressed: () async {
+                            // if (purchasePriceTotalCtrl.text.isEmpty) {
+                            //   Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
+                            //       action: () {});
+                            //   return;
+                            // }
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                    const RefillDialog(),
-                                    fullscreenDialog: true))
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RefillDialog(),
+                                        fullscreenDialog: true))
                                 .whenComplete(() {
+                              calTotal();
                               setState(() {});
                             });
                           },
@@ -653,47 +647,46 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                           //     '/order/gen/5', Global.requestObj(null));
                           // await pr.hide();
                           // if (result!.status == "success") {
-                            OrderModel order = OrderModel(
-                                orderId: "",
-                                orderDate: Global.convertDate(orderDateCtrl.text),
-                                details: Global.refillOrderDetail!,
-                                referenceNo: referenceNumberCtrl.text,
-                                sellTPrice: Global.toNumber(
-                                    productSellThengPriceCtrl.text),
-                                buyTPrice: Global.toNumber(
-                                    productBuyThengPriceCtrl.text),
-                                sellPrice:
-                                    Global.toNumber(productSellPriceCtrl.text),
-                                buyPrice:
-                                    Global.toNumber(productBuyPriceCtrl.text),
-                                priceIncludeTax: Global.toNumber(
-                                    priceIncludeTaxTotalCtrl.text),
-                                priceExcludeTax: Global.toNumber(
-                                    priceExcludeTaxTotalCtrl.text),
-                                purchasePrice: Global.toNumber(
-                                    purchasePriceTotalCtrl.text),
-                                priceDiff:
-                                    Global.toNumber(priceDiffTotalCtrl.text),
-                                taxBase: Global.toNumber(taxBaseTotalCtrl.text),
-                                taxAmount:
-                                    Global.toNumber(taxAmountTotalCtrl.text),
-                                orderTypeId: 5);
-                            final data = order.toJson();
-                            Global.orders?.add(OrderModel.fromJson(data));
-                            widget
-                                .refreshCart(Global.orders?.length.toString());
-                            Global.refillOrderDetail!.clear();
-                            if (mounted) {
-                              resetTotal();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
+                          OrderModel order = OrderModel(
+                              orderId: "",
+                              orderDate: Global.convertDate(orderDateCtrl.text),
+                              details: Global.refillOrderDetail!,
+                              referenceNo: referenceNumberCtrl.text,
+                              sellTPrice: Global.toNumber(
+                                  productSellThengPriceCtrl.text),
+                              buyTPrice: Global.toNumber(
+                                  productBuyThengPriceCtrl.text),
+                              sellPrice:
+                                  Global.toNumber(productSellPriceCtrl.text),
+                              buyPrice:
+                                  Global.toNumber(productBuyPriceCtrl.text),
+                              priceIncludeTax: Global.toNumber(
+                                  priceIncludeTaxTotalCtrl.text),
+                              priceExcludeTax: Global.toNumber(
+                                  priceExcludeTaxTotalCtrl.text),
+                              purchasePrice:
+                                  Global.toNumber(purchasePriceTotalCtrl.text),
+                              priceDiff:
+                                  Global.toNumber(priceDiffTotalCtrl.text),
+                              taxBase: Global.toNumber(taxBaseTotalCtrl.text),
+                              taxAmount:
+                                  Global.toNumber(taxAmountTotalCtrl.text),
+                              orderTypeId: 5);
+                          final data = order.toJson();
+                          Global.orders?.add(OrderModel.fromJson(data));
+                          widget.refreshCart(Global.orders?.length.toString());
+                          Global.refillOrderDetail!.clear();
+                          if (mounted) {
+                            resetTotal();
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                "เพิ่มลงรถเข็นสำเร็จ...",
+                                style: TextStyle(fontSize: 22),
+                              ),
+                              backgroundColor: Colors.teal,
+                            ));
+                          }
                           // } else {
                           //   if (mounted) {
                           //     Alert.warning(
@@ -777,7 +770,8 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                               context, 'คำเตือน', 'กรุณาเพิ่มข้อมูลก่อน', 'OK');
                           return;
                         }
-                        Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                             action: () async {
                           // final ProgressDialog pr = ProgressDialog(context,
                           //     type: ProgressDialogType.normal,
@@ -790,56 +784,56 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             //     '/order/gen/5', Global.requestObj(null));
                             // await pr.hide();
                             // if (result!.status == "success") {
-                              OrderModel order = OrderModel(
-                                  orderId: "",
-                                  orderDate: Global.convertDate(orderDateCtrl.text),
-                                  details: Global.refillOrderDetail!,
-                                  referenceNo: referenceNumberCtrl.text,
-                                  sellTPrice: Global.toNumber(
-                                      productSellThengPriceCtrl.text),
-                                  buyTPrice: Global.toNumber(
-                                      productBuyThengPriceCtrl.text),
-                                  sellPrice: Global.toNumber(
-                                      productSellPriceCtrl.text),
-                                  buyPrice:
-                                      Global.toNumber(productBuyPriceCtrl.text),
-                                  priceIncludeTax: Global.toNumber(
-                                      priceIncludeTaxTotalCtrl.text),
-                                  priceExcludeTax: Global.toNumber(
-                                      priceExcludeTaxTotalCtrl.text),
-                                  purchasePrice: Global.toNumber(
-                                      purchasePriceTotalCtrl.text),
-                                  priceDiff:
-                                      Global.toNumber(priceDiffTotalCtrl.text),
-                                  taxBase:
-                                      Global.toNumber(taxBaseTotalCtrl.text),
-                                  taxAmount:
-                                      Global.toNumber(taxAmountTotalCtrl.text),
-                                  orderTypeId: 5);
-                              final data = order.toJson();
-                              // motivePrint(data);
-                              // return;
-                              Global.orders?.add(OrderModel.fromJson(data));
-                              widget.refreshCart(
-                                  Global.orders?.length.toString());
-                              Global.refillOrderDetail!.clear();
-                              if (mounted) {
-                                resetTotal();
-                                Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CheckOutScreen()))
-                                    .whenComplete(() {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                      () async {
-                                    widget.refreshCart(
-                                        Global.orders?.length.toString());
-                                    setState(() {});
-                                  });
+                            OrderModel order = OrderModel(
+                                orderId: "",
+                                orderDate:
+                                    Global.convertDate(orderDateCtrl.text),
+                                details: Global.refillOrderDetail!,
+                                referenceNo: referenceNumberCtrl.text,
+                                sellTPrice: Global.toNumber(
+                                    productSellThengPriceCtrl.text),
+                                buyTPrice: Global.toNumber(
+                                    productBuyThengPriceCtrl.text),
+                                sellPrice:
+                                    Global.toNumber(productSellPriceCtrl.text),
+                                buyPrice:
+                                    Global.toNumber(productBuyPriceCtrl.text),
+                                priceIncludeTax: Global.toNumber(
+                                    priceIncludeTaxTotalCtrl.text),
+                                priceExcludeTax: Global.toNumber(
+                                    priceExcludeTaxTotalCtrl.text),
+                                purchasePrice: Global.toNumber(
+                                    purchasePriceTotalCtrl.text),
+                                priceDiff:
+                                    Global.toNumber(priceDiffTotalCtrl.text),
+                                taxBase: Global.toNumber(taxBaseTotalCtrl.text),
+                                taxAmount:
+                                    Global.toNumber(taxAmountTotalCtrl.text),
+                                orderTypeId: 5);
+                            final data = order.toJson();
+                            // motivePrint(data);
+                            // return;
+                            Global.orders?.add(OrderModel.fromJson(data));
+                            widget
+                                .refreshCart(Global.orders?.length.toString());
+                            Global.refillOrderDetail!.clear();
+                            if (mounted) {
+                              resetTotal();
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const WholeSaleCheckOutScreen()))
+                                  .whenComplete(() {
+                                Future.delayed(
+                                    const Duration(milliseconds: 500),
+                                    () async {
+                                  widget.refreshCart(
+                                      Global.orders?.length.toString());
+                                  setState(() {});
                                 });
-                              }
+                              });
+                            }
                             // } else {
                             //   if (mounted) {
                             //     Alert.warning(
@@ -863,11 +857,15 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.save, color: textColor,),
+                          const Icon(
+                            Icons.save,
+                            color: textColor,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'บันทึก',
-                            style: TextStyle(fontSize: size.getWidthPx(8), color: textColor),
+                            style: TextStyle(
+                                fontSize: size.getWidthPx(8), color: textColor),
                           )
                         ],
                       ),
@@ -902,6 +900,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
       Global.refillOrderDetail!.removeAt(index);
+      calTotal();
       if (Global.refillOrderDetail!.isEmpty) {
         Global.refillOrderDetail!.clear();
       }
@@ -986,6 +985,43 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
+    setState(() {});
+  }
+
+  void calTotal() {
+    if (purchasePriceTotalCtrl.text.isEmpty) {
+      Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
+          action: () {});
+      return;
+    }
+
+    priceExcludeTaxTotalCtrl.text =
+        Global.format(Global.refillOrderDetail!.fold(0, (i, el) {
+      return i + el.priceExcludeTax!;
+    }));
+
+    priceDiffTotalCtrl.text = Global.format(
+        Global.toNumber(priceExcludeTaxTotalCtrl.text) -
+            Global.toNumber(purchasePriceTotalCtrl.text));
+
+    taxBaseTotalCtrl.text = Global.format(
+        Global.toNumber(priceExcludeTaxTotalCtrl.text) -
+            Global.toNumber(purchasePriceTotalCtrl.text));
+
+    taxAmountTotalCtrl.text =
+        Global.format(Global.toNumber(taxBaseTotalCtrl.text) * getVatValue());
+
+    priceIncludeTaxTotalCtrl.text = Global.format(
+        Global.toNumber(priceExcludeTaxTotalCtrl.text) +
+            Global.toNumber(taxAmountTotalCtrl.text));
+
+    if (Global.toNumber(priceExcludeTaxTotalCtrl.text) == 0) {
+      priceIncludeTaxTotalCtrl.text = "";
+      priceExcludeTaxTotalCtrl.text = "";
+      priceDiffTotalCtrl.text = "";
+      taxAmountTotalCtrl.text = "";
+      taxBaseTotalCtrl.text = "";
+    }
     setState(() {});
   }
 }

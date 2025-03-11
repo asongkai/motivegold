@@ -467,10 +467,10 @@ class _StockMovementReportListScreenState
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
                               paddedTextBig(
-                                  ' ${Global.format(e.unitCost ?? 0)}',
+                                  ' ${Global.format6(e.unitCost ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
-                              paddedTextBig(' ${Global.format(e.price ?? 0)}',
+                              paddedTextBig(' ${Global.format6(e.price ?? 0)}',
                                   style: const TextStyle(fontSize: 16),
                                   align: TextAlign.right),
                             ],

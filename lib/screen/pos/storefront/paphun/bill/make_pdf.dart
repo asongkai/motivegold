@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/model/invoice.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
 import 'package:motivegold/utils/util.dart';
@@ -117,8 +118,8 @@ Future<Uint8List> makePdf(Invoice invoice) async {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('ตัวอักษร'),
-                  Text(NumberToWordThai.convert(
-                      Global.getOrderTotal(invoice.order).toInt()))
+                  Text(NumberToThaiWords.convertDouble(
+                      Global.getOrderTotal(invoice.order)))
                 ],
               ),
               SizedBox(height: 10),

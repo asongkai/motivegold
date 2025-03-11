@@ -1,10 +1,7 @@
-import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
-import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -17,8 +14,6 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 
 class SettingValueScreen extends StatefulWidget {
   const SettingValueScreen({super.key, this.posIdModel});

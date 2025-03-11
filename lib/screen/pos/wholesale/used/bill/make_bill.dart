@@ -5,6 +5,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
@@ -241,7 +242,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                                 style: const TextStyle(fontSize: 9)),
                             SizedBox(height: 41),
                             Text(
-                                '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())} -',
+                                '- ${NumberToThaiWords.convertDouble(Global.getOrderTotalWholeSale(invoice.order))} -',
                                 style: const TextStyle(fontSize: 9)),
                           ])),
                 )),
@@ -372,14 +373,14 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                       Expanded(
                         flex: 3,
                         child: Text(
-                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} ${invoice.order.customer?.firstName} ${invoice.order.customer?.lastName} :',
+                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
-                            '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
+                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))}',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),

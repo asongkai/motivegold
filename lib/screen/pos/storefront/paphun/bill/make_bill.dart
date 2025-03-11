@@ -5,6 +5,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
@@ -301,7 +302,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                               ),
                             ]),
                             Text(
-                                '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())}บาทถ้วน -',
+                                '- ${NumberToThaiWords.convertDouble(Global.getOrderTotal(invoice.order))} -',
                                 style: const TextStyle(fontSize: 9)),
                           ])),
                 )),

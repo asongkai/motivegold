@@ -759,7 +759,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                     var detail = await ApiServices.post(
                                         '/orderdetail/adjust/sell',
                                         Global.requestObj(selectedDetail));
-                                    print(detail!.data);
+                                    // print(detail!.data);
                                     await pr.hide();
                                     if (detail?.status == "success") {
                                       motivePrint("Confirm completed");

@@ -39,6 +39,8 @@ class CustomerModel {
   int? isBuyer;
   String? customerType;
   String? remark;
+  String? workPermit;
+  String? passportId;
 
   CustomerModel({
     this.id,
@@ -67,6 +69,8 @@ class CustomerModel {
     this.isBuyer,
     this.customerType,
     this.remark,
+    this.workPermit,
+    this.passportId
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
@@ -94,6 +98,8 @@ class CustomerModel {
     isBuyer: json["isBuyer"],
     customerType: json["customerType"],
     remark: json["remark"],
+    workPermit: json["workPermit"],
+    passportId: json["passportId"],
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
   );
@@ -123,6 +129,8 @@ class CustomerModel {
     "isBuyer": isBuyer,
     "customerType": customerType,
     "remark": remark,
+    "workPermit": workPermit,
+    "passportId": passportId,
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
   };

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:masked_text/masked_text.dart';
 import 'package:motivegold/model/qty_location.dart';
-import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/used/dialog/sell_used_dialog.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
@@ -307,8 +307,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
 
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -576,6 +577,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       "หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)",
                                   inputType: TextInputType.phone,
                                   controller: purchasePriceTotalCtrl,
+                                  onChanged: (value) {
+                                    calTotal();
+                                  },
                                   inputFormat: [
                                     ThousandsFormatter(allowFraction: true)
                                   ],
@@ -661,13 +665,19 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                             ),
                           ),
                           onPressed: () async {
+                            // if (purchasePriceTotalCtrl.text.isEmpty) {
+                            //   Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
+                            //       action: () {});
+                            //   return;
+                            // }
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                    const SellUsedDialog(),
-                                    fullscreenDialog: true))
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SellUsedDialog(),
+                                        fullscreenDialog: true))
                                 .whenComplete(() {
+                              calTotal();
                               setState(() {});
                             });
                           },
@@ -749,7 +759,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                           // if (result!.status == "success") {
                           OrderModel order = OrderModel(
                               orderId: "",
-                              orderDate: DateTime.now(),
+                              orderDate: Global.convertDate(orderDateCtrl.text),
                               details: Global.usedSellDetail!,
                               referenceNo: referenceNumberCtrl.text,
                               sellTPrice: Global.toNumber(
@@ -887,7 +897,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                             // if (result!.status == "success") {
                             OrderModel order = OrderModel(
                                 orderId: "",
-                                orderDate: DateTime.now(),
+                                orderDate:
+                                    Global.convertDate(orderDateCtrl.text),
                                 details: Global.usedSellDetail!,
                                 referenceNo: referenceNumberCtrl.text,
                                 sellTPrice: Global.toNumber(
@@ -922,7 +933,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const CheckOutScreen()))
+                                              const WholeSaleCheckOutScreen()))
                                   .whenComplete(() {
                                 Future.delayed(
                                     const Duration(milliseconds: 500),
@@ -978,7 +989,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
       productEntryWeightCtrl.text = Global.format(
-          (Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productEntryWeightBahtCtrl.text) *
+              getUnitWeightValue()));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -986,8 +998,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
 
   void gramChanged() {
     if (productEntryWeightCtrl.text.isNotEmpty) {
-      productEntryWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue()));
+      productEntryWeightBahtCtrl.text = Global.format(
+          (Global.toNumber(productEntryWeightCtrl.text) /
+              getUnitWeightValue()));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }
@@ -1019,6 +1032,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
       Global.usedSellDetail!.removeAt(index);
+      calTotal();
       if (Global.usedSellDetail!.isEmpty) {
         Global.usedSellDetail!.clear();
       }
@@ -1104,6 +1118,42 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
+    setState(() {});
+  }
+
+  void calTotal() {
+    if (purchasePriceTotalCtrl.text.isEmpty) {
+      Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
+          action: () {});
+      return;
+    }
+
+    priceIncludeTaxTotalCtrl.text =
+        Global.format(Global.usedSellDetail!.fold(0, (i, el) {
+      return i + el.priceIncludeTax!;
+    }));
+
+    priceDiffTotalCtrl.text = Global.format(
+        Global.toNumber(priceIncludeTaxTotalCtrl.text) -
+            Global.toNumber(purchasePriceTotalCtrl.text));
+
+    taxBaseTotalCtrl.text = Global.toNumber(priceDiffTotalCtrl.text) < 0 ? "0" :
+        Global.format(Global.toNumber(priceDiffTotalCtrl.text) * 100 / 107);
+
+    taxAmountTotalCtrl.text = Global.toNumber(priceDiffTotalCtrl.text) < 0 ? "0" :
+        Global.format(Global.toNumber(priceDiffTotalCtrl.text) * 7 / 107);
+
+    priceExcludeTaxTotalCtrl.text = Global.format(
+        Global.toNumber(priceIncludeTaxTotalCtrl.text) -
+            Global.toNumber(taxAmountTotalCtrl.text));
+
+    if (Global.toNumber(priceIncludeTaxTotalCtrl.text) == 0) {
+      priceIncludeTaxTotalCtrl.text = "";
+      priceExcludeTaxTotalCtrl.text = "";
+      priceDiffTotalCtrl.text = "";
+      taxAmountTotalCtrl.text = "";
+      taxBaseTotalCtrl.text = "";
+    }
     setState(() {});
   }
 }

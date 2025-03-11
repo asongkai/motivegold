@@ -36,6 +36,7 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
   final TextEditingController provinceCtrl = TextEditingController();
   final TextEditingController branchCodeCtrl = TextEditingController();
   final TextEditingController branchIdCtrl = TextEditingController();
+  final TextEditingController licenseNumberCtrl = TextEditingController();
 
   bool loading = false;
   List<CompanyModel>? companies;
@@ -209,6 +210,34 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: nameCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'เลขที่ใบอนุญาตค้าทองเก่า'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.phone,
+                                        controller: licenseNumberCtrl,
                                       ),
                                     ],
                                   ),
@@ -482,7 +511,8 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
                   "branchId": branchIdCtrl.text,
-                  "branchCode": branchCodeCtrl.text
+                  "branchCode": branchCodeCtrl.text,
+                  "oldGoldLicenseNumber": licenseNumberCtrl.text
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

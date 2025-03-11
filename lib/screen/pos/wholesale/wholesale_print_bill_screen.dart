@@ -7,7 +7,9 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -20,7 +22,6 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'used/preview.dart';
 
 class WholeSalePrintBillScreen extends StatefulWidget {
   const WholeSalePrintBillScreen({super.key});
@@ -51,6 +52,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
     });
     try {
       Response? result;
+      Response? payment;
       if (Global.pairId == null) {
         result = await ApiServices.post(
             '/order/order-list', encoder.convert(Global.orderIds));
@@ -58,12 +60,17 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
         result = await ApiServices.post(
             '/order/print-order-list/${Global.pairId}',
             Global.requestObj(null));
+        payment = await ApiServices.post(
+            '/order/payment/${Global.pairId}', Global.requestObj(null));
       }
+      // motivePrint(payment?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> dump = orderListModelFromJson(data);
         setState(() {
           orders = dump;
+          Global.paymentList =
+              paymentListModelFromJson(jsonEncode(payment?.data));
         });
       } else {
         orders = [];
@@ -201,12 +208,15 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                           (e) => TableRow(
                             decoration: const BoxDecoration(),
                             children: [
-                              paddedText(e.productName),
+                              paddedTextBigXL(e.productName),
                               paddedText(Global.format(e.weight!),
                                   align: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
-                              paddedText(Global.format(e.priceIncludeTax!),
+                              paddedText(
+                                  Global.format(order.orderTypeId == 5
+                                      ? e.priceExcludeTax!
+                                      : e.priceIncludeTax!),
                                   align: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -237,8 +247,8 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                               padding: const EdgeInsets.all(20),
                               child: Text(
                                   Global.format(
-                                      Global.getOrderSubTotalAmountApi(
-                                          order.details)),
+                                      Global.getOrderSubTotalAmountApiWholeSale(
+                                          order.orderTypeId!, order.details)),
                                   textAlign: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -294,8 +304,10 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                               child: Text(
                                   Global.format(
                                       Global.getOrderGrantTotalAmountApi(
-                                          Global.getOrderSubTotalAmountApi(
-                                              order.details),
+                                          Global
+                                              .getOrderSubTotalAmountApiWholeSale(
+                                                  order.orderTypeId!,
+                                                  order.details),
                                           order.discount)),
                                   textAlign: TextAlign.center,
                                   style:
@@ -314,6 +326,8 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                   children: [
                     GestureDetector(
                       onTap: () async {
+                        // loadOrder();
+                        // return;
                         final ProgressDialog pr = ProgressDialog(context,
                             type: ProgressDialogType.normal,
                             isDismissible: true,
@@ -321,45 +335,41 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                         await pr.show();
                         pr.update(message: 'processing'.tr());
 
-                        var result = await ApiServices.get(
-                            '/order/by-order-id/${order.orderId}');
-                        var payment = await ApiServices.post(
-                            '/order/payment/${order.pairId}',
-                            Global.requestObj(null));
-                        Global.paymentList =
-                            paymentListModelFromJson(jsonEncode(payment?.data));
+                        try {
+                          var payment = await ApiServices.post(
+                              '/order/payment/${order.pairId}',
+                              Global.requestObj(null));
+                          Global.paymentList = paymentListModelFromJson(
+                              jsonEncode(payment?.data));
 
-                        await pr.hide();
-
-                        if (result?.status == "success") {
-                          OrderModel order = OrderModel.fromJson(result!.data);
+                          await pr.hide();
                           Invoice invoice = Invoice(
                               order: order,
                               customer: order.customer!,
                               payments: Global.paymentList,
                               orders: orders,
                               items: order.details!);
-                          if (mounted) {
-                            if (order.orderTypeId == 5) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PreviewRefillGoldPage(
-                                            invoice: invoice,
-                                          )));
-                            }
 
-                            if (order.orderTypeId == 6) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PreviewSellUsedGoldPage(
-                                            invoice: invoice,
-                                          )));
-                            }
+                          if (order.orderTypeId == 5) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PreviewRefillGoldPage(
+                                          invoice: invoice,
+                                        )));
                           }
+
+                          if (order.orderTypeId == 6) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewSellUsedGoldPage(
+                                          invoice: invoice,
+                                        )));
+                          }
+                        } catch (e) {
+                          await pr.hide();
                         }
                       },
                       child: Container(
@@ -380,122 +390,6 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
             ],
           ),
           // const Divider(),
-          const SizedBox(
-            height: 100,
-          ),
-        ],
-      ),
-    );
-  }
-
-  void removeProduct(int i) async {
-    Global.orders!.removeAt(i);
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      setState(() {});
-    });
-  }
-}
-
-class PaymentCard extends StatelessWidget {
-  const PaymentCard(
-      {Key? key, this.isSelected = false, this.title, this.image, this.action})
-      : super(key: key);
-
-  final bool? isSelected;
-  final String? title;
-  final String? image;
-  final Function()? action;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: action,
-      child: Stack(
-        children: [
-          Container(
-            height: getProportionateScreenWidth(30),
-            padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(8.0),
-                vertical: getProportionateScreenHeight(8.0)),
-            margin: EdgeInsets.only(
-              bottom: getProportionateScreenHeight(8.0),
-            ),
-            decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(
-                getProportionateScreenWidth(
-                  4,
-                ),
-              ),
-              boxShadow: [
-                isSelected!
-                    ? BoxShadow(
-                        color: kShadowColor,
-                        offset: Offset(
-                          getProportionateScreenWidth(2),
-                          getProportionateScreenWidth(4),
-                        ),
-                        blurRadius: 80,
-                      )
-                    : const BoxShadow(color: Colors.transparent),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: getProportionateScreenWidth(30),
-                  height: getProportionateScreenWidth(30),
-                  decoration: ShapeDecoration(
-                    color: kGreyShade5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        getProportionateScreenWidth(8.0),
-                      ),
-                    ),
-                  ),
-                  child: image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(image!,
-                              fit: BoxFit.cover, width: 1000.0),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            "assets/images/no_image.png",
-                            fit: BoxFit.cover,
-                            width: 1000.0,
-                          )),
-                ),
-                SizedBox(
-                  width: getProportionateScreenWidth(8),
-                ),
-                Expanded(
-                  child: Text(
-                    title!,
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(8),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          if (isSelected!)
-            Positioned(
-              top: 0,
-              right: 0,
-              child: GestureDetector(
-                child: const IconButton(
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.teal,
-                  ),
-                  onPressed: null,
-                ),
-              ),
-            ),
         ],
       ),
     );

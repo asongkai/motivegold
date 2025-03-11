@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
@@ -209,9 +210,9 @@ Future<Uint8List> makeSellUsedGoldPdf(OrderModel sell) async {
                   TableRow(children: [
                     paddedText('', align: TextAlign.center),
                     paddedText(
-                        NumberToWordThai.convert(sell.priceIncludeTax == null
+                        NumberToThaiWords.convertDouble(sell.priceIncludeTax == null
                             ? 0
-                            : sell.priceIncludeTax!.toInt()),
+                            : sell.priceIncludeTax!),
                         align: TextAlign.center,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     paddedText('รวมเป็นเงินสุทธิ',

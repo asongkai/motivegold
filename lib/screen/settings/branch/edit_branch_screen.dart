@@ -36,6 +36,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   final TextEditingController provinceCtrl = TextEditingController();
   final TextEditingController branchCodeCtrl = TextEditingController();
   final TextEditingController branchIdCtrl = TextEditingController();
+  final TextEditingController licenseNumberCtrl = TextEditingController();
 
   bool loading = false;
 
@@ -53,6 +54,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     provinceCtrl.text = widget.branch.province ?? '';
     branchCodeCtrl.text = widget.branch.branchCode ?? '';
     branchIdCtrl.text = widget.branch.branchId ?? '';
+    licenseNumberCtrl.text = widget.branch.oldGoldLicenseNumber ?? '';
   }
 
   @override
@@ -99,6 +101,34 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: nameCtrl,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      buildTextFieldBig(
+                                        labelText: 'เลขที่ใบอนุญาตค้าทองเก่า'.tr(),
+                                        validator: null,
+                                        inputType: TextInputType.phone,
+                                        controller: licenseNumberCtrl,
                                       ),
                                     ],
                                   ),
@@ -373,7 +403,8 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
                   "branchId": branchIdCtrl.text,
-                  "branchCode": branchCodeCtrl.text
+                  "branchCode": branchCodeCtrl.text,
+                  "oldGoldLicenseNumber": licenseNumberCtrl.text
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

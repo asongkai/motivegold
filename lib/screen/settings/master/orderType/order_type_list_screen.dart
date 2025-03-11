@@ -5,16 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/model/bank/bank.dart';
 import 'package:motivegold/model/order_type.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/response.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/screen/settings/master/bank/add_bank_screen.dart';
-import 'package:motivegold/screen/settings/master/bank/edit_bank_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
@@ -392,6 +388,9 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                                   onChanged: (ProductModel value) async {
                                     productModel = value;
                                     productNotifier!.value = value;
+                                    setState(() {
+
+                                    });
                                   },
                                   child: DropDownObjectChildWidget(
                                     key: GlobalKey(),
@@ -443,6 +442,9 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                                   onChanged: (WarehouseModel value) {
                                     warehouseModel = value;
                                     warehouseNotifier!.value = value;
+                                    setState(() {
+
+                                    });
                                   },
                                   child: DropDownObjectChildWidget(
                                     key: GlobalKey(),
@@ -474,37 +476,6 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
         });
   }
 
-  void remove(int id, int i) async {
-    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
-        action: () async {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      try {
-        var result =
-            await ApiServices.post('/ordertype/$id', Global.requestObj(null));
-        // motivePrint(result?.data);
-        await pr.hide();
-        if (result?.status == "success") {
-          dataList!.removeAt(i);
-          setState(() {});
-        } else {
-          if (mounted) {
-            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-                action: () {});
-          }
-        }
-      } catch (e) {
-        await pr.hide();
-        if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-              action: () {});
-        }
-      }
-    });
-  }
-
   void save(BuildContext context, OrderTypeModel model) {
     if (productModel == null) {
       return;
@@ -518,6 +489,9 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
     model.defaultWarehouseId = warehouseModel?.id;
     model.orderTypeId = model.id;
 
+    // motivePrint(warehouseModel?.toJson());
+    // motivePrint(model.toJson());
+
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
       final ProgressDialog pr = ProgressDialog(context,
@@ -529,7 +503,7 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
         var result = await ApiServices.put(
             '/ordertype', model.id, Global.requestObj(model));
         await pr.hide();
-        // motivePrint(result?.toJson());
+        motivePrint(result?.toJson());
         if (result?.status == "success") {
           if (mounted) {
             loadData();

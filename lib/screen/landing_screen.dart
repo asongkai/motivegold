@@ -149,7 +149,8 @@ class _LandingScreenState extends State<LandingScreen> {
 
       var settings = await ApiServices.post('/settings/all', Global.requestObj(null));
       if (settings?.status == "success") {
-        var settingsValueModel = SettingsValueModel.fromJson(settings?.data);
+        motivePrint(settings?.toJson());
+        var settingsValueModel = settings?.data != null ? SettingsValueModel.fromJson(settings?.data) : null;
         Global.settingValueModel = settingsValueModel;
       }
 

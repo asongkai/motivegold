@@ -86,11 +86,11 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
           paddedTextBigXL(
-              Global.format(e.unitCost ?? 0),
+              Global.format6(e.unitCost ?? 0),
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
           paddedTextBigXL(
-              Global.format(e.price ?? 0),
+              Global.format6(e.price ?? 0),
               style: const TextStyle(fontSize: 12),
               align: TextAlign.right),
         ],

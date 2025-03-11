@@ -3,7 +3,6 @@ import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/landing_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/refill_gold_history_screen.dart';
 import 'package:motivegold/screen/settings/auth-history/auth_history_screen.dart';
@@ -20,7 +19,6 @@ import 'package:motivegold/screen/settings/reports/sell-new-gold-reports/sell_ne
 import 'package:motivegold/screen/settings/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/settings/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
 import 'package:motivegold/screen/settings/reports/stock-reports/stock_report_list_screen.dart';
-import 'package:motivegold/screen/settings/reports/vat-reports/make_pdf.dart';
 import 'package:motivegold/screen/settings/reports/vat-reports/vat_report_screen.dart';
 import 'package:motivegold/screen/settings/setting-value/setting_value.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
@@ -28,7 +26,6 @@ import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/constants.dart';
@@ -549,8 +546,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       try {
                         await ApiServices.post('/user/logout/${Global.user!.id}', authObject);
                         await pr.hide();
-                        Global.isLoggedIn = false;
-                        Global.user = UserModel();
+                        resetAtLogout();
                         LocalStorage.sharedInstance.setAuthStatus(key: Constants.isLoggedIn, value: "false");
                         if (mounted) {
                           Navigator.pushReplacement(context, MaterialPageRoute(

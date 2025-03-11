@@ -5,6 +5,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/number_to_thai.dart';
@@ -17,6 +18,7 @@ import 'package:table_desk/table_desk.dart';
 
 Future<Uint8List> makeRefillBill(Invoice invoice) async {
   motivePrint(invoice.order?.toJson());
+  motivePrint(NumberToThaiWords.convertDouble(474445.99));
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -157,7 +159,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                     ),
                   ),
                   child: paddedText(
-                      '${Global.format(invoice.items[i].priceIncludeTax ?? 0)}',
+                      '${Global.format(invoice.items[i].priceExcludeTax ?? 0)}',
                       align: TextAlign.right),
                 )),
           ]),
@@ -216,14 +218,14 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
   );
   widgets.add(
     Container(
-      height: 70,
+      height: 90,
       decoration: const BoxDecoration(
         border: Border(
             left: BorderSide(), bottom: BorderSide(), right: BorderSide()),
       ),
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
                 flex: 3,
@@ -245,9 +247,9 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                                   'บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
                                   style: const TextStyle(fontSize: 9)),
                             ]),
-                            SizedBox(height: 27),
+                            SizedBox(height: 10),
                             Text(
-                                '- ${NumberToWordThai.convert(Global.getOrderTotal(invoice.order).toInt())} -',
+                                ' - ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} - ', overflow: TextOverflow.visible,
                                 style: const TextStyle(fontSize: 9)),
                           ])),
                 )),
@@ -300,32 +302,29 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                              '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
+                              '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text(
-                              '${Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
-                                  color: (invoice.order.priceDiff ?? 0) <
-                                          0
+                                  color: (invoice.order.priceDiff ?? 0) < 0
                                       ? PdfColors.red
                                       : PdfColors.black)),
                           // Text(
                           //     '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
                           //     textAlign: TextAlign.right,
                           //     style: const TextStyle(fontSize: 9)),
-                          Text(
-                              '${Global.format(invoice.order.taxAmount ?? 0)}',
+                          Text('${Global.format(invoice.order.taxAmount ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
+                              '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -358,14 +357,14 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                       Expanded(
                         flex: 3,
                         child: Text(
-                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} ${invoice.order.customer?.firstName} ${invoice.order.customer?.lastName} :  ',
+                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :  ',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
-                            '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
+                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))}',
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
@@ -392,11 +391,11 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                 height: 55,
                 child: Column(children: [
                   SizedBox(height: 5),
-                  Text('ผู้รับทอง/ผู้บันทึกรายการ', style: const TextStyle(fontSize: 9)),
+                  Text('ผู้รับทอง/ผู้บันทึกรายการ',
+                      style: const TextStyle(fontSize: 9)),
                   Spacer(),
                   SizedBox(height: 5),
-                ])
-            ),
+                ])),
           ),
         ])),
   );
@@ -422,16 +421,17 @@ Widget sn(List<OrderModel>? orders) {
             child: Text('ซื้อทองคำรูปพรรณ 96.5% : ',
                 style: const TextStyle(fontSize: 9)),
           ),
-          Expanded(flex: 2,
+          Expanded(
+              flex: 2,
               child:
                   Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   style: const TextStyle(fontSize: 9))),
@@ -453,16 +453,16 @@ Widget bu(List<OrderModel>? orders) {
                 style: const TextStyle(fontSize: 9)),
           ),
           Expanded(
-            flex: 2,
+              flex: 2,
               child:
                   Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   style: const TextStyle(fontSize: 9))),

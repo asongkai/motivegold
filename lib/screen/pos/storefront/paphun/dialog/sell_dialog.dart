@@ -586,7 +586,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'ราคาขายรวม',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: 40, color: textColor),
                                       ),
                                       SizedBox(
                                         width: 10,

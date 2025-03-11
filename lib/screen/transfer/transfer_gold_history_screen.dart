@@ -214,7 +214,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                     children: [
                       if (list.toBranchId != null &&
                           list.toBranchId != 0 &&
-                          list.status == 'PENDING')
+                          list.status == 'PENDING' && list.toBranchId != Global.user!.branchId)
                         GestureDetector(
                           onTap: () {
                             cancel(list);
