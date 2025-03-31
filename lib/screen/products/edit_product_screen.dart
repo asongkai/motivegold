@@ -6,6 +6,8 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -150,9 +152,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('แก้ไขสินค้า'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("แก้ไขสินค้า",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

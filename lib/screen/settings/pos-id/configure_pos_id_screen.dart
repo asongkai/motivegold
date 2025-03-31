@@ -8,6 +8,8 @@ import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -100,8 +102,16 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Set POS ID"),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("ตั้งค่า POS ID",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

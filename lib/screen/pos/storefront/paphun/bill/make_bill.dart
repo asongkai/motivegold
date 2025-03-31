@@ -1,20 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart' as mt;
-import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/utils/number_to_thai.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:table_desk/table_desk.dart';
 
 Future<Uint8List> makeBill(Invoice invoice) async {
   // motivePrint(invoice.payments?.length);
@@ -35,7 +29,7 @@ Future<Uint8List> makeBill(Invoice invoice) async {
 
   List<Widget> widgets = [];
   widgets.add(
-    header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี'),
+    await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี'),
   );
   widgets.add(
     docNo(invoice.order),

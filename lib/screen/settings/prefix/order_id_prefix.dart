@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/prefix.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -76,8 +78,16 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("ตั้งค่า ID การทำธุรกรรม"),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("ตั้งค่า ID การทำธุรกรรม",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

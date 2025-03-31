@@ -14,11 +14,14 @@ import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.d
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -43,10 +46,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   int? selectedOption = 0;
   bool loading = false;
 
+  // List<OrderModel> orders = [];
+
   @override
   void initState() {
     // implement initState
     super.initState();
+    Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
     Global.paymentAttachment = null;
@@ -63,15 +69,23 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('เช็คเอาท์'.tr()),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("เช็คเอาท์",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: Global.orders!.isEmpty
+          child: Global.orders.isEmpty
               ? const Center(
                   child: NoDataFoundWidget(),
                 )
@@ -90,60 +104,71 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedOption = 1;
-                                  loadCustomer();
-                                });
-                              },
-                              child: ListTile(
-                                title: const Text(
-                                  'ไม่สำแดงตน',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                leading: Radio<int>(
-                                  value: 1,
-                                  groupValue: selectedOption,
-                                  activeColor: Colors.blue[700],
-                                  onChanged: (value) {
+                        SizedBox(
+                          height: 50,
+                          width: MediaQuery.of(context).size.width,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 1,
+                                child: GestureDetector(
+                                  onTap: () {
                                     setState(() {
-                                      selectedOption = value!;
+                                      selectedOption = 1;
                                       loadCustomer();
-                                      // print("Button value: $value");
                                     });
                                   },
+                                  child: ListTile(
+                                    title: const Text(
+                                      'ไม่สำแดงตน',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    leading: Radio<int>(
+                                      value: 1,
+                                      groupValue: selectedOption,
+                                      activeColor: Colors.blue[700],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedOption = value!;
+                                          loadCustomer();
+                                          // print("Button value: $value");
+                                        });
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedOption = 0;
-                                  Global.customer = null;
-                                });
-                              },
-                              child: ListTile(
-                                title: const Text('สำแดงตน',
-                                    style: TextStyle(fontSize: 20)),
-                                leading: Radio<int>(
-                                  value: 0,
-                                  groupValue: selectedOption,
-                                  activeColor: Colors.blue[700],
-                                  onChanged: (value) {
+                              Expanded(
+                                flex: 1,
+                                child: GestureDetector(
+                                  onTap: () {
                                     setState(() {
-                                      selectedOption = value!;
+                                      selectedOption = 0;
                                       Global.customer = null;
-                                      // print("Button value: $value");
                                     });
                                   },
+                                  child: ListTile(
+                                    title: const Text('สำแดงตน',
+                                        style: TextStyle(fontSize: 20)),
+                                    leading: Radio<int>(
+                                      value: 0,
+                                      groupValue: selectedOption,
+                                      activeColor: Colors.blue[700],
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedOption = value!;
+                                          Global.customer = null;
+                                          // print("Button value: $value");
+                                        });
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                              Spacer()
+                            ],
+                          ),
                         ),
                         if (loading)
                           const SizedBox(
@@ -334,7 +359,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                                         const CustomerScreen(
                                                                           selected:
                                                                               true,
-                                                                          type: "C",
+                                                                          type:
+                                                                              "C",
                                                                         ),
                                                                 fullscreenDialog:
                                                                     true))
@@ -374,9 +400,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
                           child: Column(
                             children: [
-                              for (int i = 0; i < Global.orders!.length; i++)
+                              for (int i = 0; i < Global.orders.length; i++)
                                 _itemOrderList(
-                                    order: Global.orders![i], index: i)
+                                    order: Global.orders[i], index: i)
                               // ...Global.orders!.map((e) {
                               //   return _itemOrderList(order: e, index: 0);
                               // })
@@ -670,9 +696,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 }
 
                 var checkSellUsedGold =
-                Global.orders?.where((e) => e.orderTypeId == 2);
-                motivePrint(Global.orders!.first.toJson());
-                if (checkSellUsedGold!.isNotEmpty) {
+                    Global.orders.where((e) => e.orderTypeId == 2);
+                motivePrint(Global.orders.first.toJson());
+                if (checkSellUsedGold.isNotEmpty) {
                   if (selectedOption == 1) {
                     Alert.warning(context, 'Warning'.tr(),
                         'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
@@ -723,7 +749,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 // motivePrint(getPaymentTotal());
                 // return;
 
-                if (getPaymentTotal() > Global.toNumber(Global.format(Global.getPaymentTotal(Global.orders)))) {
+                if (getPaymentTotal() >
+                    Global.toNumber(
+                        Global.format(Global.getPaymentTotal(Global.orders)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -737,7 +765,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   }
                 }
 
-                if (getPaymentTotal() < Global.toNumber(Global.format(Global.getPaymentTotal(Global.orders)))) {
+                if (getPaymentTotal() <
+                    Global.toNumber(
+                        Global.format(Global.getPaymentTotal(Global.orders)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -751,106 +781,106 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   }
                 }
 
-                for (var i = 0; i < Global.orders!.length; i++) {
-                  Global.orders![i].id = 0;
-                  Global.orders![i].createdDate = DateTime.now();
-                  Global.orders![i].updatedDate = DateTime.now();
-                  Global.orders![i].customerId = Global.customer!.id!;
-                  Global.orders![i].status = "0";
-                  Global.orders![i].discount = Global.discount;
-                  Global.orders![i].paymentMethod = Global.currentPaymentMethod;
-                  Global.orders![i].attachement = null;
-                  if (Global.orders![i].orderTypeId != 5 &&
-                      Global.orders![i].orderTypeId != 6) {
-                    Global.orders![i].priceIncludeTax =
-                        Global.getOrderTotal(Global.orders![i]);
+                for (var i = 0; i < Global.orders.length; i++) {
+                  Global.orders[i].id = 0;
+                  Global.orders[i].createdDate = DateTime.now();
+                  Global.orders[i].updatedDate = DateTime.now();
+                  Global.orders[i].customerId = Global.customer!.id!;
+                  Global.orders[i].status = "0";
+                  Global.orders[i].discount = Global.discount;
+                  Global.orders[i].paymentMethod = Global.currentPaymentMethod;
+                  Global.orders[i].attachement = null;
+                  if (Global.orders[i].orderTypeId != 5 &&
+                      Global.orders[i].orderTypeId != 6) {
+                    Global.orders[i].priceIncludeTax =
+                        Global.getOrderTotal(Global.orders[i]);
 
-                    Global.orders![i].purchasePrice =
-                        Global.orders![i].orderTypeId == 2
+                    Global.orders[i].purchasePrice =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : Global.getPapunTotal(Global.orders![i]);
+                            : Global.getPapunTotal(Global.orders[i]);
 
-                    Global.orders![i].priceDiff =
-                        Global.orders![i].orderTypeId == 2
+                    Global.orders[i].priceDiff =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : Global.getOrderTotal(Global.orders![i]) -
-                                Global.getPapunTotal(Global.orders![i]);
-                    Global.orders![i].taxBase =
-                        Global.orders![i].orderTypeId == 2
+                            : Global.getOrderTotal(Global.orders[i]) -
+                                Global.getPapunTotal(Global.orders[i]);
+                    Global.orders[i].taxBase =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : (Global.getOrderTotal(Global.orders![i]) -
-                                    Global.getPapunTotal(Global.orders![i])) *
+                            : (Global.getOrderTotal(Global.orders[i]) -
+                                    Global.getPapunTotal(Global.orders[i])) *
                                 100 /
                                 107;
-                    Global.orders![i].taxAmount = Global
-                                .orders![i].orderTypeId ==
+                    Global.orders[i].taxAmount = Global
+                                .ordersPapun![i].orderTypeId ==
                             2
                         ? 0
-                        : ((Global.getOrderTotal(Global.orders![i]) -
-                                    Global.getPapunTotal(Global.orders![i])) *
+                        : ((Global.getOrderTotal(Global.orders[i]) -
+                                    Global.getPapunTotal(Global.orders[i])) *
                                 100 /
                                 107) *
                             getVatValue();
-                    Global.orders![i].priceExcludeTax =
-                        Global.orders![i].orderTypeId == 2
+                    Global.orders[i].priceExcludeTax =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : Global.getOrderTotal(Global.orders![i]) -
-                                (((Global.getOrderTotal(Global.orders![i]) -
+                            : Global.getOrderTotal(Global.orders[i]) -
+                                (((Global.getOrderTotal(Global.orders[i]) -
                                             Global.getPapunTotal(
-                                                Global.orders![i])) *
+                                                Global.orders[i])) *
                                         100 /
                                         107) *
                                     getVatValue());
                   }
-                  for (var j = 0; j < Global.orders![i].details!.length; j++) {
-                    Global.orders![i].details![j].id = 0;
-                    Global.orders![i].details![j].orderId =
-                        Global.orders![i].id;
-                    Global.orders![i].details![j].unitCost =
-                        Global.orders![i].details![j].priceIncludeTax! /
-                            Global.orders![i].details![j].weight!;
-                    Global.orders![i].details![j].purchasePrice =
-                        Global.orders![i].orderTypeId == 2
+                  for (var j = 0; j < Global.orders[i].details!.length; j++) {
+                    Global.orders[i].details![j].id = 0;
+                    Global.orders[i].details![j].orderId =
+                        Global.orders[i].id;
+                    Global.orders[i].details![j].unitCost =
+                        Global.orders[i].details![j].priceIncludeTax! /
+                            Global.orders[i].details![j].weight!;
+                    Global.orders[i].details![j].purchasePrice =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
                             : Global.getBuyPrice(
-                                Global.orders![i].details![j].weight!);
-                    Global.orders![i].details![j].priceDiff =
-                        Global.orders![i].orderTypeId == 2
+                                Global.orders[i].details![j].weight!);
+                    Global.orders[i].details![j].priceDiff =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : Global.orders![i].details![j].priceIncludeTax! -
+                            : Global.orders[i].details![j].priceIncludeTax! -
                                 Global.getBuyPrice(
-                                    Global.orders![i].details![j].weight!);
-                    Global.orders![i].details![j].taxBase = Global
-                                .orders![i].orderTypeId ==
+                                    Global.orders[i].details![j].weight!);
+                    Global.orders[i].details![j].taxBase = Global
+                                .ordersPapun![i].orderTypeId ==
                             2
                         ? 0
-                        : (Global.orders![i].details![j].priceIncludeTax! -
+                        : (Global.orders[i].details![j].priceIncludeTax! -
                                 Global.getBuyPrice(
-                                    Global.orders![i].details![j].weight!)) *
+                                    Global.orders[i].details![j].weight!)) *
                             100 /
                             107;
-                    Global.orders![i].details![j].taxAmount =
-                        Global.orders![i].orderTypeId == 2
+                    Global.orders[i].details![j].taxAmount =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : ((Global.orders![i].details![j].priceIncludeTax! -
+                            : ((Global.orders[i].details![j].priceIncludeTax! -
                                         Global.getBuyPrice(Global
-                                            .orders![i].details![j].weight!)) *
+                                            .ordersPapun![i].details![j].weight!)) *
                                     100 /
                                     107) *
                                 getVatValue();
-                    Global.orders![i].details![j].priceExcludeTax =
-                        Global.orders![i].orderTypeId == 2
+                    Global.orders[i].details![j].priceExcludeTax =
+                        Global.orders[i].orderTypeId == 2
                             ? 0
-                            : (Global.orders![i].details![j].priceIncludeTax! -
-                                ((((Global.orders![i].details![j]
+                            : (Global.orders[i].details![j].priceIncludeTax! -
+                                ((((Global.orders[i].details![j]
                                                 .priceIncludeTax! -
-                                            Global.getBuyPrice(Global.orders![i]
+                                            Global.getBuyPrice(Global.orders[i]
                                                 .details![j].weight!)) *
                                         100 /
                                         107) *
                                     getVatValue())));
-                    Global.orders![i].details![j].createdDate = DateTime.now();
-                    Global.orders![i].details![j].updatedDate = DateTime.now();
+                    Global.orders[i].details![j].createdDate = DateTime.now();
+                    Global.orders[i].details![j].updatedDate = DateTime.now();
                   }
                 }
 
@@ -868,7 +898,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     }
                     // Gen pair ID before submit
                     var pair = await ApiServices.post(
-                        '/order/gen-pair/${Global.orders?.first.orderTypeId}',
+                        '/order/gen-pair/${Global.orders.first.orderTypeId}',
                         Global.requestObj(null));
 
                     // print(pair?.toJson());
@@ -877,15 +907,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       await postPayment(pair?.data);
                       await postOrder(pair?.data);
                       Global.orderIds =
-                          Global.orders!.map((e) => e.orderId).toList();
+                          Global.orders.map((e) => e.orderId).toList();
                       Global.pairId = pair?.data;
                       await pr.hide();
                       if (mounted) {
-                        Global.orders!.clear();
+                        Global.orders.clear();
                         Global.discount = 0;
                         Global.customer = null;
                         Global.posOrder = null;
                         Global.paymentList?.clear();
+                        writeCart();
                         setState(() {});
                         Navigator.pushReplacement(
                             context,
@@ -1078,7 +1109,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   Future postPayment(int pairId) async {
     if (Global.paymentList!.isNotEmpty) {
       var payment = await ApiServices.post(
-          '/order/gen-payment/${Global.orders?.first.orderTypeId}',
+          '/order/gen-payment/${Global.orders.first.orderTypeId}',
           Global.requestObj(null));
 
       if (payment?.status == "success") {
@@ -1116,7 +1147,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   Future postOrder(int pairId) async {
-    await Future.forEach<OrderModel>(Global.orders!, (e) async {
+    await Future.forEach<OrderModel>(Global.orders, (e) async {
       e.pairId = pairId;
       var result =
           await ApiServices.post('/order/create', Global.requestObj(e));
@@ -1324,7 +1355,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ),
             ],
           ),
-          if (index < Global.orders!.length - 1)
+          if (index < Global.orders.length - 1)
             Container(
               height: 10,
               color: Colors.white,
@@ -1344,8 +1375,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void removeProduct(int i) async {
-    Global.orders!.removeAt(i);
-    if (Global.orders!.isEmpty) {
+    Global.orders.removeAt(i);
+    if (Global.orders.isEmpty) {
       Global.customer = null;
       Global.paymentList?.clear();
     }
@@ -1355,9 +1386,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void removeItem(int i, int j) async {
-    Global.orders![i].details!.removeAt(j);
-    if (Global.orders![i].details!.isEmpty) {
-      Global.orders!.removeAt(i);
+    Global.orders[i].details!.removeAt(j);
+    if (Global.orders[i].details!.isEmpty) {
+      Global.orders.removeAt(i);
+      removeCart();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});

@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -14,12 +12,12 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
-import 'package:motivegold/utils/calculator/calculator.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -87,20 +85,20 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
     productWeightGramCtrl.text = widget.j == null
         ? Global.format(Global.sellOrderDetail![widget.index].weight ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].weight ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].weight ?? 0);
     productWeightBahtCtrl.text = widget.j == null
         ? Global.format(Global.sellOrderDetail![widget.index].weightBath ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].weightBath ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].weightBath ?? 0);
     productCommissionCtrl.text = widget.j == null
         ? Global.format(Global.sellOrderDetail![widget.index].commission ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].commission ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].commission ?? 0);
     productPriceTotalCtrl.text = widget.j == null
         ? Global.format(
             Global.sellOrderDetail![widget.index].priceIncludeTax ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].priceIncludeTax ??
+            Global.ordersPapun![widget.index].details![widget.j!].priceIncludeTax ??
                 0);
   }
 
@@ -144,7 +142,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           productList = products;
           if (productList.isNotEmpty) {
             var productId = widget.j != null
-                ? Global.orders![widget.index].details![widget.j!].productId
+                ? Global.ordersPapun![widget.index].details![widget.j!].productId
                 : Global.sellOrderDetail![widget.index].productId;
 
             selectedProduct = productList.where((e) => e.id == productId).first;
@@ -168,7 +166,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
         warehouseList = warehouses;
 
         var binId = widget.j != null
-            ? Global.orders![widget.index].details![widget.j!].binLocationId
+            ? Global.ordersPapun![widget.index].details![widget.j!].binLocationId
             : Global.sellOrderDetail![widget.index].binLocationId;
 
         selectedWarehouse = warehouseList.where((e) => e.id == binId).first;
@@ -266,13 +264,13 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.paphun?.buy
-              : Global.orders![widget.index].details![widget.j!].goldDataModel
+              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
                   ?.paphun?.buy)));
       productPriceCtrl.text = Global.format(Global.getSellPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
-              : Global.orders![widget.index].details![widget.j!].goldDataModel
+              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
                   ?.theng?.sell)));
       // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
       //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
@@ -323,13 +321,13 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.paphun?.buy
-              : Global.orders![widget.index].details![widget.j!].goldDataModel
+              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
                   ?.paphun?.buy)));
       productPriceCtrl.text = Global.format(Global.getSellPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
-              : Global.orders![widget.index].details![widget.j!].goldDataModel
+              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
                   ?.theng?.sell)));
       // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
       //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
@@ -373,6 +371,12 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: loading
           ? const Center(
               child: LoadingProgress(),
@@ -412,7 +416,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                               goldDataModel: widget.j == null
                                   ? Global.sellOrderDetail![widget.index]
                                       .goldDataModel
-                                  : Global.orders![widget.index]
+                                  : Global.ordersPapun![widget.index]
                                       .details![widget.j!].goldDataModel,
                             ),
                           ),
@@ -941,7 +945,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                           Global.toNumber(widget.j == null
                               ? Global.sellOrderDetail![widget.index]
                                   .goldDataModel?.paphun?.buy
-                              : Global.orders![widget.index].details![widget.j!]
+                              : Global.ordersPapun![widget.index].details![widget.j!]
                                   .goldDataModel?.paphun?.buy));
                       var price = Global.toNumber(productPriceTotalCtrl.text);
                       var check = price - realPrice;
@@ -1017,7 +1021,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                           setState(() {});
                           Navigator.of(context).pop();
                         } else {
-                          Global.orders![widget.index].details![widget.j!] =
+                          Global.ordersPapun![widget.index].details![widget.j!] =
                               OrderDetailModel.fromJson(
                             jsonDecode(
                               jsonEncode(
@@ -1042,15 +1046,15 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                                 productWeightGramCtrl.text)),
                                     priceIncludeTax: Global.toNumber(
                                         productPriceTotalCtrl.text),
-                                    sellPrice: Global.orders![widget.index]
+                                    sellPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].sellPrice,
-                                    buyPrice: Global.orders![widget.index]
+                                    buyPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].buyPrice,
-                                    sellTPrice: Global.orders![widget.index]
+                                    sellTPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].sellTPrice,
-                                    buyTPrice: Global.orders![widget.index]
+                                    buyTPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].buyTPrice,
-                                    goldDataModel: Global.orders![widget.index].details![widget.j!].goldDataModel),
+                                    goldDataModel: Global.ordersPapun![widget.index].details![widget.j!].goldDataModel),
                               ),
                             ),
                           );

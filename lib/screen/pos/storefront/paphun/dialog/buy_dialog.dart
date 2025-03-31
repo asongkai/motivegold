@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -18,11 +17,11 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/utils/extentions.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-// import 'package:pattern_formatter/numeric_formatter.dart';
 
 class BuyDialog extends StatefulWidget {
   const BuyDialog({super.key});
@@ -178,6 +177,12 @@ class _BuyDialogState extends State<BuyDialog> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: loading
           ? const Center(
               child: LoadingProgress(),

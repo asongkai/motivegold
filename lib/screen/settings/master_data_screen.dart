@@ -6,17 +6,29 @@ import 'package:motivegold/screen/settings/master/bankAccount/bank_account_scree
 import 'package:motivegold/screen/settings/master/orderType/order_type_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 
 
 class MasterDataScreen extends StatelessWidget {
-  const MasterDataScreen({ Key? key }) : super(key: key);
+  const MasterDataScreen({ super.key });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('จัดการข้อมูลหลัก'),),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("จัดการข้อมูลหลัก",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
+      ),
       body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:masked_text/masked_text.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
@@ -18,16 +17,13 @@ import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/dialog/buy_matching_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/theng/dialog/edit_buy_matching_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
-// import 'package:pattern_formatter/pattern_formatter.dart';
-import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class BuyThengMatchingScreen extends StatefulWidget {
@@ -71,67 +67,19 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
   final controller = BoardDateTimeController();
 
   DateTime date = DateTime.now();
-  double? _currentValue = 0;
-  String? mode;
-  late SimpleCalculator calc;
   late Screen size;
 
   @override
   void initState() {
     // implement initState
     super.initState();
-    calc = SimpleCalculator(
-      value: _currentValue!,
-      hideExpression: false,
-      hideSurroundingBorder: true,
-      autofocus: true,
-      onChanged: (key, value, expression) {
-        if (mode == 'price') {
-          productPriceCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'unit') {
-          unitPriceCtrl.text = value != null ? "${Global.format(value)}" : "";
-          unitChanged();
-        }
-        if (mode == 'baht') {
-          productWeightBahtCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-          bahtChanged();
-        }
-        setState(() {
-          _currentValue = value ?? 0;
-        });
-        if (kDebugMode) {
-          print('$key\t$value\t$expression');
-        }
-      },
-      onTappedDisplay: (value, details) {
-        if (kDebugMode) {
-          print('$value\t${details.globalPosition}');
-        }
-      },
-      theme: const CalculatorThemeData(
-          // borderColor: Colors.black,
-          // borderWidth: 2,
-          // displayColor: Colors.black,
-          // displayStyle: TextStyle(fontSize: 80, color: Colors.yellow),
-          // expressionColor: Colors.indigo,
-          // expressionStyle: TextStyle(fontSize: 20, color: Colors.white),
-          // operatorColor: Colors.pink,
-          // operatorStyle: TextStyle(fontSize: 30, color: Colors.white),
-          // commandColor: Colors.orange,
-          // commandStyle: TextStyle(fontSize: 30, color: Colors.white),
-          // numColor: Colors.grey,
-          // numStyle: TextStyle(fontSize: 50, color: Colors.white),
-          ),
-    );
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyThengTotalMatching();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -440,11 +388,12 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                         .buyThengOrderDetailMatching!,
                                                     orderTypeId: 33);
                                                 final data = order.toJson();
-                                                Global.orders?.add(
+                                                Global.ordersThengMatching?.add(
                                                     OrderModel.fromJson(data));
                                                 widget.refreshCart(Global
-                                                    .orders?.length
+                                                    .ordersThengMatching?.length
                                                     .toString());
+                                                writeCart();
                                                 Global.buyThengOrderDetailMatching!
                                                     .clear();
                                                 setState(() {
@@ -630,11 +579,12 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                         .buyThengOrderDetailMatching!,
                                                     orderTypeId: 33);
                                                 final data = order.toJson();
-                                                Global.orders?.add(
+                                                Global.ordersThengMatching?.add(
                                                     OrderModel.fromJson(data));
                                                 widget.refreshCart(Global
-                                                    .orders?.length
+                                                    .ordersThengMatching?.length
                                                     .toString());
+                                                writeCart();
                                                 Global.buyThengOrderDetailMatching!
                                                     .clear();
                                                 setState(() {
@@ -660,8 +610,9 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                               .toString();
                                                       widget.refreshHold(holds);
                                                       widget.refreshCart(Global
-                                                          .orders?.length
+                                                          .ordersPapun?.length
                                                           .toString());
+                                                      writeCart();
                                                       setState(() {});
                                                     });
                                                   });

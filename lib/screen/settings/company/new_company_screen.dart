@@ -1,6 +1,14 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/company.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/image/profile_image.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -26,6 +34,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
 
+  String? logo;
+  File? file;
+  final ImagePicker picker = ImagePicker();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -35,9 +47,16 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เพิ่มบริษัทใหม่'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("เพิ่มบริษัทใหม่",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -55,6 +74,131 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                   children: [
                     const SizedBox(
                       height: 10,
+                    ),
+                    if (logo != null)
+                      Container(
+                        height: 220.0,
+                        color: Colors.white,
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Center(
+                                child: Text(
+                              'โลโก้บริษัท',
+                              style: TextStyle(fontSize: 30, color: textColor),
+                            )),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0),
+                              child:
+                                  Stack(fit: StackFit.loose, children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: ProfilePhoto(
+                                        totalWidth: 140,
+                                        cornerRadius: 80,
+                                        color: Colors.blue,
+                                        image: FileImage(file!),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _settingModalBottomSheet(context);
+                                  },
+                                  child: const Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 90.0, right: 100.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          CircleAvatar(
+                                            backgroundColor: Colors.red,
+                                            radius: 25.0,
+                                            child: Icon(
+                                              Icons.camera_alt,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                                ),
+                              ]),
+                            )
+                          ],
+                        ),
+                      ),
+                    if (logo == null)
+                      Container(
+                        height: 220.0,
+                        color: Colors.white,
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Center(
+                                child: Text(
+                              'โลโก้บริษัท',
+                              style: TextStyle(fontSize: 30, color: textColor),
+                            )),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0),
+                              child:
+                                  Stack(fit: StackFit.loose, children: <Widget>[
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                        width: 140.0,
+                                        height: 140.0,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/no_image.png'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    _settingModalBottomSheet(context);
+                                  },
+                                  child: const Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 90.0, right: 100.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          CircleAvatar(
+                                            backgroundColor: Colors.red,
+                                            radius: 25.0,
+                                            child: Icon(
+                                              Icons.camera_alt,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                                ),
+                              ]),
+                            )
+                          ],
+                        ),
+                      ),
+                    const SizedBox(
+                      height: 20,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -293,7 +437,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                   "village": villageCtrl.text,
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
-                  "taxNumber": taxNumberCtrl.text
+                  "taxNumber": taxNumberCtrl.text,
+                  "logo": logo
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
@@ -309,6 +454,10 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
+                        // Global.company = CompanyModel.fromJson(result?.data);
+                        // setState(() {
+                        //
+                        // });
                         Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
                             action: () {
                           Navigator.of(context).pop();
@@ -351,5 +500,40 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
             )),
       ],
     );
+  }
+
+  void _settingModalBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('ຖ່າຍຮູບ'),
+                  onTap: () {
+                    pickProfileImage(context, ImageSource.camera);
+                  }),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('ເລືອກຮູບ'),
+                onTap: () {
+                  pickProfileImage(context, ImageSource.gallery);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void pickProfileImage(BuildContext context, ImageSource imageSource) async {
+    final XFile? image = await picker.pickImage(source: imageSource);
+    setState(() {
+      if (image != null) {
+        file = File(image.path);
+        logo = Global.imageToBase64(file!);
+      }
+    });
+    Navigator.of(context).pop();
   }
 }

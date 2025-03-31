@@ -8,6 +8,8 @@ import 'package:motivegold/screen/transfer/transfer_gold_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/model/transfer.dart';
@@ -63,10 +65,15 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
     size = Screen(MediaQuery.of(context).size);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'เมนูโอนทอง',
-          style: TextStyle(fontSize: size?.getWidthPx(8)),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("เมนูโอนทอง",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
         ),
       ),
       body: loading

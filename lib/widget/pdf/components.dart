@@ -1,12 +1,15 @@
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:typed_data';
+
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/number_to_thai.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
+import 'package:http/http.dart' as http;
 
 Widget divider() {
   return Divider(
@@ -19,10 +22,32 @@ Widget height({double h = 10}) {
   return SizedBox(height: h);
 }
 
-Widget header(OrderModel order, String? title, {bool? showPosId}) {
+Future<Uint8List> loadNetworkImage(String url) async {
+  final response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    return response.bodyBytes;
+  } else {
+    throw Exception('Failed to load image');
+  }
+}
+
+Future<Widget> header(OrderModel order, String? title, {bool? showPosId}) async {
+
+  // Load network image
+  final Uint8List imageData = await loadNetworkImage('${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
+
+  final image = MemoryImage(imageData);
+
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
-      Expanded(flex: 1, child: Center(child: Text('LOGO'))),
+      Expanded(flex: 2, child: Center(child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image(
+          image,
+          fit: BoxFit.fitWidth,
+          width: 60
+        ),
+      ),)),
       Expanded(
           flex: 9,
           child:
@@ -157,6 +182,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
 }
 
 Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
+  motivePrint(customer.toJson());
   return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(children: [

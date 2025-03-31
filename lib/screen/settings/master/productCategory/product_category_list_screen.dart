@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/model/product_category.dart';
 import 'package:motivegold/screen/settings/master/productCategory/add_product_category_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -39,38 +41,67 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการหมวดสินค้า'),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddProductCategoryScreen(
-                      ),
-                      fullscreenDialog: true))
-                  .whenComplete(() {
-                loadData();
-              });
-            },
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  Icons.add,
-                  size: 50,
+                const Expanded(
+                  flex: 4,
+                  child: Text("รายการหมวดสินค้า",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900)),
                 ),
-                Text(
-                  'เพิ่มหมวดสินค้า',
-                  style: TextStyle(fontSize: size.getWidthPx(6)),
-                )
+                Expanded(
+                    flex: 6,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AddProductCategoryScreen(
+                                    ),
+                                    fullscreenDialog: true))
+                                .whenComplete(() {
+                              loadData();
+                            });
+                          },
+                          child: Container(
+                            color: Colors.teal[900],
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.add,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'เพิ่มหมวดสินค้า',
+                                    style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ))
               ],
             ),
           ),
-          const SizedBox(
-            width: 20,
-          )
-        ],
+        ),
       ),
       body: SafeArea(
         child: loading

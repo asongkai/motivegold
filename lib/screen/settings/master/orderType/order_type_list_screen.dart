@@ -11,6 +11,8 @@ import 'package:motivegold/model/response.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
@@ -56,9 +58,16 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('จัดการค่าเริ่มต้นของหน้าจอ'),
-        actions: const [],
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("จัดการค่าเริ่มต้นของหน้าจอ",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: loading
@@ -70,7 +79,7 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
                         child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 150,
+                          height: MediaQuery.of(context).size.height - 350,
                           child: ListView.builder(
                               itemCount: dataList!.length,
                               scrollDirection: Axis.vertical,

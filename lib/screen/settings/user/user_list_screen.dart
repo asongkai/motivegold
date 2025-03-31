@@ -7,6 +7,8 @@ import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/settings/user/edit_user_screen.dart';
 import 'package:motivegold/screen/settings/user/new_user_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -65,40 +67,69 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ผู้ใช้'),
-        actions: [
-          if (Global.user!.userRole == 'Administrator')
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NewUserScreen(
-                                  showBackButton: true,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Expanded(
+                  flex: 4,
+                  child: Text("ผู้ใช้",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900)),
+                ),
+                Expanded(
+                    flex: 6,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (Global.user!.userRole == 'Administrator')
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const NewUserScreen(
+                                        showBackButton: true,
+                                      ),
+                                      fullscreenDialog: true))
+                                  .whenComplete(() {
+                                loadProducts();
+                              });
+                            },
+                            child: Container(
+                              color: Colors.teal[900],
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.add,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      'เพิ่มผู้ใช้',
+                                      style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                    )
+                                  ],
                                 ),
-                            fullscreenDialog: true))
-                    .whenComplete(() {
-                  loadProducts();
-                });
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.add,
-                    size: 50,
-                  ),
-                  Text(
-                    'เพิ่มผู้ใช้',
-                    style: TextStyle(fontSize: size.getWidthPx(6)),
-                  )
-                ],
-              ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ))
+              ],
             ),
-          const SizedBox(
-            width: 20,
-          )
-        ],
+          ),
+        ),
       ),
       body: SafeArea(
         child: loading
@@ -108,7 +139,7 @@ class _UserListScreenState extends State<UserListScreen> {
                 : Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height + 100,
+                    height: MediaQuery.of(context).size.height + 250,
                     child: ListView.builder(
                         itemCount: list!.length,
                         scrollDirection: Axis.vertical,

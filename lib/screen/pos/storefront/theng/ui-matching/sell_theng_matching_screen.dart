@@ -11,6 +11,7 @@ import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/dialog/sell_matching_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -77,6 +78,7 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
 
     sumSellThengTotalMatching();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -406,9 +408,10 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
                                 orderTypeId: 3,
                                 orderStatus: 'PENDING');
                             final data = order.toJson();
-                            Global.orders?.add(OrderModel.fromJson(data));
+                            Global.ordersThengMatching?.add(OrderModel.fromJson(data));
                             widget
-                                .refreshCart(Global.orders?.length.toString());
+                                .refreshCart(Global.ordersThengMatching?.length.toString());
+                            writeCart();
                             Global.sellThengOrderDetailMatching!.clear();
                             setState(() {
                               Global.sellThengSubTotal = 0;
@@ -559,9 +562,10 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
                                   orderTypeId: 3,
                                   orderStatus: 'PENDING');
                               final data = order.toJson();
-                              Global.orders?.add(OrderModel.fromJson(data));
+                              Global.ordersThengMatching?.add(OrderModel.fromJson(data));
                               widget.refreshCart(
-                                  Global.orders?.length.toString());
+                                  Global.ordersThengMatching?.length.toString());
+                              writeCart();
                               Global.sellThengOrderDetailMatching!.clear();
                               setState(() {
                                 Global.sellThengSubTotal = 0;
@@ -569,8 +573,6 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
                                 Global.sellThengTotal = 0;
                               });
 
-                              // motivePrint(orderListModelToJson(Global.orders!));
-                              // return;
                               if (mounted) {
                                 Navigator.push(
                                         context,
@@ -586,7 +588,8 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
                                         .toString();
                                     widget.refreshHold(holds);
                                     widget.refreshCart(
-                                        Global.orders?.length.toString());
+                                        Global.ordersThengMatching?.length.toString());
+                                    writeCart();
                                     setState(() {});
                                   });
                                 });

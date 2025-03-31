@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -89,9 +91,16 @@ class _NewBranchScreenState extends State<NewBranchScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เพิ่มสาขาใหม่'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("เพิ่มสาขา",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

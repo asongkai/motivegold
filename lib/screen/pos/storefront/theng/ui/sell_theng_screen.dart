@@ -11,7 +11,7 @@ import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/dialog/sell_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/extentions.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -76,6 +76,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumSellThengTotal();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -403,9 +404,10 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                 details: Global.sellThengOrderDetail!,
                                 orderTypeId: 4);
                             final data = order.toJson();
-                            Global.orders?.add(OrderModel.fromJson(data));
+                            Global.ordersTheng?.add(OrderModel.fromJson(data));
                             widget
-                                .refreshCart(Global.orders?.length.toString());
+                                .refreshCart(Global.ordersTheng?.length.toString());
+                            writeCart();
                             Global.sellThengOrderDetail!.clear();
                             setState(() {
                               Global.sellThengSubTotal = 0;
@@ -553,9 +555,10 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                   details: Global.sellThengOrderDetail!,
                                   orderTypeId: 4);
                               final data = order.toJson();
-                              Global.orders?.add(OrderModel.fromJson(data));
+                              Global.ordersTheng?.add(OrderModel.fromJson(data));
                               widget.refreshCart(
-                                  Global.orders?.length.toString());
+                                  Global.ordersTheng?.length.toString());
+                              writeCart();
                               Global.sellThengOrderDetail!.clear();
                               setState(() {
                                 Global.sellThengSubTotal = 0;
@@ -563,8 +566,6 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                 Global.sellThengTotal = 0;
                               });
 
-                              // motivePrint(orderListModelToJson(Global.orders!));
-                              // return;
                               if (mounted) {
                                 Navigator.push(
                                         context,
@@ -580,7 +581,8 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                         .toString();
                                     widget.refreshHold(holds);
                                     widget.refreshCart(
-                                        Global.orders?.length.toString());
+                                        Global.ordersTheng?.length.toString());
+                                    writeCart();
                                     setState(() {});
                                   });
                                 });

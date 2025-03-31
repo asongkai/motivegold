@@ -16,6 +16,8 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -69,80 +71,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     size = Screen(MediaQuery.of(context).size);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          Global.company != null ? ' ${Global.company!.name}' : 'แดชบอร์ด',
-          style: TextStyle(fontSize: size?.getWidthPx(8)),
-        ),
-        automaticallyImplyLeading: false,
-        actions: [
-          Text(
-            Global.user != null
-                ? 'ผู้ใช้: ${Global.user!.firstName!} ${Global.user!.lastName!}'
-                : '',
-            style: TextStyle(
-              fontSize: size?.getWidthPx(8),
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          if (Global.user?.userRole == 'Administrator')
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'สาขา: ',
-                  style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  margin: const EdgeInsets.only(bottom: 10.0),
-                  child: DropdownButton<BranchModel>(
-                    value: Global.branch,
-                    dropdownColor: Colors.black87,
-                    style: const TextStyle(color: Colors.white),
-                    icon: const Icon(
-                      Icons.keyboard_arrow_down_sharp,
-                      color: Colors.white,
-                    ),
-                    items: Global.branchList.map((BranchModel value) {
-                      return DropdownMenuItem<BranchModel>(
-                        value: value,
-                        child: Text(value.name,
-                            style: TextStyle(
-                                fontSize: size?.getWidthPx(10),
-                                color: Colors.white,
-                                fontWeight: FontWeight.w900)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        Global.branch = value;
-                        Global.user?.branchId = value?.id;
-                      });
-                    },
-                  ),
-                )
-              ],
-            ),
-          if (Global.user?.userRole != 'Administrator')
-            Text(
-              Global.branch != null ? 'สาขา: ${Global.branch!.name}' : '',
-              style: TextStyle(
-                fontSize: size?.getWidthPx(8),
-              ),
-            ),
-          const SizedBox(
-            width: 20,
-          ),
-        ],
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(backButton: false,),
       ),
       body: Stack(
         children: <Widget>[dashBg, content],
@@ -202,13 +133,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.only(left: 20, right: 20),
           decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(40),
               boxShadow: [
                 BoxShadow(
-                    offset: const Offset(0, 5),
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
-                    spreadRadius: 2,
-                    blurRadius: 5)
+                    offset: const Offset(0, 1),
+                    color: Theme.of(context).primaryColor.withValues(alpha: .1),
+                    spreadRadius: 1,
+                    blurRadius: 1)
               ]),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -222,7 +153,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Icon(
                     iconData,
                     color: Colors.white,
-                    size: size!.getWidthPx(30),
+                    size: size!.getWidthPx(50),
                   )),
               const SizedBox(height: 8),
               Text(
@@ -237,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       );
 
-  iconDashboard(String title, Image iconData, Color background, dynamic route,
+  iconDashboard(String title, Widget iconData, Color background, dynamic route,
           {int index = 0}) =>
       GestureDetector(
         onTap: () {
@@ -251,15 +182,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Container(
           padding: const EdgeInsets.only(left: 20, right: 20),
           decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                    offset: const Offset(0, 5),
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
-                    spreadRadius: 2,
-                    blurRadius: 5)
-              ]),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                  offset: const Offset(0, 1),
+                  color: Theme.of(context).primaryColor.withValues(alpha: .1),
+                  spreadRadius: 1,
+                  blurRadius: 1)
+            ],
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -344,58 +276,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: OrientationBuilder(
             builder: (context, orientation) {
               return GridView.count(
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                crossAxisCount: 5,
-                childAspectRatio:
-                    orientation == Orientation.portrait ? .74 : .80,
+                crossAxisSpacing: 36,
+                mainAxisSpacing: 36,
+                crossAxisCount: 3,
+                // childAspectRatio: orientation == Orientation.portrait ? .84 : .104,
                 children: [
                   iconDashboard(
                       'ซื้อขายทองหน้าร้าน',
-                      Image.asset('assets/icons/gold/gold-sub-dealer.png'),
+                      Image.asset(
+                        'assets/icons/gold/gold-sub-dealer.png',
+                        width: 150,
+                      ),
                       Colors.tealAccent,
                       const PosMenuScreen(title: 'POS'),
                       index: 0),
-                  Stack(
-                    children: [
-                      iconDashboard(
-                          'ซื้อขายทองแท่ง ${orientation == Orientation.portrait ? '' : '\n'}',
-                          Image.asset('assets/icons/gold/buy-gold-tang.png'),
-                          Colors.redAccent,
-                          const ThengMenuScreen(),
-                          index: 0),
-                      if (list != null && list!.isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(20.0)),
-                              padding:
-                                  const EdgeInsets.only(left: 5.0, right: 5.0),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      (list == null)
-                                          ? 0.toString()
-                                          : list!.length.toString(),
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                    ),
-                                  )
-                                ],
+                  iconDashboard(
+                      'ซื้อขายทองแท่ง ${orientation == Orientation.portrait ? '' : '\n'}',
+                      Stack(
+                        children: [
+                          Image.asset(
+                            'assets/icons/gold/buy-gold-tang.png',
+                            width: 150,
+                          ),
+                          if (list != null && list!.isNotEmpty)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius:
+                                          BorderRadius.circular(20.0)),
+                                  padding: const EdgeInsets.only(
+                                      left: 5.0, right: 5.0),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          (list == null)
+                                              ? 0.toString()
+                                              : list!.length.toString(),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
+                        ],
+                      ),
+                      Colors.redAccent,
+                      const ThengMenuScreen(),
+                      index: 0),
                   itemDashboard(
                     'ออมทอง \n'.tr(),
                     CupertinoIcons.download_circle,

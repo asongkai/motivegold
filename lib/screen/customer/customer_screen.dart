@@ -10,6 +10,8 @@ import 'package:motivegold/screen/customer/add_customer_screen.dart';
 import 'package:motivegold/screen/customer/edit_customer_screen.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -61,19 +63,19 @@ class _CustomerScreenState extends State<CustomerScreen> {
       loading = true;
     });
 
-    motivePrint({
-      "customerType": selectedCustomerType?.code,
-      "idCard":
-      selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
-      "taxNumber":
-      selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
-      "firstName": firstNameCtrl.text,
-      "lastName": lastNameCtrl.text,
-      "companyName": companyNameCtrl.text,
-      "email": emailCtrl.text,
-      "phoneNumber": phoneCtrl.text,
-      "type": widget.type ?? "",
-    });
+    // motivePrint({
+    //   "customerType": selectedCustomerType?.code,
+    //   "idCard":
+    //   selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+    //   "taxNumber":
+    //   selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+    //   "firstName": firstNameCtrl.text,
+    //   "lastName": lastNameCtrl.text,
+    //   "companyName": companyNameCtrl.text,
+    //   "email": emailCtrl.text,
+    //   "phoneNumber": phoneCtrl.text,
+    //   "type": widget.type ?? "",
+    // });
 
     try {
       var result = await ApiServices.post(
@@ -121,39 +123,59 @@ class _CustomerScreenState extends State<CustomerScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายชื่อลูกค้า'),
-        actions: [
-          if (widget.selected != true)
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context)
-                    .push(
-                  MaterialPageRoute(
-                    builder: (context) => const AddCustomerScreen(),
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.selected ?? false,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("รายชื่อลูกค้า",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900)),
+                if (widget.selected != true)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(
+                        MaterialPageRoute(
+                          builder: (context) => const AddCustomerScreen(),
+                        ),
+                      )
+                          .whenComplete(() {
+                        loadData();
+                      });
+                    },
+                    child: Container(
+                      color: Colors.teal[900],
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.add,
+                              size: 50,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              'เพิ่มลูกค้า',
+                              style: TextStyle(
+                                  fontSize: size.getWidthPx(10),
+                                  color: Colors.white),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                )
-                    .whenComplete(() {
-                  loadData();
-                });
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.add,
-                    size: 50,
-                  ),
-                  Text(
-                    'เพิ่มลูกค้า',
-                    style: TextStyle(fontSize: size.getWidthPx(6)),
-                  )
-                ],
-              ),
+              ],
             ),
-          const SizedBox(
-            width: 20,
           ),
-        ],
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -438,69 +460,21 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
-
-                                  Row(
-                                    children: [
-
-                                      if (widget.selected == true)
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                Global.customer = ods[i];
-                                              });
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Container(
-                                              height: 50,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.teal[700],
-                                                  borderRadius:
-                                                  BorderRadius.circular(8)),
-                                              child: const Row(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.check_outlined,
-                                                    color: Colors.white,
-                                                  ),
-                                                  Text(
-                                                    'เลือก',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 20),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      if (widget.selected == true)
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
+                                Row(
+                                  children: [
+                                    if (widget.selected == true)
                                       Expanded(
                                         child: GestureDetector(
                                           onTap: () {
-                                            Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            EditCustomerScreen(
-                                                                c: ods[i]!),
-                                                        fullscreenDialog: true))
-                                                .whenComplete(() {
-                                              loadData();
-                                              setState(() {});
+                                            setState(() {
+                                              Global.customer = ods[i];
                                             });
+                                            Navigator.of(context).pop();
                                           },
                                           child: Container(
                                             height: 50,
                                             decoration: BoxDecoration(
-                                                color: Colors.blue[700],
+                                                color: Colors.teal[700],
                                                 borderRadius:
                                                     BorderRadius.circular(8)),
                                             child: const Row(
@@ -510,11 +484,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Icon(
-                                                  Icons.edit,
+                                                  Icons.check_outlined,
                                                   color: Colors.white,
                                                 ),
                                                 Text(
-                                                  'แก้ไข',
+                                                  'เลือก',
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 20),
@@ -524,11 +498,57 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           ),
                                         ),
                                       ),
-                                      if (widget.selected != true)
+                                    if (widget.selected == true)
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      if (widget.selected != true)
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditCustomerScreen(
+                                                              c: ods[i]!),
+                                                      fullscreenDialog: true))
+                                              .whenComplete(() {
+                                            loadData();
+                                            setState(() {});
+                                          });
+                                        },
+                                        child: Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                              color: Colors.blue[700],
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          child: const Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                'แก้ไข',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (widget.selected != true)
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                    if (widget.selected != true)
                                       Expanded(
                                         child: GestureDetector(
                                           onTap: () {
@@ -562,10 +582,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           ),
                                         ),
                                       ),
-
-                                    ],
-                                  ),
-
+                                  ],
+                                ),
                               ],
                             ),
                           )

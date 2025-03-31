@@ -49,11 +49,43 @@ class Global {
   static int? lang;
   static GoldDataModel? goldDataModel;
   static List<OrderDetailModel>? orderDetail = [];
-  static List<OrderModel>? orders = [];
+
+  /*
+  * 1 is use for sell new gold and buy use gold
+  * 2 is use for buy and sell gold bar matching
+  * 3 is use for buy and sell gold bar real
+  * 4 is use for buy and sell gold bar with broker
+  * 5 is use for buy new gold and sell used gold with wholesale
+  * */
+  static int currentOrderType = 1;
+
+  static List<OrderModel> orders = [];
   static OrderModel? order;
+
+  static List<OrderModel>? ordersPapun = [];
+  static OrderModel? orderPapun;
+
+  static List<OrderModel>? ordersThengMatching = [];
+  static OrderModel? orderThengMatching;
+
+  static List<OrderModel>? ordersTheng = [];
+  static OrderModel? orderTheng;
+
+  static List<OrderModel>? ordersBroker = [];
+  static OrderModel? orderBroker;
+
+  static List<OrderModel>? ordersWholesale = [];
+  static OrderModel? orderWholesale;
+
+  static List<OrderModel>? ordersTransfer = [];
+  static OrderModel? orderTransfer;
+
   static List<String>? orderIds = [];
   static int? pairId;
   static String? trackingNumber;
+
+  static File? refillAttach;
+  static File? sellUsedAttach;
 
   // PAYMENT
   static String? currentPaymentMethod;
@@ -88,7 +120,6 @@ class Global {
   static List<OrderDetailModel>? usedSellDetail = [];
   static List<TransferDetailModel>? transferDetail = [];
   static TransferModel? transfer;
-
 
   static OrderModel? posOrder;
   static int posIndex = 0;
@@ -341,13 +372,13 @@ class Global {
   }
 
   static double getOrderSubTotalAmount() {
-    if (orders!.isEmpty) {
+    if (ordersPapun!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        amount += orders![i].details![j].priceIncludeTax!;
+    for (int i = 0; i < ordersPapun!.length; i++) {
+      for (int j = 0; j < ordersPapun![i].details!.length; j++) {
+        amount += ordersPapun![i].details![j].priceIncludeTax!;
       }
     }
     return amount;
@@ -379,13 +410,13 @@ class Global {
   }
 
   static double getOrderWeightTotalAmount() {
-    if (orders!.isEmpty) {
+    if (ordersPapun!.isEmpty) {
       return 0;
     }
     double amount = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        amount += orders![i].details![j].weight!;
+    for (int i = 0; i < ordersPapun!.length; i++) {
+      for (int j = 0; j < ordersPapun![i].details!.length; j++) {
+        amount += ordersPapun![i].details![j].weight!;
       }
     }
     return amount;
@@ -652,16 +683,16 @@ class Global {
   }
 
   static dynamic payToBrokerOrShop() {
-    if (orders!.isEmpty) {
+    if (ordersPapun!.isEmpty) {
       return 0;
     }
     double amount = 0;
     double buy = 0;
     double sell = 0;
-    for (int i = 0; i < orders!.length; i++) {
-      for (int j = 0; j < orders![i].details!.length; j++) {
-        double price = orders![i].details![j].priceIncludeTax!;
-        int type = orders![i].orderTypeId!;
+    for (int i = 0; i < ordersPapun!.length; i++) {
+      for (int j = 0; j < ordersPapun![i].details!.length; j++) {
+        double price = ordersPapun![i].details![j].priceIncludeTax!;
+        int type = ordersPapun![i].orderTypeId!;
         if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           buy += -price;
         }
@@ -699,6 +730,19 @@ class Global {
     amount = discount != 0 ? amount - discount : amount;
     // motivePrint(amount);
     return amount < 0 ? -amount : amount;
+  }
+
+  static double getPaymentListTotal() {
+    if (Global.paymentList!.isEmpty) {
+      return 0;
+    }
+
+    double amount = 0;
+    for (int j = 0; j < Global.paymentList!.length; j++) {
+      double price = Global.paymentList![j].amount ?? 0;
+      amount += price;
+    }
+    return amount;
   }
 
   static double getPaymentTotalWholeSale(List<OrderModel>? orders) {
@@ -1253,8 +1297,8 @@ class Global {
   static String requestObj(dynamic data,
       {status = "", message = "", token = ""}) {
     return encoder.convert(RequestModel(
-        companyId: user == null ? 0 : user!.companyId,
-        branchId: user == null ? 0 : user!.branchId,
+        companyId: company == null ? 0 : company!.id,
+        branchId: branch == null ? 0 : branch!.id,
         userId: user == null ? 0.toString() : user!.id,
         data: data,
         status: status,

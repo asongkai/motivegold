@@ -12,16 +12,18 @@ import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/screen/pos/checkout_wholesale_summary_history_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
 import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -95,9 +97,16 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการประวัติการซื้อขายทองคำ'),
-        actions: const [],
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: false,
+          title: Text("รายการประวัติการซื้อขายทองคำ",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -658,15 +667,27 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                         GestureDetector(
                           onTap: () {
                             Global.pairId = order.pairId;
-                            Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CheckOutSummaryHistoryScreen(),
-                                        fullscreenDialog: true))
-                                .whenComplete(() {
-                              search();
-                            });
+                            if (order.orderTypeId == 5) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      const CheckOutWholesaleSummaryHistoryScreen(),
+                                      fullscreenDialog: true))
+                                  .whenComplete(() {
+                                // search();
+                              });
+                            } else {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      const CheckOutSummaryHistoryScreen(),
+                                      fullscreenDialog: true))
+                                  .whenComplete(() {
+                                // search();
+                              });
+                            }
                           },
                           child: Container(
                             height: 50,

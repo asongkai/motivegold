@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -45,7 +47,7 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
     // TODO: implement initState
     super.initState();
     id = widget.branch.id;
-    nameCtrl.text = widget.branch.name ?? '';
+    nameCtrl.text = widget.branch.name;
     emailCtrl.text = widget.branch.email ?? '';
     phoneCtrl.text = widget.branch.phone ?? '';
     addressCtrl.text = widget.branch.address ?? '';
@@ -60,9 +62,16 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('แก้ไขสาขา'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("แก้ไขสาขา",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -356,10 +365,10 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                      WidgetStateProperty.all<Color>(Colors.white),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           side: BorderSide(color: Colors.teal[700]!)))),

@@ -18,6 +18,8 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -287,9 +289,14 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey();
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: loading
           ? const Center(
               child: LoadingProgress(),

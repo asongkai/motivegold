@@ -5,8 +5,11 @@ import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/ui/buy_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/ui/sell_screen.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 
 import '../checkout_screen.dart';
 
@@ -31,15 +34,17 @@ class PosMenuScreenState extends State<PosMenuScreen> {
       pageController.jumpToPage(index);
     });
     super.initState();
+    Global.currentOrderType = 1;
     init();
   }
 
   void init() async {
     sideMenu.changePage(Global.posIndex);
     int count = (await Global.getHoldList()).length;
+    int cart = await getCartCount();
     setState(() {
       holdCount = count;
-      cartCount = Global.orders!.length;
+      cartCount = cart;
     });
   }
 
@@ -47,108 +52,135 @@ class PosMenuScreenState extends State<PosMenuScreen> {
   Widget build(BuildContext context) {
     setState(() {});
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-        actions: [
-          badges.Badge(
-            position: badges.BadgePosition.topEnd(top: 0, end: 0),
-            badgeAnimation: const badges.BadgeAnimation.slide(
-                // disappearanceFadeAnimationDuration: Duration(milliseconds: 200),
-                // curve: Curves.easeInCubic,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: Text(widget.title,
+                      style: const TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900)),
                 ),
-            showBadge: true,
-            badgeStyle: const badges.BadgeStyle(
-              badgeColor: Colors.red,
+                Expanded(
+                    flex: 4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        badges.Badge(
+                          position: badges.BadgePosition.topEnd(top: 0, end: 0),
+                          badgeAnimation: const badges.BadgeAnimation.slide(
+                              // disappearanceFadeAnimationDuration: Duration(milliseconds: 200),
+                              // curve: Curves.easeInCubic,
+                              ),
+                          showBadge: true,
+                          badgeStyle: const badges.BadgeStyle(
+                            badgeColor: Colors.red,
+                          ),
+                          badgeContent: Text(
+                            '$holdCount',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          child: IconButton(
+                              icon: const Icon(
+                                Icons.save,
+                                size: 42,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                if (holdCount > 0) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const HoldListModal(),
+                                              fullscreenDialog: true))
+                                      .whenComplete(() {
+                                    init();
+                                    if (Global.posIndex == 0) {
+                                      sumSellTotal();
+                                    }
+                                    if (Global.posIndex == 1) {
+                                      sumBuyTotal();
+                                    }
+                                    sideMenu.changePage(Global.posIndex);
+                                    pageController.jumpToPage(Global.posIndex);
+                                    setState(() {});
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text(
+                                      "ว่างเปล่า...",
+                                      style: TextStyle(fontSize: 22),
+                                    ),
+                                    backgroundColor: Colors.orange,
+                                  ));
+                                }
+                              }),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        badges.Badge(
+                          position: badges.BadgePosition.topEnd(top: 0, end: 0),
+                          badgeAnimation: const badges.BadgeAnimation.slide(
+                              // disappearanceFadeAnimationDuration: Duration(milliseconds: 200),
+                              // curve: Curves.easeInCubic,
+                              ),
+                          showBadge: true,
+                          badgeStyle: const badges.BadgeStyle(
+                            badgeColor: Colors.red,
+                          ),
+                          badgeContent: Text(
+                            cartCount.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          child: IconButton(
+                              icon: const Icon(
+                                Icons.shopping_cart,
+                                size: 42,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                if (cartCount > 0) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const CheckOutScreen()))
+                                      .whenComplete(() {
+                                    init();
+                                    sideMenu.changePage(Global.posIndex);
+                                    pageController.jumpToPage(Global.posIndex);
+                                    setState(() {});
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text(
+                                      "รถเข็นว่างเปล่า...",
+                                      style: TextStyle(fontSize: 22),
+                                    ),
+                                    backgroundColor: Colors.orange,
+                                  ));
+                                }
+                              }),
+                        ),
+                      ],
+                    ))
+              ],
             ),
-            badgeContent: Text(
-              '$holdCount',
-              style: const TextStyle(color: Colors.white),
-            ),
-            child: IconButton(
-                icon: const Icon(
-                  Icons.save,
-                  size: 42,
-                ),
-                onPressed: () {
-                  if (holdCount > 0) {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HoldListModal(),
-                                fullscreenDialog: true))
-                        .whenComplete(() {
-                      init();
-                      if (Global.posIndex == 0) {
-                        sumSellTotal();
-                      }
-                      if (Global.posIndex == 1) {
-                        sumBuyTotal();
-                      }
-                      sideMenu.changePage(Global.posIndex);
-                      pageController.jumpToPage(Global.posIndex);
-                      setState(() {});
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(
-                        "ว่างเปล่า...",
-                        style: TextStyle(fontSize: 22),
-                      ),
-                      backgroundColor: Colors.orange,
-                    ));
-                  }
-                }),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          badges.Badge(
-            position: badges.BadgePosition.topEnd(top: 0, end: 0),
-            badgeAnimation: const badges.BadgeAnimation.slide(
-                // disappearanceFadeAnimationDuration: Duration(milliseconds: 200),
-                // curve: Curves.easeInCubic,
-                ),
-            showBadge: true,
-            badgeStyle: const badges.BadgeStyle(
-              badgeColor: Colors.red,
-            ),
-            badgeContent: Text(
-              cartCount.toString(),
-              style: const TextStyle(color: Colors.white),
-            ),
-            child: IconButton(
-                icon: const Icon(
-                  Icons.shopping_cart,
-                  size: 42,
-                ),
-                onPressed: () {
-                  if (cartCount > 0) {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const CheckOutScreen()))
-                        .whenComplete(() {
-                      init();
-                      sideMenu.changePage(Global.posIndex);
-                      pageController.jumpToPage(Global.posIndex);
-                      setState(() {});
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(
-                        "รถเข็นว่างเปล่า...",
-                        style: TextStyle(fontSize: 22),
-                      ),
-                      backgroundColor: Colors.orange,
-                    ));
-                  }
-                }),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-        ],
+        ),
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -201,7 +233,6 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                 icon: const Icon(FontAwesomeIcons.b),
                 tooltipContent: 'รับซื้อทองเก่า',
               ),
-
             ],
           ),
           Expanded(

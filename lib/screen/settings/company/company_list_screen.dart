@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/model/company.dart';
 import 'package:motivegold/screen/settings/company/edit_company_screen.dart';
 import 'package:motivegold/screen/settings/company/new_company_screen.dart';
+import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -68,40 +71,69 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('บริษัท'),
-        actions: [
-          if (Global.user!.userType == 'ADMIN')
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NewCompanyScreen(
-                                  showBackButton: true,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Expanded(
+                  flex: 4,
+                  child: Text("บริษัท",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900)),
+                ),
+                Expanded(
+                    flex: 6,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (Global.user!.userType == 'ADMIN')
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const NewCompanyScreen(
+                                        showBackButton: true,
+                                      ),
+                                      fullscreenDialog: true))
+                                  .whenComplete(() {
+                                loadProducts();
+                              });
+                            },
+                            child: Container(
+                              color: Colors.teal[900],
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.add,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      'เพิ่มบริษัทใหม่',
+                                      style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                    )
+                                  ],
                                 ),
-                            fullscreenDialog: true))
-                    .whenComplete(() {
-                  loadProducts();
-                });
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.add,
-                    size: 50,
-                  ),
-                  Text(
-                    'เพิ่มบริษัทใหม่',
-                    style: TextStyle(fontSize: size.getWidthPx(6)),
-                  )
-                ],
-              ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ))
+              ],
             ),
-          const SizedBox(
-            width: 20,
-          )
-        ],
+          ),
+        ),
       ),
       body: SafeArea(
         child: loading
@@ -137,8 +169,8 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
               child: ListTile(
                 leading: SizedBox(
                   width: 100,
-                  child: Image.asset(
-                    'assets/images/default_profile.png',
+                  child: Image.network(
+                    '${Constants.DOMAIN_URL}/images/${list?.logo}',
                     fit: BoxFit.fitHeight,
                   ),
                 ),

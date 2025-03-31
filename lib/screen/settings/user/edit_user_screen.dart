@@ -7,6 +7,8 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/user.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -97,7 +99,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
             .first;
         companyNotifier = ValueNotifier<CompanyModel>(
             selectedCompany ?? CompanyModel(id: 0, name: 'เลือกบริษัท'));
-        loadBranches();
+        await loadBranches();
         companyCtrl.text = selectedCompany!.name;
       } else {
         companies = [];
@@ -106,13 +108,14 @@ class _EditUserScreenState extends State<EditUserScreen> {
       if (kDebugMode) {
         print(e.toString());
       }
+    } finally {
+      setState(() {
+        loading = false;
+      });
     }
-    setState(() {
-      loading = false;
-    });
   }
 
-  void loadBranches() async {
+  Future<void> loadBranches() async {
     var result =
         await ApiServices.get('/branch/by-company/${selectedCompany!.id}');
     // print(result!.toJson());
@@ -138,9 +141,16 @@ class _EditUserScreenState extends State<EditUserScreen> {
   Widget build(BuildContext context) {
     Screen size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('แก้ไขผู้ใช้'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("แก้ไขผู้ใช้",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -213,7 +223,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                     height: 80,
                                     child: MiraiDropDownMenu<BranchModel>(
                                       key: UniqueKey(),
-                                      children: branches!,
+                                      children: branches ?? [],
                                       space: 4,
                                       maxHeight: 360,
                                       showSearchTextField: true,

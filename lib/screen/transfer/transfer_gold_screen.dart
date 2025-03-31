@@ -14,6 +14,8 @@ import 'package:motivegold/screen/transfer/transfer_gold_checkout.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/extentions.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -246,36 +248,65 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
     final formKey = GlobalKey();
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('โอนทองไปยังคลังสินค้าใหม่'),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const GoldPriceScreen(
-                            showBackButton: true,
-                          ),
-                      fullscreenDialog: true));
-            },
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  Icons.money,
-                  size: 50,
+                const Expanded(
+                  flex: 4,
+                  child: Text("โอนทองไปยังคลังสินค้าใหม่",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900)),
                 ),
-                Text(
-                  'ราคาทองคำ',
-                  style: TextStyle(fontSize: size!.getWidthPx(6)),
-                )
+                Expanded(
+                    flex: 6,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const GoldPriceScreen(
+                                      showBackButton: true,
+                                    ),
+                                    fullscreenDialog: true));
+                          },
+                          child: Container(
+                            color: Colors.teal[900],
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.money,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'ราคาทองคำ',
+                                    style: TextStyle(fontSize: size!.getWidthPx(8), color: Colors.white),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ))
               ],
             ),
           ),
-          const SizedBox(
-            width: 20,
-          )
-        ],
+        ),
       ),
       body: SafeArea(
         child: progress

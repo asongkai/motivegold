@@ -10,6 +10,8 @@ import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/utils/global.dart';
@@ -64,10 +66,15 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
     size = Screen(MediaQuery.of(context).size);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'เมนูซื้อขายทองแท่ง',
-          style: TextStyle(fontSize: size?.getWidthPx(8)),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("เมนูซื้อขายทองแท่ง",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
         ),
       ),
       body: loading

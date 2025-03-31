@@ -1,9 +1,6 @@
-import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
@@ -15,7 +12,7 @@ import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/sell_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/extentions.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -69,6 +66,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumSellTotal();
+    getCart();
   }
 
   @override
@@ -394,11 +392,12 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                                     Global.sellOrderDetail!,
                                                 orderTypeId: 1);
                                             final data = order.toJson();
-                                            Global.orders?.add(
+                                            Global.ordersPapun?.add(
                                                 OrderModel.fromJson(data));
                                             widget.refreshCart(Global
-                                                .orders?.length
+                                                .ordersPapun?.length
                                                 .toString());
+                                            writeCart();
                                             Global.sellOrderDetail!.clear();
                                             setState(() {
                                               Global.sellSubTotal = 0;
@@ -568,11 +567,12 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                                       Global.sellOrderDetail!,
                                                   orderTypeId: 1);
                                               final data = order.toJson();
-                                              Global.orders?.add(
+                                              Global.ordersPapun?.add(
                                                   OrderModel.fromJson(data));
                                               widget.refreshCart(Global
-                                                  .orders?.length
+                                                  .ordersPapun?.length
                                                   .toString());
+                                              writeCart();
                                               Global.sellOrderDetail!.clear();
                                               setState(() {
                                                 Global.sellSubTotal = 0;
@@ -596,8 +596,9 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                                         .toString();
                                                     widget.refreshHold(holds);
                                                     widget.refreshCart(Global
-                                                        .orders?.length
+                                                        .ordersPapun?.length
                                                         .toString());
+                                                    writeCart();
                                                     setState(() {});
                                                   });
                                                 });

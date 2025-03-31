@@ -9,6 +9,8 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -91,9 +93,16 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการที่รอดำเนินการ'),
-        actions: const [],
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("รายการที่รอดำเนินการ",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: loading
@@ -348,7 +357,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
   }
 
   void sellToShop(OrderModel order) async {
-    Global.orders!.clear();
+    Global.ordersThengMatching!.clear();
     int? typeId = 33;
     Global.posOrder = order;
     Global.posOrder?.orderTypeId = typeId;
@@ -370,14 +379,6 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
       Global.buyThengOrderDetailMatching = orderDetailListModelFromJson(jsonEncode(order.details));
       // Global.sellThengOrderDetail = orderDetailListModelFromJson(jsonEncode(order.details));
     }
-    // OrderModel _order = OrderModel(
-    //     orderId: result.data,
-    //     orderDate: DateTime.now(),
-    //     details: Global.sellThengOrderDetail!,
-    //     orderTypeId: 3,
-    //     orderStatus: 'PENDING');
-    // final data = _order.toJson();
-    // Global.orders?.add(OrderModel.fromJson(data));
 
     Navigator.push(
         context,
@@ -391,7 +392,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
   }
 
   void customerTakeGold(OrderModel order) async {
-    Global.orders!.clear();
+    Global.ordersThengMatching!.clear();
     // order.orderTypeId = 4;
     int? typeId = 4;
     Global.posOrder = order;

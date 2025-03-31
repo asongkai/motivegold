@@ -22,6 +22,7 @@ import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/user.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -39,8 +40,18 @@ void resetAtLogout() {
   Global.user = UserModel();
   Global.company = null;
   Global.branch = null;
-  Global.orders?.clear();
+  Global.orders.clear();
   Global.order = null;
+  Global.ordersPapun?.clear();
+  Global.orderPapun = null;
+  Global.ordersThengMatching?.clear();
+  Global.orderThengMatching = null;
+  Global.ordersTheng?.clear();
+  Global.orderTheng = null;
+  Global.ordersBroker?.clear();
+  Global.orderBroker = null;
+  Global.ordersWholesale?.clear();
+  Global.orderWholesale = null;
   Global.orderDetail?.clear();
   Global.sellOrderDetail = [];
   Global.buyOrderDetail = [];
@@ -54,6 +65,7 @@ void resetAtLogout() {
   Global.usedSellDetail = [];
   Global.transferDetail = [];
   Global.branchList = [];
+  resetCart();
 }
 
 getPaymentType(String? paymentMethod) {
@@ -751,6 +763,7 @@ Widget numberTextField(
     line,
     Color? textColor,
     Function(String value)? onChanged,
+    Function(bool)? onFocusChange,
     Function()? openCalc,
     Function()? onTap,
     Function()? clear,
@@ -760,81 +773,86 @@ Widget numberTextField(
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
-    child: TextFormField(
-      keyboardType: inputType ?? TextInputType.text,
-      inputFormatters: inputFormat ?? [],
-      enabled: enabled,
-      maxLines: line ?? 1,
-      textAlign: TextAlign.right,
-      style: TextStyle(
-        fontSize: 40,
-        color: textColor ?? Colors.blue[900],
-      ),
-      obscureText: isPassword,
-      onTap: onTap,
-      readOnly: readOnly,
-      // showCursor: readOnly ?? true,
-      focusNode: focusNode,
-      decoration: InputDecoration(
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
-        labelText: labelText,
-        labelStyle: TextStyle(
-            color: textColor ?? Colors.blue[900],
-            fontWeight: FontWeight.w900,
-            fontSize: 30),
-        prefixIconConstraints:
-            const BoxConstraints(minHeight: 50, minWidth: 50),
-        prefixIcon: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-                // shape: BoxShape.circle,
-                border: Border.all(width: 0.5, color: readOnly ? Colors.teal : Colors.orange.shade900,)),
-            child: IconButton(
-              icon:
-              Image.asset(
-                'assets/icons/icons8-plus-slash-minus-50.png',
-                color: readOnly ? Colors.teal : Colors.orange.shade500,
-                width: 50,
+    child: Focus(
+      onFocusChange: onFocusChange,
+      child: TextFormField(
+        keyboardType: inputType ?? TextInputType.text,
+        inputFormatters: inputFormat ?? [],
+        enabled: enabled,
+        maxLines: line ?? 1,
+        textAlign: TextAlign.right,
+        style: TextStyle(
+          fontSize: 40,
+          color: textColor ?? Colors.blue[900],
+        ),
+        obscureText: isPassword,
+        onTap: onTap,
+        readOnly: readOnly,
+        // showCursor: readOnly ?? true,
+        focusNode: focusNode,
+        decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+          labelText: labelText,
+          labelStyle: TextStyle(
+              color: textColor ?? Colors.blue[900],
+              fontWeight: FontWeight.w900,
+              fontSize: 30),
+          prefixIconConstraints:
+              const BoxConstraints(minHeight: 50, minWidth: 50),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  // shape: BoxShape.circle,
+                  border: Border.all(
+                width: 0.5,
+                color: readOnly ? Colors.teal : Colors.orange.shade900,
+              )),
+              child: IconButton(
+                icon: Image.asset(
+                  'assets/icons/icons8-plus-slash-minus-50.png',
+                  color: readOnly ? Colors.teal : Colors.orange.shade500,
+                  width: 50,
+                ),
+                onPressed: openCalc,
               ),
-              onPressed: openCalc,
+            ),
+          ),
+          suffixText: suffixText,
+          filled: true,
+          suffixIconConstraints:
+              const BoxConstraints(minHeight: 60, minWidth: 60),
+          suffixIcon: IconButton(
+            icon: Image.asset(
+              'assets/icons/icons8-sort-left-50.png',
+              color: Colors.red.shade500,
+            ),
+            onPressed: clear,
+          ),
+          fillColor: enabled ? Colors.white54 : Colors.white54,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              getProportionateScreenWidth(2),
+            ),
+            borderSide: BorderSide(
+              color: readOnly ? Colors.teal : kGreyShade3,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              getProportionateScreenWidth(2),
+            ),
+            borderSide: BorderSide(
+              color: readOnly ? Colors.teal : kGreyShade3,
             ),
           ),
         ),
-        suffixText: suffixText,
-        filled: true,
-        suffixIconConstraints:
-            const BoxConstraints(minHeight: 60, minWidth: 60),
-        suffixIcon: IconButton(
-          icon: Image.asset(
-            'assets/icons/icons8-sort-left-50.png',
-            color: Colors.red.shade500,
-          ),
-          onPressed: clear,
-        ),
-        fillColor: enabled ? Colors.white54 : Colors.white54,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenWidth(2),
-          ),
-          borderSide: BorderSide(
-            color: readOnly ? Colors.teal : kGreyShade3,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenWidth(2),
-          ),
-          borderSide: BorderSide(
-            color: readOnly ? Colors.teal : kGreyShade3,
-          ),
-        ),
+        validator: validator,
+        controller: controller,
+        onChanged: onChanged,
       ),
-      validator: validator,
-      controller: controller,
-      onChanged: onChanged,
     ),
   );
 }
@@ -886,16 +904,16 @@ Widget numberTextFieldBig(
               fontWeight: FontWeight.w900,
               fontSize: 50),
           prefixIconConstraints:
-          const BoxConstraints(minHeight: 50, minWidth: 50),
+              const BoxConstraints(minHeight: 50, minWidth: 50),
           prefixIcon: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: readOnly ? Colors.teal : Colors.red.shade500)),
+                  border: Border.all(
+                      color: readOnly ? Colors.teal : Colors.red.shade500)),
               child: IconButton(
-                icon:
-                Image.asset(
+                icon: Image.asset(
                   'assets/icons/icons8-plus-slash-minus-50.png',
                   color: readOnly ? Colors.teal : Colors.red.shade500,
                   width: 50,

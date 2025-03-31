@@ -14,10 +14,10 @@ class CachedImage extends StatelessWidget {
       "assets/images/no_image.png";
 
   final String noThumbnailAvailable =
-      "https://firebasestorage.googleapis.com/v0/b/ocwa-app.appspot.com/o/default.png?alt=media&token=c7feffc9-ec84-47a7-8f30-733b3d7dc583";
+      "https://www.gravatar.com/avatar/3b3be63a4c2a439b013787725dfce802?d=identicon";
 
   CachedImage(this.imageUrl,
-      {this.isRound = false,
+      {super.key, this.isRound = false,
       this.radius = 0,
       this.height,
       this.width,

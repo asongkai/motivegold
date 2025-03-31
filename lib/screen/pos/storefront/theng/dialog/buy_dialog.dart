@@ -13,11 +13,12 @@ import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 
 class BuyDialog extends StatefulWidget {
   const BuyDialog({super.key});
@@ -220,6 +221,12 @@ class _BuyDialogState extends State<BuyDialog> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: Stack(
         children: [
           GestureDetector(

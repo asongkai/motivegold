@@ -5,12 +5,14 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/title_tile.dart';
 
-
 class GoldPriceScreen extends StatefulWidget {
   final bool showBackButton;
+
   const GoldPriceScreen({super.key, required this.showBackButton});
 
   @override
@@ -33,7 +35,7 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
     setState(() {
       loading = true;
     });
-    try{
+    try {
       Global.goldDataModel =
           Global.goldDataModel ?? await api.getGoldPrice(context);
     } catch (e) {
@@ -73,27 +75,37 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
             ),
           )
         : Scaffold(
-            appBar: widget.showBackButton ? AppBar(
-              automaticallyImplyLeading: widget.showBackButton, 
-            ) : null,
+            appBar: CustomAppBar(
+              height: 300,
+              child: TitleContent(
+                backButton: widget.showBackButton,
+                title: const Text("ราคาทองตามประกาศของสมาคมค้าทองคำ",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900)),
+              ),
+            ),
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Container(
-                          width: MediaQuery.of(context).size.width,
-                          padding: const EdgeInsets.all(15.0),
-                          decoration: const BoxDecoration(
-                              color: Colors.teal,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10))),
-                          child: Text(
-                            'ราคาทองตามประกาศของสมาคมค้าทองคำ',
-                            style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
-                          )),
+                      // Container(
+                      //     width: MediaQuery.of(context).size.width,
+                      //     padding: const EdgeInsets.all(15.0),
+                      //     decoration: const BoxDecoration(
+                      //         color: Colors.teal,
+                      //         borderRadius: BorderRadius.only(
+                      //             topLeft: Radius.circular(10),
+                      //             topRight: Radius.circular(10))),
+                      //     child: Text(
+                      //       'ราคาทองตามประกาศของสมาคมค้าทองคำ',
+                      //       style: TextStyle(
+                      //           fontSize: size.getWidthPx(8),
+                      //           color: Colors.white),
+                      //     )),
                       TitleTile(
                         title: '${Global.goldDataModel?.date}',
                       ),
@@ -101,25 +113,29 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
                         leftTitle: '96.5%',
                         leftValue: "",
                         rightTitle: "ขายออก",
-                        rightValue: "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))}",
+                        rightValue:
+                            "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))}",
                       ),
                       ListTileData(
                         leftTitle: 'ทองคำแท่ง',
                         leftValue: "",
                         rightTitle: "รับซื้อ",
-                        rightValue: "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))}",
+                        rightValue:
+                            "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))}",
                       ),
                       ListTileData(
                         leftTitle: 'ทองรูปพรรณ',
                         leftValue: "96.5%",
                         rightTitle: "ขายออก",
-                        rightValue: "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.sell))}",
+                        rightValue:
+                            "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.sell))}",
                       ),
                       ListTileData(
                         leftTitle: '',
                         leftValue: "",
                         rightTitle: "รับซื้อ (ฐานภาษี)",
-                        rightValue: "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))}",
+                        rightValue:
+                            "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))}",
                       ),
                       // const GoldPriceListTileData(
                       //   title: '96.5%',

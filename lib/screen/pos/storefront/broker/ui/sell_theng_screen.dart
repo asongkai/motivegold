@@ -11,6 +11,7 @@ import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/broker/dialog/sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -76,6 +77,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumSellThengTotalBroker();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -188,6 +190,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
+        backgroundColor: Colors.teal[900],
         title: const Text(
           'ขายทองแท่งกับโบรกเกอร์',
           style: TextStyle(fontSize: 25),
@@ -323,7 +326,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                             color: const Color(0xFF636564)),
                                       ),
                                       Text(
-                                        "${Global.format(Global.sellThengSubTotal)} บาท",
+                                        "${Global.format(Global.sellThengSubTotalBroker)} บาท",
                                         style: TextStyle(
                                             fontSize: size.getWidthPx(8),
                                             fontWeight: FontWeight.bold,
@@ -386,9 +389,10 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                 details: Global.sellThengOrderDetailBroker!,
                                 orderTypeId: 8);
                             final data = order.toJson();
-                            Global.orders?.add(OrderModel.fromJson(data));
+                            Global.ordersBroker?.add(OrderModel.fromJson(data));
                             widget
-                                .refreshCart(Global.orders?.length.toString());
+                                .refreshCart(Global.ordersBroker?.length.toString());
+                            writeCart();
                             Global.sellThengOrderDetailBroker!.clear();
                             setState(() {
                               Global.sellThengSubTotal = 0;
@@ -537,9 +541,10 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                   details: Global.sellThengOrderDetailBroker!,
                                   orderTypeId: 8);
                               final data = order.toJson();
-                              Global.orders?.add(OrderModel.fromJson(data));
+                              Global.ordersBroker?.add(OrderModel.fromJson(data));
                               widget.refreshCart(
-                                  Global.orders?.length.toString());
+                                  Global.ordersBroker?.length.toString());
+                              writeCart();
                               Global.sellThengOrderDetailBroker!.clear();
                               setState(() {
                                 Global.sellThengSubTotal = 0;
@@ -547,8 +552,6 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                 Global.sellThengTotal = 0;
                               });
 
-                              // motivePrint(orderListModelToJson(Global.orders!));
-                              // return;
                               if (mounted) {
                                 Navigator.push(
                                         context,
@@ -564,7 +567,8 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                         .toString();
                                     widget.refreshHold(holds);
                                     widget.refreshCart(
-                                        Global.orders?.length.toString());
+                                        Global.ordersBroker?.length.toString());
+                                    writeCart();
                                     setState(() {});
                                   });
                                 });

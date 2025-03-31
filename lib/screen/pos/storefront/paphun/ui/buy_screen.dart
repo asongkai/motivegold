@@ -14,6 +14,7 @@ import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -63,6 +64,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyTotal();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -434,11 +436,12 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                 details: Global.buyOrderDetail!,
                                                 orderTypeId: 2);
                                             final data = order.toJson();
-                                            Global.orders?.add(
+                                            Global.ordersPapun?.add(
                                                 OrderModel.fromJson(data));
                                             widget.refreshCart(Global
-                                                .orders?.length
+                                                .ordersPapun?.length
                                                 .toString());
+                                            writeCart();
                                             Global.buyOrderDetail!.clear();
                                             setState(() {
                                               Global.buySubTotal = 0;
@@ -613,11 +616,12 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                       Global.buyOrderDetail!,
                                                   orderTypeId: 2);
                                               final data = order.toJson();
-                                              Global.orders?.add(
+                                              Global.ordersPapun?.add(
                                                   OrderModel.fromJson(data));
                                               widget.refreshCart(Global
-                                                  .orders?.length
+                                                  .ordersPapun?.length
                                                   .toString());
+                                              writeCart();
                                               Global.buyOrderDetail!.clear();
                                               setState(() {
                                                 Global.buySubTotal = 0;
@@ -641,8 +645,9 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                         .toString();
                                                     widget.refreshHold(holds);
                                                     widget.refreshCart(Global
-                                                        .orders?.length
+                                                        .ordersPapun?.length
                                                         .toString());
+                                                    writeCart();
                                                     setState(() {});
                                                   });
                                                 });

@@ -1,16 +1,11 @@
 import 'dart:convert';
 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:masked_text/masked_text.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
-import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
@@ -18,19 +13,14 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 
-// import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_widget.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/utils/screen_utils.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
-import 'package:motivegold/widget/loading/loading_progress.dart';
 
 class SellMatchingDialog extends StatefulWidget {
   const SellMatchingDialog({super.key});
@@ -234,6 +224,12 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: Stack(
         children: [
           GestureDetector(

@@ -1,9 +1,8 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -14,12 +13,12 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
-import 'package:motivegold/utils/calculator/calculator.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -177,9 +176,18 @@ class _SaleDialogState extends State<SaleDialog> {
       // await pr.hide();
 
       productWeightRemainCtrl.text =
-          formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          Global.format(Global.getTotalWeightByLocation(qtyLocationList));
+
+      productWeightBahtRemainCtrl.text = Global.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
+
+      if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
+        Alert.warning(context, 'Warning'.tr(),
+            '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
+            action: () {});
+      }
+
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -328,6 +336,12 @@ class _SaleDialogState extends State<SaleDialog> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: loading
           ? const Center(
               child: LoadingProgress(),
@@ -846,15 +860,22 @@ class _SaleDialogState extends State<SaleDialog> {
                       ),
                     ),
                     onPressed: () async {
+                      if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
+                        Alert.warning(context, 'Warning'.tr(),
+                            '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
+                            action: () {});
+                        return;
+                      }
+
                       if (selectedProduct == null) {
-                        Alert.warning(
-                            context, 'คำเตือน', getDefaultProductMessage(), 'OK');
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultProductMessage(), 'OK');
                         return;
                       }
 
                       if (selectedWarehouse == null) {
-                        Alert.warning(
-                            context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK');
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultWarehouseMessage(), 'OK');
                         return;
                       }
 

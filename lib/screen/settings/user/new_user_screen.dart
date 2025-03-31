@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -88,7 +90,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
           companyCtrl.text = selectedCompany!.name;
           companyNotifier = ValueNotifier<CompanyModel>(
               selectedCompany ?? CompanyModel(id: 0, name: 'เลือกบริษัท'));
-          loadBranches();
+          await loadBranches();
         }
       } else {
         companies = [];
@@ -97,10 +99,11 @@ class _NewUserScreenState extends State<NewUserScreen> {
       if (kDebugMode) {
         print(e.toString());
       }
+    } finally {
+      setState(() {
+        loading = false;
+      });
     }
-    setState(() {
-      loading = false;
-    });
   }
 
   Future<void> loadBranches() async {
@@ -130,9 +133,16 @@ class _NewUserScreenState extends State<NewUserScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เพิ่มผู้ใช้'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("เพิ่มผู้ใช้",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

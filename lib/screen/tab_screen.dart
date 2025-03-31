@@ -5,6 +5,7 @@ import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/screen/dashboard_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/history_screen.dart';
+import 'package:motivegold/screen/reports/report_screen.dart';
 import 'package:motivegold/screen/settings/setting_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 
@@ -28,9 +29,8 @@ List<TabItem> items = [
     icon: Icons.people,
     title: 'ข้อมูลลูกค้า'.tr(),
   ),
-  const TabItem(
-    icon: Icons.more_horiz_outlined,
-  ),
+  const TabItem(icon: Icons.playlist_add_check_sharp, title: 'รายงาน'),
+  const TabItem(icon: Icons.settings, title: 'ตั้งค่า'),
 ];
 
 class TabScreen extends StatefulWidget {
@@ -146,6 +146,7 @@ class _TabScreenState extends State<TabScreen>
                   showBackButton: false,
                 ),
                 CustomerScreen(),
+                ReportScreen(),
                 SettingScreen(),
               ],
             ),

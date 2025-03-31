@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -18,10 +17,11 @@ import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/utils/extentions.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-// import 'package:pattern_formatter/numeric_formatter.dart';
 
 class EditBuyDialog extends StatefulWidget {
   const EditBuyDialog({super.key, required this.index, this.j});
@@ -76,16 +76,16 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
     productWeightCtrl.text = widget.j == null
         ? Global.format(Global.buyOrderDetail![widget.index].weight ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].weight ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].weight ?? 0);
     productWeightBahtCtrl.text = widget.j == null
         ? Global.format(Global.buyOrderDetail![widget.index].weightBath ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].weightBath ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].weightBath ?? 0);
     productPriceCtrl.text = widget.j == null
         ? Global.format(
             Global.buyOrderDetail![widget.index].priceIncludeTax ?? 0)
         : Global.format(
-            Global.orders![widget.index].details![widget.j!].priceIncludeTax ??
+            Global.ordersPapun![widget.index].details![widget.j!].priceIncludeTax ??
                 0);
   }
 
@@ -122,7 +122,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
           productList = products;
           if (productList.isNotEmpty) {
             var productId = widget.j != null
-                ? Global.orders![widget.index].details![widget.j!].productId
+                ? Global.ordersPapun![widget.index].details![widget.j!].productId
                 : Global.buyOrderDetail![widget.index].productId;
 
             selectedProduct = productList.where((e) => e.id == productId).first;
@@ -146,7 +146,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
         setState(() {
           warehouseList = warehouses;
           var binId = widget.j != null
-              ? Global.orders![widget.index].details![widget.j!].binLocationId
+              ? Global.ordersPapun![widget.index].details![widget.j!].binLocationId
               : Global.buyOrderDetail![widget.index].binLocationId;
 
           selectedWarehouse = warehouseList.where((e) => e.id == binId).first;
@@ -201,6 +201,12 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      appBar: const CustomAppBar(
+        height: 220,
+        child: TitleContent(
+          backButton: true,
+        ),
+      ),
       body: loading
           ? const Center(
         child: LoadingProgress(),
@@ -237,7 +243,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                         GoldPriceMiniScreen(
                           goldDataModel: widget.j == null ? Global
                               .buyOrderDetail![widget.index].goldDataModel : Global
-                            .orders![widget.index].details![widget.j!].goldDataModel,
+                            .ordersPapun![widget.index].details![widget.j!].goldDataModel,
                         ),
                       ],
                     ),
@@ -691,7 +697,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                   .goldDataModel
                                   ?.paphun
                                   ?.buy : Global
-                                  .orders![widget.index].details![widget.j!]
+                                  .ordersPapun![widget.index].details![widget.j!]
                                   .goldDataModel
                                   ?.paphun
                                   ?.buy))
@@ -743,7 +749,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                           setState(() {});
                           Navigator.of(context).pop();
                         } else {
-                          Global.orders![widget.index].details![widget.j!] = OrderDetailModel.fromJson(jsonDecode(jsonEncode(OrderDetailModel(
+                          Global.ordersPapun![widget.index].details![widget.j!] = OrderDetailModel.fromJson(jsonDecode(jsonEncode(OrderDetailModel(
                               productName: productNameCtrl.text,
                               binLocationId: selectedWarehouse!.id,
                               productId: selectedProduct!.id,
@@ -755,15 +761,15 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                               priceIncludeTax: productWeightCtrl.text.isEmpty
                                   ? 0
                                   : Global.toNumber(productPriceCtrl.text),
-                              sellPrice: Global.orders![widget.index]
+                              sellPrice: Global.ordersPapun![widget.index]
                                   .details![widget.j!].sellPrice,
-                              buyPrice: Global.orders![widget.index]
+                              buyPrice: Global.ordersPapun![widget.index]
                                   .details![widget.j!].buyPrice,
-                              sellTPrice: Global.orders![widget.index]
+                              sellTPrice: Global.ordersPapun![widget.index]
                                   .details![widget.j!].sellTPrice,
-                              buyTPrice: Global.orders![widget.index]
+                              buyTPrice: Global.ordersPapun![widget.index]
                                   .details![widget.j!].buyTPrice,
-                              goldDataModel: Global.orders![widget.index]
+                              goldDataModel: Global.ordersPapun![widget.index]
                                   .details![widget.j!].goldDataModel))));
                           sumBuyTotal();
                           setState(() {});
@@ -794,7 +800,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
               Global.toNumber(widget.j == null
                   ? Global
                       .buyOrderDetail![widget.index].goldDataModel?.paphun?.buy
-                  : Global.orders![widget.index].details![widget.j!]
+                  : Global.ordersPapun![widget.index].details![widget.j!]
                       .goldDataModel?.paphun?.buy))
           .toString();
       // productPriceCtrl.text =
@@ -822,7 +828,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
               Global.toNumber(widget.j == null
                   ? Global
                       .buyOrderDetail![widget.index].goldDataModel?.paphun?.buy
-                  : Global.orders![widget.index].details![widget.j!]
+                  : Global.ordersPapun![widget.index].details![widget.j!]
                       .goldDataModel?.paphun?.buy))
           .toString();
       setState(() {});

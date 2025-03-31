@@ -243,7 +243,23 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                               Global.currentPaymentMethod =
                                   Global.selectedPayment?.code;
                               paymentNotifier!.value = value;
-                              setState(() {});
+                              // motivePrint('amount: ${Global.payToCustomerOrShopValue(Global.ordersPapun, Global.discount)}');
+                              double amount = 0;
+                              if (Global.currentOrderType == 5) {
+                                amount =
+                                    Global.payToCustomerOrShopValueWholeSale(
+                                        Global.ordersWholesale, Global.discount);
+                              } else {
+                                amount = Global.payToCustomerOrShopValue(
+                                    Global.ordersPapun, Global.discount);
+                              }
+                              if (amount >= 0) {
+                                Global.amountCtrl.text = Global.format(
+                                    amount - Global.getPaymentListTotal());
+                              } else {
+                                Global.amountCtrl.text = Global.format(
+                                    -amount - Global.getPaymentListTotal());
+                              }
                               setState(() {});
                             },
                             child: DropDownObjectChildWidget(
@@ -354,9 +370,9 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                   ],
                 ),
               if (Global.currentPaymentMethod == 'TR')
-              const SizedBox(
-                height: 30,
-              ),
+                const SizedBox(
+                  height: 30,
+                ),
               if (Global.currentPaymentMethod == 'TR')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -385,9 +401,9 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                   ],
                 ),
               if (Global.currentPaymentMethod == 'CR')
-              const SizedBox(
-                height: 20,
-              ),
+                const SizedBox(
+                  height: 20,
+                ),
               if (Global.currentPaymentMethod == 'CR')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

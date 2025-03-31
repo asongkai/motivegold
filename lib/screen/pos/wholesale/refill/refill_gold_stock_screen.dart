@@ -1,13 +1,23 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:masked_text/masked_text.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/wholesale_print_bill_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/refill/dialog/refill_dialog.dart';
+import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/drag/drag_area.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -20,6 +30,8 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -51,9 +63,11 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   TextEditingController productWeightBahtCtrl = TextEditingController();
   TextEditingController productSellPriceCtrl = TextEditingController();
   TextEditingController productBuyPriceCtrl = TextEditingController();
+  TextEditingController productBuyPricePerGramCtrl = TextEditingController();
   TextEditingController warehouseCtrl = TextEditingController();
 
   TextEditingController referenceNumberCtrl = TextEditingController();
+  TextEditingController remarkCtrl = TextEditingController();
 
   TextEditingController productSellThengPriceCtrl = TextEditingController();
   TextEditingController productBuyThengPriceCtrl = TextEditingController();
@@ -76,9 +90,22 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   final boardCtrl = BoardDateTimeController();
 
   DateTime date = DateTime.now();
-  double? _currentValue = 0;
-  String? mode;
-  late SimpleCalculator calc;
+  String? txt;
+  bool showCal = false;
+
+  FocusNode priceIncludeTaxFocus = FocusNode();
+  FocusNode gramFocus = FocusNode();
+  FocusNode priceExcludeTaxFocus = FocusNode();
+  FocusNode purchasePriceFocus = FocusNode();
+  FocusNode priceDiffFocus = FocusNode();
+  FocusNode taxAmountFocus = FocusNode();
+
+  bool priceIncludeTaxReadOnly = false;
+  bool gramReadOnly = false;
+  bool priceExcludeTaxReadOnly = false;
+  bool purchasePriceReadOnly = false;
+  bool priceDiffReadOnly = false;
+  bool taxAmountReadOnly = false;
 
   @override
   void initState() {
@@ -86,12 +113,13 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     super.initState();
 
     // Sample data
-    orderDateCtrl.text = "01-02-2025";
-    referenceNumberCtrl.text = "90803535";
-    productSellThengPriceCtrl.text = "45000";
-    productBuyThengPriceCtrl.text = "44000";
-    productSellPriceCtrl.text = "45000";
-    productBuyPriceCtrl.text = "44000";
+    // orderDateCtrl.text = "01-02-2025";
+    // referenceNumberCtrl.text = "90803535";
+    // productSellThengPriceCtrl.text = "45000";
+    // productBuyThengPriceCtrl.text = "44000";
+    // productSellPriceCtrl.text = "45000";
+    // productBuyPriceCtrl.text = "44000";
+
     // priceExcludeTaxTotalCtrl.text = "89000";
     // purchasePriceTotalCtrl.text = "88000";
     // priceDiffTotalCtrl.text = "2000";
@@ -99,85 +127,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     // taxAmountTotalCtrl.text = "500";
     // priceIncludeTaxTotalCtrl.text = "92000";
 
-    calc = SimpleCalculator(
-      value: _currentValue!,
-      hideExpression: false,
-      hideSurroundingBorder: true,
-      autofocus: true,
-      onChanged: (key, value, expression) {
-        if (mode == 'ts') {
-          productSellThengPriceCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'tb') {
-          productBuyThengPriceCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'ps') {
-          productSellPriceCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'pb') {
-          productBuyPriceCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'p_e_t_total') {
-          priceExcludeTaxTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'p_p') {
-          purchasePriceTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'p_d') {
-          priceDiffTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 't_b') {
-          taxBaseTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 't_a') {
-          taxAmountTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-        if (mode == 'p_i_t_total') {
-          priceIncludeTaxTotalCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-
-        if (mode == 'price') {
-          priceIncludeTaxCtrl.text =
-              value != null ? "${Global.format(value)}" : "";
-        }
-
-        setState(() {
-          _currentValue = value ?? 0;
-        });
-        if (kDebugMode) {
-          print('$key\t$value\t$expression');
-        }
-      },
-      onTappedDisplay: (value, details) {
-        if (kDebugMode) {
-          print('$value\t${details.globalPosition}');
-        }
-      },
-      theme: const CalculatorThemeData(
-          // borderColor: Colors.black,
-          // borderWidth: 2,
-          // displayColor: Colors.black,
-          // displayStyle: TextStyle(fontSize: 80, color: Colors.yellow),
-          // expressionColor: Colors.indigo,
-          // expressionStyle: TextStyle(fontSize: 20, color: Colors.white),
-          // operatorColor: Colors.pink,
-          // operatorStyle: TextStyle(fontSize: 30, color: Colors.white),
-          // commandColor: Colors.orange,
-          // commandStyle: TextStyle(fontSize: 30, color: Colors.white),
-          // numColor: Colors.grey,
-          // numStyle: TextStyle(fontSize: 50, color: Colors.white),
-          ),
-    );
     Global.appBarColor = rfBgColor;
     productTypeNotifier = ValueNotifier<ProductTypeModel>(
         ProductTypeModel(id: 0, name: 'เลือกประเภท'));
@@ -185,6 +134,64 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    loadProducts();
+    getCart();
+  }
+
+  void loadProducts() async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      // var result = await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/product/refill', Global.requestObj(null));
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+        motivePrint(data);
+        List<ProductModel> products = productListModelFromJson(data);
+        setState(() {
+          productList = products;
+          if (productList.isNotEmpty) {
+            selectedProduct = productList.where((e) => e.isDefault == 1).first;
+            productNotifier = ValueNotifier<ProductModel>(
+                selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
+            productCodeCtrl.text =
+                (selectedProduct != null ? selectedProduct!.productCode : '')!;
+            productNameCtrl.text =
+                selectedProduct != null ? selectedProduct!.name : '';
+          }
+        });
+      } else {
+        productList = [];
+      }
+
+      var warehouse = await ApiServices.post(
+          '/binlocation/all/type/NEW/5', Global.requestObj(null));
+      // motivePrint(warehouse?.toJson());
+      if (warehouse?.status == "success") {
+        var data = jsonEncode(warehouse?.data);
+        List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
+        setState(() {
+          warehouseList = warehouses;
+          selectedWarehouse =
+              warehouseList.where((e) => e.isDefault == 1).first;
+          warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
+              WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+        });
+      } else {
+        warehouseList = [];
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   @override
@@ -219,11 +226,53 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     purchasePriceTotalCtrl.dispose();
 
     orderDateCtrl.dispose();
+
+    priceIncludeTaxFocus.dispose();
+    gramFocus.dispose();
+    priceExcludeTaxFocus.dispose();
+    purchasePriceFocus.dispose();
+    priceDiffFocus.dispose();
+    taxAmountFocus.dispose();
+  }
+
+  void openCal() {
+    if (txt == 'purchase') {
+      purchasePriceReadOnly = true;
+    }
+    if (txt == 'gram') {
+      gramReadOnly = true;
+    }
+    if (txt == 'price_include') {
+      priceIncludeTaxReadOnly = true;
+    }
+    if (txt == 'price_exclude') {
+      priceExcludeTaxReadOnly = true;
+    }
+    if (txt == 'price_diff') {
+      priceDiffReadOnly = true;
+    }
+    if (txt == 'tax_amount') {
+      taxAmountReadOnly = true;
+    }
+    setState(() {
+      showCal = true;
+    });
+  }
+
+  void closeCal() {
+    purchasePriceReadOnly = false;
+    gramReadOnly = false;
+    priceIncludeTaxReadOnly = false;
+    priceExcludeTaxReadOnly = false;
+    priceDiffReadOnly = false;
+    taxAmountReadOnly = false;
+    setState(() {
+      showCal = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey();
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
@@ -268,345 +317,637 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : SingleChildScrollView(
-                child: Container(
-                  height: size.hp(110),
-                  margin: const EdgeInsets.all(8),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: rfBgColorLight,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            'HEADER [ส่วนหัว]',
-                            style: TextStyle(fontSize: 20),
-                          )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: MaskedTextField(
-                                controller: orderDateCtrl,
-                                mask: "##-##-####",
-                                maxLength: 10,
-                                keyboardType: TextInputType.number,
-                                //editing controller of this TextField
-                                style: const TextStyle(fontSize: 30),
-
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white70,
-                                  hintText: 'dd-mm-yyyy',
-                                  labelStyle: TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.blue[900],
-                                      fontWeight: FontWeight.w900),
-                                  prefixIcon: const Icon(Icons.calendar_today),
-                                  //icon of text field
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  labelText: "วันที่".tr(),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(8),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
+            : Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      closeCal();
+                    },
+                    child: SingleChildScrollView(
+                      child: Container(
+                        // height: size.hp(100),
+                        margin: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: rfBgColorLight,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: 80,
+                                    child: MiraiDropDownMenu<ProductModel>(
+                                      key: UniqueKey(),
+                                      children: productList,
+                                      space: 4,
+                                      maxHeight: 360,
+                                      showSearchTextField: true,
+                                      selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                      emptyListMessage: 'ไม่มีข้อมูล',
+                                      showSelectedItemBackgroundColor: true,
+                                      itemWidgetBuilder: (
+                                        int index,
+                                        ProductModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                        return DropDownItemWidget(
+                                          project: project,
+                                          isItemSelected: isItemSelected,
+                                          firstSpace: 10,
+                                          fontSize: size.getWidthPx(10),
+                                        );
+                                      },
+                                      onChanged: (ProductModel value) {
+                                        productCodeCtrl.text =
+                                            value.productCode!.toString();
+                                        productNameCtrl.text = value.name;
+                                        selectedProduct = value;
+                                        productNotifier!.value = value;
+                                      },
+                                      child: DropDownObjectChildWidget(
+                                        key: GlobalKey(),
+                                        fontSize: size.getWidthPx(10),
+                                        projectValueNotifier: productNotifier!,
+                                      ),
                                     ),
                                   ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
+                                )),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: MaskedTextField(
+                                      controller: orderDateCtrl,
+                                      mask: "##-##-####",
+                                      maxLength: 10,
+                                      keyboardType: TextInputType.number,
+                                      //editing controller of this TextField
+                                      style: const TextStyle(fontSize: 30),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white70,
+                                        hintText: 'dd-mm-yyyy',
+                                        labelStyle: TextStyle(
+                                            fontSize: 25,
+                                            color: Colors.blue[900],
+                                            fontWeight: FontWeight.w900),
+                                        prefixIcon:
+                                            const Icon(Icons.calendar_today),
+                                        //icon of text field
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 10.0,
+                                                horizontal: 10.0),
+                                        labelText: "วันที่ใบกำกับภาษี",
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            getProportionateScreenWidth(2),
+                                          ),
+                                          borderSide: const BorderSide(
+                                            color: kGreyShade3,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            getProportionateScreenWidth(2),
+                                          ),
+                                          borderSide: const BorderSide(
+                                            color: kGreyShade3,
+                                          ),
+                                        ),
+                                      ),
+                                      //set it true, so that user will not able to edit text
                                     ),
                                   ),
                                 ),
-                                //set it true, so that user will not able to edit text
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: buildTextFieldX(
+                                labelText: "เลขที่อ้างอิง",
+                                inputType: TextInputType.text,
+                                enabled: true,
+                                controller: referenceNumberCtrl,
                               ),
                             ),
-                          ),
-                          Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: buildTextFieldX(
-                              labelText: "เลขที่อ้างอิง",
-                              inputType: TextInputType.text,
-                              enabled: true,
-                              controller: referenceNumberCtrl,
-                            ),
-                          ))
-                        ],
-                      ),
-                      SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "ทองคำแท่งขายออก",
-                                  inputType: TextInputType.phone,
-                                  controller: productSellThengPriceCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: numberTextField(
+                                        labelText: "น้ำหนักรวม (กรัม)",
+                                        inputType: TextInputType.number,
+                                        controller: productWeightCtrl,
+                                        focusNode: gramFocus,
+                                        readOnly: gramReadOnly,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                        clear: () {
+                                          setState(() {
+                                            productWeightCtrl.text = "";
+                                          });
+                                          gramChanged();
+                                        },
+                                        onTap: () {
+                                          txt = 'gram';
+                                          closeCal();
+                                        },
+                                        openCalc: () {
+                                          if (!showCal) {
+                                            txt = 'gram';
+                                            gramFocus.requestFocus();
+                                            openCal();
+                                          }
+                                        },
+                                        onChanged: (String value) {
+                                          gramChanged();
+                                        }),
+                                  ),
                                 ),
+                                Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: numberTextField(
+                                        labelText: "จำนวนเงินสุทธิ",
+                                        inputType: TextInputType.phone,
+                                        controller: priceIncludeTaxCtrl,
+                                        focusNode: priceIncludeTaxFocus,
+                                        readOnly: priceIncludeTaxReadOnly,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                        clear: () {
+                                          setState(() {
+                                            priceIncludeTaxCtrl.text = "";
+                                          });
+                                          // gramChanged();
+                                        },
+                                        onTap: () {
+                                          txt = 'price_include';
+                                          closeCal();
+                                        },
+                                        openCalc: () {
+                                          if (!showCal) {
+                                            txt = 'price_include';
+                                            priceIncludeTaxFocus.requestFocus();
+                                            openCal();
+                                          }
+                                        },
+                                        onChanged: (String value) {
+                                          // gramChanged();
+                                        }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                      flex: 4,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'ราคารวมค่ากำเหน็จก่อนภาษี',
+                                          style: TextStyle(
+                                              fontSize: 25, color: textColor),
+                                        ),
+                                      )),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: numberTextField(
+                                        labelText: "",
+                                        inputType: TextInputType.phone,
+                                        controller: priceExcludeTaxCtrl,
+                                        focusNode: priceExcludeTaxFocus,
+                                        readOnly: priceExcludeTaxReadOnly,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                        clear: () {
+                                          setState(() {
+                                            priceExcludeTaxCtrl.text = "";
+                                          });
+                                          // gramChanged();
+                                        },
+                                        onTap: () {
+                                          txt = 'price_exclude';
+                                          closeCal();
+                                        },
+                                        openCalc: () {
+                                          if (!showCal) {
+                                            txt = 'price_exclude';
+                                            priceExcludeTaxFocus.requestFocus();
+                                            openCal();
+                                          }
+                                        },
+                                        onChanged: (String value) {
+                                          // gramChanged();
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                      flex: 4,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'หักราคารับซื้อทองประจำวัน',
+                                          style: TextStyle(
+                                              fontSize: 25, color: textColor),
+                                        ),
+                                      )),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: numberTextField(
+                                          labelText: "",
+                                          inputType: TextInputType.phone,
+                                          controller: purchasePriceCtrl,
+                                          focusNode: purchasePriceFocus,
+                                          readOnly: purchasePriceReadOnly,
+                                          inputFormat: [
+                                            ThousandsFormatter(
+                                                allowFraction: true)
+                                          ],
+                                          clear: () {
+                                            setState(() {
+                                              purchasePriceCtrl.text = "";
+                                            });
+                                            // gramChanged();
+                                          },
+                                          onTap: () {
+                                            txt = 'purchase';
+                                            closeCal();
+                                          },
+                                          openCalc: () {
+                                            if (!showCal) {
+                                              txt = 'purchase';
+                                              purchasePriceFocus.requestFocus();
+                                              openCal();
+                                            }
+                                          },
+                                          onChanged: (String value) {
+                                            // gramChanged();
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                      flex: 4,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'จำนวนส่วนต่างฐานภาษี',
+                                          style: TextStyle(
+                                              fontSize: 25, color: textColor),
+                                        ),
+                                      )),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: numberTextField(
+                                          labelText: "",
+                                          inputType: TextInputType.phone,
+                                          controller: priceDiffCtrl,
+                                          focusNode: priceDiffFocus,
+                                          readOnly: priceDiffReadOnly,
+                                          inputFormat: [
+                                            ThousandsFormatter(
+                                                allowFraction: true)
+                                          ],
+                                          clear: () {
+                                            setState(() {
+                                              priceDiffCtrl.text = "";
+                                            });
+                                            // gramChanged();
+                                          },
+                                          onTap: () {
+                                            txt = 'price_diff';
+                                            closeCal();
+                                          },
+                                          openCalc: () {
+                                            if (!showCal) {
+                                              txt = 'price_diff';
+                                              priceDiffFocus.requestFocus();
+                                              openCal();
+                                            }
+                                          },
+                                          onChanged: (String value) {
+                                            // gramChanged();
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                      flex: 4,
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'ภาษีมูลค่าเพิ่ม 7%',
+                                          style: TextStyle(
+                                              fontSize: 25, color: textColor),
+                                        ),
+                                      )),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: numberTextField(
+                                          labelText: "",
+                                          inputType: TextInputType.phone,
+                                          controller: taxAmountCtrl,
+                                          focusNode: taxAmountFocus,
+                                          readOnly: taxAmountReadOnly,
+                                          inputFormat: [
+                                            ThousandsFormatter(
+                                                allowFraction: true)
+                                          ],
+                                          clear: () {
+                                            setState(() {
+                                              taxAmountCtrl.text = "";
+                                            });
+                                            // gramChanged();
+                                          },
+                                          onTap: () {
+                                            txt = 'tax_amount';
+                                            closeCal();
+                                          },
+                                          openCalc: () {
+                                            if (!showCal) {
+                                              txt = 'tax_amount';
+                                              taxAmountFocus.requestFocus();
+                                              openCal();
+                                            }
+                                          },
+                                          onChanged: (String value) {
+                                            // gramChanged();
+                                          }),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: buildTextFieldX(
+                                        labelText: "หมายเหตุ",
+                                        inputType: TextInputType.text,
+                                        controller: remarkCtrl,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(
                               height: 10,
                             ),
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                    labelText: "ทองคำแท่งรับซื้อ",
-                                    inputType: TextInputType.number,
-                                    controller: productBuyThengPriceCtrl,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    enabled: true),
+                            SizedBox(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: buildTextFieldX(
+                                        labelText: "ทองคำแท่งขายออกบาทละ",
+                                        inputType: TextInputType.number,
+                                        controller: productSellThengPriceCtrl,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Expanded(
+                                    flex: 5,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: buildTextFieldX(
+                                          labelText: "ทองรูปพรรณรับซื้อกรัมละ",
+                                          inputType: TextInputType.number,
+                                          controller:
+                                              productBuyPricePerGramCtrl,
+                                          inputFormat: [
+                                            ThousandsFormatter(
+                                                allowFraction: true)
+                                          ],
+                                          enabled: true),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "ทองรูปพรรณขายออก",
-                                  inputType: TextInputType.phone,
-                                  controller: productSellPriceCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                    labelText: "ทองรูปพรรณรับซื้อ",
-                                    inputType: TextInputType.number,
-                                    controller: productBuyPriceCtrl,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    enabled: true),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Divider(),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'FOOTER [ส่วนท้าย]',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText:
-                                      "ราคาสินค้า (ไม่รวมภาษีมูลค่าเพิ่ม)",
-                                  inputType: TextInputType.phone,
-                                  controller: priceExcludeTaxTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText:
-                                      "หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)",
-                                  inputType: TextInputType.phone,
-                                  controller: purchasePriceTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                  onChanged: (value) {
-                                    calTotal();
-                                  }
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "ผลต่าง (ฐานภาษี)",
-                                  inputType: TextInputType.phone,
-                                  controller: priceDiffTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "มูลค่าฐานภาษีมูลค่าเพิ่ม",
-                                  inputType: TextInputType.phone,
-                                  controller: taxBaseTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "ภาษีมูลค่าเพิ่ม",
-                                  inputType: TextInputType.phone,
-                                  controller: taxAmountTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: buildTextFieldX(
-                                  labelText: "ราคาสินค้า (รวมภาษีมูลค่าเพิ่ม)",
-                                  inputType: TextInputType.phone,
-                                  controller: priceIncludeTaxTotalCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 150,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: rfBgColor,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () async {
-                            // if (purchasePriceTotalCtrl.text.isEmpty) {
-                            //   Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
-                            //       action: () {});
-                            //   return;
-                            // }
-                            Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RefillDialog(),
-                                        fullscreenDialog: true))
-                                .whenComplete(() {
-                              calTotal();
-                              setState(() {});
-                            });
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add,
-                                size: 25,
-                                color: textColor,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                'เพิ่ม',
+                            // Attachment
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
                                 style:
-                                    TextStyle(fontSize: 25, color: textColor),
-                              )
-                            ],
-                          ),
+                                    Theme.of(context).textTheme.headlineSmall,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: 200,
+                                child: ElevatedButton.icon(
+                                  onPressed: showOptions,
+                                  icon: const Icon(
+                                    Icons.add_a_photo_outlined,
+                                  ),
+                                  label: Text(
+                                    'เลือกรูปภาพ',
+                                    style:
+                                        TextStyle(fontSize: size.getWidthPx(8)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Global.refillAttach == null
+                                    ? Text(
+                                        'ไม่ได้เลือกรูปภาพ',
+                                        style: TextStyle(
+                                            fontSize: size.getWidthPx(6)),
+                                      )
+                                    : SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                4,
+                                        child: Stack(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Image.file(
+                                                  Global.refillAttach!),
+                                            ),
+                                            Positioned(
+                                              right: 0.0,
+                                              top: 0.0,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    Global.refillAttach = null;
+                                                  });
+                                                },
+                                                child: const CircleAvatar(
+                                                  backgroundColor: Colors.red,
+                                                  child: Icon(Icons.close),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            color: rfBgColorLight,
-                          ),
-                          child: ListView.builder(
-                              itemCount: Global.refillOrderDetail!.length,
-                              itemBuilder: (context, index) {
-                                return _itemOrderList(
-                                    order: Global.refillOrderDetail![index],
-                                    index: index);
-                              }),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  if (showCal)
+                    DragArea(
+                        closeCal: closeCal,
+                        child: Container(
+                            width: 350,
+                            height: 500,
+                            padding: const EdgeInsets.all(5),
+                            decoration:
+                                const BoxDecoration(color: Color(0xffcccccc)),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Calc(
+                                  closeCal: closeCal,
+                                  onChanged: (key, value, expression) {
+                                    if (key == 'ENT') {
+                                      if (txt == 'gram') {
+                                        productWeightCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                        gramChanged();
+                                      }
+                                      if (txt == 'price_include') {
+                                        priceIncludeTaxCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                        // bahtChanged();
+                                      }
+                                      if (txt == 'price_exclude') {
+                                        priceExcludeTaxCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                      }
+                                      if (txt == 'purchase') {
+                                        purchasePriceCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                        // gramChanged();
+                                      }
+                                      if (txt == 'price_diff') {
+                                        priceDiffCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                        // bahtChanged();
+                                      }
+                                      if (txt == 'tax_amount') {
+                                        taxAmountCtrl.text = value != null
+                                            ? "${Global.format(value)}"
+                                            : "";
+                                      }
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+                                      closeCal();
+                                    }
+                                    if (kDebugMode) {
+                                      print('$key\t$value\t$expression');
+                                    }
+                                  },
+                                ),
+                                Positioned(
+                                  right: -35.0,
+                                  top: -35.0,
+                                  child: InkWell(
+                                    onTap: closeCal,
+                                    child: const CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.red,
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )))
+                ],
               ),
       ),
       persistentFooterButtons: [
@@ -673,11 +1014,14 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   Global.toNumber(taxAmountTotalCtrl.text),
                               orderTypeId: 5);
                           final data = order.toJson();
-                          Global.orders?.add(OrderModel.fromJson(data));
-                          widget.refreshCart(Global.orders?.length.toString());
+                          Global.ordersWholesale
+                              ?.add(OrderModel.fromJson(data));
+                          widget.refreshCart(
+                              Global.ordersWholesale?.length.toString());
+                          writeCart();
                           Global.refillOrderDetail!.clear();
                           if (mounted) {
-                            resetTotal();
+                            resetText();
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text(
@@ -735,7 +1079,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                       onPressed: () {
                         setState(() {
                           Global.refillOrderDetail = [];
-                          resetTotal();
+                          resetText();
                         });
                       },
                       child: Row(
@@ -813,12 +1157,14 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             final data = order.toJson();
                             // motivePrint(data);
                             // return;
-                            Global.orders?.add(OrderModel.fromJson(data));
-                            widget
-                                .refreshCart(Global.orders?.length.toString());
+                            Global.ordersWholesale
+                                ?.add(OrderModel.fromJson(data));
+                            widget.refreshCart(
+                                Global.ordersWholesale?.length.toString());
+                            writeCart();
                             Global.refillOrderDetail!.clear();
                             if (mounted) {
-                              resetTotal();
+                              resetText();
                               Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -828,8 +1174,10 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                 Future.delayed(
                                     const Duration(milliseconds: 500),
                                     () async {
-                                  widget.refreshCart(
-                                      Global.orders?.length.toString());
+                                  widget.refreshCart(Global
+                                      .ordersWholesale?.length
+                                      .toString());
+                                  writeCart();
                                   setState(() {});
                                 });
                               });
@@ -880,102 +1228,41 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     );
   }
 
+  void gramChanged() {
+    if (productWeightCtrl.text.isNotEmpty) {
+      // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
+      // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
+      productWeightBahtCtrl.text = Global.format(
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+    } else {
+      productWeightBahtCtrl.text = "";
+    }
+  }
+
+  void bahtChanged() {
+    if (productWeightBahtCtrl.text.isNotEmpty) {
+      productWeightCtrl.text = Global.format(
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+      // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
+      // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
+    } else {
+      productWeightCtrl.text = "";
+    }
+  }
+
   resetText() {
-    productCodeCtrl.text = "";
-    productNameCtrl.text = "";
     productWeightCtrl.text = "";
     priceIncludeTaxCtrl.text = "";
     productWeightBahtCtrl.text = "";
-    selectedProduct = productList.first;
-    productNotifier = ValueNotifier<ProductModel>(
-        selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
-    productCodeCtrl.text =
-        (selectedProduct != null ? selectedProduct!.productCode : '')!;
-    productNameCtrl.text = selectedProduct != null ? selectedProduct!.name : '';
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-  }
-
-  removeProduct(index) {
-    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
-        action: () async {
-      Global.refillOrderDetail!.removeAt(index);
-      calTotal();
-      if (Global.refillOrderDetail!.isEmpty) {
-        Global.refillOrderDetail!.clear();
-      }
-      setState(() {});
-    });
-  }
-
-  Widget _itemOrderList({required OrderDetailModel order, required index}) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          bottom: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          left: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          right: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              title: ListTileData(
-                leftTitle: order.productName,
-                leftValue: '${order.weight!.toString()} กรัม',
-                rightTitle: 'คลังสินค้า',
-                rightValue: '${order.binLocationName}',
-                single: null,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    removeProduct(index);
-                  },
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  void resetTotal() {
-    orderDateCtrl.text = "";
-    referenceNumberCtrl.text = "";
+    priceExcludeTaxCtrl.text = "";
+    purchasePriceCtrl.text = "";
+    priceDiffCtrl.text = "";
+    taxAmountCtrl.text = "";
+    remarkCtrl.text = "";
     productSellThengPriceCtrl.text = "";
+    productBuyPricePerGramCtrl.text = "";
+    referenceNumberCtrl.text = "";
+    orderDateCtrl.text = "";
     productBuyThengPriceCtrl.text = "";
     productSellPriceCtrl.text = "";
     productBuyPriceCtrl.text = "";
@@ -985,43 +1272,59 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
+    Global.refillAttach = null;
     setState(() {});
   }
 
-  void calTotal() {
-    if (purchasePriceTotalCtrl.text.isEmpty) {
-      Alert.warning(context, 'Warning'.tr(), 'กรุณากรอก หัก ราคารับซื้อคืน (ฐานภาษียกเว้น)', 'OK'.tr(),
-          action: () {});
-      return;
-    }
+  final picker = ImagePicker();
 
-    priceExcludeTaxTotalCtrl.text =
-        Global.format(Global.refillOrderDetail!.fold(0, (i, el) {
-      return i + el.priceExcludeTax!;
-    }));
+  //Image Picker function to get image from gallery
+  Future getImageFromGallery() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    priceDiffTotalCtrl.text = Global.format(
-        Global.toNumber(priceExcludeTaxTotalCtrl.text) -
-            Global.toNumber(purchasePriceTotalCtrl.text));
+    setState(() {
+      if (pickedFile != null) {
+        Global.refillAttach = File(pickedFile.path);
+      }
+    });
+  }
 
-    taxBaseTotalCtrl.text = Global.format(
-        Global.toNumber(priceExcludeTaxTotalCtrl.text) -
-            Global.toNumber(purchasePriceTotalCtrl.text));
+//Image Picker function to get image from camera
+  Future getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
-    taxAmountTotalCtrl.text =
-        Global.format(Global.toNumber(taxBaseTotalCtrl.text) * getVatValue());
+    setState(() {
+      if (pickedFile != null) {
+        Global.refillAttach = File(pickedFile.path);
+      }
+    });
+  }
 
-    priceIncludeTaxTotalCtrl.text = Global.format(
-        Global.toNumber(priceExcludeTaxTotalCtrl.text) +
-            Global.toNumber(taxAmountTotalCtrl.text));
-
-    if (Global.toNumber(priceExcludeTaxTotalCtrl.text) == 0) {
-      priceIncludeTaxTotalCtrl.text = "";
-      priceExcludeTaxTotalCtrl.text = "";
-      priceDiffTotalCtrl.text = "";
-      taxAmountTotalCtrl.text = "";
-      taxBaseTotalCtrl.text = "";
-    }
-    setState(() {});
+  Future showOptions() async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            child: const Text('คลังภาพ'),
+            onPressed: () {
+              // close the options modal
+              Navigator.of(context).pop();
+              // get image from gallery
+              getImageFromGallery();
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('ถ่ายรูป'),
+            onPressed: () {
+              // close the options modal
+              Navigator.of(context).pop();
+              // get image from camera
+              getImageFromCamera();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

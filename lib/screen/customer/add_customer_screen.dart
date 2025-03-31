@@ -18,6 +18,8 @@ import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/customer/location.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
@@ -237,9 +239,20 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("เพิ่มลูกค้า"),
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("เพิ่มลูกค้า",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
+      // AppBar(
+      //   title: const Text("เพิ่มลูกค้า"),
+      // ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
@@ -931,7 +944,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                   // return;
 
                   Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                    action: () async {
+                      action: () async {
                     final ProgressDialog pr = ProgressDialog(context,
                         type: ProgressDialogType.normal,
                         isDismissible: true,
@@ -946,15 +959,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     if (result?.status == "success") {
                       if (mounted) {
                         CustomerModel customer =
-                        customerModelFromJson(jsonEncode(result!.data!));
+                            customerModelFromJson(jsonEncode(result!.data!));
                         // print(customer.toJson());
                         setState(() {
                           Global.customer = customer;
                         });
                         Alert.success(context, 'Success'.tr(),
                             "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
-                              Navigator.of(context).pop();
-                            });
+                          Navigator.of(context).pop();
+                        });
                       }
                     } else {
                       if (mounted) {

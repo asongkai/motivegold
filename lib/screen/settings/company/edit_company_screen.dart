@@ -1,7 +1,15 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/company.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/image/profile_image.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -36,6 +44,9 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   final TextEditingController provinceCtrl = TextEditingController();
 
   bool loading = false;
+  String? logo;
+  File? file;
+  final ImagePicker picker = ImagePicker();
 
   @override
   void initState() {
@@ -55,9 +66,16 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('แก้ไขบริษัท'),
-        automaticallyImplyLeading: widget.showBackButton,
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("แก้ไขบริษัท",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -78,6 +96,142 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                           const SizedBox(
                             height: 10,
                           ),
+                          if (logo != null)
+                            Container(
+                              height: 220.0,
+                              color: Colors.white,
+                              child: Column(
+                                children: <Widget>[
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Center(
+                                      child: Text(
+                                    'โลโก้บริษัท',
+                                    style: TextStyle(
+                                        fontSize: 30, color: textColor),
+                                  )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Stack(
+                                        fit: StackFit.loose,
+                                        children: <Widget>[
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: ProfilePhoto(
+                                                  totalWidth: 140,
+                                                  cornerRadius: 80,
+                                                  color: Colors.blue,
+                                                  image: FileImage(file!),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _settingModalBottomSheet(context);
+                                            },
+                                            child: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 90.0, right: 100.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      radius: 25.0,
+                                                      child: Icon(
+                                                        Icons.camera_alt,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  ],
+                                                )),
+                                          ),
+                                        ]),
+                                  )
+                                ],
+                              ),
+                            ),
+                          if (logo == null)
+                            Container(
+                              height: 220.0,
+                              color: Colors.white,
+                              child: Column(
+                                children: <Widget>[
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Center(
+                                      child: Text(
+                                    'โลโก้บริษัท',
+                                    style: TextStyle(
+                                        fontSize: 30, color: textColor),
+                                  )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Stack(
+                                        fit: StackFit.loose,
+                                        children: <Widget>[
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                  width: 140.0,
+                                                  height: 140.0,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/images/no_image.png'),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  )),
+                                            ],
+                                          ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _settingModalBottomSheet(context);
+                                            },
+                                            child: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 90.0, right: 100.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    CircleAvatar(
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      radius: 25.0,
+                                                      child: Icon(
+                                                        Icons.camera_alt,
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  ],
+                                                )),
+                                          ),
+                                        ]),
+                                  )
+                                ],
+                              ),
+                            ),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +246,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'ชื่อบริษัท'.tr(),
+                                        labelText: 'ชื่อบริษัท',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: nameCtrl,
@@ -120,7 +274,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'โทรศัพท์'.tr(),
+                                        labelText: 'โทรศัพท์',
                                         validator: null,
                                         inputType: TextInputType.phone,
                                         controller: phoneCtrl,
@@ -142,7 +296,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'อีเมล'.tr(),
+                                        labelText: 'อีเมล',
                                         validator: null,
                                         inputType: TextInputType.emailAddress,
                                         controller: emailCtrl,
@@ -170,7 +324,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'จังหวัด'.tr(),
+                                        labelText: 'จังหวัด',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: provinceCtrl,
@@ -192,7 +346,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'เขต'.tr(),
+                                        labelText: 'เขต',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: districtCtrl,
@@ -220,7 +374,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'บ้าน'.tr(),
+                                        labelText: 'บ้าน',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: villageCtrl,
@@ -242,7 +396,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText: 'ที่อยู่'.tr(),
+                                        labelText: 'ที่อยู่',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: addressCtrl,
@@ -270,8 +424,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                         height: 10,
                                       ),
                                       buildTextFieldBig(
-                                        labelText:
-                                            'หมายเลขประจำตัวผู้เสียภาษี'.tr(),
+                                        labelText: 'หมายเลขประจำตัวผู้เสียภาษี',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: taxNumberCtrl,
@@ -304,8 +457,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                           side: BorderSide(color: Colors.teal[700]!)))),
               onPressed: () async {
                 if (nameCtrl.text.trim() == "") {
-                  Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+                  Alert.warning(context, 'warning', 'กรุณากรอกข้อมูล', 'OK',
                       action: () {});
                   return;
                 }
@@ -319,7 +471,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                   "village": villageCtrl.text,
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
-                  "taxNumber": taxNumberCtrl.text
+                  "taxNumber": taxNumberCtrl.text,
+                  "logo": logo
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
@@ -329,29 +482,33 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                       isDismissible: true,
                       showLogs: true);
                   await pr.show();
-                  pr.update(message: 'processing'.tr());
+                  pr.update(message: 'processing');
                   try {
                     var result = await ApiServices.put('/company', id, object);
                     await pr.hide();
                     if (result?.status == "success") {
                       if (mounted) {
-                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                            action: () {
+                        // motivePrint(result?.data);
+                        var c = CompanyModel.fromJson(result?.data);
+                        if (c.id == Global.company?.id) {
+                          Global.company = CompanyModel.fromJson(result?.data);
+                          setState(() {});
+                        }
+                        Alert.success(context, 'Success', '', 'OK', action: () {
                           Navigator.of(context).pop();
                         });
                       }
                     } else {
                       if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(), result!.message!,
-                            'OK'.tr(),
+                        Alert.warning(
+                            context, 'Warning', result!.message!, 'OK',
                             action: () {});
                       }
                     }
                   } catch (e) {
                     await pr.hide();
                     if (mounted) {
-                      Alert.warning(
-                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                      Alert.warning(context, 'Warning', e.toString(), 'OK',
                           action: () {});
                     }
                   }
@@ -361,7 +518,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "บันทึก".tr(),
+                    "บันทึก",
                     style: const TextStyle(color: Colors.white, fontSize: 32),
                   ),
                   const SizedBox(
@@ -377,5 +534,40 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
             )),
       ],
     );
+  }
+
+  void _settingModalBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('ຖ່າຍຮູບ'),
+                  onTap: () {
+                    pickProfileImage(context, ImageSource.camera);
+                  }),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('ເລືອກຮູບ'),
+                onTap: () {
+                  pickProfileImage(context, ImageSource.gallery);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void pickProfileImage(BuildContext context, ImageSource imageSource) async {
+    final XFile? image = await picker.pickImage(source: imageSource);
+    setState(() {
+      if (image != null) {
+        file = File(image.path);
+        logo = Global.imageToBase64(file!);
+      }
+    });
+    Navigator.of(context).pop();
   }
 }

@@ -7,8 +7,8 @@ import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/widget/empty.dart';
-// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:motivegold/widget/appbar/appbar.dart';
+import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -81,9 +81,16 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการประวัติการขายทองเก่า'),
-        actions: const [],
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("รายการประวัติการขายทองเก่า",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
       ),
       body: SafeArea(
         child: loading

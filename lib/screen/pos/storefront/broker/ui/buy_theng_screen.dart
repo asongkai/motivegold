@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
@@ -13,24 +12,18 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/storefront/broker/dialog/buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 
-// import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-// import 'package:pattern_formatter/pattern_formatter.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class BuyThengBrokerScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -135,6 +128,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyThengTotalBroker();
     loadProducts();
+    getCart();
   }
 
   @override
@@ -245,6 +239,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
+        backgroundColor: Colors.teal[900],
         title: const Text(
           'ซื้อทองแท่งกับโบรกเกอร์',
           style: TextStyle(fontSize: 25),
@@ -380,7 +375,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                             color: const Color(0xFF636564)),
                                       ),
                                       Text(
-                                        "${Global.format(Global.buyThengSubTotal)} บาท",
+                                        "${Global.format(Global.buyThengSubTotalBroker)} บาท",
                                         style: TextStyle(
                                             fontSize: size.getWidthPx(8),
                                             fontWeight: FontWeight.bold,
@@ -444,11 +439,12 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                                         .buyThengOrderDetailBroker!,
                                                     orderTypeId: 9);
                                                 final data = order.toJson();
-                                                Global.orders?.add(
+                                                Global.ordersBroker?.add(
                                                     OrderModel.fromJson(data));
                                                 widget.refreshCart(Global
-                                                    .orders?.length
+                                                    .ordersBroker?.length
                                                     .toString());
+                                                writeCart();
                                                 Global.buyThengOrderDetailBroker!
                                                     .clear();
                                                 setState(() {
@@ -628,11 +624,12 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                                         .buyThengOrderDetailBroker!,
                                                     orderTypeId: 9);
                                                 final data = order.toJson();
-                                                Global.orders?.add(
+                                                Global.ordersBroker?.add(
                                                     OrderModel.fromJson(data));
                                                 widget.refreshCart(Global
-                                                    .orders?.length
+                                                    .ordersBroker?.length
                                                     .toString());
+                                                writeCart();
                                                 Global.buyThengOrderDetailBroker!
                                                     .clear();
                                                 setState(() {
@@ -658,8 +655,9 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
                                                               .toString();
                                                       widget.refreshHold(holds);
                                                       widget.refreshCart(Global
-                                                          .orders?.length
+                                                          .ordersPapun?.length
                                                           .toString());
+                                                      writeCart();
                                                       setState(() {});
                                                     });
                                                   });

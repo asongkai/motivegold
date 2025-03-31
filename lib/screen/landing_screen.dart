@@ -136,7 +136,7 @@ class _LandingScreenState extends State<LandingScreen> {
       Global.user = userModelFromJson(user);
       if (Global.user!.companyId != null) {
         var c = await ApiServices.get('/company/${Global.user?.companyId}');
-        // motivePrint(c!.data);
+        motivePrint(c!.data);
         if (c?.status == "success") {
           var cn = CompanyModel.fromJson(c?.data);
           setState(() {
@@ -149,7 +149,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
       var settings = await ApiServices.post('/settings/all', Global.requestObj(null));
       if (settings?.status == "success") {
-        motivePrint(settings?.toJson());
+        // motivePrint(settings?.toJson());
         var settingsValueModel = settings?.data != null ? SettingsValueModel.fromJson(settings?.data) : null;
         Global.settingValueModel = settingsValueModel;
       }
