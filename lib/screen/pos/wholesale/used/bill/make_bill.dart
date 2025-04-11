@@ -220,6 +220,223 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Expanded(
+            //   flex: 7,
+            //   child: Container(
+            //     decoration: const BoxDecoration(
+            //       border: Border(right: BorderSide()),
+            //     ),
+            //     child: Column(
+            //       children: [
+            //         Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 flex: 2,
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.only(left: 8.0),
+            //                   child: Text(
+            //                     'หมายเหตุ :',
+            //                     style: const TextStyle(fontSize: 9),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                   flex: 5,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                       border: Border(right: BorderSide()),
+            //                     ),
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(
+            //                           bottom: 0.0, right: 4.0),
+            //                       child: Text(
+            //                         'ราคาสินค้ารวมค่ากําเหน็จและอื่นๆ (รวมภาษีมูลค่าเพิ่ม) :',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9),
+            //                       ),
+            //                     ),
+            //                   )),
+            //             ]),
+            //         Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 flex: 4,
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.only(left: 8.0),
+            //                   child: Text(
+            //                     '${invoice.order.remark ?? ''}       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
+            //                     style: const TextStyle(fontSize: 9),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                   flex: 3,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                       border: Border(right: BorderSide()),
+            //                     ),
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(
+            //                           bottom: 0.0, right: 4.0),
+            //                       child: Text(
+            //                         'หัก ราคารับซื้อทองประจําวัน :',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9),
+            //                       ),
+            //                     ),
+            //                   )),
+            //             ]),
+            //         Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 flex: 2,
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.only(left: 8.0),
+            //                   child: Text(
+            //                     '',
+            //                     style: const TextStyle(fontSize: 9),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                   flex: 5,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                       border: Border(right: BorderSide()),
+            //                     ),
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(
+            //                           bottom: 0.0, right: 4.0),
+            //                       child: Text(
+            //                         'ผลต่าง (รวมภาษีมูลค่าเพิ่ม) :',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9),
+            //                       ),
+            //                     ),
+            //                   )),
+            //             ]),
+            //         Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 flex: 2,
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.only(left: 8.0),
+            //                   child: Text(
+            //                     '',
+            //                     style: const TextStyle(fontSize: 9),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                   flex: 5,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                       border: Border(right: BorderSide()),
+            //                     ),
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(
+            //                           bottom: 0.0, right: 4.0),
+            //                       child: Text(
+            //                         'ภาษีมูลค่าเพิ่ม 7% :',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9),
+            //                       ),
+            //                     ),
+            //                   )),
+            //             ]),
+            //         Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               Expanded(
+            //                 flex: 5,
+            //                 child: Padding(
+            //                   padding: const EdgeInsets.only(left: 8.0),
+            //                   child: Text(
+            //                     ' - ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} - ',
+            //                     style: const TextStyle(fontSize: 9),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                   flex: 2,
+            //                   child: Container(
+            //                     decoration: const BoxDecoration(
+            //                       border: Border(right: BorderSide()),
+            //                     ),
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(
+            //                           bottom: 0.0, right: 4.0),
+            //                       child: Text(
+            //                         'ราคาสินค้าไม่รวมภาษีมูลค่าเพิ่ม :',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9),
+            //                       ),
+            //                     ),
+            //                   )),
+            //             ]),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // Expanded(
+            //     flex: 2,
+            //     child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.end,
+            //         children: [
+            //           Container(
+            //             decoration: const BoxDecoration(
+            //               border: Border(),
+            //             ),
+            //             child: Padding(
+            //               padding: const EdgeInsets.only(
+            //                 right: 4.0,
+            //                 bottom: 0.0,
+            //               ),
+            //               child: Column(
+            //                   crossAxisAlignment: CrossAxisAlignment.end,
+            //                   children: [
+            //                     Text(
+            //                         '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9)),
+            //                     Text(
+            //                         '${Global.format(invoice.order.purchasePrice ?? 0)}',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9)),
+            //                     Text(
+            //                         '${Global.format(invoice.order.priceDiff ?? 0)}',
+            //                         textAlign: TextAlign.right,
+            //                         style: TextStyle(
+            //                             fontSize: 9,
+            //                             color:
+            //                                 (invoice.order.priceDiff ?? 0) < 0
+            //                                     ? PdfColors.red
+            //                                     : PdfColors.black)),
+            //                     // Text(
+            //                     //     '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
+            //                     //     textAlign: TextAlign.right,
+            //                     //     style: const TextStyle(fontSize: 9)),
+            //                     Text(
+            //                         '${Global.format(invoice.order.taxAmount ?? 0)}',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9)),
+            //                     Text(
+            //                         '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
+            //                         textAlign: TextAlign.right,
+            //                         style: const TextStyle(fontSize: 9)),
+            //                   ]),
+            //             ),
+            //           ),
+            //         ])),
             Expanded(
                 flex: 3,
                 child: Container(
@@ -234,10 +451,16 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                           children: [
                             Text('หมายเหตุ :',
                                 style: const TextStyle(fontSize: 9)),
-                            SizedBox(height: 41),
                             Text(
-                                '- ${NumberToThaiWords.convertDouble(Global.getOrderTotalWholeSale(invoice.order))} -',
+                                '${invoice.order.remark ?? ''}       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
                                 style: const TextStyle(fontSize: 9)),
+                            Spacer(),
+                            Row(children: [
+                              Text(
+                                  '- ${NumberToThaiWords.convertDouble(Global.getOrderTotalWholeSale(invoice.order))} -',
+                                  style: const TextStyle(fontSize: 9)),
+                            ]),
+                            SizedBox(height: 3),
                           ])),
                 )),
             Expanded(
@@ -296,21 +519,18 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text(
-                              '${Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
-                                  color: (invoice.order.priceDiff ?? 0) <
-                                      0
+                                  color: (invoice.order.priceDiff ?? 0) < 0
                                       ? PdfColors.red
                                       : PdfColors.black)),
                           // Text(
                           //     '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
                           //     textAlign: TextAlign.right,
                           //     style: const TextStyle(fontSize: 9)),
-                          Text(
-                              '${Global.format(invoice.order.taxAmount ?? 0)}',
+                          Text('${Global.format(invoice.order.taxAmount ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
@@ -350,8 +570,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
           Expanded(
             flex: 8,
             child: Container(
-              width: double.infinity,
-              height: 55,
+              // width: double.infinity,
+              // height: 55,
               padding: const EdgeInsets.all(4.0),
               decoration: BoxDecoration(
                   border: Border.all(),
@@ -363,32 +583,68 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                   sn(invoice.orders),
                   bu(invoice.orders),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Expanded(
-                        flex: 3,
-                        child: Text(
-                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :',
+                        flex: 8,
+                        child: Text('ส่วนลด:',
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
-                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))}',
+                            '${Global.format(invoice.order.discount ?? 0)} บาท',
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: Text(
+                          '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :  ',
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                              fontSize: 9, color: PdfColors.blue700),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} บาท',
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                                fontSize: 9, color: PdfColors.blue700)),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
                       for (int i = 0; i < invoice.payments!.length; i++)
                         Expanded(
-                          flex: 2,
-                            child: Text(
-                                "${getPaymentType(invoice.payments![i].paymentMethod)} :   ${Global.format(invoice.payments![i].amount ?? 0)}",
-                                style: const TextStyle(
-                                    fontSize: 9, color: PdfColors.blue700))),
-                      if (invoice.payments!.length <= 1)
-                        Expanded(flex: 2, child: Container()),
-                      if (invoice.payments!.isEmpty)
-                        Expanded(flex: 2, child: Container())
+                            child: Container(
+                                child: Row(children: [
+                          Expanded(
+                              flex: invoice.payments!.length > 1 ? 3 : 8,
+                              child: Text(
+                                  "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700))),
+                          Expanded(
+                              flex: 2,
+                              child: Text(
+                                  "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700)))
+                        ])))
                     ],
                   ),
                 ],
@@ -398,15 +654,16 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
           Expanded(
             flex: 2,
             child: Container(
-              height: 55,
-              child: Column(children: [
-                SizedBox(height: 5),
-                Text('ผู้รับเงิน/ผู้ส่งมอบทอง', style: const TextStyle(fontSize: 9)),
-                Spacer(),
-                Text('ผู้ซื้อ/ผู้รับมอบทอง', style: const TextStyle(fontSize: 9)),
-                SizedBox(height: 5),
-              ])
-            ),
+                height: 55,
+                child: Column(children: [
+                  SizedBox(height: 5),
+                  Text('ผู้รับเงิน/ผู้ส่งมอบทอง',
+                      style: const TextStyle(fontSize: 9)),
+                  Spacer(),
+                  Text('ผู้ซื้อ/ผู้รับมอบทอง',
+                      style: const TextStyle(fontSize: 9)),
+                  SizedBox(height: 5),
+                ])),
           ),
         ])),
   );
@@ -433,18 +690,20 @@ Widget sn(List<OrderModel>? orders) {
                 style: const TextStyle(fontSize: 9)),
           ),
           Expanded(
-            flex: 2,
+              flex: 2,
               child:
                   Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 2,
+              flex: 2,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );
@@ -464,18 +723,20 @@ Widget bu(List<OrderModel>? orders) {
                 style: const TextStyle(fontSize: 9)),
           ),
           Expanded(
-            flex: 2,
+              flex: 2,
               child:
                   Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 2,
+              flex: 2,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
-            flex: 3,
+              flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );

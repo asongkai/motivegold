@@ -22,32 +22,35 @@ Widget height({double h = 10}) {
   return SizedBox(height: h);
 }
 
-Future<Uint8List> loadNetworkImage(String url) async {
+Future<Uint8List?> loadNetworkImage(String url) async {
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
     return response.bodyBytes;
   } else {
-    throw Exception('Failed to load image');
+    return null;
   }
 }
 
-Future<Widget> header(OrderModel order, String? title, {bool? showPosId}) async {
-
+Future<Widget> header(OrderModel order, String? title,
+    {bool? showPosId}) async {
   // Load network image
-  final Uint8List imageData = await loadNetworkImage('${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
+  final Uint8List? imageData = await loadNetworkImage(
+      '${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
 
-  final image = MemoryImage(imageData);
+  final image = imageData != null ? MemoryImage(imageData) : null;
 
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
-      Expanded(flex: 2, child: Center(child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Image(
-          image,
-          fit: BoxFit.fitWidth,
-          width: 60
-        ),
-      ),)),
+      Expanded(
+          flex: 2,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: image == null
+                  ? Container()
+                  : Image(image, fit: BoxFit.fitWidth, width: 60),
+            ),
+          )),
       Expanded(
           flex: 9,
           child:
@@ -224,34 +227,34 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
         ),
         Expanded(
             child: Column(children: [
-              Table(children: [
-                TableRow(children: [
-                  Text('ทองคําแท่งขายออกบาทละ : ',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                  Text('${Global.format(order.sellTPrice ?? 0)} บาท',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                ]),
-                TableRow(children: [
-                  Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                  Text('${Global.format(order.buyPrice ?? 0)} บาท',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                ]),
-                TableRow(children: [
-                  Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                  Text(
-                      '${Global.format((order.buyPrice ?? 0) / getUnitWeightValue())} บาท',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(fontSize: 9)),
-                ]),
-              ]),
-            ])),
+          Table(children: [
+            TableRow(children: [
+              Text('ทองคําแท่งขายออกบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.sellTPrice ?? 0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.buyPrice ?? 0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  '${Global.format((order.buyPrice ?? 0) / getUnitWeightValue())} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+          ]),
+        ])),
       ]));
 }
 
@@ -295,7 +298,8 @@ Widget getThongThengTable(OrderModel order) {
               align: TextAlign.center,
             ),
             paddedText(
-              Global.format((e.priceIncludeTax! / e.weight!) * getUnitWeightValue()),
+              Global.format(
+                  (e.priceIncludeTax! / e.weight!) * getUnitWeightValue()),
               align: TextAlign.right,
             ),
             paddedText(

@@ -152,7 +152,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
       productWeightBahtCtrl.text = formatter
           .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       qtyLocation = qtyLocationList.isNotEmpty ? qtyLocationList.first : null;
-      // motivePrint(qtyLocation?.toJson());
+      motivePrint(qtyLocation?.toJson());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -257,11 +257,11 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   flex: 4,
                   child: Text("โอนทองไปยังคลังสินค้าใหม่",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: size?.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -797,7 +797,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                               .number,
                                                                           enabled:
                                                                               false,
-                                                                          textColor: Colors
+                                                                          labelColor: Colors
                                                                               .orange,
                                                                           controller:
                                                                               productWeightCtrl,
@@ -825,7 +825,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                               .phone,
                                                                           enabled:
                                                                               false,
-                                                                          textColor: Colors
+                                                                          labelColor: Colors
                                                                               .orange,
                                                                           controller:
                                                                               productWeightBahtCtrl,
@@ -860,7 +860,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                               "ป้อนน้ำหนัก (gram)",
                                                                           inputType: TextInputType
                                                                               .number,
-                                                                          textColor: Colors
+                                                                          labelColor: Colors
                                                                               .orange,
                                                                           controller:
                                                                               productEntryWeightCtrl,
@@ -886,7 +886,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                               "ป้อนน้ำหนัก (บาททอง)",
                                                                           inputType: TextInputType
                                                                               .phone,
-                                                                          textColor: Colors
+                                                                          labelColor: Colors
                                                                               .orange,
                                                                           controller:
                                                                               productEntryWeightBahtCtrl,

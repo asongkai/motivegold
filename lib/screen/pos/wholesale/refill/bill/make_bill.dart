@@ -4,7 +4,6 @@ import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
@@ -218,180 +217,292 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
         border: Border(
             left: BorderSide(), bottom: BorderSide(), right: BorderSide()),
       ),
-      child: Row(children: [
-        Expanded(
-          flex: 7,
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(right: BorderSide()),
-            ),
-            child: Column(
+      child:
+          //Row(children: [
+          // Expanded(
+          //   flex: 7,
+          //   child: Container(
+          //     decoration: const BoxDecoration(
+          //       border: Border(right: BorderSide()),
+          //     ),
+          //     child: Column(
+          //       children: [
+          //         Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 2,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Text(
+          //                     'หมายเหตุ :',
+          //                     style: const TextStyle(fontSize: 9),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 5,
+          //                   child: Container(
+          //                     decoration: const BoxDecoration(
+          //                       border: Border(right: BorderSide()),
+          //                     ),
+          //                     child: Padding(
+          //                       padding: const EdgeInsets.only(
+          //                           bottom: 0.0, right: 4.0),
+          //                       child: Text(
+          //                         'ราคาสินค้ารวมค่ากำเหน็จและอื่นๆ ก่อนภาษีมูลค่าเพิ่ม :',
+          //                         textAlign: TextAlign.right,
+          //                         style: const TextStyle(fontSize: 9),
+          //                       ),
+          //                     ),
+          //                   )),
+          //             ]),
+          //         Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 4,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Text(
+          //                     '${invoice.order.remark ?? ''}       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
+          //                     style: const TextStyle(fontSize: 9), overflow: TextOverflow.span
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 3,
+          //                   child: Container(
+          //                     decoration: const BoxDecoration(
+          //                       border: Border(right: BorderSide()),
+          //                     ),
+          //                     child: Padding(
+          //                       padding: const EdgeInsets.only(
+          //                           bottom: 0.0, right: 4.0),
+          //                       child: Text(
+          //                         'หัก ราคารับซื้อทองประจำวัน ',
+          //                         textAlign: TextAlign.right,
+          //                         style: const TextStyle(fontSize: 9),
+          //                       ),
+          //                     ),
+          //                   )),
+          //             ]),
+          //         Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 2,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Text(
+          //                     '',
+          //                     style: const TextStyle(fontSize: 9),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 5,
+          //                   child: Container(
+          //                     decoration: const BoxDecoration(
+          //                       border: Border(right: BorderSide()),
+          //                     ),
+          //                     child: Padding(
+          //                       padding: const EdgeInsets.only(
+          //                           bottom: 0.0, right: 4.0),
+          //                       child: Text(
+          //                         'ผลต่าง ฐานภาษี :',
+          //                         textAlign: TextAlign.right,
+          //                         style: const TextStyle(fontSize: 9),
+          //                       ),
+          //                     ),
+          //                   )),
+          //             ]),
+          //         Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 2,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Text(
+          //                     '',
+          //                     style: const TextStyle(fontSize: 9),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 5,
+          //                   child: Container(
+          //                     decoration: const BoxDecoration(
+          //                       border: Border(right: BorderSide()),
+          //                     ),
+          //                     child: Padding(
+          //                       padding: const EdgeInsets.only(
+          //                           bottom: 0.0, right: 4.0),
+          //                       child: Text(
+          //                         'ภาษีมูลค่าเพิ่ม 7% :',
+          //                         textAlign: TextAlign.right,
+          //                         style: const TextStyle(fontSize: 9),
+          //                       ),
+          //                     ),
+          //                   )),
+          //             ]),
+          //         Row(
+          //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Expanded(
+          //                 flex: 5,
+          //                 child: Padding(
+          //                   padding: const EdgeInsets.only(left: 8.0),
+          //                   child: Text(
+          //                     ' - ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} - ',
+          //                     style: const TextStyle(fontSize: 9),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                   flex: 2,
+          //                   child: Container(
+          //                     decoration: const BoxDecoration(
+          //                       border: Border(right: BorderSide()),
+          //                     ),
+          //                     child: Padding(
+          //                       padding: const EdgeInsets.only(
+          //                           bottom: 0.0, right: 4.0),
+          //                       child: Text(
+          //                         'จำนวนเงินสุทธิ :',
+          //                         textAlign: TextAlign.right,
+          //                         style: const TextStyle(fontSize: 9),
+          //                       ),
+          //                     ),
+          //                   )),
+          //             ]),
+          //
+          //
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          // Expanded(
+          //     flex: 2,
+          //     child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          //       Container(
+          //         decoration: const BoxDecoration(
+          //           border: Border(),
+          //         ),
+          //         child: Padding(
+          //           padding: const EdgeInsets.only(
+          //             right: 4.0,
+          //             bottom: 0.0,
+          //           ),
+          //           child: Column(
+          //               crossAxisAlignment: CrossAxisAlignment.end,
+          //               children: [
+          //                 Text(
+          //                     '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
+          //                     textAlign: TextAlign.right,
+          //                     style: const TextStyle(fontSize: 9)),
+          //                 Text(
+          //                     '${Global.format(invoice.order.purchasePrice ?? 0)}',
+          //                     textAlign: TextAlign.right,
+          //                     style: const TextStyle(fontSize: 9)),
+          //                 Text('${Global.format(invoice.order.priceDiff ?? 0)}',
+          //                     textAlign: TextAlign.right,
+          //                     style: TextStyle(
+          //                         fontSize: 9,
+          //                         color: (invoice.order.priceDiff ?? 0) < 0
+          //                             ? PdfColors.red
+          //                             : PdfColors.black)),
+          //                 // Text(
+          //                 //     '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
+          //                 //     textAlign: TextAlign.right,
+          //                 //     style: const TextStyle(fontSize: 9)),
+          //                 Text('${Global.format(invoice.order.taxAmount ?? 0)}',
+          //                     textAlign: TextAlign.right,
+          //                     style: const TextStyle(fontSize: 9)),
+          //                 Text(
+          //                     '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
+          //                     textAlign: TextAlign.right,
+          //                     style: const TextStyle(fontSize: 9)),
+          //               ]),
+          //         ),
+          //       ),
+          //     ])),
+          //]),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            'หมายเหตุ :',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 5,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(right: BorderSide()),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 0.0, right: 4.0),
-                              child: Text(
-                                'ราคาสินค้ารวมค่ากำเหน็จและอื่นๆ ก่อนภาษีมูลค่าเพิ่ม :',
-                                textAlign: TextAlign.right,
+            Expanded(
+                flex: 3,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(),
+                  ),
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('หมายเหตุ :',
+                                style: const TextStyle(fontSize: 9)),
+                            Text(
+                                '${invoice.order.remark ?? ''}       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
                                 style: const TextStyle(fontSize: 9),
-                              ),
-                            ),
-                          )),
-                    ]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            '       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(right: BorderSide()),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 0.0, right: 4.0),
-                              child: Text(
-                                'หัก ราคารับซื้อทองประจำวัน ',
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 9),
-                              ),
-                            ),
-                          )),
-                    ]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            '',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 5,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(right: BorderSide()),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 0.0, right: 4.0),
-                              child: Text(
-                                'ผลต่าง ฐานภาษี :',
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 9),
-                              ),
-                            ),
-                          )),
-                    ]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            '',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 5,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(right: BorderSide()),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 0.0, right: 4.0),
-                              child: Text(
-                                'ภาษีมูลค่าเพิ่ม 7% :',
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 9),
-                              ),
-                            ),
-                          )),
-                    ]),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            ' - ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} - ',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              border: Border(right: BorderSide()),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 0.0, right: 4.0),
-                              child: Text(
-                                'จำนวนเงินสุทธิ :',
-                                textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 9),
-                              ),
-                            ),
-                          )),
-                    ]),
-
-
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-            flex: 2,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Container(
+                                overflow: TextOverflow.span),
+                            Spacer(),
+                            Row(children: [
+                              Text(
+                                  '- ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} -',
+                                  overflow: TextOverflow.visible,
+                                  style: const TextStyle(fontSize: 9)),
+                            ]),
+                            SizedBox(height: 3),
+                          ])),
+                )),
+            Expanded(
+                flex: 4,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(right: BorderSide()),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 0.0, right: 4.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                              'ราคาสินค้ารวมค่ากำเหน็จและอื่นๆ ก่อนภาษีมูลค่าเพิ่ม :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                          Text('หัก ราคารับซื้อทองประจำวัน :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                          Text('ผลต่าง ฐานภาษี :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                          // Text('ฐานภาษีมูลค่าเพิ่ม :',
+                          //     textAlign: TextAlign.right,
+                          //     style: const TextStyle(fontSize: 9)),
+                          Text('ภาษีมูลค่าเพิ่ม 7% :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                          Text('จำนวนเงินสุทธิ :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ]),
+                  ),
+                )),
+            Expanded(
+              flex: 2,
+              child: Container(
                 decoration: const BoxDecoration(
                   border: Border(),
                 ),
@@ -432,118 +543,8 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                       ]),
                 ),
               ),
-            ])),
-        // Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       Expanded(
-        //           flex: 3,
-        //           child: Container(
-        //             decoration: const BoxDecoration(
-        //               border: Border(),
-        //             ),
-        //             child: Padding(
-        //                 padding: const EdgeInsets.only(left: 8.0),
-        //                 child: Column(
-        //                     crossAxisAlignment: CrossAxisAlignment.start,
-        //                     mainAxisAlignment: MainAxisAlignment.start,
-        //                     children: [
-        //                       Text('หมายเหตุ :',
-        //                           style: const TextStyle(fontSize: 9)),
-        //                       Row(children: [
-        //                         SizedBox(width: 20),
-        //                         Text(
-        //                             'บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
-        //                             style: const TextStyle(fontSize: 9)),
-        //                       ]),
-        //                       SizedBox(height: 10),
-        //                       Text(
-        //                           ' - ${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)} - ',
-        //                           overflow: TextOverflow.visible,
-        //                           style: const TextStyle(fontSize: 9)),
-        //                     ])),
-        //           )),
-        //       Expanded(
-        //           flex: 4,
-        //           child: Container(
-        //             decoration: const BoxDecoration(
-        //               border: Border(right: BorderSide()),
-        //             ),
-        //             child: Padding(
-        //               padding: const EdgeInsets.only(bottom: 0.0, right: 4.0),
-        //               child: Column(
-        //                   crossAxisAlignment: CrossAxisAlignment.end,
-        //                   mainAxisAlignment: MainAxisAlignment.start,
-        //                   children: [
-        //                     Text(
-        //                         'ราคาสินค้ารวมค่ากำเหน็จและอื่นๆ ก่อนภาษีมูลค่าเพิ่ม :',
-        //                         textAlign: TextAlign.right,
-        //                         style: const TextStyle(fontSize: 9)),
-        //                     Text('หัก ราคารับซื้อทองประจำวัน :',
-        //                         textAlign: TextAlign.right,
-        //                         style: const TextStyle(fontSize: 9)),
-        //                     Text('ผลต่าง ฐานภาษี :',
-        //                         textAlign: TextAlign.right,
-        //                         style: const TextStyle(fontSize: 9)),
-        //                     // Text('ฐานภาษีมูลค่าเพิ่ม :',
-        //                     //     textAlign: TextAlign.right,
-        //                     //     style: const TextStyle(fontSize: 9)),
-        //                     Text('ภาษีมูลค่าเพิ่ม 7% :',
-        //                         textAlign: TextAlign.right,
-        //                         style: const TextStyle(fontSize: 9)),
-        //                     Text('จำนวนเงินสุทธิ :',
-        //                         textAlign: TextAlign.right,
-        //                         style: const TextStyle(fontSize: 9)),
-        //                   ]),
-        //             ),
-        //           )),
-        //       Expanded(
-        //         flex: 2,
-        //         child: Container(
-        //           decoration: const BoxDecoration(
-        //             border: Border(),
-        //           ),
-        //           child: Padding(
-        //             padding: const EdgeInsets.only(
-        //               right: 4.0,
-        //               bottom: 0.0,
-        //             ),
-        //             child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.end,
-        //                 children: [
-        //                   Text(
-        //                       '${Global.format(invoice.order.priceExcludeTax ?? 0)}',
-        //                       textAlign: TextAlign.right,
-        //                       style: const TextStyle(fontSize: 9)),
-        //                   Text(
-        //                       '${Global.format(invoice.order.purchasePrice ?? 0)}',
-        //                       textAlign: TextAlign.right,
-        //                       style: const TextStyle(fontSize: 9)),
-        //                   Text('${Global.format(invoice.order.priceDiff ?? 0)}',
-        //                       textAlign: TextAlign.right,
-        //                       style: TextStyle(
-        //                           fontSize: 9,
-        //                           color: (invoice.order.priceDiff ?? 0) < 0
-        //                               ? PdfColors.red
-        //                               : PdfColors.black)),
-        //                   // Text(
-        //                   //     '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
-        //                   //     textAlign: TextAlign.right,
-        //                   //     style: const TextStyle(fontSize: 9)),
-        //                   Text('${Global.format(invoice.order.taxAmount ?? 0)}',
-        //                       textAlign: TextAlign.right,
-        //                       style: const TextStyle(fontSize: 9)),
-        //                   Text(
-        //                       '${Global.format(invoice.order.priceIncludeTax ?? 0)}',
-        //                       textAlign: TextAlign.right,
-        //                       style: const TextStyle(fontSize: 9)),
-        //                 ]),
-        //           ),
-        //         ),
-        //       ),
-        //     ]),
-      ]),
+            ),
+          ]),
     ),
   );
   widgets.add(
@@ -553,8 +554,8 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
           Expanded(
             flex: 8,
             child: Container(
-              width: double.infinity,
-              height: 55,
+              // width: double.infinity,
+              // height: 55,
               padding: const EdgeInsets.all(4.0),
               decoration: BoxDecoration(
                   border: Border.all(),
@@ -566,32 +567,68 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
                   sn(invoice.orders),
                   bu(invoice.orders),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Expanded(
-                        flex: 3,
-                        child: Text(
-                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :  ',
+                        flex: 8,
+                        child: Text('ส่วนลด:',
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
                       Expanded(
                         flex: 2,
                         child: Text(
-                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))}',
+                            '${Global.format(invoice.order.discount ?? 0)} บาท',
+                            textAlign: TextAlign.right,
                             style: const TextStyle(
                                 fontSize: 9, color: PdfColors.blue700)),
                       ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 8,
+                        child: Text(
+                          '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} :  ',
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                              fontSize: 9, color: PdfColors.blue700),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                            '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0))} บาท',
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                                fontSize: 9, color: PdfColors.blue700)),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
                       for (int i = 0; i < invoice.payments!.length; i++)
                         Expanded(
-                            flex: 3,
-                            child: Text(
-                                "${getPaymentType(invoice.payments![i].paymentMethod)} :   ${Global.format(invoice.payments![i].amount ?? 0)}",
-                                style: const TextStyle(
-                                    fontSize: 9, color: PdfColors.blue700))),
-                      if (invoice.payments!.length <= 1)
-                        Expanded(flex: 3, child: Container()),
-                      if (invoice.payments!.isEmpty)
-                        Expanded(flex: 3, child: Container())
+                            child: Container(
+                                child: Row(children: [
+                          Expanded(
+                              flex: invoice.payments!.length > 1 ? 3 : 8,
+                              child: Text(
+                                  "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700))),
+                          Expanded(
+                              flex: 2,
+                              child: Text(
+                                  "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700)))
+                        ])))
                     ],
                   ),
                 ],
@@ -642,11 +679,13 @@ Widget sn(List<OrderModel>? orders) {
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );
@@ -673,11 +712,13 @@ Widget bu(List<OrderModel>? orders) {
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );

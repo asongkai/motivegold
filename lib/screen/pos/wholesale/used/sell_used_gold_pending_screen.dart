@@ -392,7 +392,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "เลขที่",
                                     inputType: TextInputType.text,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: sellIdCtrl,
                                   ),
@@ -404,7 +404,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "วันที่",
                                     inputType: TextInputType.text,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: dateCtrl,
                                   ),
@@ -423,7 +423,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "น้ำหนัก (gram)",
                                     inputType: TextInputType.number,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: productWeightCtrl,
                                     inputFormat: [
@@ -438,7 +438,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "น้ำหนัก (บาททอง)",
                                     inputType: TextInputType.phone,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: productWeightBahtCtrl,
                                     inputFormat: [
@@ -460,7 +460,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                       labelText: "ป้อนน้ำหนักจริง (gram)",
                                       inputType: TextInputType.number,
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       controller: productEntryWeightCtrl,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
@@ -500,7 +500,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                   child: buildTextFieldBig(
                                       labelText: "ป้อนน้ำหนักจริง (บาททอง)",
                                       inputType: TextInputType.phone,
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       controller: productEntryWeightBahtCtrl,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
@@ -556,7 +556,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                       "ราคาขายทองคำ (สมาคม)",
                                       enabled:
                                       false,
-                                      textColor:
+                                      labelColor:
                                       Colors
                                           .black38,
                                       inputFormat: [
@@ -585,7 +585,7 @@ class _SellUsedGoldPendingScreenState extends State<SellUsedGoldPendingScreen> {
                                         inputType:
                                         TextInputType
                                             .number,
-                                        textColor:
+                                        labelColor:
                                         Colors
                                             .orange,
                                         controller:

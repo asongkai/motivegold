@@ -10,7 +10,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 
 Future<Uint8List> makeBuyUsedGoldGovReportPdf(
-    List<OrderModel?> orders, int type, DateTime date) async {
+    List<OrderModel?> orders, int type, String date) async {
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -79,9 +79,11 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                   '${type == 1 ? Global.format(getWeight(orders[i])) : Global.format(orders[i]!.weight ?? 0)}',
                   align: TextAlign.right),
               paddedText('กรัม'),
-              paddedText(
-                  '${orders[i]!.customer?.firstName} ${orders[i]!.customer?.lastName}',
-                  align: TextAlign.center),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                paddedText(
+                    '${orders[i]!.customer?.firstName} ${orders[i]!.customer?.lastName} \n${orders[i]!.customer?.address} \nTel: ${orders[i]!.customer?.phoneNumber} \nID: ${orders[i]!.customer?.idCard}',
+                    align: TextAlign.left),
+              ]),
               paddedText(Global.dateOnly(orders[i]!.orderDate.toString()),
                   align: TextAlign.center),
               paddedText(Global.format(orders[i]!.priceIncludeTax ?? 0),

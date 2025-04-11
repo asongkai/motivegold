@@ -12,6 +12,7 @@ import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/bank/bank.dart';
 import 'package:motivegold/model/bank/bank_account.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -248,7 +249,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                               if (Global.currentOrderType == 5) {
                                 amount =
                                     Global.payToCustomerOrShopValueWholeSale(
-                                        Global.ordersWholesale, Global.discount);
+                                        Global.ordersWholesale,
+                                        Global.discount);
                               } else {
                                 amount = Global.payToCustomerOrShopValue(
                                     Global.ordersPapun, Global.discount);
@@ -349,7 +351,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(6),
+                                fontSize: size.getWidthPx(8),
                               );
                             },
                             onChanged: (BankAccountModel value) {
@@ -566,6 +568,26 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                 //DateTime.now() - not to allow to choose before today.
                                 lastDate: DateTime(2101));
                             if (pickedDate != null) {
+                              // motivePrint(DateTime.now());
+                              DateTime date = Global.currentOrderType != 5
+                                  ? DateTime.now()
+                                  : Global.ordersWholesale![0].orderDate!;
+                              if (pickedDate.isSameDate(date)) {
+                                Alert.warning(
+                                    context,
+                                    'Warning'.tr(),
+                                    'วันที่ชำระเงินไม่ตรงกับวันที่ทำธุรกรรม',
+                                    'OK',
+                                    action: () {});
+                              }
+                              if (pickedDate.compareTo(date) > 0) {
+                                Alert.warning(
+                                    context,
+                                    'Warning'.tr(),
+                                    'วันที่ชำระเงินมากกว่าวันที่ทำธุรกรรม',
+                                    'OK',
+                                    action: () {});
+                              }
                               motivePrint(
                                   pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                               String formattedDate =

@@ -9,8 +9,8 @@ import 'make_pdf.dart';
 class PreviewSellUsedGoldReportPage extends StatelessWidget {
   final List<OrderModel?> orders;
   final int type;
-  final DateTime date;
-  const PreviewSellUsedGoldReportPage({Key? key, required this.orders, required this.type, required this.date}) : super(key: key);
+  final String date;
+  const PreviewSellUsedGoldReportPage({super.key, required this.orders, required this.type, required this.date});
 
   @override
   Widget build(BuildContext context) {

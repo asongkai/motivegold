@@ -141,11 +141,11 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   flex: 6,
                   child: Text("รายงานสต็อก",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -165,7 +165,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PreviewStockReportPage(
-                                  list: filterList!,
+                                  list: filterList!.reversed.toList(),
                                   type: 1,
                                 ),
                               ),

@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
-
+import 'package:motivegold/utils/global.dart';
 
 class DropDownItemWidget extends StatelessWidget {
   const DropDownItemWidget({
@@ -36,19 +35,19 @@ class DropDownItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '${project is int ? project :project!.name}',
+                  '${project is int ? project : project!.name}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: textColor,
-                    fontSize: fontSize,
-                  ),
+                        color: textColor,
+                        fontSize: fontSize,
+                      ),
                 ),
-                // Text(
-                //   '${project!.code}',
-                //   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                //     color: textColor,
-                //     fontSize: fontSize,
-                //   ),
-                // ),
+                if (Global.ifInt(project) == false && project.toJson().containsKey("accountNo"))
+                  Text(
+                    '${project!.accountNo}',
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: textColor,
+                        ),
+                  ),
               ],
             ),
           ),

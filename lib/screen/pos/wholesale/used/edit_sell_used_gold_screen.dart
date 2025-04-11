@@ -36,18 +36,17 @@ import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 
-class SellUsedGoldScreen extends StatefulWidget {
-  final Function(dynamic value) refreshCart;
-  final int cartCount;
+class EditSellUsedGoldScreen extends StatefulWidget {
+  final int index;
+  final int? j;
 
-  const SellUsedGoldScreen(
-      {super.key, required this.refreshCart, required this.cartCount});
+  const EditSellUsedGoldScreen({super.key, required this.index, this.j});
 
   @override
-  State<SellUsedGoldScreen> createState() => _SellUsedGoldScreenState();
+  State<EditSellUsedGoldScreen> createState() => _EditSellUsedGoldScreenState();
 }
 
-class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
+class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
   bool loading = false;
   Screen? size;
   List<ProductModel> productList = [];
@@ -152,6 +151,48 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
         BranchModel(id: 0, name: 'เลือกสาขาปลายทาง'));
     loadProducts();
     getCart();
+
+    orderDateCtrl.text = Global.formatDateD(
+        Global.ordersWholesale![widget.index].orderDate.toString());
+    referenceNumberCtrl.text =
+        Global.ordersWholesale![widget.index].referenceNo ?? '';
+    productSellThengPriceCtrl.text =
+        Global.format(Global.ordersWholesale![widget.index].sellTPrice ?? 0);
+    productBuyPricePerGramCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].buyPrice ??
+            0 / getUnitWeightValue());
+    productBuyPriceCtrl.text =
+        Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
+    productEntryWeightCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].weight ?? 0);
+    priceIncludeTaxCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index]
+            .details![widget.j!]
+            .priceIncludeTax ??
+        0);
+    priceExcludeTaxCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index]
+            .details![widget.j!]
+            .priceExcludeTax ??
+        0);
+    purchasePriceCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index].details![widget.j!].purchasePrice ??
+        0);
+    priceDiffCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].priceDiff ??
+            0);
+    taxAmountCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].taxAmount ??
+            0);
+    taxBaseCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].taxBase ?? 0);
+    priceAdjCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].weightAdj ??
+            0);
+    remarkCtrl.text = Global.ordersWholesale![widget.index].remark ?? '';
+
+    purchasePriceChanged();
+    priceIncludeTaxChanged();
   }
 
   @override
@@ -204,6 +245,12 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
       loading = true;
     });
     try {
+      Global.sellUsedAttach =
+      Global.ordersWholesale![widget.index].attachement != null
+          ? await Global.createFileFromString(
+          Global.ordersWholesale![widget.index].attachement ?? '')
+          : null;
+
       var result = await ApiServices.post(
           '/product/type/USED/6', Global.requestObj(null));
       if (result?.status == "success") {
@@ -354,7 +401,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: suBgColor,
         centerTitle: true,
         title: Text(
@@ -472,7 +519,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       maxLength: 10,
                                       keyboardType: TextInputType.number,
                                       //editing controller of this TextField
-                                      style: TextStyle(fontSize: size?.getWidthPx(12)),
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(12)),
                                       decoration: InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white70,
@@ -520,12 +568,11 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: buildTextFieldX(
-                                labelText: "เลขที่อ้างอิง",
-                                inputType: TextInputType.text,
-                                enabled: true,
-                                controller: referenceNumberCtrl,
-                                fontSize: size!.getWidthPx(12)
-                              ),
+                                  labelText: "เลขที่อ้างอิง",
+                                  inputType: TextInputType.text,
+                                  enabled: true,
+                                  controller: referenceNumberCtrl,
+                                  fontSize: size!.getWidthPx(12)),
                             ),
                             // Padding(
                             //   padding:
@@ -832,7 +879,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       child: Text(
                                         'หักราคารับซื้อทองประจำวัน',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(10), color: textColor),
+                                            fontSize: size!.getWidthPx(10),
+                                            color: textColor),
                                       ),
                                     )),
                                 Expanded(
@@ -888,7 +936,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       child: Text(
                                         'จำนวนส่วนต่างฐานภาษี',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(10), color: textColor),
+                                            fontSize: size!.getWidthPx(10),
+                                            color: textColor),
                                       ),
                                     )),
                                 Expanded(
@@ -935,7 +984,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       child: Text(
                                         'ภาษีมูลค่าเพิ่ม 7%',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(10), color: textColor),
+                                            fontSize: size!.getWidthPx(10),
+                                            color: textColor),
                                       ),
                                     )),
                                 Expanded(
@@ -982,7 +1032,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                       child: Text(
                                         'ราคารวมก่อนภาษี',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(10), color: textColor),
+                                            fontSize: size!.getWidthPx(10),
+                                            color: textColor),
                                       ),
                                     )),
                                 Expanded(
@@ -1030,7 +1081,8 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                         child: Text(
                                           'น้ำหนักสูญเสีย (กรัม) ',
                                           style: TextStyle(
-                                              fontSize: size!.getWidthPx(10), color: textColor),
+                                              fontSize: size!.getWidthPx(10),
+                                              color: textColor),
                                         ),
                                       )),
                                   Expanded(
@@ -1075,11 +1127,10 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: buildTextFieldX(
-                                      labelText: "หมายเหตุ",
-                                      inputType: TextInputType.text,
-                                      controller: remarkCtrl,
-                                      fontSize: size!.getWidthPx(12)
-                                    ),
+                                        labelText: "หมายเหตุ",
+                                        inputType: TextInputType.text,
+                                        controller: remarkCtrl,
+                                        fontSize: size!.getWidthPx(12)),
                                   ),
                                 ),
                               ],
@@ -1089,7 +1140,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
-                                style: TextStyle(fontSize: size!.getWidthPx(10), color: textColor),
+                                style: TextStyle(
+                                    fontSize: size!.getWidthPx(10),
+                                    color: textColor),
                               ),
                             ),
                             SizedBox(
@@ -1256,85 +1309,6 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue[700],
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (orderDateCtrl.text.isEmpty) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'กรุณาป้อนวันที่ใบกำกับภาษี', 'OK');
-                          return;
-                        }
-
-                        if (!checkDate(orderDateCtrl.text)) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (productEntryWeightCtrl.text.isEmpty ||
-                            priceIncludeTaxCtrl.text.isEmpty) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'กรุณาเพิ่มข้อมูลก่อน', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (selectedFromLocation == null) {
-                          Alert.warning(context, 'คำเตือน',
-                              'กรุณาเลือกคลังสินค้าต้นทาง', 'OK',
-                              action: () {});
-                          return;
-                        }
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
-                          try {
-                            saveData();
-                            if (mounted) {
-                              resetText();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              Alert.warning(context, 'Warning'.tr(),
-                                  e.toString(), 'OK'.tr(),
-                                  action: () {});
-                            }
-                          }
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: size?.getWidthPx(8)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
                         backgroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
@@ -1401,6 +1375,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                               action: () {});
                           return;
                         }
+
                         Alert.info(
                             context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                             action: () async {
@@ -1417,9 +1392,6 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                 Future.delayed(
                                     const Duration(milliseconds: 500),
                                     () async {
-                                  widget.refreshCart(Global
-                                      .ordersWholesale?.length
-                                      .toString());
                                   writeCart();
                                   setState(() {});
                                 });
@@ -1668,8 +1640,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     final data = order.toJson();
     // motivePrint(data);
     // return;
-    Global.ordersWholesale?.add(OrderModel.fromJson(data));
-    widget.refreshCart(Global.ordersWholesale?.length.toString());
+    Global.ordersWholesale?[widget.index] = OrderModel.fromJson(data);
     writeCart();
     Global.usedSellDetail!.clear();
   }

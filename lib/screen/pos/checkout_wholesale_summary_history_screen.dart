@@ -272,7 +272,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                   ),
                                   buildTextFieldBig(
                                       labelText: "ส่วนลด (บาทไทย)",
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       controller: discountCtrl,
                                       inputType: TextInputType.phone,
                                       enabled: false,

@@ -2,7 +2,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 
 class LocalStorageBindings {
-  final storage = const FlutterSecureStorage();
+  final storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   Future<void> writeValue({required String key, dynamic value}) {
     return storage.write(key: key, value: value);
@@ -35,7 +39,7 @@ class LocalStorage {
     return sharedInstance;
   }
 
-  Future<String?> loadUserRef(String key) async{
+  Future<String?> loadUserRef(String key) async {
     return await localStorageBindings.readValue(key);
   }
 
@@ -43,7 +47,7 @@ class LocalStorage {
     localStorageBindings.writeValue(key: key, value: value);
   }
 
-  Future<String?> loadAuthStatus(String key) async{
+  Future<String?> loadAuthStatus(String key) async {
     return await localStorageBindings.readValue(key);
   }
 

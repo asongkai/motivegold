@@ -111,82 +111,12 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
       // ])
     ],
   ));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(height());
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      paddedText('ผู้ตรวจสอบ/Authorize',
-          style: TextStyle(fontWeight: FontWeight.bold)),
-      paddedText('ผู้อนุมัติ/Approve',
-          style: TextStyle(fontWeight: FontWeight.bold)),
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Divider(
-          height: 1,
-          borderStyle: BorderStyle.dashed,
-        ),
-      ),
-      SizedBox(width: 80),
-      Expanded(
-        child: Divider(
-          height: 1,
-          borderStyle: BorderStyle.dashed,
-        ),
-      ),
-    ],
-  ));
-  widgets.add(height());
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text('('),
-      Expanded(
-        child: Divider(
-          height: 1,
-          borderStyle: BorderStyle.dashed,
-        ),
-      ),
-      Text(')'),
-      SizedBox(width: 80),
-      Text('('),
-      Expanded(
-        child: Divider(
-          height: 1,
-          borderStyle: BorderStyle.dashed,
-        ),
-      ),
-      Text(')'),
-    ],
-  ));
-  widgets.add(height());
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text('วันที่ : ${DateTime.now()}'),
-      Spacer(),
-      Text('วันที่ : ${DateTime.now()}')
-    ],
-  ));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(height());
-  widgets.add(Center(child: Text(
-    "ตราประทับ",
-    style: const TextStyle(fontSize: 20),
-  )));
-  widgets.add(height(h: 100));
-  widgets.add(divider());
 
   pdf.addPage(
     MultiPage(
       margin: const EdgeInsets.all(30),
-      pageFormat: PdfPageFormat.a4,
+      pageFormat: const PdfPageFormat(1000, 1000),
+      orientation: PageOrientation.natural,
       build: (context) => widgets,
     ),
   );

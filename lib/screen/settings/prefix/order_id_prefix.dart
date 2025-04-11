@@ -179,7 +179,7 @@ class _OrderIdPrefixScreenState extends State<OrderIdPrefixScreen> {
                                             labelText:
                                                 'ตัวอย่างรูปแบบรหัสธุรกรรม'
                                                     .tr(),
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             enabled: false,

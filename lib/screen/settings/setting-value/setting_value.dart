@@ -126,7 +126,7 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'ค่าภาษีมูลค่าเพิ่ม',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             inputType: TextInputType.phone,
                                             controller: vatDefaultValue,
                                             inputFormat: [
@@ -159,7 +159,7 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'น้ำหนักหน่วยกรัม',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             inputType: TextInputType.phone,
                                             controller: unitDefaultValue,
                                             inputFormat: [
@@ -192,7 +192,7 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'มูลค่าสูงสุดของ KYC',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             inputType: TextInputType.phone,
                                             controller: maxKycValue,
                                             inputFormat: [

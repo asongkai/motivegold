@@ -738,9 +738,6 @@ class _RefillDialogState extends State<RefillDialog> {
                         return;
                       }
 
-                      var realPrice = Global.getBuyPrice(
-                          Global.toNumber(productWeightCtrl.text));
-
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {

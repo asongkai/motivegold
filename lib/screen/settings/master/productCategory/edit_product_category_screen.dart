@@ -80,7 +80,7 @@ class _EditProductCategoryScreenState extends State<EditProductCategoryScreen> {
                                 ),
                                 buildTextFieldBig(
                                   labelText: 'ชื่อหมวดหมู่สินค้า'.tr(),
-                                  textColor: Colors.orange,
+                                  labelColor: Colors.orange,
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: nameCtrl,

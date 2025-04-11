@@ -43,20 +43,31 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
 
   void loadProducts() async {
 
-    if (fromDateCtrl.text.isEmpty) {
-      Alert.warning(
-          context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-      return;
-    }
-    if (toDateCtrl.text.isEmpty) {
-      Alert.warning(
-          context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-      return;
-    }
+    // if (fromDateCtrl.text.isEmpty) {
+    //   Alert.warning(
+    //       context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+    //   return;
+    // }
+    // if (toDateCtrl.text.isEmpty) {
+    //   Alert.warning(
+    //       context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+    //   return;
+    // }
 
     setState(() {
       loading = true;
     });
+
+    motivePrint(Global.requestObj({
+      "year": 0,
+      "month": 0,
+      "fromDate": fromDateCtrl.text.isNotEmpty
+          ? DateTime.parse(fromDateCtrl.text).toString()
+          : null,
+      "toDate": toDateCtrl.text.isNotEmpty
+          ? DateTime.parse(toDateCtrl.text).toString()
+          : null,
+    }));
 
     try {
       var result = await ApiServices.post(
@@ -144,7 +155,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PreviewNewGoldReportPage(
-                                  orders: filterList!,
+                                  orders: filterList!.reversed.toList(),
                                   type: 1,
                                   date:
                                       '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
@@ -282,6 +293,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         fromDateCtrl.text =
                                             formattedDate; //set output date to TextField value.
                                       });
+                                      loadProducts();
                                     } else {
                                       motivePrint("Date is not selected");
                                     }
@@ -358,6 +370,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         toDateCtrl.text =
                                             formattedDate; //set output date to TextField value.
                                       });
+                                      loadProducts();
                                     } else {
                                       motivePrint("Date is not selected");
                                     }
@@ -442,12 +455,10 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                 Global.dateOnly(e!.orderDate.toString()),
                                 align: TextAlign.center),
                             paddedTextBig(e.orderId, align: TextAlign.center),
-                            paddedTextBig('เงินสด', align: TextAlign.center),
-                            paddedTextBig(
-                                Global.company != null
-                                    ? Global.company!.taxNumber ?? ''
-                                    : '',
-                                align: TextAlign.center),
+                            paddedTextBig('${e.customer!.firstName!} ${e.customer!.lastName!}', align: TextAlign.center),
+                            paddedTextBig(e.customer?.taxNumber != ''
+                                ? e.customer?.taxNumber ?? ''
+                                : e.customer?.idCard ?? '', align: TextAlign.center),
                             paddedTextBig(Global.format(getWeight(e)),
                                 align: TextAlign.right),
                             paddedTextBig('กรัม', align: TextAlign.center),

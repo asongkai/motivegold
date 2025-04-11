@@ -173,8 +173,9 @@ class _SellDialogState extends State<SellDialog> {
 
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtRemainCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -242,7 +243,7 @@ class _SellDialogState extends State<SellDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 100,
+                    height: 70,
                     decoration: const BoxDecoration(color: Colors.teal),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -269,23 +270,25 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'จำนวนน้ำหนัก',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '(บาททอง)',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -334,7 +337,7 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -342,16 +345,18 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ราคาขายทอง\nคำแท่ง',
                                   textAlign: TextAlign.right,
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -398,23 +403,25 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'ค่าบล็อกทอง',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -460,23 +467,25 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'รวมราคาขาย',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -574,7 +583,7 @@ class _SellDialogState extends State<SellDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -589,7 +598,9 @@ class _SellDialogState extends State<SellDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -609,7 +620,7 @@ class _SellDialogState extends State<SellDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.teal,
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
@@ -622,32 +633,37 @@ class _SellDialogState extends State<SellDialog> {
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: 30),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.getWidthPx(15)),
                         ),
                       ],
                     ),
                     onPressed: () async {
                       if (selectedProduct == null) {
-                        Alert.warning(
-                            context, 'คำเตือน', getDefaultProductMessage(), 'OK', action: () {});
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultProductMessage(), 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (selectedWarehouse == null) {
-                        Alert.warning(
-                            context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK', action: () {});
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultWarehouseMessage(), 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (productWeightBahtCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK', action: (){});
+                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (productPriceTotalCtrl.text.isEmpty) {
-                        Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK', action: (){});
+                        Alert.warning(context, 'คำเตือน', 'กรุณากรอกราคา', 'OK',
+                            action: () {});
                         return;
                       }
 
@@ -672,7 +688,8 @@ class _SellDialogState extends State<SellDialog> {
                             context,
                             'คำเตือน',
                             'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK', action: (){});
+                            'OK',
+                            action: () {});
 
                         return;
                       }
@@ -712,7 +729,7 @@ class _SellDialogState extends State<SellDialog> {
   void comChanged() {
     if (productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-      "${Global.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)))}";
+          "${Global.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)))}";
       // productPriceTotalCtrl.text =
       //     "${Global.format((Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text)) * Global.toNumber(productWeightBahtCtrl.text))}";
       setState(() {});
@@ -723,7 +740,7 @@ class _SellDialogState extends State<SellDialog> {
     if (productPriceCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text = Global.format(
           (Global.toNumber(productCommissionCtrl.text) +
-                  Global.toNumber(productPriceCtrl.text)));
+              Global.toNumber(productPriceCtrl.text)));
       // productPriceTotalCtrl.text = Global.format(
       //     (Global.toNumber(productCommissionCtrl.text) +
       //         Global.toNumber(productPriceCtrl.text)) * Global.toNumber(productWeightBahtCtrl.text));

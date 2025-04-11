@@ -89,17 +89,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
     productWeightBahtCtrl.text = widget.j == null
         ? Global.format(Global.sellOrderDetail![widget.index].weightBath ?? 0)
         : Global.format(
-            Global.ordersPapun![widget.index].details![widget.j!].weightBath ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].weightBath ??
+                0);
     productCommissionCtrl.text = widget.j == null
         ? Global.format(Global.sellOrderDetail![widget.index].commission ?? 0)
         : Global.format(
-            Global.ordersPapun![widget.index].details![widget.j!].commission ?? 0);
+            Global.ordersPapun![widget.index].details![widget.j!].commission ??
+                0);
     productPriceTotalCtrl.text = widget.j == null
         ? Global.format(
             Global.sellOrderDetail![widget.index].priceIncludeTax ?? 0)
-        : Global.format(
-            Global.ordersPapun![widget.index].details![widget.j!].priceIncludeTax ??
-                0);
+        : Global.format(Global.ordersPapun![widget.index].details![widget.j!]
+                .priceIncludeTax ??
+            0);
   }
 
   @override
@@ -133,8 +135,8 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
       // ApiServices api = ApiServices();
       // Global.goldDataModel = await api.getGoldPrice(context);
 
-      var result =
-          await ApiServices.post('/product/type/NEW/1', Global.requestObj(null));
+      var result = await ApiServices.post(
+          '/product/type/NEW/1', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -142,7 +144,8 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           productList = products;
           if (productList.isNotEmpty) {
             var productId = widget.j != null
-                ? Global.ordersPapun![widget.index].details![widget.j!].productId
+                ? Global
+                    .ordersPapun![widget.index].details![widget.j!].productId
                 : Global.sellOrderDetail![widget.index].productId;
 
             selectedProduct = productList.where((e) => e.id == productId).first;
@@ -166,7 +169,8 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
         warehouseList = warehouses;
 
         var binId = widget.j != null
-            ? Global.ordersPapun![widget.index].details![widget.j!].binLocationId
+            ? Global
+                .ordersPapun![widget.index].details![widget.j!].binLocationId
             : Global.sellOrderDetail![widget.index].binLocationId;
 
         selectedWarehouse = warehouseList.where((e) => e.id == binId).first;
@@ -208,8 +212,9 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
 
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtRemainCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -264,14 +269,14 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.paphun?.buy
-              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
-                  ?.paphun?.buy)));
+              : Global.ordersPapun![widget.index].details![widget.j!]
+                  .goldDataModel?.paphun?.buy)));
       productPriceCtrl.text = Global.format(Global.getSellPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
-              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
-                  ?.theng?.sell)));
+              : Global.ordersPapun![widget.index].details![widget.j!]
+                  .goldDataModel?.theng?.sell)));
       // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
       //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
       //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
@@ -321,14 +326,14 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.paphun?.buy
-              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
-                  ?.paphun?.buy)));
+              : Global.ordersPapun![widget.index].details![widget.j!]
+                  .goldDataModel?.paphun?.buy)));
       productPriceCtrl.text = Global.format(Global.getSellPriceUsePrice(
           Global.toNumber(productWeightGramCtrl.text),
           Global.toNumber(widget.j == null
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
-              : Global.ordersPapun![widget.index].details![widget.j!].goldDataModel
-                  ?.theng?.sell)));
+              : Global.ordersPapun![widget.index].details![widget.j!]
+                  .goldDataModel?.theng?.sell)));
       // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
       //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
       //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
@@ -397,7 +402,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                         children: [
                           Container(
                             width: double.infinity,
-                            height: 100,
+                            height: 70,
                             decoration: const BoxDecoration(color: snBgColor),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -426,7 +431,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
-                                  const Expanded(
+                                  Expanded(
                                       flex: 6,
                                       child: Row(
                                         mainAxisAlignment:
@@ -435,17 +440,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           Text(
                                             '',
                                             style: TextStyle(
-                                                fontSize: 50, color: textColor),
+                                                fontSize: size.getWidthPx(15),
+                                                color: textColor),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
                                           Text(
                                             '',
                                             style: TextStyle(
-                                                color: textColor, fontSize: 30),
+                                                color: textColor,
+                                                fontSize: size.getWidthPx(10)),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
                                         ],
@@ -513,7 +520,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                const Expanded(
+                                Expanded(
                                     flex: 6,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -521,17 +528,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'น้ำหนัก',
                                           style: TextStyle(
-                                              fontSize: 50, color: textColor),
+                                              fontSize: size.getWidthPx(15),
+                                              color: textColor),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           '(บาททอง)',
                                           style: TextStyle(
-                                              color: textColor, fontSize: 30),
+                                              color: textColor,
+                                              fontSize: size.getWidthPx(10)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                       ],
@@ -577,7 +586,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                const Expanded(
+                                Expanded(
                                     flex: 6,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -585,17 +594,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'น้ำหนัก',
                                           style: TextStyle(
-                                              fontSize: 50, color: textColor),
+                                              fontSize: size.getWidthPx(15),
+                                              color: textColor),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           '(กรัม)',
                                           style: TextStyle(
-                                              color: textColor, fontSize: 30),
+                                              color: textColor,
+                                              fontSize: size.getWidthPx(10)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                       ],
@@ -639,7 +650,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                const Expanded(
+                                Expanded(
                                     flex: 6,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -647,17 +658,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'ราคาขายรวม',
                                           style: TextStyle(
-                                              fontSize: 50, color: textColor),
+                                              fontSize: size.getWidthPx(15),
+                                              color: textColor),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           '(บาท)',
                                           style: TextStyle(
-                                              color: textColor, fontSize: 30),
+                                              color: textColor,
+                                              fontSize: size.getWidthPx(10)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                       ],
@@ -705,7 +718,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                               onTap: () {},
                               child: Row(
                                 children: [
-                                  const Expanded(
+                                  Expanded(
                                       flex: 6,
                                       child: Row(
                                         mainAxisAlignment:
@@ -714,17 +727,19 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           Text(
                                             'ค่ากำเหน็จ',
                                             style: TextStyle(
-                                                fontSize: 50, color: textColor),
+                                                fontSize: size.getWidthPx(15),
+                                                color: textColor),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
                                           Text(
                                             '(บาท)',
                                             style: TextStyle(
-                                                color: textColor, fontSize: 30),
+                                                color: textColor,
+                                                fontSize: size.getWidthPx(10)),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
                                         ],
@@ -854,22 +869,24 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -889,22 +906,24 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: snBgColor,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.save,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -945,8 +964,12 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                           Global.toNumber(widget.j == null
                               ? Global.sellOrderDetail![widget.index]
                                   .goldDataModel?.paphun?.buy
-                              : Global.ordersPapun![widget.index].details![widget.j!]
-                                  .goldDataModel?.paphun?.buy));
+                              : Global
+                                  .ordersPapun![widget.index]
+                                  .details![widget.j!]
+                                  .goldDataModel
+                                  ?.paphun
+                                  ?.buy));
                       var price = Global.toNumber(productPriceTotalCtrl.text);
                       var check = price - realPrice;
 
@@ -1021,8 +1044,8 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                           setState(() {});
                           Navigator.of(context).pop();
                         } else {
-                          Global.ordersPapun![widget.index].details![widget.j!] =
-                              OrderDetailModel.fromJson(
+                          Global.ordersPapun![widget.index]
+                              .details![widget.j!] = OrderDetailModel.fromJson(
                             jsonDecode(
                               jsonEncode(
                                 OrderDetailModel(
@@ -1050,8 +1073,10 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         .details![widget.j!].sellPrice,
                                     buyPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].buyPrice,
-                                    sellTPrice: Global.ordersPapun![widget.index]
-                                        .details![widget.j!].sellTPrice,
+                                    sellTPrice: Global
+                                        .ordersPapun![widget.index]
+                                        .details![widget.j!]
+                                        .sellTPrice,
                                     buyTPrice: Global.ordersPapun![widget.index]
                                         .details![widget.j!].buyTPrice,
                                     goldDataModel: Global.ordersPapun![widget.index].details![widget.j!].goldDataModel),

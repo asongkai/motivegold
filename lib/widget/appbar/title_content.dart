@@ -1,11 +1,19 @@
+import 'dart:convert';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/company.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/image/cached_image.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class TitleContent extends StatefulWidget {
   final Widget? title;
@@ -19,6 +27,7 @@ class TitleContent extends StatefulWidget {
 
 class _TitleContentState extends State<TitleContent> {
   ValueNotifier<dynamic>? branchNotifier;
+  ValueNotifier<dynamic>? companyNotifier;
 
   @override
   void initState() {
@@ -26,10 +35,13 @@ class _TitleContentState extends State<TitleContent> {
     super.initState();
     branchNotifier = ValueNotifier<BranchModel>(
         Global.branch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
+    companyNotifier = ValueNotifier<CompanyModel>(
+        Global.company ?? CompanyModel(id: 0, name: 'เลือกบริษัท'));
   }
 
   @override
   Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,11 +59,11 @@ class _TitleContentState extends State<TitleContent> {
                     elevation: 2.0,
                     fillColor: Colors.white,
                     constraints: const BoxConstraints(minWidth: 0.0),
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(8.0),
                     shape: const CircleBorder(),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_back,
-                      size: 35.0,
+                      size: size.getWidthPx(15),
                     ),
                   ),
                 ),
@@ -67,10 +79,12 @@ class _TitleContentState extends State<TitleContent> {
                           child: Center(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              // child: Image.network(
-                              //   '${Constants.DOMAIN_URL}/images/${Global.company?.logo}',
-                              //   fit: BoxFit.fitHeight,
-                              // ),
+                              child: Global.company?.logo == null
+                                  ? Container()
+                                  : Image.network(
+                                      '${Constants.DOMAIN_URL}/images/${Global.company?.logo}',
+                                      fit: BoxFit.fitHeight,
+                                    ),
                             ),
                           ),
                         ),
@@ -84,23 +98,26 @@ class _TitleContentState extends State<TitleContent> {
                                   ),
                                   Text(
                                     '${Global.company?.name} (${Global.branch?.name})',
-                                    style: const TextStyle(
-                                        fontSize: 20,
+                                    style: TextStyle(
+                                        fontSize: size.getWidthPx(8),
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900),
                                   ),
                                   Text(
                                       '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
-                                      style: const TextStyle(
-                                          fontSize: 18, color: Colors.white)),
+                                      style: TextStyle(
+                                          fontSize: size.getWidthPx(7),
+                                          color: Colors.white)),
                                   Text(
                                       'โทรศัพท์/Phone : ${Global.branch?.phone}',
-                                      style: const TextStyle(
-                                          fontSize: 18, color: Colors.white)),
+                                      style: TextStyle(
+                                          fontSize: size.getWidthPx(7),
+                                          color: Colors.white)),
                                   Text(
                                       'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
-                                      style: const TextStyle(
-                                          fontSize: 18, color: Colors.white)),
+                                      style: TextStyle(
+                                          fontSize: size.getWidthPx(7),
+                                          color: Colors.white)),
                                 ]))
                       ]),
                     ])),
@@ -119,11 +136,9 @@ class _TitleContentState extends State<TitleContent> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            Global.user != null
-                                ? 'ผู้ใช้: '
-                                : '',
-                            style: const TextStyle(
-                                fontSize: 20,
+                            Global.user != null ? 'ผู้ใช้: ' : '',
+                            style: TextStyle(
+                                fontSize: size.getWidthPx(8),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -131,8 +146,8 @@ class _TitleContentState extends State<TitleContent> {
                             Global.user != null
                                 ? '${Global.user!.firstName!} ${Global.user!.lastName!}'
                                 : '',
-                            style: const TextStyle(
-                                fontSize: 20,
+                            style: TextStyle(
+                                fontSize: size.getWidthPx(8),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -141,23 +156,23 @@ class _TitleContentState extends State<TitleContent> {
                       const SizedBox(
                         width: 20,
                       ),
-                      if (Global.user?.userRole == 'Administrator')
+                      if (Global.user?.userType == 'ADMIN')
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'สาขา: ',
+                            Text(
+                              'บริษัท: ',
                               style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: size.getWidthPx(8),
                                   color: Colors.white,
                                   fontWeight: FontWeight.w900),
                             ),
                             SizedBox(
-                              height: 60,
-                              child: MiraiDropDownMenu<BranchModel>(
+                              // height: 60,
+                              child: MiraiDropDownMenu<CompanyModel>(
                                 key: UniqueKey(),
-                                children: Global.branchList,
+                                children: Global.companyList,
                                 space: 4,
                                 maxHeight: 360,
                                 showSearchTextField: false,
@@ -166,26 +181,131 @@ class _TitleContentState extends State<TitleContent> {
                                 showSelectedItemBackgroundColor: true,
                                 itemWidgetBuilder: (
                                   int index,
-                                  BranchModel? project, {
+                                  CompanyModel? project, {
                                   bool isItemSelected = false,
                                 }) {
                                   return DropDownItemWidget(
                                     project: project,
                                     isItemSelected: isItemSelected,
                                     firstSpace: 10,
-                                    fontSize: 20,
+                                    fontSize: size.getWidthPx(8),
                                   );
                                 },
-                                onChanged: (BranchModel value) {
-                                  Global.branch = value;
-                                  branchNotifier!.value = value;
+                                onChanged: (CompanyModel value) async {
+                                  Global.company = value;
+                                  companyNotifier!.value = value;
+
+                                  await loadBranchList();
                                   setState(() {});
                                 },
                                 child: DropDownObjectChildWidget(
                                   key: GlobalKey(),
-                                  fontSize: 20,
-                                  projectValueNotifier: branchNotifier!,
+                                  fontSize: size.getWidthPx(8),
+                                  projectValueNotifier: companyNotifier!,
                                 ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (Global.user?.userRole == 'Administrator')
+                        const SizedBox(
+                          width: 20,
+                        ),
+                      if (Global.user?.userRole == 'Administrator')
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'สาขา: ',
+                              style: TextStyle(
+                                  fontSize: size.getWidthPx(8),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900),
+                            ),
+                            SizedBox(
+                              // height: 60,
+                              child: Stack(
+                                children: [
+                                  MiraiDropDownMenu<BranchModel>(
+                                    key: UniqueKey(),
+                                    children: Global.branchList,
+                                    space: 4,
+                                    maxHeight: 360,
+                                    showSearchTextField: false,
+                                    selectedItemBackgroundColor:
+                                        Colors.transparent,
+                                    emptyListMessage: 'ไม่มีข้อมูล',
+                                    showSelectedItemBackgroundColor: true,
+                                    itemWidgetBuilder: (
+                                      int index,
+                                      BranchModel? project, {
+                                      bool isItemSelected = false,
+                                    }) {
+                                      return DropDownItemWidget(
+                                        project: project,
+                                        isItemSelected: isItemSelected,
+                                        firstSpace: 10,
+                                        fontSize: size.getWidthPx(8),
+                                      );
+                                    },
+                                    onChanged: (BranchModel value) {
+                                      Global.branch = value;
+                                      branchNotifier!.value = value;
+                                      setState(() {});
+                                    },
+                                    child: DropDownObjectChildWidget(
+                                      key: GlobalKey(),
+                                      fontSize: size.getWidthPx(8),
+                                      projectValueNotifier: branchNotifier!,
+                                    ),
+                                  ),
+                                  if (Global.branch != null)
+                                    Positioned(
+                                      right: 5,
+                                      top: 5,
+                                      child: Center(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(100.0)),
+                                          // padding: const EdgeInsets.only(
+                                          //     left: 5.0, right: 5.0),
+                                          child: Row(
+                                            children: [
+                                              ClipOval(
+                                                child: SizedBox(
+                                                  width: 30.0,
+                                                  height: 30.0,
+                                                  child: RawMaterialButton(
+                                                    elevation: 10.0,
+                                                    child: const Icon(
+                                                      Icons.clear,
+                                                      color: Colors.white,
+                                                    ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        // Global.branchList = [];
+                                                        Global.branch = null;
+                                                        branchNotifier = ValueNotifier<
+                                                            BranchModel>(Global
+                                                                .branch ??
+                                                            BranchModel(
+                                                                id: 0,
+                                                                name:
+                                                                    'เลือกสาขา'));
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],
@@ -195,9 +315,10 @@ class _TitleContentState extends State<TitleContent> {
                           Global.branch != null
                               ? 'สาขา: ${Global.branch!.name}'
                               : '',
-                          style: const TextStyle(
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(
+                              fontSize: size.getWidthPx(7),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900),
                         ),
                     ],
                   ),
@@ -206,16 +327,16 @@ class _TitleContentState extends State<TitleContent> {
         ),
         Row(
           children: [
-            const Expanded(
+            Expanded(
                 flex: 6,
                 child: Padding(
-                  padding: EdgeInsets.only(left: 18.0),
+                  padding: const EdgeInsets.only(left: 18.0),
                   child: Text(
                     'ติดต่อฝ่ายช่วยเหลือโปรแกรม 90039450835',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: 20),
+                        fontSize: size.getWidthPx(7)),
                   ),
                 )),
             Expanded(flex: 4, child: Container())
@@ -232,5 +353,32 @@ class _TitleContentState extends State<TitleContent> {
         ),
       ],
     );
+  }
+
+  loadBranchList() async {
+    Global.branch = null;
+    branchNotifier = ValueNotifier<BranchModel>(
+        Global.branch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
+    final ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+    await pr.show();
+    pr.update(message: 'processing'.tr());
+    try {
+      var b = await ApiServices.get('/branch/by-company/${Global.company?.id}');
+      // motivePrint(b!.data);
+      await pr.hide();
+      if (b?.status == "success") {
+        var data = jsonEncode(b?.data);
+        List<BranchModel> products = branchListModelFromJson(data);
+        setState(() {
+          Global.branchList = products;
+        });
+      } else {
+        Global.branchList = [];
+      }
+    } catch (e) {
+      await pr.hide();
+      Alert.warning(context, 'คำเตือน', '${e.toString()}', 'OK', action: () {});
+    }
   }
 }

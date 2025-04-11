@@ -37,6 +37,8 @@ class OrderDetailModel {
   double? commission;
   double? weight;
   double? weightBath;
+  double? weightAdj;
+  double? weightBathAdj;
   double? unitCost;
   double? priceIncludeTax;
   double? purchasePrice;
@@ -66,6 +68,8 @@ class OrderDetailModel {
     this.commission,
     this.weight,
     this.weightBath,
+    this.weightAdj,
+    this.weightBathAdj,
     this.unitCost,
     this.priceIncludeTax,
     this.purchasePrice,
@@ -99,6 +103,8 @@ class OrderDetailModel {
         commission: json["commission"],
         weight: json["weight"],
         weightBath: json["weightBath"],
+        weightAdj: json["weightAdj"],
+        weightBathAdj: json["weightBathAdj"],
         unitCost: json["unitCost"],
         priceIncludeTax: json["priceIncludeTax"],
         purchasePrice: json["purchasePrice"],
@@ -139,6 +145,8 @@ class OrderDetailModel {
         "commission": commission,
         "weight": weight,
         "weightBath": weightBath,
+        "weightAdj": weightAdj,
+        "weightBathAdj": weightBathAdj,
         "unitCost": unitCost,
         "priceIncludeTax": priceIncludeTax,
         "purchasePrice": purchasePrice,

@@ -8,6 +8,7 @@ import 'package:motivegold/screen/pos/storefront/theng/ui/buy_theng_screen.dart'
 import 'package:motivegold/screen/pos/storefront/theng/ui/sell_theng_screen.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -51,7 +52,7 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
   Widget build(BuildContext context) {
     // sideMenu.changePage(Global.posIndex);
     // pageController.jumpToPage(Global.posIndex);
-    setState(() {});
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: CustomAppBar(
         height: 300,
@@ -62,11 +63,11 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                 Expanded(
                   flex: 5,
                   child: Text('ซื้อขายทองคำแท่ง (ซื้อ-ขายจริง)',
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -91,9 +92,9 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.save,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -146,9 +147,9 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.shopping_cart,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

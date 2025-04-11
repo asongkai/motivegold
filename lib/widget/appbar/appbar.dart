@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
@@ -6,7 +7,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const CustomAppBar({super.key,
     required this.child,
-    this.height = kToolbarHeight,
+    this.height = 250 //kToolbarHeight,
   });
 
   @override
@@ -14,9 +15,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    Screen? size = Screen(MediaQuery.of(context).size);
     return SafeArea(
       child: Container(
-        height: preferredSize.height,
+        height: size.hp(22), //preferredSize.height,
         color: Colors.teal,
         alignment: Alignment.center,
         child: child,

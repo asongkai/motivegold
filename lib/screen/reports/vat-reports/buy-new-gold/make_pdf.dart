@@ -9,20 +9,22 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 
-Future<Uint8List> makeBuyVatReportPdf(
-    List<OrderModel?> orders, int type, DateTime date) async {
+Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
+    String date, DateTime fromDate, DateTime toDate) async {
   List<OrderModel> list = [];
 
-  for (DateTime indexDay = DateTime(date.year, date.month, 1);
-      indexDay.month == date.month;
-      indexDay = indexDay.add(const Duration(days: 1))) {
-    // print(indexDay.toString());
+  int days = Global.daysBetween(fromDate, toDate);
+
+  for (int j = 0; j <= days; j++) {
+    var indexDay = fromDate.add(Duration(days: j));
+    // motivePrint(indexDay);
     for (int i = 0; i < orders.length; i++) {
-      // print(orders[i]?.orderDate.toString());
-      if (orders[i]!.orderDate == indexDay) {
+      // motivePrint(orders[i]!.createdDate);
+      if (orders[i]!.createdDate == indexDay) {
         list.add(orders[i]!);
       } else {
-        var checkExisting = list.where((e) => e.orderDate == indexDay).toList();
+        var checkExisting =
+            list.where((e) => e.createdDate == indexDay).toList();
         if (checkExisting.isEmpty) {
           list.add(OrderModel(
               orderId: 'หยุดทำการ/ไม่มียอดขาย',
@@ -41,20 +43,6 @@ Future<Uint8List> makeBuyVatReportPdf(
   );
   final pdf = Document(theme: myTheme);
   List<Widget> widgets = [];
-  // widgets.add(Center(
-  //     child: Column(children: [
-  //       Text('${Global.company?.name} (${Global.branch!.name})',
-  //           style:
-  //           TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-  //       Text(
-  //           '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
-  //           style:
-  //           TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-  //       Text(
-  //           'เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber} โทร ${Global.company?.phone}',
-  //           style:
-  //           TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-  //     ])));
   widgets.add(height());
   widgets.add(Center(
     child: Text(
@@ -67,7 +55,7 @@ Future<Uint8List> makeBuyVatReportPdf(
   ));
   widgets.add(Center(
     child: Text(
-      'เดือน/ปีภาษี: ${Global.monthYear(date.toString())}',
+      'ระหว่างวันที่: $date',
       style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
     ),
   ));
@@ -180,13 +168,13 @@ Future<Uint8List> makeBuyVatReportPdf(
             children: [
               paddedText('${i + 1}'),
               paddedText(orders[i]!.orderId),
-              paddedText(Global.dateOnly(orders[i]!.orderDate.toString())),
-              paddedText(Global.timeOnlyF(orders[i]!.orderDate.toString())),
+              paddedText(Global.dateOnly(orders[i]!.createdDate.toString())),
+              paddedText(Global.timeOnlyF(orders[i]!.createdDate.toString())),
               paddedText(
                   '${orders[i]!.customer?.firstName} ${orders[i]!.customer?.lastName} '),
               paddedText(orders[i]!.customer?.taxNumber != null
                   ? orders[i]!.customer?.taxNumber ?? ''
-                  : ''),
+                  : orders[i]!.customer?.idCard ?? ''),
               paddedText(Global.format(getWeight(orders[i]!)),
                   align: TextAlign.right),
               paddedText(Global.format(orders[i]!.priceIncludeTax ?? 0),

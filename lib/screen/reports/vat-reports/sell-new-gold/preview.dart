@@ -8,8 +8,10 @@ import 'package:printing/printing.dart';
 class PreviewSellVatReportPage extends StatelessWidget {
   final List<OrderModel?> orders;
   final int type;
-  final DateTime date;
-  const PreviewSellVatReportPage({super.key, required this.orders, required this.type, required this.date});
+  final String date;
+  final DateTime? fromDate;
+  final DateTime? toDate;
+  const PreviewSellVatReportPage({super.key, required this.orders, required this.type, required this.date, this.fromDate, this.toDate});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class PreviewSellVatReportPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeSellVatReportPdf(orders, type, date),
+        build: (context) => makeSellVatReportPdf(orders, type, date, fromDate!, toDate!),
       ),
     );
   }

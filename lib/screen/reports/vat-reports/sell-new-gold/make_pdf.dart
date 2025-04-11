@@ -9,20 +9,20 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 
-Future<Uint8List> makeSellVatReportPdf(
-    List<OrderModel?> orders, int type, DateTime date) async {
+Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
+    String date, DateTime fromDate, DateTime toDate) async {
   List<OrderModel> list = [];
 
-  for (DateTime indexDay = DateTime(date.year, date.month, 1);
-      indexDay.month == date.month;
-      indexDay = indexDay.add(const Duration(days: 1))) {
-    // print(indexDay.toString());
+  int days = Global.daysBetween(fromDate, toDate);
+
+  for (int j = 0; j <= days; j++) {
+    var indexDay = fromDate.add(Duration(days: j));
     for (int i = 0; i < orders.length; i++) {
-      // print(orders[i]?.orderDate.toString());
-      if (orders[i]!.orderDate == indexDay) {
+      if (orders[i]!.createdDate == indexDay) {
         list.add(orders[i]!);
       } else {
-        var checkExisting = list.where((e) => e.orderDate == indexDay).toList();
+        var checkExisting =
+            list.where((e) => e.createdDate == indexDay).toList();
         if (checkExisting.isEmpty) {
           list.add(OrderModel(
               orderId: 'หยุดทำการ/ไม่มียอดขาย',
@@ -67,7 +67,7 @@ Future<Uint8List> makeSellVatReportPdf(
   ));
   widgets.add(Center(
     child: Text(
-      'เดือน/ปีภาษี: ${Global.monthYear(date.toString())}',
+      'ระหว่างวันที่: $date',
       style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
     ),
   ));

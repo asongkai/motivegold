@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/product.dart';
@@ -44,6 +45,13 @@ class _BuyUsedGoldGovReportScreenState
   ValueNotifier<dynamic>? yearNotifier;
   ValueNotifier<dynamic>? monthNotifier;
 
+  final TextEditingController fromDateCtrl = TextEditingController();
+  final TextEditingController toDateCtrl = TextEditingController();
+  ValueNotifier<dynamic>? fromDateNotifier;
+  ValueNotifier<dynamic>? toDateNotifier;
+  DateTime? fromDate;
+  DateTime? toDate;
+
   List<ProductModel> productList = [];
   List<WarehouseModel> warehouseList = [];
   ProductModel? selectedProduct;
@@ -54,14 +62,7 @@ class _BuyUsedGoldGovReportScreenState
   @override
   void initState() {
     super.initState();
-    yearNotifier = ValueNotifier<int>(DateTime.now().year);
-    monthNotifier = ValueNotifier<int>(DateTime.now().month);
-    yearCtrl.text = DateTime.now().year.toString();
-    monthCtrl.text = DateTime.now().month.toString();
-    productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    resetFilter();
     loadProducts();
     search();
   }
@@ -99,15 +100,19 @@ class _BuyUsedGoldGovReportScreenState
   }
 
   void search() async {
-    if (yearCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
-      return;
-    }
+    // if (yearCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+    //   return;
+    // }
+    //
+    // if (monthCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
+    //   return;
+    // }
 
-    if (monthCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
-      return;
-    }
+    makeSearchDate();
+
+    // return;
 
     setState(() {
       loading = true;
@@ -117,10 +122,12 @@ class _BuyUsedGoldGovReportScreenState
       var result = await ApiServices.post(
           '/order/all/type/2',
           Global.requestObj({
-            "year": yearCtrl.text,
-            "month": monthCtrl.text,
+            "year": yearCtrl.text == "" ? null : yearCtrl.text,
+            "month": monthCtrl.text == "" ? null : monthCtrl.text,
             "productId": selectedProduct?.id,
-            "warehouseId": selectedWarehouse?.id
+            "warehouseId": selectedWarehouse?.id,
+            "fromDate": fromDate.toString(),
+            "toDate": toDate.toString(),
           }));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -161,11 +168,11 @@ class _BuyUsedGoldGovReportScreenState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   flex: 5,
                   child: Text("รายงานบัญชีสำหรับผู้ทำการค้าของเก่า",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -186,10 +193,9 @@ class _BuyUsedGoldGovReportScreenState
                               MaterialPageRoute(
                                 builder: (context) =>
                                     PreviewBuyUsedGoldGovReportPage(
-                                  orders: filterList!,
+                                  orders: filterList!.reversed.toList(),
                                   type: 1,
-                                  date: DateTime.parse(
-                                      "${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
+                                  date: '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
                                 ),
                               ),
                             );
@@ -202,7 +208,7 @@ class _BuyUsedGoldGovReportScreenState
                                 color: Colors.white,
                               ),
                               Text(
-                                'พิมพ์แบบเรียงเบอร์',
+                                'พิมพ์',
                                 style: TextStyle(
                                   fontSize: size.getWidthPx(8),
                                   color: Colors.white,
@@ -214,40 +220,6 @@ class _BuyUsedGoldGovReportScreenState
                         const SizedBox(
                           width: 20,
                         ),
-                        // GestureDetector(
-                        //   onTap: () {
-                        //     List<OrderModel> dailyList = genDailyList(filterList);
-                        //     if (dailyList.isEmpty) {
-                        //       Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
-                        //       return;
-                        //     }
-                        //     Navigator.of(context).push(
-                        //       MaterialPageRoute(
-                        //         builder: (context) => PreviewBuyUsedGoldReportPage(
-                        //           orders: dailyList,
-                        //           type: 2,
-                        //           date: DateTime.parse("${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
-                        //         ),
-                        //       ),
-                        //     );
-                        //   },
-                        //   child: Row(
-                        //     children: [
-                        //       const Icon(
-                        //         Icons.print,
-                        //         size: 50,
-                        // color: Colors.white,
-                        //       ),
-                        //       Text(
-                        //         'พิมพ์แบบรายวัน',
-                        //         style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white,),
-                        //       )
-                        //     ],
-                        //   ),
-                        // ),
-                        // const SizedBox(
-                        //   width: 20,
-                        // ),
                       ],
                     ))
               ],
@@ -309,7 +281,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'สินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(8)),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -334,7 +306,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(8),
                                               );
                                             },
                                             onChanged: (ProductModel value) {
@@ -344,7 +316,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(8),
                                               projectValueNotifier:
                                                   productNotifier!,
                                             ),
@@ -374,7 +346,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'คลังสินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(8)),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -399,7 +371,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(8),
                                               );
                                             },
                                             onChanged: (WarehouseModel value) {
@@ -409,7 +381,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(8),
                                               projectValueNotifier:
                                                   warehouseNotifier!,
                                             ),
@@ -443,15 +415,15 @@ class _BuyUsedGoldGovReportScreenState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'ปี',
+                                          'จากวันที่',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(8)),
                                         ),
                                         SizedBox(
                                           height: 70,
-                                          child: MiraiDropDownMenu<int>(
+                                          child: MiraiDropDownMenu<dynamic>(
                                             key: UniqueKey(),
-                                            children: Global.genYear(),
+                                            children: Global.genMonthDays(),
                                             space: 4,
                                             maxHeight: 360,
                                             showSearchTextField: true,
@@ -462,26 +434,27 @@ class _BuyUsedGoldGovReportScreenState
                                                 true,
                                             itemWidgetBuilder: (
                                               int index,
-                                              int? project, {
+                                              dynamic project, {
                                               bool isItemSelected = false,
                                             }) {
                                               return DropDownItemWidget(
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(8),
                                               );
                                             },
-                                            onChanged: (int value) {
-                                              yearCtrl.text = value.toString();
-                                              yearNotifier!.value = value;
+                                            onChanged: (dynamic value) {
+                                              fromDateCtrl.text =
+                                                  value.toString();
+                                              fromDateNotifier!.value = value;
                                               search();
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(8),
                                               projectValueNotifier:
-                                                  yearNotifier!,
+                                                  fromDateNotifier!,
                                             ),
                                           ),
                                         ),
@@ -507,13 +480,84 @@ class _BuyUsedGoldGovReportScreenState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'เดือน',
+                                          'ถึงวันที่',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(8)),
                                         ),
                                         SizedBox(
                                           height: 70,
-                                          child: MiraiDropDownMenu<int>(
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genMonthDays(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              toDateCtrl.text =
+                                                  value.toString();
+                                              toDateNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  toDateNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'เดือน',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
                                             key: UniqueKey(),
                                             children: Global.genMonth(),
                                             space: 4,
@@ -526,24 +570,24 @@ class _BuyUsedGoldGovReportScreenState
                                                 true,
                                             itemWidgetBuilder: (
                                               int index,
-                                              int? project, {
+                                              dynamic project, {
                                               bool isItemSelected = false,
                                             }) {
                                               return DropDownItemWidget(
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(8),
                                               );
                                             },
-                                            onChanged: (int value) {
+                                            onChanged: (dynamic value) {
                                               monthCtrl.text = value.toString();
                                               monthNotifier!.value = value;
                                               search();
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(8),
                                               projectValueNotifier:
                                                   monthNotifier!,
                                             ),
@@ -555,23 +599,117 @@ class _BuyUsedGoldGovReportScreenState
                                 ),
                               ),
                             ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ปี',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genYear(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  yearNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenWidth(3.0),
-                            vertical: getProportionateScreenHeight(5.0),
-                          ),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStateProperty.all<Color>(bgColor3)),
-                            onPressed: search,
-                            child: Text(
-                              'ค้นหา'.tr(),
-                              style: const TextStyle(fontSize: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(3.0),
+                                  vertical: getProportionateScreenHeight(5.0),
+                                ),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              Colors.red)),
+                                  onPressed: () {
+                                    resetFilter();
+                                  },
+                                  child: Text(
+                                    'Reset'.tr(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            Expanded(
+                              flex: 7,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(3.0),
+                                  vertical: getProportionateScreenHeight(5.0),
+                                ),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              bgColor3)),
+                                  onPressed: search,
+                                  child: Text(
+                                    'ค้นหา'.tr(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -661,38 +799,71 @@ class _BuyUsedGoldGovReportScreenState
           );
   }
 
-  List<OrderModel> genDailyList(List<OrderModel?>? filterList) {
-    List<OrderModel> orderList = [];
-    int days = daysInMonth(int.parse(yearCtrl.text), int.parse(monthCtrl.text));
-    for (int i = 1; i <= days; i++) {
-      DateTime? monthDate = DateTime.tryParse(
-          '${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-${twoDigit(i)}');
+  makeSearchDate() {
+    int month = 0;
+    int year = 0;
 
-      motivePrint(monthDate);
+    if (monthCtrl.text.isEmpty) {
+      month = DateTime.now().month;
+    } else {
+      month = Global.toNumber(monthCtrl.text).toInt();
+    }
 
-      var dateList = filterList
-          ?.where((element) =>
-              Global.dateOnly(element!.orderDate.toString()) ==
-              Global.dateOnly(monthDate.toString()))
-          .toList();
-      if (dateList!.isNotEmpty) {
-        var order = OrderModel(
-            orderId: '${dateList.first?.orderId} - ${dateList.last?.orderId}',
-            orderDate: monthDate,
-            customerId: 0,
-            weight: getWeightTotal(dateList),
-            priceIncludeTax: priceIncludeTaxTotal(dateList),
-            purchasePrice: purchasePriceTotal(dateList),
-            priceDiff: priceDiffTotal(dateList),
-            taxBase: taxBaseTotal(dateList),
-            taxAmount: taxAmountTotal(dateList),
-            priceExcludeTax: priceExcludeTaxTotal(dateList));
-        orderList.add(order);
+    if (yearCtrl.text.isEmpty) {
+      year = DateTime.now().year;
+    } else {
+      year = Global.toNumber(yearCtrl.text).toInt();
+    }
+
+    if (fromDateCtrl.text.isNotEmpty) {
+      fromDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      fromDate = null;
+    }
+
+    if (toDateCtrl.text.isNotEmpty) {
+      toDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      toDate = null;
+    }
+
+    if (fromDate == null && toDate == null) {
+      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
+      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
+        fromDate = DateTime(year, 1, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!)
+            .add(months: 12, days: -1)
+            .dateTime;
+      } else {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
       }
     }
 
-    motivePrint(orderListModelToJson(orderList));
+    motivePrint(fromDate.toString());
+    motivePrint(toDate.toString());
+  }
 
-    return orderList;
+  void resetFilter() {
+    yearNotifier = ValueNotifier<dynamic>("");
+    monthNotifier = ValueNotifier<dynamic>("");
+    fromDateNotifier = ValueNotifier<dynamic>("");
+    toDateNotifier = ValueNotifier<dynamic>("");
+    yearCtrl.text = "";
+    monthCtrl.text = "";
+    fromDateCtrl.text = "";
+    toDateCtrl.text = "";
+    fromDate = null;
+    toDate = null;
+    productNotifier =
+        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    search();
+    setState(() {});
   }
 }

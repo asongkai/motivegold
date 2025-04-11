@@ -234,7 +234,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'ชื่อบัญชีธนาคาร'.tr(),
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: nameCtrl,
@@ -255,7 +255,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                           buildTextFieldBig(
                                             labelText:
                                                 'หมายเลขบัญชีธนาคาร'.tr(),
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: codeCtrl,

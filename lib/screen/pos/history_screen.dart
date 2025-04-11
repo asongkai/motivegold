@@ -510,7 +510,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
       Global.pairId = null;
       Global.orderIds!.clear();
     });
-    // motivePrint({
+    // motivePrint(Global.requestObj({
     //   "year": 0,
     //   "month": 0,
     //   "fromDate": fromDateCtrl.text.isNotEmpty
@@ -521,7 +521,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     //       : null,
     //   "orderTypeId": selectedOrderType?.id,
     //   "branchId": selectedBranch?.id
-    // });
+    // }));
     try {
       var result = await ApiServices.post(
           '/order/all/search',
@@ -721,6 +721,13 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                           onTap: () async {
                             // motivePrint(order.customer?.toJson());
                             Global.orderIds!.add(order.orderId);
+
+                            if (Global.branch == null) {
+                              Alert.warning(
+                                  context, 'warning'.tr(), 'กรุณาเลือกสาขาก่อนพิมพ์', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
 
                             final ProgressDialog pr = ProgressDialog(context,
                                 type: ProgressDialogType.normal,

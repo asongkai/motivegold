@@ -45,16 +45,16 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
       loading = true;
     });
 
-    if (fromDateCtrl.text.isEmpty) {
-      Alert.warning(
-          context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-      return;
-    }
-    if (toDateCtrl.text.isEmpty) {
-      Alert.warning(
-          context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-      return;
-    }
+    // if (fromDateCtrl.text.isEmpty) {
+    //   Alert.warning(
+    //       context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+    //   return;
+    // }
+    // if (toDateCtrl.text.isEmpty) {
+    //   Alert.warning(
+    //       context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+    //   return;
+    // }
 
     try {
       var result = await ApiServices.post(
@@ -143,7 +143,7 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
                               MaterialPageRoute(
                                 builder: (context) =>
                                     PreviewBuyNewGoldReportPage(
-                                  orders: filterList!,
+                                  orders: filterList!.reversed.toList(),
                                   type: 1,
                                   date: '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
                                 ),
@@ -280,6 +280,7 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
                                         fromDateCtrl.text =
                                             formattedDate; //set output date to TextField value.
                                       });
+                                      loadProducts();
                                     } else {
                                       motivePrint("Date is not selected");
                                     }
@@ -356,6 +357,7 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
                                         toDateCtrl.text =
                                             formattedDate; //set output date to TextField value.
                                       });
+                                      loadProducts();
                                     } else {
                                       motivePrint("Date is not selected");
                                     }
@@ -440,12 +442,10 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
                                 Global.dateOnly(e!.orderDate.toString()),
                                 align: TextAlign.center),
                             paddedTextBig(e.orderId, align: TextAlign.center),
-                            paddedTextBig('เงินสด', align: TextAlign.center),
-                            paddedTextBig(
-                                Global.company != null
-                                    ? Global.company!.taxNumber ?? ''
-                                    : '',
-                                align: TextAlign.center),
+                            paddedTextBig('${e.customer?.firstName} ${e.customer?.lastName}', align: TextAlign.center),
+                            paddedTextBig(e.customer?.taxNumber != ''
+                                ? e.customer?.taxNumber ?? ''
+                                : e.customer?.idCard ?? '', align: TextAlign.center),
                             paddedTextBig(Global.format(getWeight(e)),
                                 align: TextAlign.right),
                             paddedTextBig('กรัม', align: TextAlign.center),

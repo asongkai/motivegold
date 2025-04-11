@@ -328,7 +328,7 @@ class _TransferGoldCheckOutScreenState
                     await ApiServices.post('/transfer', Global.requestObj(Global.transfer));
                     // print(result!.toJson());
                     // return;
-                    await pr.hide();
+
                     if (result!.status == "success") {
                       var transfer = transferModelFromJson(jsonEncode(result.data));
                       int? transferId = transfer.id;
@@ -344,6 +344,7 @@ class _TransferGoldCheckOutScreenState
                               print("Order completed");
                             }
                           });
+                      await pr.hide();
                       if (mounted) {
                         Alert.success(context, 'Success'.tr(), "", 'OK'.tr(),
                             action: () {
@@ -357,6 +358,7 @@ class _TransferGoldCheckOutScreenState
                             });
                       }
                     } else {
+                      await pr.hide();
                       Alert.warning(
                           context, 'Warning'.tr(), result.message ?? '', 'OK'.tr(),
                           action: () {});

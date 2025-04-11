@@ -25,6 +25,7 @@ class EditBuyMatchingDialog extends StatefulWidget {
   const EditBuyMatchingDialog({super.key, required this.index});
 
   final int index;
+
   @override
   State<EditBuyMatchingDialog> createState() => _EditBuyMatchingDialogState();
 }
@@ -81,16 +82,19 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
 
     bookDateCtrl.text = Global.formatDateD(
         Global.buyThengOrderDetailMatching![widget.index].bookDate != null
-            ? Global.buyThengOrderDetailMatching![widget.index].bookDate.toString()
+            ? Global.buyThengOrderDetailMatching![widget.index].bookDate
+                .toString()
             : DateTime.now().toString());
-    productWeightCtrl.text =
-        Global.format(Global.buyThengOrderDetailMatching![widget.index].weight ?? 0);
-    productWeightBahtCtrl.text =
-        Global.format(Global.buyThengOrderDetailMatching![widget.index].weightBath ?? 0);
-    unitPriceCtrl.text =
-        Global.format(Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax! / Global.buyThengOrderDetailMatching![widget.index].weightBath! ?? 0);
-    productPriceCtrl.text =
-        Global.format(Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax ?? 0);
+    productWeightCtrl.text = Global.format(
+        Global.buyThengOrderDetailMatching![widget.index].weight ?? 0);
+    productWeightBahtCtrl.text = Global.format(
+        Global.buyThengOrderDetailMatching![widget.index].weightBath ?? 0);
+    unitPriceCtrl.text = Global.format(
+        Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax! /
+                Global.buyThengOrderDetailMatching![widget.index].weightBath! ??
+            0);
+    productPriceCtrl.text = Global.format(
+        Global.buyThengOrderDetailMatching![widget.index].priceIncludeTax ?? 0);
 
     sumBuyThengTotalMatching();
     loadProducts();
@@ -119,8 +123,8 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
       loading = true;
     });
     try {
-      var result =
-      await ApiServices.post('/product/type/BARM/33', Global.requestObj(null));
+      var result = await ApiServices.post(
+          '/product/type/BARM/33', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -130,9 +134,9 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
             // selectedProduct = productList.first;
             selectedProduct = productList.where((e) => e.isDefault == 1).first;
             productCodeCtrl.text =
-            (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+                (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
-            (selectedProduct != null ? selectedProduct?.name : "")!;
+                (selectedProduct != null ? selectedProduct?.name : "")!;
             productNotifier = ValueNotifier<ProductModel>(
                 selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
           }
@@ -187,8 +191,9 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
 
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtRemainCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -218,16 +223,16 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
 
   void closeCal() {
     // if (txt == 'unit') {
-      unitReadOnly = false;
+    unitReadOnly = false;
     // }
     // if (txt == 'gram') {
-      gramReadOnly = false;
+    gramReadOnly = false;
     // }
     // if (txt == 'baht') {
-      bahtReadOnly = false;
+    bahtReadOnly = false;
     // }
     // if (txt == 'price') {
-      priceReadOnly = false;
+    priceReadOnly = false;
     // }
     setState(() {
       showCal = false;
@@ -256,7 +261,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 100,
+                    height: 70,
                     decoration: const BoxDecoration(color: Colors.teal),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -264,8 +269,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                         'ซื้อทองแท่ง (จับคู่)',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(15),
-                            color: Colors.white),
+                            fontSize: size.getWidthPx(15), color: Colors.white),
                       ),
                     ),
                   ),
@@ -276,25 +280,27 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Expanded(
+                      Expanded(
                           flex: 6,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text(
                                 'วันจองราคา',
-                                style:
-                                TextStyle(fontSize: 40, color: textColor),
+                                style: TextStyle(
+                                    fontSize: size.getWidthPx(15),
+                                    color: textColor),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 '',
-                                style:
-                                TextStyle(color: textColor, fontSize: 20),
+                                style: TextStyle(
+                                    color: textColor,
+                                    fontSize: size.getWidthPx(10)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                             ],
@@ -315,7 +321,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -323,17 +329,19 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: 40, color: textColor),
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '(บาททอง)',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 20),
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -379,7 +387,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                   Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -387,17 +395,19 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style: TextStyle(
-                                      fontSize: 40, color: textColor),
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 20),
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -439,7 +449,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -447,17 +457,19 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style: TextStyle(
-                                      fontSize: 40, color: textColor),
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: 20),
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -529,7 +541,6 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                   //     ],
                   //   ),
                   // ),
-
                 ],
               ),
             ),
@@ -605,23 +616,24 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "ยกเลิก",
                             style: TextStyle(
-                                color: Colors.white, fontSize: 20),
+                                color: Colors.white,
+                                fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -641,46 +653,54 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.teal,
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.save,
                           color: Colors.white,
                           size: 32,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         Text(
                           "บันทึก",
                           style: TextStyle(
-                              color: Colors.white, fontSize: 20),
+                              color: Colors.white,
+                              fontSize: size.getWidthPx(15)),
                         ),
                       ],
                     ),
                     onPressed: () async {
                       if (bookDateCtrl.text.isEmpty) {
-                        Alert.warning(context, 'คำเตือน',
-                            'กรุณาเลือกวันจอง', 'OK');
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณาเลือกวันจอง', 'OK');
+                        return;
+                      }
+
+                      if (!checkDate(bookDateCtrl.text)) {
+                        Alert.warning(
+                            context, 'คำเตือน', 'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (productCodeCtrl.text.isEmpty) {
-                        Alert.warning(context, 'คำเตือน',
-                            'กรุณาเลือกสินค้า', 'OK');
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK');
                         return;
                       }
 
                       if (productWeightBahtCtrl.text.isEmpty) {
-                        Alert.warning(context, 'คำเตือน',
-                            'กรุณาใส่น้ำหนัก', 'OK');
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK');
                         return;
                       }
 
                       if (productPriceCtrl.text.isEmpty) {
-                        Alert.warning(context, 'คำเตือน',
-                            'กรุณากรอกราคา', 'OK');
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK');
                         return;
                       }
 
@@ -718,30 +738,22 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                       //   return;
                       // }
                       Alert.info(
-                          context,
-                          'ต้องการบันทึกข้อมูลหรือไม่?',
-                          '',
-                          'ตกลง', action: () async {
+                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                          action: () async {
                         Global.buyThengOrderDetailMatching![widget.index] =
                             OrderDetailModel(
-                                productName:
-                                selectedProduct!.name,
-                                productId:
-                                selectedProduct!.id,
-                                binLocationId:
-                                selectedWarehouse!.id,
-                                weight: Global.toNumber(
-                                    productWeightCtrl.text),
-                                weightBath: Global.toNumber(
-                                    productWeightBahtCtrl
-                                        .text),
+                                productName: selectedProduct!.name,
+                                productId: selectedProduct!.id,
+                                binLocationId: selectedWarehouse!.id,
+                                weight: Global.toNumber(productWeightCtrl.text),
+                                weightBath:
+                                    Global.toNumber(productWeightBahtCtrl.text),
                                 commission: 0,
                                 taxBase: 0,
                                 unitCost: Global.toNumber(unitPriceCtrl.text),
-                                priceIncludeTax: Global.toNumber(
-                                    productPriceCtrl.text),
-                                bookDate: bookDate.text !=
-                                    ""
+                                priceIncludeTax:
+                                    Global.toNumber(productPriceCtrl.text),
+                                bookDate: bookDate.text != ""
                                     ? Global.convertDate(bookDate.text)
                                     : null);
                         sumBuyThengTotalMatching();
@@ -772,8 +784,8 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+      productWeightCtrl.text = Global.format(
+          Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
       // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(
@@ -802,9 +814,9 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
     productNotifier = ValueNotifier<ProductModel>(
         selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
     productCodeCtrl.text =
-    (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+        (selectedProduct != null ? selectedProduct?.productCode! : "")!;
     productNameCtrl.text =
-    (selectedProduct != null ? selectedProduct?.name : "")!;
+        (selectedProduct != null ? selectedProduct?.name : "")!;
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         selectedWarehouse ?? WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     bookDateCtrl.text = Global.formatDateD(DateTime.now().toString());

@@ -15,6 +15,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
@@ -139,6 +140,7 @@ class _SaleDialogState extends State<SaleDialog> {
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         warehouseList = warehouses;
         selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
+        // motivePrint(selectedWarehouse?.toJson());
         warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
             WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         await loadQtyByLocation(selectedWarehouse!.id!);
@@ -166,6 +168,7 @@ class _SaleDialogState extends State<SaleDialog> {
           '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
+        motivePrint(data);
         List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
         setState(() {
           qtyLocationList = qtys;
@@ -174,6 +177,8 @@ class _SaleDialogState extends State<SaleDialog> {
         qtyLocationList = [];
       }
       // await pr.hide();
+
+      motivePrint(productWeightRemainCtrl.text);
 
       productWeightRemainCtrl.text =
           Global.format(Global.getTotalWeightByLocation(qtyLocationList));
@@ -359,7 +364,7 @@ class _SaleDialogState extends State<SaleDialog> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 100,
+                          height: 70,
                           decoration: const BoxDecoration(color: snBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -466,7 +471,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -474,17 +479,17 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'น้ำหนัก',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '(บาททอง)',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -530,7 +535,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -538,17 +543,17 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'น้ำหนัก',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '(กรัม)',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -592,7 +597,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -600,17 +605,17 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'ราคาขายรวม',
                                         style: TextStyle(
-                                            fontSize: 40, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '(บาท)',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -658,7 +663,7 @@ class _SaleDialogState extends State<SaleDialog> {
                             onTap: () {},
                             child: Row(
                               children: [
-                                const Expanded(
+                                Expanded(
                                     flex: 6,
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -666,17 +671,17 @@ class _SaleDialogState extends State<SaleDialog> {
                                         Text(
                                           'ค่ากำเหน็จ',
                                           style: TextStyle(
-                                              fontSize: 50, color: textColor),
+                                              fontSize: size.getWidthPx(15), color: textColor),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Text(
                                           '(บาท)',
                                           style: TextStyle(
-                                              color: textColor, fontSize: 30),
+                                              color: textColor, fontSize: size.getWidthPx(10)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                       ],
@@ -804,22 +809,22 @@ class _SaleDialogState extends State<SaleDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -839,22 +844,22 @@ class _SaleDialogState extends State<SaleDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: snBgColor,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.save,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),

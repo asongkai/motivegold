@@ -243,7 +243,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                       ),
                                       buildTextFieldBig(
                                         labelText: 'ชื่อบัญชีธนาคาร'.tr(),
-                                        textColor: Colors.orange,
+                                        labelColor: Colors.orange,
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: nameCtrl,
@@ -263,7 +263,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                       ),
                                       buildTextFieldBig(
                                         labelText: 'หมายเลขบัญชีธนาคาร'.tr(),
-                                        textColor: Colors.orange,
+                                        labelColor: Colors.orange,
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: codeCtrl,

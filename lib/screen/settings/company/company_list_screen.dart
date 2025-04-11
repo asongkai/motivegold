@@ -53,6 +53,7 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
             : [CompanyModel.fromJson(result!.data)];
         setState(() {
           list = products;
+          Global.companyList = products;
         });
       } else {
         list = [];

@@ -200,7 +200,7 @@ class _BuyDialogState extends State<BuyDialog> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 100,
+                          height: 70,
                           decoration: const BoxDecoration(color: buBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -293,7 +293,7 @@ class _BuyDialogState extends State<BuyDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -301,17 +301,17 @@ class _BuyDialogState extends State<BuyDialog> {
                                       Text(
                                         'น้ำหนัก',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '(กรัม)',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -358,7 +358,7 @@ class _BuyDialogState extends State<BuyDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -366,17 +366,17 @@ class _BuyDialogState extends State<BuyDialog> {
                                       Text(
                                         'ราคารับซื้อคืน',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '(บาท)',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -434,7 +434,7 @@ class _BuyDialogState extends State<BuyDialog> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                   flex: 6,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -442,17 +442,17 @@ class _BuyDialogState extends State<BuyDialog> {
                                       Text(
                                         'คลังสินค้า',
                                         style: TextStyle(
-                                            fontSize: 50, color: textColor),
+                                            fontSize: size.getWidthPx(15), color: textColor),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Text(
                                         '',
                                         style: TextStyle(
-                                            color: textColor, fontSize: 30),
+                                            color: textColor, fontSize: size.getWidthPx(10)),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                     ],
@@ -594,22 +594,22 @@ class _BuyDialogState extends State<BuyDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 30),
+                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -629,20 +629,20 @@ class _BuyDialogState extends State<BuyDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: buBgColor,
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.save,
                           color: Colors.white,
                           size: 32,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: 30),
+                          style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                         ),
                       ],
                     ),

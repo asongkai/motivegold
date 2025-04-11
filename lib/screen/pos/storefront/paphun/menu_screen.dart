@@ -7,6 +7,7 @@ import 'package:motivegold/screen/pos/storefront/paphun/ui/sell_screen.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -50,7 +51,7 @@ class PosMenuScreenState extends State<PosMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {});
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: CustomAppBar(
         height: 300,
@@ -64,8 +65,8 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                 Expanded(
                   flex: 5,
                   child: Text(widget.title,
-                      style: const TextStyle(
-                          fontSize: 30,
+                      style: TextStyle(
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -90,9 +91,9 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.save,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -145,9 +146,9 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.shopping_cart,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

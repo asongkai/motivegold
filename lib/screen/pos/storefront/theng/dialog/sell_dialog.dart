@@ -104,8 +104,8 @@ class _SellDialogState extends State<SellDialog> {
       loading = true;
     });
     try {
-      var result =
-          await ApiServices.post('/product/type/BAR/4', Global.requestObj(null));
+      var result = await ApiServices.post(
+          '/product/type/BAR/4', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -134,7 +134,8 @@ class _SellDialogState extends State<SellDialog> {
         setState(() {
           warehouseList = warehouses;
           // selectedWarehouse = warehouseList.first;
-          selectedWarehouse = warehouseList.where((e) => e.isDefault == 1).first;
+          selectedWarehouse =
+              warehouseList.where((e) => e.isDefault == 1).first;
           warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
               WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
         });
@@ -173,8 +174,9 @@ class _SellDialogState extends State<SellDialog> {
       }
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtRemainCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -204,16 +206,16 @@ class _SellDialogState extends State<SellDialog> {
 
   void closeCal() {
     // if (txt == 'com') {
-      comReadOnly = false;
+    comReadOnly = false;
     // }
     // if (txt == 'gram') {
-      gramReadOnly = false;
+    gramReadOnly = false;
     // }
     // if (txt == 'baht') {
-      bahtReadOnly = false;
+    bahtReadOnly = false;
     // }
     // if (txt == 'price') {
-      priceReadOnly = false;
+    priceReadOnly = false;
     // }
     setState(() {
       showCal = false;
@@ -242,7 +244,7 @@ class _SellDialogState extends State<SellDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 100,
+                    height: 70,
                     decoration: const BoxDecoration(color: stBgColor),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -481,25 +483,27 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'จำนวนน้ำหนัก',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '(บาททอง)',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -546,25 +550,28 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'ราคาขายทอง\nคำแท่ง', textAlign: TextAlign.right,
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  'ราคาขายทอง\nคำแท่ง',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -609,25 +616,27 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'ค่าบล็อกทอง',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -671,25 +680,27 @@ class _SellDialogState extends State<SellDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
                                   'รวมราคาขาย',
-                                  style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -699,7 +710,7 @@ class _SellDialogState extends State<SellDialog> {
                           child: buildTextFieldBig(
                               labelText: "",
                               inputType: TextInputType.number,
-                              textColor: Colors.grey,
+                              labelColor: Colors.grey,
                               controller: productPriceTotalCtrl,
                               align: TextAlign.right,
                               inputFormat: [
@@ -710,152 +721,6 @@ class _SellDialogState extends State<SellDialog> {
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minWidth: double.infinity, minHeight: 100),
-                            child: MaterialButton(
-                              color: Colors.redAccent,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 32,
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(
-                                      "ยกเลิก",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              onPressed: () async {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minWidth: double.infinity, minHeight: 100),
-                            child: MaterialButton(
-                              color: stBgColor,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.save,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                    "บันทึก",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                ],
-                              ),
-                              onPressed: () async {
-                                if (selectedProduct == null) {
-                                  Alert.warning(
-                                      context, 'คำเตือน', getDefaultProductMessage(), 'OK', action: () {});
-                                  return;
-                                }
-
-                                if (selectedWarehouse == null) {
-                                  Alert.warning(
-                                      context, 'คำเตือน', getDefaultWarehouseMessage(), 'OK', action: () {});
-                                  return;
-                                }
-
-                                if (productWeightBahtCtrl.text.isEmpty) {
-                                  Alert.warning(context, 'คำเตือน',
-                                      'กรุณาใส่น้ำหนัก', 'OK', action: (){});
-                                  return;
-                                }
-
-                                if (productPriceTotalCtrl.text.isEmpty) {
-                                  Alert.warning(context, 'คำเตือน',
-                                      'กรุณากรอกราคา', 'OK', action: (){});
-                                  return;
-                                }
-
-                                var realPrice = Global.getBuyThengPrice(
-                                    Global.toNumber(productWeightCtrl.text));
-                                var price =
-                                    Global.toNumber(productPriceCtrl.text);
-                                var check = price - realPrice;
-
-                                // if (check >
-                                //     10000) {
-                                //   Alert.warning(
-                                //       context,
-                                //       'คำเตือน',
-                                //       'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
-                                //       'OK');
-                                //
-                                //   return;
-                                // }
-
-                                if (price < realPrice) {
-                                  Alert.warning(
-                                      context,
-                                      'คำเตือน',
-                                      'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                                      'OK', action: (){});
-
-                                  return;
-                                }
-                                Alert.info(
-                                    context,
-                                    'ต้องการบันทึกข้อมูลหรือไม่?',
-                                    '',
-                                    'ตกลง', action: () async {
-                                  Global.sellThengOrderDetail!.add(
-                                    OrderDetailModel(
-                                        productName: productNameCtrl.text,
-                                        productId: selectedProduct!.id,
-                                        binLocationId: selectedWarehouse!.id,
-                                        weight: Global.toNumber(
-                                            productWeightCtrl.text),
-                                        weightBath: Global.toNumber(
-                                            productWeightBahtCtrl.text),
-                                        commission: 0,
-                                        taxBase: 0,
-                                        priceIncludeTax: Global.toNumber(
-                                            productPriceTotalCtrl.text),
-                                        bookDate: null),
-                                  );
-                                  sumSellThengTotal();
-                                  setState(() {});
-                                  Navigator.of(context).pop();
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
@@ -921,6 +786,156 @@ class _SellDialogState extends State<SellDialog> {
                     )))
         ],
       ),
+      persistentFooterButtons: [
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                      minWidth: double.infinity, minHeight: 100),
+                  child: MaterialButton(
+                    color: Colors.redAccent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            "ยกเลิก",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.getWidthPx(15)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                      minWidth: double.infinity, minHeight: 100),
+                  child: MaterialButton(
+                    color: stBgColor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.save,
+                          color: Colors.white,
+                          size: 32,
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          "บันทึก",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.getWidthPx(15)),
+                        ),
+                      ],
+                    ),
+                    onPressed: () async {
+                      if (selectedProduct == null) {
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultProductMessage(), 'OK',
+                            action: () {});
+                        return;
+                      }
+
+                      if (selectedWarehouse == null) {
+                        Alert.warning(context, 'คำเตือน',
+                            getDefaultWarehouseMessage(), 'OK',
+                            action: () {});
+                        return;
+                      }
+
+                      if (productWeightBahtCtrl.text.isEmpty) {
+                        Alert.warning(
+                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK',
+                            action: () {});
+                        return;
+                      }
+
+                      if (productPriceTotalCtrl.text.isEmpty) {
+                        Alert.warning(context, 'คำเตือน', 'กรุณากรอกราคา', 'OK',
+                            action: () {});
+                        return;
+                      }
+
+                      var realPrice = Global.getBuyThengPrice(
+                          Global.toNumber(productWeightCtrl.text));
+                      var price = Global.toNumber(productPriceCtrl.text);
+                      var check = price - realPrice;
+
+                      // if (check >
+                      //     10000) {
+                      //   Alert.warning(
+                      //       context,
+                      //       'คำเตือน',
+                      //       'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
+                      //       'OK');
+                      //
+                      //   return;
+                      // }
+
+                      if (price < realPrice) {
+                        Alert.warning(
+                            context,
+                            'คำเตือน',
+                            'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
+                            'OK',
+                            action: () {});
+
+                        return;
+                      }
+                      Alert.info(
+                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                          action: () async {
+                        Global.sellThengOrderDetail!.add(
+                          OrderDetailModel(
+                              productName: productNameCtrl.text,
+                              productId: selectedProduct!.id,
+                              binLocationId: selectedWarehouse!.id,
+                              weight: Global.toNumber(productWeightCtrl.text),
+                              weightBath:
+                                  Global.toNumber(productWeightBahtCtrl.text),
+                              commission: 0,
+                              taxBase: 0,
+                              priceIncludeTax:
+                                  Global.toNumber(productPriceTotalCtrl.text),
+                              bookDate: null),
+                        );
+                        sumSellThengTotal();
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
     );
   }
 

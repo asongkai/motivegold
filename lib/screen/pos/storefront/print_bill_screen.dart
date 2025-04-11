@@ -344,10 +344,11 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           var payment = await ApiServices.post(
                               '/order/payment/${order.pairId}',
                               Global.requestObj(null));
+                          await pr.hide();
                           Global.paymentList = paymentListModelFromJson(
                               jsonEncode(payment?.data));
 
-                          await pr.hide();
+
                           Invoice invoice = Invoice(
                               order: order,
                               customer: order.customer!,

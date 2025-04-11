@@ -31,6 +31,7 @@ import 'package:motivegold/model/company.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/model/user.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum UserState {
   Offline,
@@ -201,10 +202,18 @@ class Global {
   static Color? appBarColor;
 
   static List<BranchModel> branchList = [];
+  static List<CompanyModel> companyList = [];
 
   static PosIdModel? posIdModel;
 
   static SettingsValueModel? settingValueModel;
+
+  static ifInt(dynamic value) {
+    if (value is int) {
+      return true;
+    }
+    return false;
+  }
 
   static format(double value) {
     String number = formatter.format(value);
@@ -635,7 +644,7 @@ class Global {
       }
     }
     amount = sell + buy;
-
+    amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     return amount;
   }
@@ -661,7 +670,7 @@ class Global {
       }
     }
     amount = sell + buy;
-
+    amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     return amount;
   }
@@ -719,6 +728,7 @@ class Global {
     for (int i = 0; i < orders.length; i++) {
       for (int j = 0; j < orders[i].details!.length; j++) {
         double price = orders[i].details![j].priceIncludeTax!;
+        motivePrint(price);
         int type = orders[i].orderTypeId!;
         if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
           price = -price;
@@ -727,6 +737,7 @@ class Global {
       }
     }
     // motivePrint(discount);
+    amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     // motivePrint(amount);
     return amount < 0 ? -amount : amount;
@@ -761,6 +772,7 @@ class Global {
       amount += price;
     }
     // motivePrint(discount);
+    amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     // motivePrint(amount);
     return amount < 0 ? -amount : amount;
@@ -849,6 +861,14 @@ class Global {
       sum += e.weightBath!;
     }
     return sum;
+  }
+
+  static Future<File> createFileFromString(encodedStr) async {
+    Uint8List bytes = base64.decode(encodedStr);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.png");
+    await file.writeAsBytes(bytes);
+    return file;
   }
 
   static convertImageListToBase64(List<File> files) {
@@ -1226,6 +1246,14 @@ class Global {
     return months;
   }
 
+  static List<int> genMonthDays() {
+    List<int> days = [];
+    for (int i = 1; i <= 31; i++) {
+      days.add(i);
+    }
+    return days;
+  }
+
   static String genId() {
     Random rnd = Random();
     // Define min and max value
@@ -1297,9 +1325,9 @@ class Global {
   static String requestObj(dynamic data,
       {status = "", message = "", token = ""}) {
     return encoder.convert(RequestModel(
-        companyId: company == null ? 0 : company!.id,
-        branchId: branch == null ? 0 : branch!.id,
-        userId: user == null ? 0.toString() : user!.id,
+        companyId: company?.id,
+        branchId: branch?.id,
+        userId: user?.id,
         data: data,
         status: status,
         token: token,

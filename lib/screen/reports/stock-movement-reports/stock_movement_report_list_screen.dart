@@ -138,11 +138,11 @@ class _StockMovementReportListScreenState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   flex: 6,
                   child: Text("รายงานความเคลื่อนไหวสต๊อกสินค้า",
                       style: TextStyle(
-                          fontSize: 30,
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -161,7 +161,7 @@ class _StockMovementReportListScreenState
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PreviewStockMovementReportPage(
-                                  list: filterList!,
+                                  list: filterList!.reversed.toList(),
                                   type: 1,
                                 ),
                               ),

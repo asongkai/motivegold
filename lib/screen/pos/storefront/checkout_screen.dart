@@ -46,8 +46,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   int? selectedOption = 0;
   bool loading = false;
 
-  // List<OrderModel> orders = [];
-
   @override
   void initState() {
     // implement initState
@@ -418,7 +416,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         ),
                         buildTextFieldBig(
                             labelText: "ส่วนลด (บาทไทย)",
-                            textColor: Colors.orange,
+                            labelColor: Colors.orange,
                             controller: discountCtrl,
                             inputType: TextInputType.phone,
                             inputFormat: [

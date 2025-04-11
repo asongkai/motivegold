@@ -434,14 +434,14 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                           color: Colors.orange)),
                                 ),
                               ),
-                              if (sell.orderStatus != null &&
-                                  sell.orderStatus == 'PENDING')
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Container(),
-                                  ),
+                              // if (sell.orderStatus != null &&
+                              //     sell.orderStatus == 'PENDING')
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: Container(),
                                 ),
+                              ),
                             ],
                           ),
                           ...sell.details!.map(
@@ -452,17 +452,49 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                     align: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(7))),
-                                paddedText(formatter.format(e.weight!),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        paddedText('น้ำหนักขาย(กรัม)',
+                                            align: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: size?.getWidthPx(7))),
+                                        paddedText(Global.format(e.weight ?? 0),
+                                            align: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize:
+                                                    size?.getWidthPx(10))),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        paddedText('น้ำหนักสูญเสีย(กรัม)',
+                                            align: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: size?.getWidthPx(7))),
+                                        paddedText(
+                                            Global.format(e.weightAdj ?? 0),
+                                            align: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize:
+                                                    size?.getWidthPx(10))),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                paddedText('${e.binLocationName}',
                                     align: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(7))),
-                                paddedText(
-                                    '${e.binLocationName} - ${e.toBinLocationName}',
-                                    align: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: size?.getWidthPx(7))),
-                                if (sell.orderStatus != null &&
-                                    sell.orderStatus == 'PENDING')
+                                if (e.weightAdj != null && e.weightAdj! > 0)
+                                  Container(),
+                                if (e.weightAdj == null || e.weightAdj == 0)
                                   Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
@@ -484,7 +516,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                                 "";
                                             selectedDetail = e;
                                           });
-                                          motivePrint(e.toJson());
+                                          // motivePrint(e.toJson());
                                           adjustWeight(e);
                                         },
                                         child: Padding(
@@ -502,10 +534,11 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                               child: Row(
                                                 children: [
                                                   const Icon(
-                                                    Icons.check,
+                                                    Icons
+                                                        .change_circle_outlined,
                                                     color: Colors.white,
                                                   ),
-                                                  Text('ยืนยัน',
+                                                  Text('ปรับน้ำหนักสูญเสีย',
                                                       style: TextStyle(
                                                           fontSize: size!
                                                               .getWidthPx(6),
@@ -529,41 +562,41 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
               ),
             ),
           ),
-          if (sell.orderStatus == 'PENDING')
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(10.0)),
-                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                  child: Row(
-                    children: [
-                      ClipOval(
-                        child: SizedBox(
-                          width: 30.0,
-                          height: 30.0,
-                          child: RawMaterialButton(
-                            elevation: 10.0,
-                            child: const Icon(
-                              Icons.pending_actions,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {},
+          // if (sell.orderStatus == 'PENDING')
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.teal,
+                    borderRadius: BorderRadius.circular(10.0)),
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                child: Row(
+                  children: [
+                    ClipOval(
+                      child: SizedBox(
+                        width: 30.0,
+                        height: 30.0,
+                        child: RawMaterialButton(
+                          elevation: 10.0,
+                          child: const Icon(
+                            Icons.pending_actions,
+                            color: Colors.white,
                           ),
+                          onPressed: () {},
                         ),
                       ),
-                      Text(
-                        sell.orderStatus!,
-                        style: const TextStyle(color: Colors.white),
-                      )
-                    ],
-                  ),
+                    ),
+                    Text(
+                      sell.orderStatus!,
+                      style: const TextStyle(color: Colors.white),
+                    )
+                  ],
                 ),
               ),
             ),
+          ),
         ],
       ),
     );
@@ -610,7 +643,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "เลขที่",
                                     inputType: TextInputType.text,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: sellIdCtrl,
                                   ),
@@ -622,7 +655,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "วันที่",
                                     inputType: TextInputType.text,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: dateCtrl,
                                   ),
@@ -641,7 +674,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "น้ำหนัก (gram)",
                                     inputType: TextInputType.number,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: productWeightCtrl,
                                     inputFormat: [
@@ -656,7 +689,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                   child: buildTextFieldBig(
                                     labelText: "น้ำหนัก (บาททอง)",
                                     inputType: TextInputType.phone,
-                                    textColor: Colors.orange,
+                                    labelColor: Colors.orange,
                                     enabled: false,
                                     controller: productWeightBahtCtrl,
                                     inputFormat: [
@@ -676,9 +709,9 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                               children: [
                                 Expanded(
                                   child: buildTextFieldBig(
-                                      labelText: "ป้อนน้ำหนักจริง (gram)",
+                                      labelText: "น้ำหนักสูญเสีย (gram)",
                                       inputType: TextInputType.number,
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       controller: productEntryWeightCtrl,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
@@ -701,9 +734,9 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                 ),
                                 Expanded(
                                   child: buildTextFieldBig(
-                                      labelText: "ป้อนน้ำหนักจริง (บาททอง)",
+                                      labelText: "น้ำหนักสูญเสีย (บาททอง)",
                                       inputType: TextInputType.phone,
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       controller: productEntryWeightBahtCtrl,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
@@ -742,53 +775,60 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                   return;
                                 }
 
-                                selectedDetail?.weight = Global.toNumber(
+                                selectedDetail?.weightAdj = Global.toNumber(
                                     productEntryWeightCtrl.text);
-                                selectedDetail?.weightBath = Global.toNumber(
+                                selectedDetail?.weightBathAdj = Global.toNumber(
                                     productEntryWeightBahtCtrl.text);
 
                                 // motivePrint(selectedSell?.toJson());
                                 // return;
-                                final ProgressDialog pr = ProgressDialog(
+
+                                Alert.info(
                                     context,
-                                    type: ProgressDialogType.normal,
-                                    isDismissible: true,
-                                    showLogs: true);
-                                await pr.show();
-                                pr.update(message: 'processing'.tr());
-                                try {
-                                  var result = await ApiServices.post(
-                                      '/order/confirm-adjust',
-                                      Global.requestObj(selectedSell));
-                                  // print(result!.data);
-                                  if (result!.status == "success") {
-                                    var detail = await ApiServices.post(
-                                        '/orderdetail/adjust/sell',
-                                        Global.requestObj(selectedDetail));
-                                    // print(detail!.data);
-                                    await pr.hide();
-                                    if (detail?.status == "success") {
-                                      motivePrint("Confirm completed");
-                                      if (mounted) {
-                                        Alert.success(context, 'Success'.tr(),
-                                            'Success', 'OK'.tr(), action: () {
-                                          Navigator.of(context).pop();
-                                          loadData();
-                                        });
+                                    'ต้องการบันทึกข้อมูลหรือไม่?',
+                                    '',
+                                    'ตกลง', action: () async {
+                                  final ProgressDialog pr = ProgressDialog(
+                                      context,
+                                      type: ProgressDialogType.normal,
+                                      isDismissible: true,
+                                      showLogs: true);
+                                  await pr.show();
+                                  pr.update(message: 'processing'.tr());
+                                  try {
+                                    var result = await ApiServices.post(
+                                        '/order/confirm-adjust',
+                                        Global.requestObj(selectedSell));
+                                    // print(result!.data);
+                                    if (result!.status == "success") {
+                                      var detail = await ApiServices.post(
+                                          '/orderdetail/adjust/sell',
+                                          Global.requestObj(selectedDetail));
+                                      // print(detail!.data);
+                                      await pr.hide();
+                                      if (detail?.status == "success") {
+                                        motivePrint("Confirm completed");
+                                        if (mounted) {
+                                          Alert.success(context, 'Success'.tr(),
+                                              'Success', 'OK'.tr(), action: () {
+                                            Navigator.of(context).pop();
+                                            loadData();
+                                          });
+                                        }
                                       }
+                                    } else {
+                                      await pr.hide();
                                     }
-                                  } else {
+                                    setState(() {});
+                                  } catch (e) {
                                     await pr.hide();
+                                    if (mounted) {
+                                      Alert.warning(context, 'Warning'.tr(),
+                                          e.toString(), 'OK'.tr(),
+                                          action: () {});
+                                    }
                                   }
-                                  setState(() {});
-                                } catch (e) {
-                                  await pr.hide();
-                                  if (mounted) {
-                                    Alert.warning(context, 'Warning'.tr(),
-                                        e.toString(), 'OK'.tr(),
-                                        action: () {});
-                                  }
-                                }
+                                });
                               },
                             ),
                           )

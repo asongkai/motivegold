@@ -12,8 +12,11 @@ import 'package:motivegold/screen/customer/add_customer_screen.dart';
 import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
+import 'package:motivegold/screen/pos/wholesale/refill/edit_refill_gold_stock_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/used/edit_sell_used_gold_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_print_bill_screen.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -42,10 +45,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   TextEditingController discountCtrl = TextEditingController();
   Screen? size;
 
-  // int? selectedOption = 0;
   bool loading = false;
-
-  List<OrderModel> orders = [];
 
   @override
   void initState() {
@@ -61,13 +61,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.paymentDetailCtrl.text = "";
     Global.paymentList?.clear();
-    motivePrint(
-        '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.ordersWholesale, Global.discount))}');
-    motivePrint(
-        '${Global.payToCustomerOrShopWholeSale(Global.ordersWholesale, Global.discount)}');
-    if (Global.currentOrderType == 5) {
-      orders = Global.ordersWholesale ?? [];
-    }
   }
 
   @override
@@ -90,7 +83,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: orders.isEmpty
+          child: Global.ordersWholesale!.isEmpty
               ? const Center(
                   child: NoDataFoundWidget(),
                 )
@@ -109,69 +102,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                         const SizedBox(
                           height: 10,
                         ),
-                        // Column(
-                        //   mainAxisAlignment: MainAxisAlignment.start,
-                        //   children: <Widget>[
-                        //     GestureDetector(
-                        //       onTap: () {
-                        //         setState(() {
-                        //           selectedOption = 1;
-                        //           loadCustomer();
-                        //         });
-                        //       },
-                        //       child: ListTile(
-                        //         title: const Text(
-                        //           'ไม่สำแดงตน',
-                        //           style: TextStyle(fontSize: 20),
-                        //         ),
-                        //         leading: Radio<int>(
-                        //           value: 1,
-                        //           groupValue: selectedOption,
-                        //           activeColor: Colors.blue[700],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               selectedOption = value!;
-                        //               loadCustomer();
-                        //               // print("Button value: $value");
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     GestureDetector(
-                        //       onTap: () {
-                        //         setState(() {
-                        //           selectedOption = 0;
-                        //           Global.customer = null;
-                        //         });
-                        //       },
-                        //       child: ListTile(
-                        //         title: const Text('สำแดงตน',
-                        //             style: TextStyle(fontSize: 20)),
-                        //         leading: Radio<int>(
-                        //           value: 0,
-                        //           groupValue: selectedOption,
-                        //           activeColor: Colors.blue[700],
-                        //           onChanged: (value) {
-                        //             setState(() {
-                        //               selectedOption = value!;
-                        //               Global.customer = null;
-                        //               // print("Button value: $value");
-                        //             });
-                        //           },
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        // if (loading)
-                        //   const SizedBox(
-                        //     height: 100,
-                        //     child: Center(
-                        //       child: LoadingProgress(),
-                        //     ),
-                        //   ),
-                        // if (selectedOption == 0)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -383,11 +313,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                           ),
                           child: Column(
                             children: [
-                              for (int i = 0; i < orders.length; i++)
-                                _itemOrderList(order: orders[i], index: i)
-                              // ...orders.map((e) {
-                              //   return _itemOrderList(order: e, index: 0);
-                              // })
+                              for (int i = 0;
+                                  i < Global.ordersWholesale!.length;
+                                  i++)
+                                _itemOrderList(
+                                    order: Global.ordersWholesale![i], index: i)
                             ],
                           ),
                         ),
@@ -400,7 +330,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                         ),
                         buildTextFieldBig(
                             labelText: "ส่วนลด (บาทไทย)",
-                            textColor: Colors.orange,
+                            labelColor: Colors.orange,
                             controller: discountCtrl,
                             inputType: TextInputType.phone,
                             inputFormat: [
@@ -713,7 +643,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 // return;
                 if (getPaymentTotal() >
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(Global.ordersWholesale)))) {
+                        Global.getPaymentTotalWholeSale(
+                            Global.ordersWholesale)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -729,7 +660,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
 
                 if (getPaymentTotal() <
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(Global.ordersWholesale)))) {
+                        Global.getPaymentTotalWholeSale(
+                            Global.ordersWholesale)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -743,24 +675,33 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   }
                 }
 
-                for (var i = 0; i < orders.length; i++) {
-                  orders[i].id = 0;
-                  orders[i].createdDate = DateTime.now();
-                  orders[i].updatedDate = DateTime.now();
-                  orders[i].customerId = Global.customer!.id!;
-                  orders[i].status = "0";
-                  orders[i].discount = Global.discount;
-                  orders[i].paymentMethod = Global.currentPaymentMethod;
-                  orders[i].attachement = null;
-                  for (var j = 0; j < orders[i].details!.length; j++) {
-                    orders[i].details![j].id = 0;
-                    orders[i].details![j].orderId = orders[i].id;
-                    orders[i].details![j].unitCost = orders[i].orderTypeId == 6
-                        ? orders[i].details![j].priceIncludeTax!
-                        : orders[i].details![j].priceExcludeTax! /
-                            orders[i].details![j].weight!;
-                    orders[i].details![j].createdDate = DateTime.now();
-                    orders[i].details![j].updatedDate = DateTime.now();
+                for (var i = 0; i < Global.ordersWholesale!.length; i++) {
+                  Global.ordersWholesale![i].id = 0;
+                  Global.ordersWholesale![i].createdDate = DateTime.now();
+                  Global.ordersWholesale![i].updatedDate = DateTime.now();
+                  Global.ordersWholesale![i].customerId = Global.customer!.id!;
+                  Global.ordersWholesale![i].status = "0";
+                  Global.ordersWholesale![i].discount = Global.discount;
+                  Global.ordersWholesale![i].paymentMethod =
+                      Global.currentPaymentMethod;
+                  Global.ordersWholesale![i].attachement = null;
+                  for (var j = 0;
+                      j < Global.ordersWholesale![i].details!.length;
+                      j++) {
+                    Global.ordersWholesale![i].details![j].id = 0;
+                    Global.ordersWholesale![i].details![j].orderId =
+                        Global.ordersWholesale![i].id;
+                    Global.ordersWholesale![i].details![j].unitCost =
+                        Global.ordersWholesale![i].orderTypeId == 6
+                            ? Global.ordersWholesale![i].details![j]
+                                .priceIncludeTax!
+                            : Global.ordersWholesale![i].details![j]
+                                    .priceExcludeTax! /
+                                Global.ordersWholesale![i].details![j].weight!;
+                    Global.ordersWholesale![i].details![j].createdDate =
+                        DateTime.now();
+                    Global.ordersWholesale![i].details![j].updatedDate =
+                        DateTime.now();
                   }
                 }
 
@@ -786,15 +727,20 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                     if (pair?.status == "success") {
                       await postPayment(pair?.data);
                       await postOrder(pair?.data);
-                      Global.orderIds = orders.map((e) => e.orderId).toList();
+                      Global.orderIds = Global.ordersWholesale!
+                          .map((e) => e.orderId)
+                          .toList();
                       Global.pairId = pair?.data;
                       await pr.hide();
                       if (mounted) {
-                        orders.clear();
+                        Global.ordersWholesale!.clear();
                         Global.discount = 0;
                         Global.customer = null;
                         Global.posOrder = null;
                         Global.paymentList?.clear();
+                        Global.refillAttach = null;
+                        Global.sellUsedAttach = null;
+                        writeCart();
                         setState(() {});
                         Navigator.pushReplacement(
                             context,
@@ -1026,7 +972,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   Future postOrder(int pairId) async {
-    await Future.forEach<OrderModel>(orders, (e) async {
+    await Future.forEach<OrderModel>(Global.ordersWholesale!, (e) async {
       e.pairId = pairId;
       var result =
           await ApiServices.post('/order/create', Global.requestObj(e));
@@ -1153,60 +1099,59 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (order.orderTypeId == 1 || order.orderTypeId == 2)
-                            GestureDetector(
-                              onTap: () {
-                                if (order.orderTypeId == 1) {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditSaleDialog(
-                                                    index: index,
-                                                    j: j,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                } else {
-                                  // motivePrint('${index} ${j}');
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditBuyDialog(
-                                                    index: index,
-                                                    j: j,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                }
-                              },
-                              child: Container(
-                                height: 60,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                    color: Colors.blue[700],
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      'แก้ไข',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    )
-                                  ],
-                                ),
+                          GestureDetector(
+                            onTap: () {
+                              if (order.orderTypeId == 5) {
+                                Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditRefillGoldStockScreen(
+                                                  index: index,
+                                                  j: j,
+                                                ),
+                                            fullscreenDialog: true))
+                                    .whenComplete(() {
+                                  setState(() {});
+                                });
+                              } else {
+                                // motivePrint('${index} ${j}');
+                                Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditSellUsedGoldScreen(
+                                                  index: index,
+                                                  j: j,
+                                                ),
+                                            fullscreenDialog: true))
+                                    .whenComplete(() {
+                                  setState(() {});
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: 60,
+                              width: 80,
+                              decoration: BoxDecoration(
+                                  color: Colors.blue[700],
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'แก้ไข',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white),
+                                  )
+                                ],
                               ),
                             ),
+                          ),
                           const SizedBox(
                             width: 20,
                           ),
@@ -1243,7 +1188,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 ),
             ],
           ),
-          if (index < orders.length - 1)
+          if (index < Global.ordersWholesale!.length - 1)
             Container(
               height: 10,
               color: Colors.white,
@@ -1263,8 +1208,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   void removeProduct(int i) async {
-    orders.removeAt(i);
-    if (orders.isEmpty) {
+    Global.ordersWholesale!.removeAt(i);
+    if (Global.ordersWholesale!.isEmpty) {
       Global.customer = null;
       Global.paymentList?.clear();
     }
@@ -1274,9 +1219,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   void removeItem(int i, int j) async {
-    orders[i].details!.removeAt(j);
-    if (orders[i].details!.isEmpty) {
-      orders.removeAt(i);
+    Global.ordersWholesale![i].details!.removeAt(j);
+    if (Global.ordersWholesale![i].details!.isEmpty) {
+      Global.ordersWholesale!.removeAt(i);
+      removeCart();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});

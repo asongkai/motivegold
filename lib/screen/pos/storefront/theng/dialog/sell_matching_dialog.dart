@@ -243,7 +243,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 100,
+                    height: 70,
                     decoration: const BoxDecoration(color: stmBgColor),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -434,7 +434,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Expanded(
+                      Expanded(
                           flex: 6,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -442,17 +442,17 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                    TextStyle(fontSize: 40, color: textColor),
+                                    TextStyle(fontSize: size.getWidthPx(15), color: textColor),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 '',
                                 style:
-                                    TextStyle(color: textColor, fontSize: 20),
+                                    TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                             ],
@@ -473,7 +473,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -481,17 +481,17 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '(บาททอง)',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -537,7 +537,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                   Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -545,17 +545,17 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -597,7 +597,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                             flex: 6,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -605,17 +605,17 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style:
-                                      TextStyle(fontSize: 40, color: textColor),
+                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: 20),
+                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                               ],
@@ -732,22 +732,22 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: Colors.redAccent,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close,
                             color: Colors.white,
                             size: 32,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
+                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                           ),
                         ],
                       ),
@@ -767,20 +767,20 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                       minWidth: double.infinity, minHeight: 100),
                   child: MaterialButton(
                     color: stmBgColor,
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.save,
                           color: Colors.white,
                           size: 32,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
                         ),
                       ],
                     ),
@@ -788,6 +788,13 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                       if (bookDateCtrl.text.isEmpty) {
                         Alert.warning(
                             context, 'คำเตือน', 'กรุณาเลือกวันจอง', 'OK');
+                        return;
+                      }
+
+                      if (!checkDate(bookDateCtrl.text)) {
+                        Alert.warning(
+                            context, 'คำเตือน', 'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
+                            action: () {});
                         return;
                       }
 

@@ -35,18 +35,18 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
-class RefillGoldStockScreen extends StatefulWidget {
-  final Function(dynamic value) refreshCart;
-  int cartCount;
+class EditRefillGoldStockScreen extends StatefulWidget {
+  final int index;
+  final int? j;
 
-  RefillGoldStockScreen(
-      {super.key, required this.refreshCart, required this.cartCount});
+  const EditRefillGoldStockScreen({super.key, required this.index, this.j});
 
   @override
-  State<RefillGoldStockScreen> createState() => _RefillGoldStockScreenState();
+  State<EditRefillGoldStockScreen> createState() =>
+      _EditRefillGoldStockScreenState();
 }
 
-class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
+class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
   bool loading = false;
   List<ProductModel> productList = [];
   List<WarehouseModel> warehouseList = [];
@@ -136,6 +136,44 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
     getCart();
+
+    orderDateCtrl.text = Global.formatDateD(
+        Global.ordersWholesale![widget.index].orderDate.toString());
+    referenceNumberCtrl.text =
+        Global.ordersWholesale![widget.index].referenceNo ?? '';
+    productSellThengPriceCtrl.text =
+        Global.format(Global.ordersWholesale![widget.index].sellTPrice ?? 0);
+    productBuyPriceCtrl.text =
+        Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
+    productBuyPricePerGramCtrl.text = Global.format(
+        Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
+
+    productWeightCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].weight ?? 0);
+    priceIncludeTaxCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index]
+            .details![widget.j!]
+            .priceIncludeTax ??
+        0);
+    priceExcludeTaxCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index]
+            .details![widget.j!]
+            .priceExcludeTax ??
+        0);
+    purchasePriceCtrl.text = Global.format(Global
+            .ordersWholesale![widget.index].details![widget.j!].purchasePrice ??
+        0);
+    priceDiffCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].priceDiff ??
+            0);
+    taxAmountCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].taxAmount ??
+            0);
+    taxBaseCtrl.text = Global.format(
+        Global.ordersWholesale![widget.index].details![widget.j!].taxBase ?? 0);
+    remarkCtrl.text = Global.ordersWholesale![widget.index].remark ?? '';
+
+    priceExcludeTaxChanged();
   }
 
   void loadProducts() async {
@@ -143,6 +181,12 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
       loading = true;
     });
     try {
+      // motivePrint(Global.ordersWholesale![widget.index].attachement);
+      Global.refillAttach =
+          Global.ordersWholesale![widget.index].attachement != null
+              ? await Global.createFileFromString(
+                  Global.ordersWholesale![widget.index].attachement ?? '')
+              : null;
       // var result = await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
       var result =
           await ApiServices.post('/product/refill', Global.requestObj(null));
@@ -276,7 +320,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         backgroundColor: rfBgColor,
         title: Text(
           'เติมทอง – ซื้อทองรูปพรรณใหม่ 96.5%',
@@ -969,97 +1013,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue[700],
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (orderDateCtrl.text.isEmpty) {
-                          Alert.warning(context, 'คำเตือน',
-                              'กรุณาป้อนวันที่ใบกำกับภาษี', 'OK');
-                          return;
-                        }
-
-                        if (!checkDate(orderDateCtrl.text)) {
-                          Alert.warning(context, 'คำเตือน',
-                              'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (selectedProduct == null) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (selectedWarehouse == null) {
-                          Alert.warning(context, 'คำเตือน',
-                              'ยังไม่ได้ตั้งค่าโกดังเริ่มต้น', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (productWeightCtrl.text.isEmpty) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'กรุณากรอกน้ำหนัก', 'OK',
-                              action: () {});
-                          return;
-                        }
-
-                        if (priceExcludeTaxCtrl.text.isEmpty) {
-                          Alert.warning(context, 'คำเตือน',
-                              'ราคารวมค่ากำเหน็จก่อนภาษี', 'OK',
-                              action: () {});
-                          return;
-                        }
-                        try {
-                          Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
-                              'ตกลง', action: () async {
-                            saveData();
-                            if (mounted) {
-                              resetText();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
-                          });
-                        } catch (e) {
-                          if (mounted) {
-                            Alert.warning(context, 'Warning'.tr(), e.toString(),
-                                'OK'.tr(),
-                                action: () {});
-                          }
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: size.getWidthPx(10)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
                         backgroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
@@ -1155,9 +1108,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                 Future.delayed(
                                     const Duration(milliseconds: 500),
                                     () async {
-                                  widget.refreshCart(Global
-                                      .ordersWholesale?.length
-                                      .toString());
                                   writeCart();
                                   setState(() {});
                                 });
@@ -1373,8 +1323,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
             : null,
         orderTypeId: 5);
     final data = order.toJson();
-    Global.ordersWholesale?.add(OrderModel.fromJson(data));
-    widget.refreshCart(Global.ordersWholesale?.length.toString());
+    Global.ordersWholesale?[widget.index] = OrderModel.fromJson(data);
     writeCart();
     Global.refillOrderDetail!.clear();
   }

@@ -139,9 +139,9 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: buBgColor,
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'รับซื้อทองคำเก่า',
-          style: TextStyle(fontSize: 32),
+          style: TextStyle(fontSize: size.getWidthPx(10)),
         ),
         // backgroundColor: bgColor,
         actions: [

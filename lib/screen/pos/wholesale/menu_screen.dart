@@ -6,6 +6,7 @@ import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'refill/refill_gold_stock_screen.dart';
@@ -50,22 +51,22 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
   Widget build(BuildContext context) {
     // sideMenu.changePage(Global.posIndex);
     // pageController.jumpToPage(Global.posIndex);
-    setState(() {});
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   flex: 5,
                   child: Text(widget.title,
-                      style: const TextStyle(
-                          fontSize: 30,
+                      style: TextStyle(
+                          fontSize: size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -90,9 +91,9 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.shopping_cart,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

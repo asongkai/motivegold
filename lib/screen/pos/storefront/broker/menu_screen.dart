@@ -8,6 +8,7 @@ import 'package:motivegold/screen/pos/storefront/broker/ui/sell_theng_screen.dar
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -51,7 +52,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
   Widget build(BuildContext context) {
     // sideMenu.changePage(Global.posIndex);
     // pageController.jumpToPage(Global.posIndex);
-    setState(() {});
+    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: CustomAppBar(
         height: 300,
@@ -65,8 +66,8 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 Expanded(
                     flex: 5,
                     child: Text(widget.title,
-                        style: const TextStyle(
-                            fontSize: 30,
+                        style: TextStyle(
+                            fontSize: size.getWidthPx(10),
                             color: Colors.white,
                             fontWeight: FontWeight.w900))),
                 Expanded(
@@ -90,9 +91,9 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.save,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -145,9 +146,9 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                             style: const TextStyle(color: Colors.white),
                           ),
                           child: IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.shopping_cart,
-                                size: 42,
+                                size: size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

@@ -112,186 +112,181 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(
-                      getProportionateScreenWidth(
-                        8,
-                      ),
-                    ),
-                    topRight: Radius.circular(
-                      getProportionateScreenWidth(
-                        8,
-                      ),
+            Container(
+              margin: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(
+                    getProportionateScreenWidth(
+                      8,
                     ),
                   ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: getProportionateScreenWidth(0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                              const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'ปี',
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
-                                      ),
-                                      SizedBox(
-                                        height: 70,
-                                        child: MiraiDropDownMenu<int>(
-                                          key: UniqueKey(),
-                                          children: Global.genYear(),
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                              int index,
-                                              int? project, {
-                                                bool isItemSelected = false,
-                                              }) {
-                                            return DropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
-                                            );
-                                          },
-                                          onChanged: (int value) {
-                                            yearCtrl.text = value.toString();
-                                            yearNotifier!.value = value;
-                                            search();
-                                          },
-                                          child: DropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
-                                            projectValueNotifier: yearNotifier!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                              const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'เดือน',
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
-                                      ),
-                                      SizedBox(
-                                        height: 70,
-                                        child: MiraiDropDownMenu<int>(
-                                          key: UniqueKey(),
-                                          children: Global.genMonth(),
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                              int index,
-                                              int? project, {
-                                                bool isItemSelected = false,
-                                              }) {
-                                            return DropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
-                                            );
-                                          },
-                                          onChanged: (int value) {
-                                            monthCtrl.text = value.toString();
-                                            monthNotifier!.value = value;
-                                            search();
-                                          },
-                                          child: DropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
-                                            projectValueNotifier:
-                                            monthNotifier!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(3.0),
-                          vertical: getProportionateScreenHeight(5.0),
-                        ),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor:
-                              MaterialStateProperty.all<Color>(bgColor3)),
-                          onPressed: search,
-                          child: Text(
-                            'ค้นหา'.tr(),
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      ),
-                    ],
+                  topRight: Radius.circular(
+                    getProportionateScreenWidth(
+                      8,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Divider(
-              thickness: 1.0,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: getProportionateScreenWidth(0),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'ปี',
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(6)),
+                                    ),
+                                    SizedBox(
+                                      height: 70,
+                                      child: MiraiDropDownMenu<int>(
+                                        key: UniqueKey(),
+                                        children: Global.genYear(),
+                                        space: 4,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
+                                        selectedItemBackgroundColor:
+                                        Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                            int index,
+                                            int? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                          return DropDownItemWidget(
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size?.getWidthPx(6),
+                                          );
+                                        },
+                                        onChanged: (int value) {
+                                          yearCtrl.text = value.toString();
+                                          yearNotifier!.value = value;
+                                          search();
+                                        },
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size?.getWidthPx(6),
+                                          projectValueNotifier: yearNotifier!,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding:
+                            const EdgeInsets.only(left: 8.0, right: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'เดือน',
+                                      style: TextStyle(
+                                          fontSize: size?.getWidthPx(6)),
+                                    ),
+                                    SizedBox(
+                                      height: 70,
+                                      child: MiraiDropDownMenu<int>(
+                                        key: UniqueKey(),
+                                        children: Global.genMonth(),
+                                        space: 4,
+                                        maxHeight: 360,
+                                        showSearchTextField: true,
+                                        selectedItemBackgroundColor:
+                                        Colors.transparent,
+                                        emptyListMessage: 'ไม่มีข้อมูล',
+                                        showSelectedItemBackgroundColor: true,
+                                        itemWidgetBuilder: (
+                                            int index,
+                                            int? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                          return DropDownItemWidget(
+                                            project: project,
+                                            isItemSelected: isItemSelected,
+                                            firstSpace: 10,
+                                            fontSize: size?.getWidthPx(6),
+                                          );
+                                        },
+                                        onChanged: (int value) {
+                                          monthCtrl.text = value.toString();
+                                          monthNotifier!.value = value;
+                                          search();
+                                        },
+                                        child: DropDownObjectChildWidget(
+                                          key: GlobalKey(),
+                                          fontSize: size?.getWidthPx(6),
+                                          projectValueNotifier:
+                                          monthNotifier!,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(3.0),
+                        vertical: getProportionateScreenHeight(5.0),
+                      ),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                            MaterialStateProperty.all<Color>(bgColor3)),
+                        onPressed: search,
+                        child: Text(
+                          'ค้นหา'.tr(),
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             loading
                 ? Container(
@@ -299,20 +294,17 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                 child: const LoadingProgress())
                 : filterList!.isEmpty
                 ? const NoDataFoundWidget()
-                : SingleChildScrollView(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 350,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListView.builder(
-                                itemCount: orders!.length,
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return dataCard(orders![index], index);
-                                }),
-                          ),
-                        ),
-                      ),
+                : Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView.builder(
+                        itemCount: orders!.length,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (BuildContext context, int index) {
+                          return dataCard(orders![index], index);
+                        }),
+                  ),
+                ),
           ],
         ),
       ),

@@ -217,7 +217,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'ชื่อคลังสินค้า'.tr(),
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: nameCtrl,
@@ -248,7 +248,7 @@ class _AddLocationScreenState extends State<AddLocationScreen> {
                                           buildTextFieldBig(
                                             line: 3,
                                             labelText: 'ที่อยู่คลังสินค้า'.tr(),
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: addressCtrl,

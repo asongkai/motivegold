@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/product.dart';
@@ -42,6 +43,13 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
   ValueNotifier<dynamic>? yearNotifier;
   ValueNotifier<dynamic>? monthNotifier;
 
+  final TextEditingController fromDateCtrl = TextEditingController();
+  final TextEditingController toDateCtrl = TextEditingController();
+  ValueNotifier<dynamic>? fromDateNotifier;
+  ValueNotifier<dynamic>? toDateNotifier;
+  DateTime? fromDate;
+  DateTime? toDate;
+
   List<ProductModel> productList = [];
   List<WarehouseModel> warehouseList = [];
   ProductModel? selectedProduct;
@@ -52,14 +60,7 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
   @override
   void initState() {
     super.initState();
-    yearNotifier = ValueNotifier<int>(DateTime.now().year);
-    monthNotifier = ValueNotifier<int>(DateTime.now().month);
-    yearCtrl.text = DateTime.now().year.toString();
-    monthCtrl.text = DateTime.now().month.toString();
-    productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    resetFilter();
     loadProducts();
     search();
   }
@@ -97,15 +98,17 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
   }
 
   void search() async {
-    if (yearCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
-      return;
-    }
+    // if (yearCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+    //   return;
+    // }
+    //
+    // if (monthCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
+    //   return;
+    // }
 
-    if (monthCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
-      return;
-    }
+    makeSearchDate();
 
     setState(() {
       loading = true;
@@ -115,10 +118,12 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
       var result = await ApiServices.post(
           '/order/all/type/1',
           Global.requestObj({
-            "year": yearCtrl.text,
-            "month": monthCtrl.text,
+            "year": yearCtrl.text == "" ? null : yearCtrl.text,
+            "month": monthCtrl.text == "" ? null : monthCtrl.text,
             "productId": selectedProduct?.id,
-            "warehouseId": selectedWarehouse?.id
+            "warehouseId": selectedWarehouse?.id,
+            "fromDate": fromDate.toString(),
+            "toDate": toDate.toString(),
           }));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -176,29 +181,32 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                         GestureDetector(
                           onTap: () {
                             if (filterList!.isEmpty) {
-                              Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+                              Alert.warning(
+                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
                               return;
                             }
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => PreviewSellVatReportPage(
-                                  orders: filterList!,
+                                  orders: filterList!.reversed.toList(),
                                   type: 1,
-                                  date: DateTime.parse("${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
+                                  fromDate: fromDate,
+                                  toDate: toDate,
+                                  date:
+                                      '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
                                 ),
                               ),
                             );
                           },
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.print,
-                                size: 50,
-                                  color: Colors.white
-                              ),
+                              const Icon(Icons.print,
+                                  size: 50, color: Colors.white),
                               Text(
                                 'แบบเรียงเบอร์',
-                                style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: size.getWidthPx(8),
+                                    color: Colors.white),
                               )
                             ],
                           ),
@@ -208,9 +216,11 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            List<OrderModel> dailyList = genDailyList(filterList);
+                            List<OrderModel> dailyList =
+                                genDailyList(filterList);
                             if (dailyList.isEmpty) {
-                              Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+                              Alert.warning(
+                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
                               return;
                             }
                             Navigator.of(context).push(
@@ -218,21 +228,23 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                 builder: (context) => PreviewSellVatReportPage(
                                   orders: dailyList,
                                   type: 2,
-                                  date: DateTime.parse("${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-01"),
+                                  fromDate: fromDate,
+                                  toDate: toDate,
+                                  date:
+                                      '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
                                 ),
                               ),
                             );
                           },
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.print,
-                                size: 50,
-                                  color: Colors.white
-                              ),
+                              const Icon(Icons.print,
+                                  size: 50, color: Colors.white),
                               Text(
                                 'แบบรายวัน',
-                                style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: size.getWidthPx(8),
+                                    color: Colors.white),
                               )
                             ],
                           ),
@@ -249,334 +261,500 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Card(
               child: Column(
-                children: [
-                  SizedBox(
-                    child: Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(
-                            getProportionateScreenWidth(
-                              8,
-                            ),
-                          ),
-                          topRight: Radius.circular(
-                            getProportionateScreenWidth(
-                              8,
-                            ),
-                          ),
+            children: [
+              SizedBox(
+                child: Container(
+                  margin: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(
+                        getProportionateScreenWidth(
+                          8,
                         ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: getProportionateScreenWidth(0),
+                      topRight: Radius.circular(
+                        getProportionateScreenWidth(
+                          8,
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                      ),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: getProportionateScreenWidth(0),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'สินค้า',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(6)),
-                                            ),
-                                            SizedBox(
-                                              height: 80,
-                                              child:
+                                      children: [
+                                        Text(
+                                          'สินค้า',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(6)),
+                                        ),
+                                        SizedBox(
+                                          height: 80,
+                                          child:
                                               MiraiDropDownMenu<ProductModel>(
-                                                key: UniqueKey(),
-                                                children: productList,
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
+                                            key: UniqueKey(),
+                                            children: productList,
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
                                                 Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
                                                 true,
-                                                itemWidgetBuilder: (
-                                                    int index,
-                                                    ProductModel? project, {
-                                                      bool isItemSelected = false,
-                                                    }) {
-                                                  return DropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected: isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: size.getWidthPx(6),
-                                                  );
-                                                },
-                                                onChanged: (ProductModel value) {
-                                                  selectedProduct = value;
-                                                  productNotifier!.value = value;
-                                                  search();
-                                                },
-                                                child: DropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: size.getWidthPx(6),
-                                                  projectValueNotifier:
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              ProductModel? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(6),
+                                              );
+                                            },
+                                            onChanged: (ProductModel value) {
+                                              selectedProduct = value;
+                                              productNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(6),
+                                              projectValueNotifier:
                                                   productNotifier!,
-                                                ),
-                                              ),
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'คลังสินค้า',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(6)),
-                                            ),
-                                            SizedBox(
-                                              height: 80,
-                                              child:
-                                              MiraiDropDownMenu<WarehouseModel>(
-                                                key: UniqueKey(),
-                                                children: warehouseList,
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                true,
-                                                itemWidgetBuilder: (
-                                                    int index,
-                                                    WarehouseModel? project, {
-                                                      bool isItemSelected = false,
-                                                    }) {
-                                                  return DropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected: isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: size.getWidthPx(6),
-                                                  );
-                                                },
-                                                onChanged: (WarehouseModel value) {
-                                                  selectedWarehouse = value;
-                                                  warehouseNotifier!.value = value;
-                                                  search();
-                                                },
-                                                child: DropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: size.getWidthPx(6),
-                                                  projectValueNotifier:
-                                                  warehouseNotifier!,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'ปี',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(6)),
-                                            ),
-                                            SizedBox(
-                                              height: 70,
-                                              child: MiraiDropDownMenu<int>(
-                                                key: UniqueKey(),
-                                                children: Global.genYear(),
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                true,
-                                                itemWidgetBuilder: (
-                                                    int index,
-                                                    int? project, {
-                                                      bool isItemSelected = false,
-                                                    }) {
-                                                  return DropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected: isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: size.getWidthPx(6),
-                                                  );
-                                                },
-                                                onChanged: (int value) {
-                                                  yearCtrl.text = value.toString();
-                                                  yearNotifier!.value = value;
-                                                  search();
-                                                },
-                                                child: DropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: size.getWidthPx(6),
-                                                  projectValueNotifier:
-                                                  yearNotifier!,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'เดือน',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(6)),
-                                            ),
-                                            SizedBox(
-                                              height: 70,
-                                              child: MiraiDropDownMenu<int>(
-                                                key: UniqueKey(),
-                                                children: Global.genMonth(),
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                true,
-                                                itemWidgetBuilder: (
-                                                    int index,
-                                                    int? project, {
-                                                      bool isItemSelected = false,
-                                                    }) {
-                                                  return DropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected: isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: size.getWidthPx(6),
-                                                  );
-                                                },
-                                                onChanged: (int value) {
-                                                  monthCtrl.text = value.toString();
-                                                  monthNotifier!.value = value;
-                                                  search();
-                                                },
-                                                child: DropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: size.getWidthPx(6),
-                                                  projectValueNotifier:
-                                                  monthNotifier!,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(3.0),
-                                vertical: getProportionateScreenHeight(5.0),
                               ),
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                    backgroundColor:
-                                    WidgetStateProperty.all<Color>(bgColor3)),
-                                onPressed: search,
-                                child: Text(
-                                  'ค้นหา'.tr(),
-                                  style: const TextStyle(fontSize: 20),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'คลังสินค้า',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(6)),
+                                        ),
+                                        SizedBox(
+                                          height: 80,
+                                          child:
+                                              MiraiDropDownMenu<WarehouseModel>(
+                                            key: UniqueKey(),
+                                            children: warehouseList,
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              WarehouseModel? project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(6),
+                                              );
+                                            },
+                                            onChanged: (WarehouseModel value) {
+                                              selectedWarehouse = value;
+                                              warehouseNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(6),
+                                              projectValueNotifier:
+                                                  warehouseNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'จากวันที่',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genMonthDays(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              fromDateCtrl.text =
+                                                  value.toString();
+                                              fromDateNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  fromDateNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ถึงวันที่',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genMonthDays(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              toDateCtrl.text =
+                                                  value.toString();
+                                              toDateNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  toDateNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'เดือน',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genMonth(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              monthCtrl.text = value.toString();
+                                              monthNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  monthNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ปี',
+                                          style: TextStyle(
+                                              fontSize: size.getWidthPx(8)),
+                                        ),
+                                        SizedBox(
+                                          height: 70,
+                                          child: MiraiDropDownMenu<dynamic>(
+                                            key: UniqueKey(),
+                                            children: Global.genYear(),
+                                            space: 4,
+                                            maxHeight: 360,
+                                            showSearchTextField: true,
+                                            selectedItemBackgroundColor:
+                                                Colors.transparent,
+                                            emptyListMessage: 'ไม่มีข้อมูล',
+                                            showSelectedItemBackgroundColor:
+                                                true,
+                                            itemWidgetBuilder: (
+                                              int index,
+                                              dynamic project, {
+                                              bool isItemSelected = false,
+                                            }) {
+                                              return DropDownItemWidget(
+                                                project: project,
+                                                isItemSelected: isItemSelected,
+                                                firstSpace: 10,
+                                                fontSize: size.getWidthPx(8),
+                                              );
+                                            },
+                                            onChanged: (dynamic value) {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
+                                              search();
+                                            },
+                                            child: DropDownObjectChildWidget(
+                                              key: GlobalKey(),
+                                              fontSize: size.getWidthPx(8),
+                                              projectValueNotifier:
+                                                  yearNotifier!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(3.0),
+                                  vertical: getProportionateScreenHeight(5.0),
+                                ),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              Colors.red)),
+                                  onPressed: () {
+                                    resetFilter();
+                                  },
+                                  child: Text(
+                                    'Reset'.tr(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: getProportionateScreenWidth(3.0),
+                                  vertical: getProportionateScreenHeight(5.0),
+                                ),
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              bgColor3)),
+                                  onPressed: search,
+                                  child: Text(
+                                    'ค้นหา'.tr(),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  const Divider(
-                    thickness: 1.0,
-                  ),
-                  loading
-                      ? Container(
+                ),
+              ),
+              const Divider(
+                thickness: 1.0,
+              ),
+              loading
+                  ? Container(
                       margin: const EdgeInsets.only(top: 100),
                       child: const LoadingProgress())
-                      : productCard(filterList!),
-                ],
-              )),
+                  : productCard(filterList!),
+            ],
+          )),
         ),
       ),
     );
@@ -585,88 +763,109 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
   Widget productCard(List<OrderModel?> ods) {
     return filterList!.isEmpty
         ? Container(
-        margin: const EdgeInsets.only(top: 100),
-        child: const NoDataFoundWidget())
+            margin: const EdgeInsets.only(top: 100),
+            child: const NoDataFoundWidget())
         : Expanded(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Table(
-            border: TableBorder.all(color: Colors.grey[300]!),
-            children: [
-              TableRow(children: [
-                paddedTextBig('วัน/เดือน/ปี', align: TextAlign.center),
-                paddedTextBig('เลขที่ใบกํากับภาษี', align: TextAlign.center),
-                paddedTextBig('ชื่อผู้ซื้อ', align: TextAlign.center),
-                paddedTextBig('เลขประจําตัวผู้เสียภาษี', align: TextAlign.center),
-                paddedTextBig('น้ําหนัก', align: TextAlign.center),
-                paddedTextBig('หน่วย', align: TextAlign.center),
-                paddedTextBig('ยอดขายรวม\nภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedTextBig('มูลค่ายกเว้น', align: TextAlign.center),
-                paddedTextBig('ผลต่างรวม\nภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedTextBig('ฐานภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedTextBig('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedTextBig('ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-              ]),
-              ...ods.map((e) => TableRow(
-                decoration: const BoxDecoration(),
-                children: [
-                  paddedTextBig(
-                      Global.dateOnly(e!.orderDate.toString()), align: TextAlign.center),
-                  paddedTextBig(e.orderId, align: TextAlign.center),
-                  paddedTextBig('เงินสด', align: TextAlign.center),
-                  paddedTextBig(Global.company != null
-                      ? Global.company!.taxNumber ?? ''
-                      : '', align: TextAlign.center),
-                  paddedTextBig(Global.format(getWeight(e)), align: TextAlign.right),
-                  paddedTextBig('กรัม', align: TextAlign.center),
-                  paddedTextBig(Global.format(e.priceIncludeTax ?? 0), align: TextAlign.right),
-                  paddedTextBig(Global.format(e.purchasePrice ?? 0), align: TextAlign.right),
-                  paddedTextBig(Global.format(e.priceDiff ?? 0), align: TextAlign.right),
-                  paddedTextBig(Global.format(e.taxBase ?? 0), align: TextAlign.right),
-                  paddedTextBig(Global.format(e.taxAmount ?? 0), align: TextAlign.right),
-                  paddedTextBig(Global.format(e.priceExcludeTax ?? 0), align: TextAlign.right)
-                ],
-              )),
-              TableRow(children: [
-                paddedTextBig('', style: const TextStyle(fontSize: 14)),
-                paddedTextBig(''),
-                paddedTextBig(''),
-                paddedTextBig('รวมท้ังหมด', align: TextAlign.right),
-                paddedTextBig(Global.format(getWeightTotal(ods)), align: TextAlign.right),
-                paddedTextBig(''),
-                paddedTextBig(Global.format(priceIncludeTaxTotal(ods)), align: TextAlign.right),
-                paddedTextBig(Global.format(purchasePriceTotal(ods)), align: TextAlign.right),
-                paddedTextBig(Global.format(priceDiffTotal(ods)), align: TextAlign.right),
-                paddedTextBig(Global.format(taxBaseTotal(ods)), align: TextAlign.right),
-                paddedTextBig(Global.format(taxAmountTotal(ods)), align: TextAlign.right),
-                paddedTextBig(Global.format(priceExcludeTaxTotal(ods)), align: TextAlign.right),
-              ])
-            ],
-          ),
-        ),
-      ),
-    );
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Table(
+                  border: TableBorder.all(color: Colors.grey[300]!),
+                  children: [
+                    TableRow(children: [
+                      paddedTextBig('วัน/เดือน/ปี', align: TextAlign.center),
+                      paddedTextBig('เลขที่ใบกํากับภาษี',
+                          align: TextAlign.center),
+                      paddedTextBig('ชื่อผู้ซื้อ', align: TextAlign.center),
+                      paddedTextBig('เลขประจําตัวผู้เสียภาษี',
+                          align: TextAlign.center),
+                      paddedTextBig('น้ําหนัก', align: TextAlign.center),
+                      paddedTextBig('หน่วย', align: TextAlign.center),
+                      paddedTextBig('ยอดขายรวม\nภาษีมูลค่าเพิ่ม',
+                          align: TextAlign.center),
+                      paddedTextBig('มูลค่ายกเว้น', align: TextAlign.center),
+                      paddedTextBig('ผลต่างรวม\nภาษีมูลค่าเพิ่ม',
+                          align: TextAlign.center),
+                      paddedTextBig('ฐานภาษีมูลค่าเพิ่ม',
+                          align: TextAlign.center),
+                      paddedTextBig('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
+                      paddedTextBig('ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม',
+                          align: TextAlign.center),
+                    ]),
+                    ...ods.map((e) => TableRow(
+                          decoration: const BoxDecoration(),
+                          children: [
+                            paddedTextBig(
+                                Global.dateOnly(e!.orderDate.toString()),
+                                align: TextAlign.center),
+                            paddedTextBig(e.orderId, align: TextAlign.center),
+                            paddedTextBig('เงินสด', align: TextAlign.center),
+                            paddedTextBig(
+                                Global.company != null
+                                    ? Global.company!.taxNumber ?? ''
+                                    : '',
+                                align: TextAlign.center),
+                            paddedTextBig(Global.format(getWeight(e)),
+                                align: TextAlign.right),
+                            paddedTextBig('กรัม', align: TextAlign.center),
+                            paddedTextBig(Global.format(e.priceIncludeTax ?? 0),
+                                align: TextAlign.right),
+                            paddedTextBig(Global.format(e.purchasePrice ?? 0),
+                                align: TextAlign.right),
+                            paddedTextBig(Global.format(e.priceDiff ?? 0),
+                                align: TextAlign.right),
+                            paddedTextBig(Global.format(e.taxBase ?? 0),
+                                align: TextAlign.right),
+                            paddedTextBig(Global.format(e.taxAmount ?? 0),
+                                align: TextAlign.right),
+                            paddedTextBig(Global.format(e.priceExcludeTax ?? 0),
+                                align: TextAlign.right)
+                          ],
+                        )),
+                    TableRow(children: [
+                      paddedTextBig('', style: const TextStyle(fontSize: 14)),
+                      paddedTextBig(''),
+                      paddedTextBig(''),
+                      paddedTextBig('รวมท้ังหมด', align: TextAlign.right),
+                      paddedTextBig(Global.format(getWeightTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(''),
+                      paddedTextBig(Global.format(priceIncludeTaxTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(Global.format(purchasePriceTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(Global.format(priceDiffTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(Global.format(taxBaseTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(Global.format(taxAmountTotal(ods)),
+                          align: TextAlign.right),
+                      paddedTextBig(Global.format(priceExcludeTaxTotal(ods)),
+                          align: TextAlign.right),
+                    ])
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 
   List<OrderModel> genDailyList(List<OrderModel?>? filterList) {
     List<OrderModel> orderList = [];
-    int days = daysInMonth(int.parse(yearCtrl.text), int.parse(monthCtrl.text));
-    for (int i = 1; i <= days; i++) {
-      DateTime? monthDate = DateTime.tryParse(
-          '${yearCtrl.text}-${twoDigit(int.parse(monthCtrl.text))}-${twoDigit(i)}');
-
-      // motivePrint(monthDate);
-
+    int days = Global.daysBetween(fromDate!, toDate!);
+    for (int i = 0; i <= days; i++) {
+      DateTime? monthDate = fromDate!.add(Duration(days: i));
       var dateList = filterList
           ?.where((element) =>
-      Global.dateOnly(element!.orderDate.toString()) ==
-          Global.dateOnly(monthDate.toString()))
+              Global.dateOnly(element!.createdDate.toString()) ==
+              Global.dateOnly(monthDate.toString()))
           .toList();
+      // motivePrint(dateList?.length);
       if (dateList!.isNotEmpty) {
         var order = OrderModel(
             orderId: '${dateList.first?.orderId} - ${dateList.last?.orderId}',
-            orderDate: monthDate,
+            orderDate: dateList.first?.orderDate,
+            createdDate: monthDate,
             customerId: 0,
             weight: getWeightTotal(dateList),
             priceIncludeTax: priceIncludeTaxTotal(dateList),
@@ -675,12 +874,78 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             taxBase: taxBaseTotal(dateList),
             taxAmount: taxAmountTotal(dateList),
             priceExcludeTax: priceExcludeTaxTotal(dateList));
+        // motivePrint(order.toJson());
         orderList.add(order);
       }
     }
-
-    // motivePrint(orderListModelToJson(orderList));
-
     return orderList;
+  }
+
+  makeSearchDate() {
+    int month = 0;
+    int year = 0;
+
+    if (monthCtrl.text.isEmpty) {
+      month = DateTime.now().month;
+    } else {
+      month = Global.toNumber(monthCtrl.text).toInt();
+    }
+
+    if (yearCtrl.text.isEmpty) {
+      year = DateTime.now().year;
+    } else {
+      year = Global.toNumber(yearCtrl.text).toInt();
+    }
+
+    if (fromDateCtrl.text.isNotEmpty) {
+      fromDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      fromDate = null;
+    }
+
+    if (toDateCtrl.text.isNotEmpty) {
+      toDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      toDate = null;
+    }
+
+    if (fromDate == null && toDate == null) {
+      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
+      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
+        fromDate = DateTime(year, 1, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!)
+            .add(months: 12, days: -1)
+            .dateTime;
+      } else {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
+      }
+    }
+
+    // motivePrint(fromDate.toString());
+    // motivePrint(toDate.toString());
+  }
+
+  void resetFilter() {
+    yearNotifier = ValueNotifier<dynamic>("");
+    monthNotifier = ValueNotifier<dynamic>("");
+    fromDateNotifier = ValueNotifier<dynamic>("");
+    toDateNotifier = ValueNotifier<dynamic>("");
+    yearCtrl.text = "";
+    monthCtrl.text = "";
+    fromDateCtrl.text = "";
+    toDateCtrl.text = "";
+    fromDate = null;
+    toDate = null;
+    productNotifier =
+        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    search();
+    setState(() {});
   }
 }

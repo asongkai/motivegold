@@ -76,7 +76,7 @@ class _AddProductTypeScreenState extends State<AddProductTypeScreen> {
                                     ),
                                     buildTextFieldBig(
                                       labelText: 'ชื่อประเภทสินค้า'.tr(),
-                                      textColor: Colors.orange,
+                                      labelColor: Colors.orange,
                                       validator: null,
                                       inputType: TextInputType.text,
                                       controller: nameCtrl,

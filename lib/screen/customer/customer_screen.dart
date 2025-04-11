@@ -271,7 +271,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                   child: buildTextField(
                                       labelText:
                                           getIdTitle(selectedCustomerType),
-                                      textColor: Colors.deepPurple[700],
+                                      labelColor: Colors.deepPurple[700],
                                       onSubmitted: (value) {
                                         search();
                                       },
@@ -284,7 +284,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: buildTextField(
                                       labelText: "ชื่อ",
-                                      textColor: Colors.deepPurple[700],
+                                      labelColor: Colors.deepPurple[700],
                                       onSubmitted: (value) {
                                         search();
                                       },
@@ -297,7 +297,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: buildTextField(
                                       labelText: "นามสกุล",
-                                      textColor: Colors.deepPurple[700],
+                                      labelColor: Colors.deepPurple[700],
                                       onSubmitted: (value) {
                                         search();
                                       },
@@ -310,7 +310,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: buildTextField(
                                       labelText: "ชื่อบริษัท",
-                                      textColor: Colors.deepPurple[700],
+                                      labelColor: Colors.deepPurple[700],
                                       onSubmitted: (value) {
                                         search();
                                       },
@@ -328,7 +328,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: buildTextField(
                                     labelText: "อีเมล",
-                                    textColor: Colors.deepPurple[700],
+                                    labelColor: Colors.deepPurple[700],
                                     onSubmitted: (value) {
                                       search();
                                     },
@@ -340,7 +340,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: buildTextField(
                                     labelText: "โทรศัพท์",
-                                    textColor: Colors.deepPurple[700],
+                                    labelColor: Colors.deepPurple[700],
                                     onSubmitted: (value) {
                                       search();
                                     },
@@ -446,11 +446,24 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         decoration: const BoxDecoration(),
                         children: [
                           paddedTextBigL('${i + 1}', align: TextAlign.center),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              paddedTextBigL(
+                                  'ชื่อ: ${ods[i]?.firstName} ${ods[i]?.lastName}',
+                                  align: TextAlign.left),
+                              if (ods[i]?.nationality == "Thai" || ods[i]?.nationality == "")
+                                paddedTextBigL(
+                                    '${getIdTitle(selectedCustomerType)}: ${selectedCustomerType?.code == 'general' ? ods[i]?.idCard : ods[i]?.taxNumber}',
+                                    align: TextAlign.left),
+                              if (ods[i]?.nationality == "Foreigner")
+                                paddedTextBigL(
+                                    'Work permit: ${ods[i]?.workPermit} \nPassport: ${ods[i]?.passportId} \nTax ID: ${ods[i]?.taxNumber}',
+                                    align: TextAlign.left),
+                            ],
+                          ),
                           paddedTextBigL(
-                              'ชื่อ: \n${ods[i]?.firstName} ${ods[i]?.lastName} \n${getIdTitle(selectedCustomerType)}: \n${selectedCustomerType?.code == 'general' ? ods[i]?.idCard : ods[i]?.taxNumber}',
-                              align: TextAlign.left),
-                          paddedTextBigL(
-                              'Email: \n${ods[i]?.email} \nโทรศัพท์: \n${ods[i]?.phoneNumber}',
+                              'Email: ${ods[i]?.email} \nโทรศัพท์: ${ods[i]?.phoneNumber}',
                               align: TextAlign.left),
                           // paddedTextBigL('${ods[i]?.taxNumber}',
                           //     align: TextAlign.center),

@@ -199,7 +199,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (CompanyModel value) {
@@ -209,7 +209,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier: companyNotifier!,
                                       ),
                                     ),
@@ -240,7 +240,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (BranchModel value) {
@@ -250,7 +250,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier: branchNotifier!,
                                       ),
                                     ),
@@ -414,7 +414,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductTypeModel project) {
@@ -424,7 +424,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier: userRoleNotifier!,
                                       ),
                                     ),
@@ -550,7 +550,8 @@ class _EditUserScreenState extends State<EditUserScreen> {
                   "username": usernameCtrl.text,
                   "password": passwordCtrl.text,
                   "companyId": selectedCompany!.id.toString(),
-                  "branchId": selectedBranch!.id.toString()
+                  "branchId": selectedBranch!.id.toString(),
+                  "userRole": selectedUserRole!.code,
                 });
 
                 // print(object);

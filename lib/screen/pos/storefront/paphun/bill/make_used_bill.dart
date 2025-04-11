@@ -276,10 +276,10 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
   );
   widgets.add(
     Padding(
-      padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: Container(
-        width: double.infinity,
-        height: 55,
+        // width: double.infinity,
+        // height: 55,
         padding: const EdgeInsets.all(4.0),
         decoration: BoxDecoration(
             border: Border.all(),
@@ -291,32 +291,70 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
             sn(invoice.orders),
             bu(invoice.orders),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                  flex: 3,
+                  flex: 8,
+                  child: Text('ส่วนลด:',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                          fontSize: 9, color: PdfColors.blue700)),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text('${Global.format(invoice.order.discount ?? 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                          fontSize: 9, color: PdfColors.blue700)),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: 8,
                   child: Text(
-                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} :  ',
+                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}:',
+                      textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
                 Expanded(
                   flex: 2,
                   child: Text(
-                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}',
+                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} บาท',
+                      textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
                 for (int i = 0; i < invoice.payments!.length; i++)
                   Expanded(
-                      flex: 3,
-                      child: Text(
-                          "${getPaymentType(invoice.payments![i].paymentMethod)} :   ${Global.format(invoice.payments![i].amount ?? 0)}",
-                          style: const TextStyle(
-                              fontSize: 9, color: PdfColors.blue700))),
-                if (invoice.payments!.length <= 1)
-                  Expanded(flex: 3, child: Container()),
-                if (invoice.payments!.isEmpty)
-                  Expanded(flex: 3, child: Container())
+                      child: Container(
+                          child: Row(children: [
+                            Expanded(
+                                flex: invoice.payments!.length > 1 ? 3 : 8,
+                                child: Text(
+                                    "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 9, color: PdfColors.blue700))),
+                            Expanded(
+                                flex: 2,
+                                child: Text(
+                                    "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 9, color: PdfColors.blue700)))
+                          ])))
               ],
             ),
           ],
@@ -394,25 +432,29 @@ Widget sn(List<OrderModel>? orders) {
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 1) {
       return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             flex: 3,
             child: Text('ขายทองคํารูปพรรณใหม่ : ',
-                style: const TextStyle(fontSize: 9)),
+                textAlign: TextAlign.left, style: const TextStyle(fontSize: 9)),
           ),
           Expanded(
               flex: 2,
               child:
-                  Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
+              Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );
@@ -425,25 +467,29 @@ Widget bu(List<OrderModel>? orders) {
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 2) {
       return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             flex: 3,
             child: Text('รับซื้อทองคํารูปพรรณเก่า : ',
-                style: const TextStyle(fontSize: 9)),
+                textAlign: TextAlign.left, style: const TextStyle(fontSize: 9)),
           ),
           Expanded(
               flex: 2,
               child:
-                  Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
+              Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
       );

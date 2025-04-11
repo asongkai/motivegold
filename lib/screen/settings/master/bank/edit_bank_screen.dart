@@ -81,7 +81,7 @@ class _EditBankScreenState extends State<EditBankScreen> {
                                 ),
                                 buildTextFieldBig(
                                   labelText: 'ชื่อธนาคาร'.tr(),
-                                  textColor: Colors.orange,
+                                  labelColor: Colors.orange,
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: nameCtrl,
@@ -101,7 +101,7 @@ class _EditBankScreenState extends State<EditBankScreen> {
                                 ),
                                 buildTextFieldBig(
                                   labelText: 'รหัสธนาคาร'.tr(),
-                                  textColor: Colors.orange,
+                                  labelColor: Colors.orange,
                                   validator: null,
                                   inputType: TextInputType.text,
                                   controller: codeCtrl,

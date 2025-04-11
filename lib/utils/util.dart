@@ -576,12 +576,13 @@ Widget buildTextField(
     TextInputType? inputType,
     List<TextInputFormatter>? inputFormat,
     line,
-    Color? textColor,
+    Color? labelColor,
     bool option = false,
     bool obscureText = false,
     Function(String value)? onChanged,
     Function(String value)? onSubmitted,
     String? placeholder,
+    double fontSize = 20.00,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -591,14 +592,14 @@ Widget buildTextField(
       obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 20),
+      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.all(8),
         labelText: labelText,
         labelStyle: TextStyle(
-            fontSize: 20,
-            color: textColor ?? Colors.black,
+            fontSize: fontSize,
+            color: labelColor ?? textColor,
             fontWeight: FontWeight.w900),
         suffixText: suffixText,
         filled: true,
@@ -638,12 +639,13 @@ Widget buildTextFieldX(
     TextInputType? inputType,
     List<TextInputFormatter>? inputFormat,
     line,
-    Color? textColor,
+    Color? labelColor,
     bool option = false,
     bool obscureText = false,
     Function(String value)? onChanged,
     Function(String value)? onSubmitted,
     String? placeholder,
+    double fontSize = 30.00,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -653,14 +655,14 @@ Widget buildTextFieldX(
       obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 30),
+      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.all(8),
         labelText: labelText,
         labelStyle: TextStyle(
-            fontSize: 30,
-            color: textColor ?? Colors.black,
+            fontSize: fontSize,
+            color: labelColor ?? textColor,
             fontWeight: FontWeight.w900),
         suffixText: suffixText,
         filled: true,
@@ -700,11 +702,12 @@ Widget buildTextFieldBig(
     TextInputType? inputType,
     List<TextInputFormatter>? inputFormat,
     line,
-    Color? textColor,
+    Color? labelColor,
     bool option = false,
     Function(String value)? onChanged,
     TextAlign? align,
     bool isPassword = false,
+    double fontSize = 40.00,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -713,7 +716,7 @@ Widget buildTextFieldBig(
       inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: const TextStyle(fontSize: 40),
+      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
       textAlign: align ?? TextAlign.left,
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -722,9 +725,9 @@ Widget buildTextFieldBig(
             const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
         labelText: labelText,
         labelStyle: TextStyle(
-            color: textColor ?? Colors.blue[900],
+            color: labelColor ?? textColor,
             fontWeight: FontWeight.w900,
-            fontSize: 40),
+            fontSize: fontSize),
         suffixText: suffixText,
         filled: true,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
@@ -761,7 +764,7 @@ Widget numberTextField(
     TextInputType? inputType,
     List<TextInputFormatter>? inputFormat,
     line,
-    Color? textColor,
+    Color? labelColor,
     Function(String value)? onChanged,
     Function(bool)? onFocusChange,
     Function()? openCalc,
@@ -770,6 +773,7 @@ Widget numberTextField(
     FocusNode? focusNode,
     bool isPassword = false,
     bool readOnly = false,
+    double fontSize = 40,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
@@ -782,8 +786,8 @@ Widget numberTextField(
         maxLines: line ?? 1,
         textAlign: TextAlign.right,
         style: TextStyle(
-          fontSize: 40,
-          color: textColor ?? Colors.blue[900],
+          fontSize: fontSize,
+          color: labelColor ?? textColor,
         ),
         obscureText: isPassword,
         onTap: onTap,
@@ -796,9 +800,9 @@ Widget numberTextField(
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
           labelText: labelText,
           labelStyle: TextStyle(
-              color: textColor ?? Colors.blue[900],
+              color: labelColor ?? textColor,
               fontWeight: FontWeight.w900,
-              fontSize: 30),
+              fontSize: fontSize),
           prefixIconConstraints:
               const BoxConstraints(minHeight: 50, minWidth: 50),
           prefixIcon: Padding(
@@ -865,7 +869,7 @@ Widget numberTextFieldBig(
     TextInputType? inputType,
     List<TextInputFormatter>? inputFormat,
     line,
-    Color? textColor,
+    Color? labelColor,
     Function(String value)? onChanged,
     Function(bool)? onFocusChange,
     Function()? openCalc,
@@ -874,6 +878,7 @@ Widget numberTextFieldBig(
     FocusNode? focusNode,
     bool isPassword = false,
     bool readOnly = false,
+    double fontSize = 50.00,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
@@ -886,8 +891,8 @@ Widget numberTextFieldBig(
         maxLines: line ?? 1,
         textAlign: TextAlign.right,
         style: TextStyle(
-          fontSize: 50,
-          color: textColor ?? Colors.blue[900],
+          fontSize: fontSize,
+          color: labelColor ?? textColor,
         ),
         obscureText: isPassword,
         onTap: onTap,
@@ -900,9 +905,9 @@ Widget numberTextFieldBig(
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
           labelText: labelText,
           labelStyle: TextStyle(
-              color: textColor ?? Colors.blue[900],
+              color: labelColor ?? textColor,
               fontWeight: FontWeight.w900,
-              fontSize: 50),
+              fontSize: fontSize),
           prefixIconConstraints:
               const BoxConstraints(minHeight: 50, minWidth: 50),
           prefixIcon: Padding(
@@ -1261,9 +1266,9 @@ getUnitWeightValue() {
 
 getMaxKycValue() {
   if (Global.settingValueModel == null) {
-    return 200000;
+    return 200000.00;
   }
-  return Global.settingValueModel?.maxKycValue ?? 200000;
+  return Global.settingValueModel?.maxKycValue ?? 200000.00;
 }
 
 getTaxAmount(double? amount) {}
@@ -1271,3 +1276,22 @@ getTaxAmount(double? amount) {}
 getTaxBase(double? amount) {}
 
 enum ENV { PRO, DEV }
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDate(DateTime other) {
+    return year == other.year && month == other.month
+        && day == other.day - 1;
+  }
+}
+
+DateFormat dateFormat = DateFormat("dd-MM-yyyy");
+
+checkDate(String date) {
+  try {
+    dateFormat.parseStrict(date);
+    return true;
+  } catch (e) {
+    motivePrint(e.toString());
+    return false;
+  }
+}

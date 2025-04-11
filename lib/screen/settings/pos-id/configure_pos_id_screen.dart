@@ -206,7 +206,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'รหัสเครื่อง',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             enabled: false,
@@ -266,7 +266,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                                           ),
                                           buildTextFieldBig(
                                             labelText: 'รหัสเครื่อง POS ID',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: posIdCtrl,
@@ -297,7 +297,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                                           buildTextFieldBig(
                                             line: 3,
                                             labelText: 'คำอธิบาย...',
-                                            textColor: Colors.orange,
+                                            labelColor: Colors.orange,
                                             validator: null,
                                             inputType: TextInputType.text,
                                             controller: detailCtrl,

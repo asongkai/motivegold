@@ -194,7 +194,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: size!.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (CompanyModel value) async {
@@ -212,7 +212,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(6),
+                                        fontSize: size!.getWidthPx(10),
                                         projectValueNotifier: companyNotifier!,
                                       ),
                                     ),
@@ -243,7 +243,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: size!.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (BranchModel value) {
@@ -253,7 +253,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(6),
+                                        fontSize: size!.getWidthPx(10),
                                         projectValueNotifier: branchNotifier!,
                                       ),
                                     ),
@@ -417,7 +417,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: size!.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductTypeModel project) {
@@ -427,7 +427,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(6),
+                                        fontSize: size!.getWidthPx(10),
                                         projectValueNotifier: userRoleNotifier!,
                                       ),
                                     ),
