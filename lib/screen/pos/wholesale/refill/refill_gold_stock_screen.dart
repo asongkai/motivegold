@@ -562,6 +562,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                           setState(() {
                                             priceIncludeTaxCtrl.text = "";
                                           });
+                                          priceIncludeTaxChanged();
                                         },
                                         onTap: () {
                                           txt = 'price_include';
@@ -574,7 +575,11 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                             openCal();
                                           }
                                         },
-                                        onFocusChange: (bool value) {}),
+                                        onFocusChange: (bool value) {
+                                          if (!value) {
+                                            priceIncludeTaxChanged();
+                                          }
+                                        }),
                                   ),
                                 ),
                               ],
@@ -1210,6 +1215,10 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     } else {
       productWeightBahtCtrl.text = "";
     }
+    getOtherAmount();
+  }
+
+  void priceIncludeTaxChanged() {
     getOtherAmount();
   }
 

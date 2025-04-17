@@ -680,11 +680,12 @@ class _BuyDialogState extends State<BuyDialog> {
                       var realPrice = Global.getBuyPrice(Global.toNumber(
                           productWeightCtrl
                               .text)); //Global.toNumber(productPriceBaseCtrl.text);
-
+                      realPrice = Global.toNumber(Global.format(realPrice));
                       motivePrint(realPrice);
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
-
+                      motivePrint(price);
+                      motivePrint(check);
                       // return;
                       if (price > realPrice) {
                         Alert.warning(
