@@ -189,29 +189,29 @@ class PosMenuScreenState extends State<PosMenuScreen> {
           SideMenu(
             controller: sideMenu,
             style: SideMenuStyle(
-              showTooltip: true,
-              iconSize: 90,
-              compactSideMenuWidth: 130,
-              itemHeight: 130,
-              displayMode: SideMenuDisplayMode.compact,
+              showHamburger: true,
+              displayMode: SideMenuDisplayMode.auto,
               hoverColor: Colors.teal[100],
               selectedHoverColor: Colors.teal[100],
               selectedColor: Colors.teal,
               selectedTitleTextStyle: const TextStyle(color: Colors.white),
               selectedIconColor: Colors.white,
+              openSideMenuWidth: 160,
+              itemHeight: 100,
+              itemOuterPadding: const EdgeInsets.all(4.0)
             ),
-            title: Column(
+            title: const Column(
               children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 150,
-                    maxWidth: 150,
-                  ),
-                  child: Image.asset(
-                    'assets/icons/start.gif',
-                  ),
-                ),
-                const Divider(
+                // ConstrainedBox(
+                //   constraints: const BoxConstraints(
+                //     maxHeight: 150,
+                //     maxWidth: 150,
+                //   ),
+                //   child: Image.asset(
+                //     'assets/icons/start.gif',
+                //   ),
+                // ),
+                Divider(
                   indent: 8.0,
                   endIndent: 8.0,
                 ),
@@ -219,20 +219,22 @@ class PosMenuScreenState extends State<PosMenuScreen> {
             ),
             items: [
               SideMenuItem(
-                title: 'ขายทองคำใหม่',
+                title: 'ลูกค้าซื้อ',
+                subTitle: 'ร้านทองขาย',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.s),
-                tooltipContent: "ขายทองคำใหม่",
+                icon: null, //const Icon(FontAwesomeIcons.s),
+                tooltipContent: "ลูกค้าซื้อ ร้านทองขาย",
               ),
               SideMenuItem(
-                title: 'รับซื้อทองเก่า',
+                title: 'ลูกค้าขาย',
+                subTitle: 'ร้านทองรับซื้อ',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.b),
-                tooltipContent: 'รับซื้อทองเก่า',
+                icon: null, //const Icon(FontAwesomeIcons.b),
+                tooltipContent: 'ลูกค้าขาย ร้านทองรับซื้อ',
               ),
             ],
           ),

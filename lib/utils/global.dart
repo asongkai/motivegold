@@ -22,6 +22,7 @@ import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/request.dart';
 import 'package:motivegold/model/transfer_detail.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/bill/make_bill.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/util.dart';
@@ -78,6 +79,9 @@ class Global {
   static List<OrderModel>? ordersWholesale = [];
   static OrderModel? orderWholesale;
 
+  static List<OrderModel>? ordersThengWholesale = [];
+  static OrderModel? orderThengWholesale;
+
   static List<OrderModel>? ordersTransfer = [];
   static OrderModel? orderTransfer;
 
@@ -87,6 +91,9 @@ class Global {
 
   static File? refillAttach;
   static File? sellUsedAttach;
+
+  static File? refillThengAttach;
+  static File? sellUsedThengAttach;
 
   // PAYMENT
   static String? currentPaymentMethod;
@@ -121,6 +128,9 @@ class Global {
   static List<OrderDetailModel>? usedSellDetail = [];
   static List<TransferDetailModel>? transferDetail = [];
   static TransferModel? transfer;
+
+  static List<OrderDetailModel>? refillThengOrderDetail = [];
+  static List<OrderDetailModel>? sellUsedThengOrderDetail = [];
 
   static OrderModel? posOrder;
   static int posIndex = 0;
@@ -215,7 +225,7 @@ class Global {
     return false;
   }
 
-  static format(double value) {
+  static format(dynamic value) {
     String number = formatter.format(value);
     var part = number.split('.');
     if (part.length > 1) {
@@ -228,7 +238,7 @@ class Global {
     }
   }
 
-  static format4(double value) {
+  static format4(dynamic value) {
     String number = formatter4.format(value);
     var part = number.split('.');
     if (part.length > 1) {
@@ -247,7 +257,7 @@ class Global {
     }
   }
 
-  static format6(double value) {
+  static format6(dynamic value) {
     String number = formatter6.format(value);
     var part = number.split('.');
     if (part.length > 1) {
@@ -603,23 +613,23 @@ class Global {
     }
     double amount = payToCustomerOrShopValue(orders, discount);
     return amount > 0
-        ? '${format(amount)} THB'
+        ? '${format(amount)} บาท'
         : amount == 0
             ? 0
-            : '${format(-amount)} THB';
+            : '${format(-amount)} บาท';
   }
 
   static dynamic payToCustomerOrShopWholeSale(
-      List<OrderModel>? orders, double discount) {
+      dynamic orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
     double amount = payToCustomerOrShopValueWholeSale(orders, discount);
     return amount > 0
-        ? '${format(amount)} THB'
+        ? '${format(amount)} บาท'
         : amount == 0
             ? 0
-            : '${format(-amount)} THB';
+            : '${format(-amount)} บาท';
   }
 
   static dynamic payToCustomerOrShopValue(
@@ -646,6 +656,7 @@ class Global {
     amount = sell + buy;
     amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
+    amount = (sell + buy) < 0 ? -amount : amount;
     return amount;
   }
 
@@ -662,16 +673,18 @@ class Global {
       // double price = type == 5 ? orders[i].priceExcludeTax ?? 0 : orders[i].priceIncludeTax ?? 0;
       double price = orders[i].priceIncludeTax ?? 0;
 
-      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9 || type == 10) {
         buy += -price;
       }
-      if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8) {
+      if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8 || type == 11) {
         sell += price;
       }
     }
     amount = sell + buy;
     amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
+    amount = (sell + buy) < 0 ? -amount : amount;
+    // motivePrint(sell + buy);
     return amount;
   }
 
@@ -684,6 +697,7 @@ class Global {
   }
 
   static dynamic getRefillPayTittle(double amount) {
+    motivePrint(amount);
     return amount > 0
         ? 'ค้าส่งจ่าย - ร้านรับเงิน (สุทธิ)'
         : amount == 0
@@ -714,10 +728,10 @@ class Global {
 
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
-        ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} THB'
+        ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} บาท'
         : amount == 0
             ? 0
-            : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} THB';
+            : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} บาท';
   }
 
   static double getPaymentTotal(List<OrderModel>? orders) {
@@ -1103,6 +1117,10 @@ class Global {
     return num == null || num == '' ? 0 : double.parse(num.replaceAll(",", ""));
   }
 
+  static int toInt(String? num) {
+    return num == null || num == '' ? 0 : int.parse(num.replaceAll(",", ""));
+  }
+
   static DateTime convertDate(String date) {
     List<String> parts = date.split("-");
     DateTime tempDate =
@@ -1325,8 +1343,8 @@ class Global {
   static String requestObj(dynamic data,
       {status = "", message = "", token = ""}) {
     return encoder.convert(RequestModel(
-        companyId: company?.id,
-        branchId: branch?.id,
+        companyId: company?.id ?? user?.companyId,
+        branchId: branch?.id ?? user?.branchId,
         userId: user?.id,
         data: data,
         status: status,
@@ -1358,6 +1376,10 @@ class Global {
         return 'BARM';
       case 9:
         return 'BARM';
+      case 10:
+        return 'RFB';
+      case 11:
+        return 'SUB';
       default:
         return 'NEW';
     }

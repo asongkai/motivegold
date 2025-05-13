@@ -259,142 +259,142 @@ class _BuyUsedGoldGovReportScreenState
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'สินค้า',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
-                                        ),
-                                        SizedBox(
-                                          height: 80,
-                                          child:
-                                              MiraiDropDownMenu<ProductModel>(
-                                            key: UniqueKey(),
-                                            children: productList,
-                                            space: 4,
-                                            maxHeight: 360,
-                                            showSearchTextField: true,
-                                            selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                            emptyListMessage: 'ไม่มีข้อมูล',
-                                            showSelectedItemBackgroundColor:
-                                                true,
-                                            itemWidgetBuilder: (
-                                              int index,
-                                              ProductModel? project, {
-                                              bool isItemSelected = false,
-                                            }) {
-                                              return DropDownItemWidget(
-                                                project: project,
-                                                isItemSelected: isItemSelected,
-                                                firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
-                                              );
-                                            },
-                                            onChanged: (ProductModel value) {
-                                              selectedProduct = value;
-                                              productNotifier!.value = value;
-                                              search();
-                                            },
-                                            child: DropDownObjectChildWidget(
-                                              key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
-                                              projectValueNotifier:
-                                                  productNotifier!,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'คลังสินค้า',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
-                                        ),
-                                        SizedBox(
-                                          height: 80,
-                                          child:
-                                              MiraiDropDownMenu<WarehouseModel>(
-                                            key: UniqueKey(),
-                                            children: warehouseList,
-                                            space: 4,
-                                            maxHeight: 360,
-                                            showSearchTextField: true,
-                                            selectedItemBackgroundColor:
-                                                Colors.transparent,
-                                            emptyListMessage: 'ไม่มีข้อมูล',
-                                            showSelectedItemBackgroundColor:
-                                                true,
-                                            itemWidgetBuilder: (
-                                              int index,
-                                              WarehouseModel? project, {
-                                              bool isItemSelected = false,
-                                            }) {
-                                              return DropDownItemWidget(
-                                                project: project,
-                                                isItemSelected: isItemSelected,
-                                                firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
-                                              );
-                                            },
-                                            onChanged: (WarehouseModel value) {
-                                              selectedWarehouse = value;
-                                              warehouseNotifier!.value = value;
-                                              search();
-                                            },
-                                            child: DropDownObjectChildWidget(
-                                              key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
-                                              projectValueNotifier:
-                                                  warehouseNotifier!,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   crossAxisAlignment: CrossAxisAlignment.center,
+                        //   children: [
+                        //     Expanded(
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.only(
+                        //             left: 8.0, right: 8.0),
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           mainAxisAlignment: MainAxisAlignment.start,
+                        //           children: [
+                        //             const SizedBox(
+                        //               height: 10,
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment:
+                        //                   CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Text(
+                        //                   'สินค้า',
+                        //                   style: TextStyle(
+                        //                       fontSize: size.getWidthPx(8)),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 80,
+                        //                   child:
+                        //                       MiraiDropDownMenu<ProductModel>(
+                        //                     key: UniqueKey(),
+                        //                     children: productList,
+                        //                     space: 4,
+                        //                     maxHeight: 360,
+                        //                     showSearchTextField: true,
+                        //                     selectedItemBackgroundColor:
+                        //                         Colors.transparent,
+                        //                     emptyListMessage: 'ไม่มีข้อมูล',
+                        //                     showSelectedItemBackgroundColor:
+                        //                         true,
+                        //                     itemWidgetBuilder: (
+                        //                       int index,
+                        //                       ProductModel? project, {
+                        //                       bool isItemSelected = false,
+                        //                     }) {
+                        //                       return DropDownItemWidget(
+                        //                         project: project,
+                        //                         isItemSelected: isItemSelected,
+                        //                         firstSpace: 10,
+                        //                         fontSize: size.getWidthPx(8),
+                        //                       );
+                        //                     },
+                        //                     onChanged: (ProductModel value) {
+                        //                       selectedProduct = value;
+                        //                       productNotifier!.value = value;
+                        //                       search();
+                        //                     },
+                        //                     child: DropDownObjectChildWidget(
+                        //                       key: GlobalKey(),
+                        //                       fontSize: size.getWidthPx(8),
+                        //                       projectValueNotifier:
+                        //                           productNotifier!,
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     Expanded(
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.only(
+                        //             left: 8.0, right: 8.0),
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           mainAxisAlignment: MainAxisAlignment.start,
+                        //           children: [
+                        //             const SizedBox(
+                        //               height: 10,
+                        //             ),
+                        //             Column(
+                        //               crossAxisAlignment:
+                        //                   CrossAxisAlignment.start,
+                        //               children: [
+                        //                 Text(
+                        //                   'คลังสินค้า',
+                        //                   style: TextStyle(
+                        //                       fontSize: size.getWidthPx(8)),
+                        //                 ),
+                        //                 SizedBox(
+                        //                   height: 80,
+                        //                   child:
+                        //                       MiraiDropDownMenu<WarehouseModel>(
+                        //                     key: UniqueKey(),
+                        //                     children: warehouseList,
+                        //                     space: 4,
+                        //                     maxHeight: 360,
+                        //                     showSearchTextField: true,
+                        //                     selectedItemBackgroundColor:
+                        //                         Colors.transparent,
+                        //                     emptyListMessage: 'ไม่มีข้อมูล',
+                        //                     showSelectedItemBackgroundColor:
+                        //                         true,
+                        //                     itemWidgetBuilder: (
+                        //                       int index,
+                        //                       WarehouseModel? project, {
+                        //                       bool isItemSelected = false,
+                        //                     }) {
+                        //                       return DropDownItemWidget(
+                        //                         project: project,
+                        //                         isItemSelected: isItemSelected,
+                        //                         firstSpace: 10,
+                        //                         fontSize: size.getWidthPx(8),
+                        //                       );
+                        //                     },
+                        //                     onChanged: (WarehouseModel value) {
+                        //                       selectedWarehouse = value;
+                        //                       warehouseNotifier!.value = value;
+                        //                       search();
+                        //                     },
+                        //                     child: DropDownObjectChildWidget(
+                        //                       key: GlobalKey(),
+                        //                       fontSize: size.getWidthPx(8),
+                        //                       projectValueNotifier:
+                        //                           warehouseNotifier!,
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,

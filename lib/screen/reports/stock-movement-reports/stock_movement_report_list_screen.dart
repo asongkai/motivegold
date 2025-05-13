@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/stockmovement.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/preview.dart';
+import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_card.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -22,6 +23,8 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/pdf/components.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 class StockMovementReportListScreen extends StatefulWidget {
   const StockMovementReportListScreen({super.key});
@@ -47,6 +50,9 @@ class _StockMovementReportListScreenState
   ValueNotifier<dynamic>? productNotifier;
   ValueNotifier<dynamic>? warehouseNotifier;
 
+  final TextEditingController fromDateCtrl = TextEditingController();
+  final TextEditingController toDateCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +61,7 @@ class _StockMovementReportListScreenState
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
-    search();
+    // search();
   }
 
   void loadProducts() async {
@@ -105,7 +111,13 @@ class _StockMovementReportListScreenState
         '/stockmovement/search',
         Global.requestObj({
           "productId": selectedProduct?.id,
-          "binLocationId": selectedWarehouse?.id
+          "binLocationId": selectedWarehouse?.id,
+          "fromDate": fromDateCtrl.text.isNotEmpty
+              ? DateTime.parse(fromDateCtrl.text).toString()
+              : null,
+          "toDate": toDateCtrl.text.isNotEmpty
+              ? DateTime.parse(toDateCtrl.text).toString()
+              : null,
         }));
     // motivePrint(location?.toJson());
     if (location?.status == "success") {
@@ -153,14 +165,116 @@ class _StockMovementReportListScreenState
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         GestureDetector(
+                          onTap: () async {
+                            if (selectedWarehouse == null) {
+                              Alert.warning(context, 'คำเตือน',
+                                  'กรุณาเลือกคลังสินค้า', 'OK',
+                                  action: () {});
+                              return;
+                            }
+
+                            if (selectedProduct == null) {
+                              Alert.warning(
+                                  context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK',
+                                  action: () {});
+                              return;
+                            }
+
+                            if (fromDateCtrl.text.isEmpty) {
+                              Alert.warning(context, 'คำเตือน',
+                                  'กรุณาเลือกจากวันที่', 'OK',
+                                  action: () {});
+                              return;
+                            }
+
+                            if (toDateCtrl.text.isEmpty) {
+                              Alert.warning(context, 'คำเตือน',
+                                  'กรุณาเลือกถึงวันที่', 'OK',
+                                  action: () {});
+                              return;
+                            }
+
+                            if (filterList!.isEmpty) {
+                              Alert.warning(
+                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+                              return;
+                            }
+
+                            final ProgressDialog pr = ProgressDialog(context,
+                                type: ProgressDialogType.normal,
+                                isDismissible: true,
+                                showLogs: true);
+                            await pr.show();
+                            pr.update(message: 'processing'.tr());
+
+                            var location = await ApiServices.post(
+                                '/stockmovement/search/balance',
+                                Global.requestObj({
+                                  "productId": selectedProduct?.id,
+                                  "binLocationId": selectedWarehouse?.id,
+                                  "fromDate": fromDateCtrl.text.isNotEmpty
+                                      ? DateTime.parse(fromDateCtrl.text)
+                                          .toString()
+                                      : null,
+                                  "toDate": toDateCtrl.text.isNotEmpty
+                                      ? DateTime.parse(toDateCtrl.text)
+                                          .toString()
+                                      : null,
+                                }));
+                            motivePrint(location?.toJson());
+                            StockMovementModel? product;
+                            if (location?.status == "success") {
+                              product =
+                                  StockMovementModel.fromJson(location?.data);
+                              setState(() {});
+                            }
+
+                            await pr.hide();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewStockCardReportPage(
+                                  list: filterList!.reversed.toList(),
+                                  type: 1,
+                                  warehouseModel: selectedWarehouse,
+                                  productModel: selectedProduct,
+                                  stockMovementModel: product,
+                                  date:
+                                      '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
+                                ),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.print,
+                                size: 50,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                'พิมพ์ Stock card',
+                                style: TextStyle(
+                                    fontSize: size.getWidthPx(8),
+                                    color: Colors.white),
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
                           onTap: () {
                             if (filterList!.isEmpty) {
-                              Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+                              Alert.warning(
+                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
                               return;
                             }
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => PreviewStockMovementReportPage(
+                                builder: (context) =>
+                                    PreviewStockMovementReportPage(
                                   list: filterList!.reversed.toList(),
                                   type: 1,
                                 ),
@@ -176,7 +290,9 @@ class _StockMovementReportListScreenState
                               ),
                               Text(
                                 'พิมพ์',
-                                style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: size.getWidthPx(8),
+                                    color: Colors.white),
                               )
                             ],
                           ),
@@ -239,16 +355,16 @@ class _StockMovementReportListScreenState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'สินค้า',
+                                          'คลังสินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(10)),
                                         ),
                                         SizedBox(
                                           height: 80,
                                           child:
-                                              MiraiDropDownMenu<ProductModel>(
+                                              MiraiDropDownMenu<WarehouseModel>(
                                             key: UniqueKey(),
-                                            children: productList,
+                                            children: warehouseList,
                                             space: 4,
                                             maxHeight: 360,
                                             showSearchTextField: true,
@@ -259,27 +375,28 @@ class _StockMovementReportListScreenState
                                                 true,
                                             itemWidgetBuilder: (
                                               int index,
-                                              ProductModel? project, {
+                                              WarehouseModel? project, {
                                               bool isItemSelected = false,
                                             }) {
                                               return DropDownItemWidget(
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(10),
                                               );
                                             },
-                                            onChanged: (ProductModel value) {
-                                              productCtrl.text = value.name;
-                                              selectedProduct = value;
-                                              productNotifier!.value = value;
+                                            onChanged: (WarehouseModel value) {
+                                              warehouseCtrl.text =
+                                                  value.name.toString();
+                                              selectedWarehouse = value;
+                                              warehouseNotifier!.value = value;
                                               search();
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(10),
                                               projectValueNotifier:
-                                                  productNotifier!,
+                                                  warehouseNotifier!,
                                             ),
                                           ),
                                         ),
@@ -305,16 +422,16 @@ class _StockMovementReportListScreenState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'คลังสินค้า',
+                                          'สินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: size.getWidthPx(10)),
                                         ),
                                         SizedBox(
                                           height: 80,
                                           child:
-                                              MiraiDropDownMenu<WarehouseModel>(
+                                              MiraiDropDownMenu<ProductModel>(
                                             key: UniqueKey(),
-                                            children: warehouseList,
+                                            children: productList,
                                             space: 4,
                                             maxHeight: 360,
                                             showSearchTextField: true,
@@ -325,34 +442,197 @@ class _StockMovementReportListScreenState
                                                 true,
                                             itemWidgetBuilder: (
                                               int index,
-                                              WarehouseModel? project, {
+                                              ProductModel? project, {
                                               bool isItemSelected = false,
                                             }) {
                                               return DropDownItemWidget(
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: size.getWidthPx(10),
                                               );
                                             },
-                                            onChanged: (WarehouseModel value) {
-                                              warehouseCtrl.text =
-                                                  value.name.toString();
-                                              selectedWarehouse = value;
-                                              warehouseNotifier!.value = value;
+                                            onChanged: (ProductModel value) {
+                                              productCtrl.text = value.name;
+                                              selectedProduct = value;
+                                              productNotifier!.value = value;
                                               search();
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: size.getWidthPx(10),
                                               projectValueNotifier:
-                                                  warehouseNotifier!,
+                                                  productNotifier!,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: TextField(
+                                  controller: fromDateCtrl,
+                                  style:
+                                      TextStyle(fontSize: size.getWidthPx(12)),
+                                  //editing controller of this TextField
+                                  decoration: InputDecoration(
+                                    prefixIcon:
+                                        const Icon(Icons.calendar_today),
+                                    //icon of text field
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    suffixIcon: fromDateCtrl.text.isNotEmpty
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                fromDateCtrl.text = "";
+                                                toDateCtrl.text = "";
+                                                filterList = dataList;
+                                              });
+                                            },
+                                            child: const Icon(Icons.clear))
+                                        : null,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    labelText: "จากวันที่",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        getProportionateScreenWidth(2),
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: kGreyShade3,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        getProportionateScreenWidth(2),
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: kGreyShade3,
+                                      ),
+                                    ),
+                                  ),
+                                  readOnly: true,
+                                  //set it true, so that user will not able to edit text
+                                  onTap: () async {
+                                    DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate:
+                                            DateTime(DateTime.now().year - 200),
+                                        //DateTime.now() - not to allow to choose before today.
+                                        lastDate: DateTime(2101));
+                                    if (pickedDate != null) {
+                                      motivePrint(
+                                          pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                      String formattedDate =
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(pickedDate);
+                                      motivePrint(
+                                          formattedDate); //formatted date output using intl package =>  2021-03-16
+                                      //you can implement different kind of Date Format here according to your requirement
+                                      setState(() {
+                                        fromDateCtrl.text =
+                                            formattedDate; //set output date to TextField value.
+                                      });
+                                      search();
+                                    } else {
+                                      motivePrint("Date is not selected");
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: TextField(
+                                  controller: toDateCtrl,
+                                  //editing controller of this TextField
+                                  style:
+                                      TextStyle(fontSize: size.getWidthPx(12)),
+                                  //editing controller of this TextField
+                                  decoration: InputDecoration(
+                                    prefixIcon:
+                                        const Icon(Icons.calendar_today),
+                                    //icon of text field
+                                    suffixIcon: toDateCtrl.text.isNotEmpty
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                toDateCtrl.text = "";
+                                                fromDateCtrl.text = "";
+                                                filterList = dataList;
+                                              });
+                                            },
+                                            child: const Icon(Icons.clear))
+                                        : null,
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.always,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    labelText: "ถึงวันที่",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        getProportionateScreenWidth(2),
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: kGreyShade3,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        getProportionateScreenWidth(2),
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: kGreyShade3,
+                                      ),
+                                    ),
+                                  ),
+                                  readOnly: true,
+                                  //set it true, so that user will not able to edit text
+                                  onTap: () async {
+                                    DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate:
+                                            DateTime(DateTime.now().year - 200),
+                                        //DateTime.now() - not to allow to choose before today.
+                                        lastDate: DateTime(2101));
+                                    if (pickedDate != null) {
+                                      motivePrint(
+                                          pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                      String formattedDate =
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(pickedDate);
+                                      motivePrint(
+                                          formattedDate); //formatted date output using intl package =>  2021-03-16
+                                      //you can implement different kind of Date Format here according to your requirement
+                                      setState(() {
+                                        toDateCtrl.text =
+                                            formattedDate; //set output date to TextField value.
+                                      });
+                                      search();
+                                    } else {
+                                      motivePrint("Date is not selected");
+                                    }
+                                  },
                                 ),
                               ),
                             ),
@@ -373,15 +653,15 @@ class _StockMovementReportListScreenState
                                           WidgetStateProperty.all<Color>(
                                               bgColor3)),
                                   onPressed: search,
-                                  child: Row(
+                                  child: const Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.search),
+                                      Icon(Icons.search),
                                       Text(
-                                        'ค้นหา'.tr(),
-                                        style: const TextStyle(fontSize: 20),
+                                        'ค้นหา',
+                                        style: TextStyle(fontSize: 20),
                                       ),
                                     ],
                                   ),
@@ -411,18 +691,20 @@ class _StockMovementReportListScreenState
                                     warehouseCtrl.text = "";
                                     selectedProduct = null;
                                     selectedWarehouse = null;
+                                    toDateCtrl.text = "";
+                                    fromDateCtrl.text = "";
                                     search();
                                     setState(() {});
                                   },
-                                  child: Row(
+                                  child: const Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.clear),
+                                      Icon(Icons.clear),
                                       Text(
-                                        'Reset'.tr(),
-                                        style: const TextStyle(fontSize: 20),
+                                        'Reset',
+                                        style: TextStyle(fontSize: 20),
                                       ),
                                     ],
                                   ),

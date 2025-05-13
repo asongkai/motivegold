@@ -58,6 +58,7 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
+                if (Global.user!.userRole == 'Administrator')
                 Expanded(
                     flex: 6,
                     child: Row(
@@ -176,6 +177,7 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if (Global.user!.userRole == 'Administrator')
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -203,6 +205,7 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
                   ),
                 ),
                 const SizedBox(width: 10,),
+                if (Global.user!.userRole == 'Administrator')
                 GestureDetector(
                   onTap: () {
                     remove(list[index].id!, index);

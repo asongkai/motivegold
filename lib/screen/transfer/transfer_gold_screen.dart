@@ -149,8 +149,9 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
 
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
-      productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+      productWeightBahtCtrl.text = formatter.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
       qtyLocation = qtyLocationList.isNotEmpty ? qtyLocationList.first : null;
       motivePrint(qtyLocation?.toJson());
       setState(() {});
@@ -277,14 +278,15 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const GoldPriceScreen(
-                                      showBackButton: true,
-                                    ),
+                                          showBackButton: true,
+                                        ),
                                     fullscreenDialog: true));
                           },
                           child: Container(
                             color: Colors.teal[900],
                             child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
                               child: Row(
                                 children: [
                                   const Icon(
@@ -294,7 +296,9 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                   ),
                                   Text(
                                     'ราคาทองคำ',
-                                    style: TextStyle(fontSize: size!.getWidthPx(8), color: Colors.white),
+                                    style: TextStyle(
+                                        fontSize: size!.getWidthPx(8),
+                                        color: Colors.white),
                                   )
                                 ],
                               ),
@@ -936,6 +940,20 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                       context,
                                                                       'คำเตือน',
                                                                       'กรุณาเพิ่มข้อมูลก่อน',
+                                                                      'OK');
+                                                                  return;
+                                                                }
+
+                                                                if (Global.toNumber(
+                                                                        productEntryWeightCtrl
+                                                                            .text) >
+                                                                    Global.toNumber(
+                                                                        productWeightCtrl
+                                                                            .text)) {
+                                                                  Alert.warning(
+                                                                      context,
+                                                                      'คำเตือน',
+                                                                      'ไม่สามารถโอนเกินสต๊อกที่มีอยู่ได้',
                                                                       'OK');
                                                                   return;
                                                                 }

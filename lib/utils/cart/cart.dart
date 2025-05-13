@@ -37,6 +37,12 @@ bool writeCart() {
           key: getCartKey(Global.currentOrderType),
           value: jsonEncode(Global.ordersWholesale ?? []));
     }
+    if (Global.currentOrderType == 6) {
+      Global.orders = Global.ordersThengWholesale ?? [];
+      LocalStorage.sharedInstance.writeValue(
+          key: getCartKey(Global.currentOrderType),
+          value: jsonEncode(Global.ordersThengWholesale ?? []));
+    }
     return true;
   } catch (e) {
     return false;
@@ -74,10 +80,16 @@ void removeCart() {
         key: getCartKey(Global.currentOrderType),
         value: jsonEncode(Global.ordersWholesale ?? []));
   }
+  if (Global.currentOrderType == 6) {
+    Global.ordersThengWholesale = Global.orders;
+    LocalStorage.sharedInstance.writeValue(
+        key: getCartKey(Global.currentOrderType),
+        value: jsonEncode(Global.ordersThengWholesale ?? []));
+  }
 }
 
 void resetCart() {
-  for (int i = 1; i < 6; i++) {
+  for (int i = 1; i < 7; i++) {
     LocalStorage.sharedInstance
         .writeValue(key: getCartKey(i), value: jsonEncode([]));
   }
@@ -116,6 +128,9 @@ void getCart() async {
   if (Global.currentOrderType == 5) {
     Global.orders = Global.ordersWholesale ?? [];
   }
+  if (Global.currentOrderType == 6) {
+    Global.orders = Global.ordersThengWholesale ?? [];
+  }
 }
 
 void setCart(List<OrderModel> orders, int orderType) {
@@ -135,6 +150,9 @@ void setCart(List<OrderModel> orders, int orderType) {
     case 5:
       Global.ordersWholesale = orders;
       break;
+    case 6:
+      Global.ordersThengWholesale = orders;
+      break;
     default:
       break;
   }
@@ -152,6 +170,8 @@ String getCartKey(int orderType) {
       return 'broker_cart';
     case 5:
       return 'wholesale_cart';
+    case 6:
+      return 'theng_wholesale_cart';
     default:
       return '';
   }

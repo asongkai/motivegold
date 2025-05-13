@@ -51,40 +51,46 @@ class OrderDetailModel {
   DateTime? bookDate;
   String? transferType;
   GoldDataModel? goldDataModel;
+  int? packageId;
+  int? packageQty;
+  double? packagePrice;
+  String? vatOption;
 
-  OrderDetailModel({
-    this.id,
-    this.orderId,
-    this.productId,
-    required this.productName,
-    this.binLocationId,
-    this.toBinLocationId,
-    this.binLocationName,
-    this.toBinLocationName,
-    this.sellTPrice,
-    this.buyTPrice,
-    this.sellPrice,
-    this.buyPrice,
-    this.commission,
-    this.weight,
-    this.weightBath,
-    this.weightAdj,
-    this.weightBathAdj,
-    this.unitCost,
-    this.priceIncludeTax,
-    this.purchasePrice,
-    this.priceDiff,
-    this.taxAmount,
-    this.taxBase,
-    this.priceExcludeTax,
-    this.createdDate,
-    this.updatedDate,
-    this.toBranchId,
-    this.toBranchName,
-    this.bookDate,
-    this.transferType,
-    this.goldDataModel,
-  });
+  OrderDetailModel(
+      {this.id,
+      this.orderId,
+      this.productId,
+      required this.productName,
+      this.binLocationId,
+      this.toBinLocationId,
+      this.binLocationName,
+      this.toBinLocationName,
+      this.sellTPrice,
+      this.buyTPrice,
+      this.sellPrice,
+      this.buyPrice,
+      this.commission,
+      this.weight,
+      this.weightBath,
+      this.weightAdj,
+      this.weightBathAdj,
+      this.unitCost,
+      this.priceIncludeTax,
+      this.purchasePrice,
+      this.priceDiff,
+      this.taxAmount,
+      this.taxBase,
+      this.priceExcludeTax,
+      this.createdDate,
+      this.updatedDate,
+      this.toBranchId,
+      this.toBranchName,
+      this.bookDate,
+      this.transferType,
+      this.goldDataModel,
+      this.packageId,
+      this.packageQty,
+      this.packagePrice, this.vatOption,});
 
   factory OrderDetailModel.fromJson(Map<String, dynamic> json) =>
       OrderDetailModel(
@@ -127,6 +133,10 @@ class OrderDetailModel {
         goldDataModel: json["goldDataModel"] == null
             ? null
             : GoldDataModel.fromJson(json["goldDataModel"]),
+        packageId: json["packageId"],
+        packageQty: json["packageQty"] != null ? json["packageQty"].toInt() : 0,
+        packagePrice: json["packagePrice"],
+        vatOption: json["vatOption"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -161,6 +171,10 @@ class OrderDetailModel {
         "toBranchName": toBranchName,
         "transferType": transferType,
         "goldDataModel": goldDataModel?.toJson(),
+        "packageId": packageId,
+        "packageQty": packageQty,
+        "packagePrice": packagePrice,
+        "vatOption": vatOption,
       };
 
   @override

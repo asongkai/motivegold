@@ -10,10 +10,10 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/screen/customer/add_customer_screen.dart';
 import 'package:motivegold/screen/customer/customer_screen.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.dart';
-import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/edit_refill_gold_stock_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/used/edit_sell_used_gold_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/edit_refill_gold_stock_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/used/edit_sell_used_gold_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/refill/edit_refill_theng_gold_stock_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/used/edit_sell_used_theng_gold_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_print_bill_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/cart/cart.dart';
@@ -51,6 +51,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   void initState() {
     // implement initState
     super.initState();
+    Global.discount = 0;
+    Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
     Global.paymentAttachment = null;
@@ -64,6 +66,12 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    Global.discount = 0;
+  }
+  @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
@@ -71,7 +79,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Text("Wholesale เช็คเอาท์",
+          title: Text("ชำระเงิน [ค้าส่ง]",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white,
@@ -83,7 +91,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: Global.ordersWholesale!.isEmpty
+          child: Global.orders.isEmpty
               ? const Center(
                   child: NoDataFoundWidget(),
                 )
@@ -313,11 +321,9 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                           ),
                           child: Column(
                             children: [
-                              for (int i = 0;
-                                  i < Global.ordersWholesale!.length;
-                                  i++)
+                              for (int i = 0; i < Global.orders.length; i++)
                                 _itemOrderList(
-                                    order: Global.ordersWholesale![i], index: i)
+                                    order: Global.orders[i], index: i)
                             ],
                           ),
                         ),
@@ -353,12 +359,12 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                               PriceBreakdown(
                                 title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                 price:
-                                    '${Global.format(Global.getPaymentTotalWholeSale(Global.ordersWholesale))} THB',
+                                    '${Global.format(Global.getPaymentTotalWholeSale(Global.orders))} บาท',
                               ),
                               PriceBreakdown(
                                 title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
                                 price:
-                                    '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.ordersWholesale, Global.discount))} ${Global.payToCustomerOrShopWholeSale(Global.ordersWholesale, Global.discount)}',
+                                    '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.orders, Global.discount))} ${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
                               ),
                             ],
                           ),
@@ -616,7 +622,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   }
                 }
                 var amount = Global.payToCustomerOrShopValueWholeSale(
-                    Global.ordersWholesale, Global.discount);
+                    Global.orders, Global.discount);
                 // // motivePrint(selectedOption);
                 // if (amount > getMaxKycValue()) {
                 //   if (selectedOption == 0 && Global.customer == null) {
@@ -643,8 +649,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 // return;
                 if (getPaymentTotal() >
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(
-                            Global.ordersWholesale)))) {
+                        Global.getPaymentTotalWholeSale(Global.orders)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -660,8 +665,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
 
                 if (getPaymentTotal() <
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(
-                            Global.ordersWholesale)))) {
+                        Global.getPaymentTotalWholeSale(Global.orders)))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -675,33 +679,25 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   }
                 }
 
-                for (var i = 0; i < Global.ordersWholesale!.length; i++) {
-                  Global.ordersWholesale![i].id = 0;
-                  Global.ordersWholesale![i].createdDate = DateTime.now();
-                  Global.ordersWholesale![i].updatedDate = DateTime.now();
-                  Global.ordersWholesale![i].customerId = Global.customer!.id!;
-                  Global.ordersWholesale![i].status = "0";
-                  Global.ordersWholesale![i].discount = Global.discount;
-                  Global.ordersWholesale![i].paymentMethod =
-                      Global.currentPaymentMethod;
-                  Global.ordersWholesale![i].attachement = null;
-                  for (var j = 0;
-                      j < Global.ordersWholesale![i].details!.length;
-                      j++) {
-                    Global.ordersWholesale![i].details![j].id = 0;
-                    Global.ordersWholesale![i].details![j].orderId =
-                        Global.ordersWholesale![i].id;
-                    Global.ordersWholesale![i].details![j].unitCost =
-                        Global.ordersWholesale![i].orderTypeId == 6
-                            ? Global.ordersWholesale![i].details![j]
-                                .priceIncludeTax!
-                            : Global.ordersWholesale![i].details![j]
-                                    .priceExcludeTax! /
-                                Global.ordersWholesale![i].details![j].weight!;
-                    Global.ordersWholesale![i].details![j].createdDate =
-                        DateTime.now();
-                    Global.ordersWholesale![i].details![j].updatedDate =
-                        DateTime.now();
+                for (var i = 0; i < Global.orders.length; i++) {
+                  Global.orders[i].id = 0;
+                  Global.orders[i].createdDate = DateTime.now();
+                  Global.orders[i].updatedDate = DateTime.now();
+                  Global.orders[i].customerId = Global.customer!.id!;
+                  Global.orders[i].status = "0";
+                  Global.orders[i].discount = Global.discount;
+                  Global.orders[i].paymentMethod = Global.currentPaymentMethod;
+                  Global.orders[i].attachement = null;
+                  for (var j = 0; j < Global.orders[i].details!.length; j++) {
+                    Global.orders[i].details![j].id = 0;
+                    Global.orders[i].details![j].orderId = Global.orders[i].id;
+                    Global.orders[i].details![j].unitCost =
+                        Global.orders[i].orderTypeId == 6
+                            ? Global.orders[i].details![j].priceIncludeTax!
+                            : Global.orders[i].details![j].priceExcludeTax! /
+                                Global.orders[i].details![j].weight!;
+                    Global.orders[i].details![j].createdDate = DateTime.now();
+                    Global.orders[i].details![j].updatedDate = DateTime.now();
                   }
                 }
 
@@ -719,7 +715,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                     }
                     // Gen pair ID before submit
                     var pair = await ApiServices.post(
-                        '/order/gen-pair/${Global.ordersWholesale?.first.orderTypeId}',
+                        '/order/gen-pair/${Global.orders.first.orderTypeId}',
                         Global.requestObj(null));
 
                     // print(pair?.toJson());
@@ -727,13 +723,12 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                     if (pair?.status == "success") {
                       await postPayment(pair?.data);
                       await postOrder(pair?.data);
-                      Global.orderIds = Global.ordersWholesale!
-                          .map((e) => e.orderId)
-                          .toList();
+                      Global.orderIds =
+                          Global.orders.map((e) => e.orderId).toList();
                       Global.pairId = pair?.data;
                       await pr.hide();
                       if (mounted) {
-                        Global.ordersWholesale!.clear();
+                        Global.orders.clear();
                         Global.discount = 0;
                         Global.customer = null;
                         Global.posOrder = null;
@@ -934,7 +929,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   Future postPayment(int pairId) async {
     if (Global.paymentList!.isNotEmpty) {
       var payment = await ApiServices.post(
-          '/order/gen-payment/${Global.ordersWholesale?.first.orderTypeId}',
+          '/order/gen-payment/${Global.orders.first.orderTypeId}',
           Global.requestObj(null));
 
       if (payment?.status == "success") {
@@ -972,7 +967,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   Future postOrder(int pairId) async {
-    await Future.forEach<OrderModel>(Global.ordersWholesale!, (e) async {
+    await Future.forEach<OrderModel>(Global.orders, (e) async {
       e.pairId = pairId;
       var result =
           await ApiServices.post('/order/create', Global.requestObj(e));
@@ -981,9 +976,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
         int? id = order.id;
         await Future.forEach<OrderDetailModel>(e.details!, (f) async {
           f.orderId = id;
+          motivePrint(Global.requestObj(f));
           var detail =
               await ApiServices.post('/orderdetail', Global.requestObj(f));
-          // motivePrint(detail?.toJson());
+          motivePrint(detail?.toJson());
           if (detail?.status == "success") {
             motivePrint("Order completed");
           }
@@ -1114,7 +1110,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                     .whenComplete(() {
                                   setState(() {});
                                 });
-                              } else {
+                              } else if (order.orderTypeId == 6) {
                                 // motivePrint('${index} ${j}');
                                 Navigator.push(
                                         context,
@@ -1125,6 +1121,34 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                   j: j,
                                                 ),
                                             fullscreenDialog: true))
+                                    .whenComplete(() {
+                                  setState(() {});
+                                });
+                              } else if (order.orderTypeId == 10) {
+                                // motivePrint('${index} ${j}');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditRefillThengGoldStockScreen(
+                                              index: index,
+                                              j: j,
+                                            ),
+                                        fullscreenDialog: true))
+                                    .whenComplete(() {
+                                  setState(() {});
+                                });
+                              } else if (order.orderTypeId == 11) {
+                                // motivePrint('${index} ${j}');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditSellUsedThengGoldScreen(
+                                              index: index,
+                                              j: j,
+                                            ),
+                                        fullscreenDialog: true))
                                     .whenComplete(() {
                                   setState(() {});
                                 });
@@ -1188,7 +1212,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 ),
             ],
           ),
-          if (index < Global.ordersWholesale!.length - 1)
+          if (index < Global.orders.length - 1)
             Container(
               height: 10,
               color: Colors.white,
@@ -1208,9 +1232,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   void removeProduct(int i) async {
-    Global.ordersWholesale!.removeAt(i);
-    if (Global.ordersWholesale!.isEmpty) {
+    Global.orders.removeAt(i);
+    if (Global.orders.isEmpty) {
       Global.customer = null;
+      Global.discount = 0;
       Global.paymentList?.clear();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -1219,9 +1244,9 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   }
 
   void removeItem(int i, int j) async {
-    Global.ordersWholesale![i].details!.removeAt(j);
-    if (Global.ordersWholesale![i].details!.isEmpty) {
-      Global.ordersWholesale!.removeAt(i);
+    Global.orders[i].details!.removeAt(j);
+    if (Global.orders[i].details!.isEmpty) {
+      Global.orders.removeAt(i);
       removeCart();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -1269,7 +1294,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShopWholeSale(Global.ordersWholesale, Global.discount)}',
+                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),
@@ -1407,7 +1432,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShopWholeSale(Global.ordersWholesale, Global.discount)}',
+                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),

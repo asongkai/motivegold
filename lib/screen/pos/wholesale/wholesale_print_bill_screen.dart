@@ -7,8 +7,10 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
-import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/used/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/used/preview.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -374,6 +376,25 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         PreviewSellUsedGoldPage(
+                                          invoice: invoice,
+                                        )));
+                          }
+
+                          if (order.orderTypeId == 10) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PreviewRefillThengGoldPage(
+                                      invoice: invoice,
+                                    )));
+                          }
+
+                          if (order.orderTypeId == 11) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewSellUsedThengGoldPage(
                                           invoice: invoice,
                                         )));
                           }

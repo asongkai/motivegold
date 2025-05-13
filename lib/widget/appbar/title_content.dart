@@ -97,26 +97,26 @@ class _TitleContentState extends State<TitleContent> {
                                     height: 10,
                                   ),
                                   Text(
-                                    '${Global.company?.name} (${Global.branch?.name})',
+                                    '${Global.company?.name} (สาขา ${Global.branch?.name})',
                                     style: TextStyle(
-                                        fontSize: size.getWidthPx(8),
+                                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900),
                                   ),
                                   Text(
                                       '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(7),
+                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
                                           color: Colors.white)),
                                   Text(
                                       'โทรศัพท์/Phone : ${Global.branch?.phone}',
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(7),
+                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
                                           color: Colors.white)),
                                   Text(
                                       'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(7),
+                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
                                           color: Colors.white)),
                                 ]))
                       ]),
@@ -138,7 +138,7 @@ class _TitleContentState extends State<TitleContent> {
                           Text(
                             Global.user != null ? 'ผู้ใช้: ' : '',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(8),
+                                fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -147,7 +147,7 @@ class _TitleContentState extends State<TitleContent> {
                                 ? '${Global.user!.firstName!} ${Global.user!.lastName!}'
                                 : '',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(8),
+                                fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -164,7 +164,7 @@ class _TitleContentState extends State<TitleContent> {
                             Text(
                               'บริษัท: ',
                               style: TextStyle(
-                                  fontSize: size.getWidthPx(8),
+                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                   color: Colors.white,
                                   fontWeight: FontWeight.w900),
                             ),
@@ -188,7 +188,7 @@ class _TitleContentState extends State<TitleContent> {
                                     project: project,
                                     isItemSelected: isItemSelected,
                                     firstSpace: 10,
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                   );
                                 },
                                 onChanged: (CompanyModel value) async {
@@ -200,7 +200,7 @@ class _TitleContentState extends State<TitleContent> {
                                 },
                                 child: DropDownObjectChildWidget(
                                   key: GlobalKey(),
-                                  fontSize: size.getWidthPx(8),
+                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                   projectValueNotifier: companyNotifier!,
                                 ),
                               ),
@@ -219,7 +219,7 @@ class _TitleContentState extends State<TitleContent> {
                             Text(
                               'สาขา: ',
                               style: TextStyle(
-                                  fontSize: size.getWidthPx(8),
+                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                   color: Colors.white,
                                   fontWeight: FontWeight.w900),
                             ),
@@ -246,7 +246,7 @@ class _TitleContentState extends State<TitleContent> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(8),
+                                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                       );
                                     },
                                     onChanged: (BranchModel value) {
@@ -256,7 +256,7 @@ class _TitleContentState extends State<TitleContent> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(8),
+                                      fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                                       projectValueNotifier: branchNotifier!,
                                     ),
                                   ),
@@ -316,7 +316,7 @@ class _TitleContentState extends State<TitleContent> {
                               ? 'สาขา: ${Global.branch!.name}'
                               : '',
                           style: TextStyle(
-                              fontSize: size.getWidthPx(7),
+                              fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
                               color: Colors.white,
                               fontWeight: FontWeight.w900),
                         ),
@@ -336,7 +336,7 @@ class _TitleContentState extends State<TitleContent> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
-                        fontSize: size.getWidthPx(7)),
+                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6)),
                   ),
                 )),
             Expanded(flex: 4, child: Container())

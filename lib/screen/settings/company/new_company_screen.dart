@@ -510,13 +510,13 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
             children: <Widget>[
               ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('ຖ່າຍຮູບ'),
+                  title: const Text('ถ่ายรูป'),
                   onTap: () {
                     pickProfileImage(context, ImageSource.camera);
                   }),
               ListTile(
                 leading: const Icon(Icons.photo),
-                title: const Text('ເລືອກຮູບ'),
+                title: const Text('เลือกรูป'),
                 onTap: () {
                   pickProfileImage(context, ImageSource.gallery);
                 },

@@ -251,9 +251,14 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                     Global.payToCustomerOrShopValueWholeSale(
                                         Global.ordersWholesale,
                                         Global.discount);
+                              } else if (Global.currentOrderType == 6) {
+                                amount =
+                                    Global.payToCustomerOrShopValueWholeSale(
+                                        Global.ordersThengWholesale,
+                                        Global.discount);
                               } else {
                                 amount = Global.payToCustomerOrShopValue(
-                                    Global.ordersPapun, Global.discount);
+                                    Global.orders, Global.discount);
                               }
                               if (amount >= 0) {
                                 Global.amountCtrl.text = Global.format(

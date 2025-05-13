@@ -13,9 +13,13 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/screen/pos/checkout_wholesale_summary_history_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_buy_theng_pdf.dart';
 import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
-import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_sell_theng_pdf.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/used/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/used/preview.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -70,7 +74,74 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     try {
       var result =
           await ApiServices.post('/order/all', Global.requestObj(null));
-      // Global.printLongString(result!.toJson().toString());
+      Global.printLongString(result!.toJson().toString());
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+
+        List<OrderModel> products = orderListModelFromJson(data);
+        // motivePrint(products.first);
+        setState(() {
+          list = products;
+          filterList!.addAll(products);
+        });
+      } else {
+        list = [];
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void search() async {
+    // if (fromDateCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+    //   return;
+    // }
+    //
+    // if (toDateCtrl.text.isEmpty) {
+    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+    //   return;
+    // }
+
+    setState(() {
+      loading = true;
+      filterList?.clear();
+      Global.pairId = null;
+      Global.orderIds!.clear();
+    });
+    // motivePrint(Global.requestObj({
+    //   "year": 0,
+    //   "month": 0,
+    //   "fromDate": fromDateCtrl.text.isNotEmpty
+    //       ? DateTime.parse(fromDateCtrl.text).toString()
+    //       : null,
+    //   "toDate": toDateCtrl.text.isNotEmpty
+    //       ? DateTime.parse(toDateCtrl.text).toString()
+    //       : null,
+    //   "orderTypeId": selectedOrderType?.id,
+    //   "branchId": selectedBranch?.id
+    // }));
+    try {
+      var result = await ApiServices.post(
+          '/order/all/search',
+          Global.requestObj({
+            "year": 0,
+            "month": 0,
+            "fromDate": fromDateCtrl.text.isNotEmpty
+                ? DateTime.parse(fromDateCtrl.text).toString()
+                : null,
+            "toDate": toDateCtrl.text.isNotEmpty
+                ? DateTime.parse(toDateCtrl.text).toString()
+                : null,
+            "orderTypeId": selectedOrderType?.id,
+            "branchId": selectedBranch?.id
+          }));
+      Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
 
@@ -156,7 +227,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                     height: 90,
                                     child: MiraiDropDownMenu<ProductTypeModel>(
                                       key: UniqueKey(),
-                                      children: orderTypes(),
+                                      children: orderTypes().where((e) => e.id != 7).toList(),
                                       space: 4,
                                       maxHeight: 360,
                                       showSearchTextField: true,
@@ -493,72 +564,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     );
   }
 
-  void search() async {
-    // if (fromDateCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-    //   return;
-    // }
-    //
-    // if (toDateCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-    //   return;
-    // }
 
-    setState(() {
-      loading = true;
-      filterList?.clear();
-      Global.pairId = null;
-      Global.orderIds!.clear();
-    });
-    // motivePrint(Global.requestObj({
-    //   "year": 0,
-    //   "month": 0,
-    //   "fromDate": fromDateCtrl.text.isNotEmpty
-    //       ? DateTime.parse(fromDateCtrl.text).toString()
-    //       : null,
-    //   "toDate": toDateCtrl.text.isNotEmpty
-    //       ? DateTime.parse(toDateCtrl.text).toString()
-    //       : null,
-    //   "orderTypeId": selectedOrderType?.id,
-    //   "branchId": selectedBranch?.id
-    // }));
-    try {
-      var result = await ApiServices.post(
-          '/order/all/search',
-          Global.requestObj({
-            "year": 0,
-            "month": 0,
-            "fromDate": fromDateCtrl.text.isNotEmpty
-                ? DateTime.parse(fromDateCtrl.text).toString()
-                : null,
-            "toDate": toDateCtrl.text.isNotEmpty
-                ? DateTime.parse(toDateCtrl.text).toString()
-                : null,
-            "orderTypeId": selectedOrderType?.id,
-            "branchId": selectedBranch?.id
-          }));
-      // Global.printLongString(result!.toJson().toString());
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-
-        List<OrderModel> products = orderListModelFromJson(data);
-        // motivePrint(products.first);
-        setState(() {
-          list = products;
-          filterList!.addAll(products);
-        });
-      } else {
-        list = [];
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    }
-    setState(() {
-      loading = false;
-    });
-  }
 
   Widget dataCard(OrderModel order, int index) {
     return Stack(
@@ -589,10 +595,15 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                           style: TextStyle(fontSize: size?.getWidthPx(8)),
                         ),
                         Text(
-                          Global.formatDate(order.orderDate.toString()),
+                          'วันที่เอกสาร: ${Global.formatDate(order.orderDate.toString())}',
                           style: TextStyle(
                               color: Colors.green,
-                              fontSize: size!.getWidthPx(5)),
+                              fontSize: size!.getWidthPx(6)),
+                        ),Text(
+                          'วันที่บันทึกรายการ: ${Global.formatDate(order.createdDate.toString())}',
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: size!.getWidthPx(6)),
                         ),
                       ],
                     ),
@@ -667,7 +678,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                         GestureDetector(
                           onTap: () {
                             Global.pairId = order.pairId;
-                            if (order.orderTypeId == 5) {
+                            if (order.orderTypeId == 5 || order.orderTypeId == 6 || order.orderTypeId == 10 || order.orderTypeId == 11) {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -783,9 +794,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                               invoice: invoice,
                                             )));
                               } else if (order.orderTypeId == 3 ||
-                                  order.orderTypeId == 4 ||
                                   order.orderTypeId == 33 ||
-                                  order.orderTypeId == 44 ||
                                   order.orderTypeId == 8 ||
                                   order.orderTypeId == 9) {
                                 if (mounted) {
@@ -796,7 +805,36 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                     ),
                                   );
                                 }
+                              } else if (order.orderTypeId == 10) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewRefillThengGoldPage(invoice: invoice),
+                                  ),
+                                );
+                              } else if (order.orderTypeId == 11) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewSellUsedThengGoldPage(invoice: invoice),
+                                  ),
+                                );
+                              } else if (order.orderTypeId == 4) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewSellThengPdfPage(invoice: invoice),
+                                  ),
+                                );
+                              } else if (order.orderTypeId == 44) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewBuyThengPdfPage(invoice: invoice),
+                                  ),
+                                );
                               }
+
                             } catch (e) {
                               await pr.hide();
                             }

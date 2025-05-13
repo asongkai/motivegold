@@ -94,7 +94,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
                         ),
                         if (Global.goldDataModel!.different! > 0.0)
                         Expanded(
-                          flex: 3,
+                          flex: 4,
                           child: Row(
                             children: [
                               Expanded(
@@ -102,7 +102,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
                               ),
                               Expanded(
                                   child: Text(
-                                '${getSign()}${Global.format(Global.goldDataModel?.different ?? 0)}',
+                                '${getSign()}${formatterInt.format(Global.goldDataModel?.different ?? 0)}',
                                     textAlign: TextAlign.end,
                                 style: TextStyle(
                                     fontSize: 30,

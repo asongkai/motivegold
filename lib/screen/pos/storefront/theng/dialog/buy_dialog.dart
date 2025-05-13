@@ -44,11 +44,14 @@ class _BuyDialogState extends State<BuyDialog> {
   TextEditingController productWeightRemainCtrl = TextEditingController();
   TextEditingController productWeightBahtRemainCtrl = TextEditingController();
   TextEditingController productCommissionCtrl = TextEditingController();
-  TextEditingController productPriceCtrl = TextEditingController();
-  TextEditingController productPriceTotalCtrl = TextEditingController();
+  // TextEditingController productPriceCtrl = TextEditingController();
+  // TextEditingController productPriceTotalCtrl = TextEditingController();
   final TextEditingController reserveDateCtrl = TextEditingController();
   TextEditingController marketPriceTotalCtrl = TextEditingController();
   TextEditingController warehouseCtrl = TextEditingController();
+
+  TextEditingController priceExcludeTaxCtrl = TextEditingController();
+  TextEditingController priceIncludeTaxCtrl = TextEditingController();
 
   final controller = BoardDateTimeController();
 
@@ -85,8 +88,8 @@ class _BuyDialogState extends State<BuyDialog> {
     warehouseCtrl.dispose();
     marketPriceTotalCtrl.dispose();
     reserveDateCtrl.dispose();
-    productPriceTotalCtrl.dispose();
-    productPriceCtrl.dispose();
+    priceIncludeTaxCtrl.dispose();
+    priceExcludeTaxCtrl.dispose();
     productCommissionCtrl.dispose();
     productWeightBahtRemainCtrl.dispose();
     productWeightRemainCtrl.dispose();
@@ -260,8 +263,82 @@ class _BuyDialogState extends State<BuyDialog> {
                       ],
                     ),
                   ),
+
                   const SizedBox(
                     height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'จำนวนน้ำหนัก',
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(กรัม)',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: size.getWidthPx(10)),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextField(
+                            labelText: "",
+                            inputType: TextInputType.phone,
+                            controller: productWeightCtrl,
+                            readOnly: gramReadOnly,
+                            focusNode: gramFocus,
+                            inputFormat: [
+                              ThousandsFormatter(allowFraction: true)
+                            ],
+                            clear: () {
+                              setState(() {
+                                productWeightCtrl.text = "";
+                              });
+                              gramChanged();
+                            },
+                            onTap: () {
+                              txt = 'gram';
+                              closeCal();
+                            },
+                            openCalc: () {
+                              if (!showCal) {
+                                txt = 'gram';
+                                gramFocus.requestFocus();
+                                openCal();
+                              }
+                            },
+                            onChanged: (String value) {
+                              // gramChanged();
+                            },
+                            onFocusChange: (value) {
+                              if (!value) {
+                                gramChanged();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -340,135 +417,6 @@ class _BuyDialogState extends State<BuyDialog> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'ราคารับซื้อทอง\nคำแท่ง',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
-                                      color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                      color: textColor,
-                                      fontSize: size.getWidthPx(10)),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.phone,
-                              controller: productPriceCtrl,
-                              readOnly: priceReadOnly,
-                              focusNode: priceFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productPriceCtrl.text = "";
-                                });
-                                priceChanged();
-                              },
-                              onTap: () {
-                                txt = 'price';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'price';
-                                  priceFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (String value) {
-                                priceChanged();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'ค่าบล็อกทอง',
-                                  style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
-                                      color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                      color: textColor,
-                                      fontSize: size.getWidthPx(10)),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.phone,
-                              controller: productCommissionCtrl,
-                              readOnly: comReadOnly,
-                              focusNode: comFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productCommissionCtrl.text = "";
-                                });
-                                bahtChanged();
-                              },
-                              onTap: () {
-                                txt = 'com';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'com';
-                                  comFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (String value) {
-                                comChanged();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
                                   'รวมราคารับซื้อ',
                                   style: TextStyle(
                                       fontSize: size.getWidthPx(15),
@@ -490,18 +438,32 @@ class _BuyDialogState extends State<BuyDialog> {
                             )),
                         Expanded(
                           flex: 6,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: buildTextFieldBig(
-                                labelText: "",
-                                inputType: TextInputType.number,
-                                labelColor: Colors.grey,
-                                controller: productPriceTotalCtrl,
-                                align: TextAlign.right,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                                enabled: false),
+                          child: numberTextField(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: priceIncludeTaxCtrl,
+                            readOnly: priceReadOnly,
+                            focusNode: priceFocus,
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  priceIncludeTaxCtrl.text = "";
+                                });
+                                bahtChanged();
+                              },
+                              onTap: () {
+                                txt = 'price';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'price';
+                                  priceFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
                           ),
                         ),
                       ],
@@ -526,23 +488,23 @@ class _BuyDialogState extends State<BuyDialog> {
                           closeCal: closeCal,
                           onChanged: (key, value, expression) {
                             if (key == 'ENT') {
-                              if (txt == 'com') {
-                                productCommissionCtrl.text = value != null
-                                    ? "${Global.format(value)}"
-                                    : "";
-                                comChanged();
-                              }
                               if (txt == 'baht') {
                                 productWeightBahtCtrl.text = value != null
                                     ? "${Global.format(value)}"
                                     : "";
                                 bahtChanged();
                               }
-                              if (txt == 'price') {
-                                productPriceTotalCtrl.text = value != null
+                              if (txt == 'gram') {
+                                productWeightCtrl.text = value != null
                                     ? "${Global.format(value)}"
                                     : "";
-                                priceChanged();
+                                gramChanged();
+                              }
+
+                              if (txt == 'price') {
+                                priceIncludeTaxCtrl.text = value != null
+                                    ? "${Global.format(value)}"
+                                    : "";
                               }
                               FocusScope.of(context).requestFocus(FocusNode());
                               closeCal();
@@ -672,7 +634,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         return;
                       }
 
-                      if (productPriceTotalCtrl.text.isEmpty) {
+                      if (priceIncludeTaxCtrl.text.isEmpty) {
                         Alert.warning(context, 'คำเตือน', 'กรุณากรอกราคา', 'OK',
                             action: () {});
                         return;
@@ -733,20 +695,17 @@ class _BuyDialogState extends State<BuyDialog> {
                               productName: selectedProduct!.name,
                               productId: selectedProduct!.id,
                               binLocationId: selectedWarehouse!.id,
+                              sellTPrice: Global.toNumber(Global.goldDataModel?.theng!.sell),
+                              buyTPrice: Global.toNumber(Global.goldDataModel?.theng!.buy),
+                              sellPrice: Global.toNumber(Global.goldDataModel?.paphun!.sell),
+                              buyPrice: Global.toNumber(Global.goldDataModel?.paphun!.buy),
                               weight: Global.toNumber(productWeightCtrl.text),
                               weightBath:
                                   Global.toNumber(productWeightBahtCtrl.text),
-                              commission: productCommissionCtrl.text.isEmpty
-                                  ? 0
-                                  : Global.toNumber(productCommissionCtrl.text),
-                              taxBase: productWeightCtrl.text.isEmpty
-                                  ? 0
-                                  : Global.taxBase(
-                                      Global.toNumber(
-                                          productPriceTotalCtrl.text),
-                                      Global.toNumber(productWeightCtrl.text)),
+                              commission: 0,
+                              taxBase: 0,
                               priceIncludeTax:
-                                  Global.toNumber(productPriceTotalCtrl.text),
+                                  Global.toNumber(priceIncludeTaxCtrl.text),
                               bookDate: null),
                         );
                         sumBuyThengTotal();
@@ -764,22 +723,13 @@ class _BuyDialogState extends State<BuyDialog> {
     );
   }
 
-  void comChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
-      productPriceTotalCtrl.text =
-          "${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}";
-      setState(() {});
-    }
-  }
 
-  void priceChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
-      productPriceTotalCtrl.text = Global.format(
-          Global.toNumber(productCommissionCtrl.text) +
-              Global.toNumber(productPriceCtrl.text));
-      setState(() {});
+  void gramChanged() {
+    if (productWeightCtrl.text.isNotEmpty) {
+      productWeightBahtCtrl.text = Global.format(
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+    } else {
+      productWeightBahtCtrl.text = "";
     }
   }
 
@@ -787,17 +737,9 @@ class _BuyDialogState extends State<BuyDialog> {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
           (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
-      marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
-      productPriceCtrl.text = marketPriceTotalCtrl.text;
-      productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-          ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-          : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
     } else {
       productWeightCtrl.text = "";
       marketPriceTotalCtrl.text = "";
-      productPriceCtrl.text = "";
-      productPriceTotalCtrl.text = "";
     }
   }
 
@@ -806,8 +748,8 @@ class _BuyDialogState extends State<BuyDialog> {
     productNameCtrl.text = "";
     productWeightCtrl.text = "";
     productCommissionCtrl.text = "";
-    productPriceCtrl.text = "";
-    productPriceTotalCtrl.text = "";
+    priceIncludeTaxCtrl.text = "";
+    priceExcludeTaxCtrl.text = "";
     productWeightBahtCtrl.text = "";
     reserveDateCtrl.text = "";
     productWeightRemainCtrl.text = "";

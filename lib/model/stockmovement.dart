@@ -32,6 +32,9 @@ class StockMovementModel {
   double? weight;
   double? unitCost;
   double? price;
+  double? weightBalance;
+  double? unitCostBalance;
+  double? priceBalance;
   DateTime? createdDate;
   DateTime? updatedDate;
   ProductModel? product;
@@ -49,6 +52,9 @@ class StockMovementModel {
       this.weight,
       this.unitCost,
       this.price,
+      this.weightBalance,
+      this.unitCostBalance,
+      this.priceBalance,
       this.createdDate,
       this.updatedDate,
       this.product,
@@ -67,6 +73,9 @@ class StockMovementModel {
         weight: json["weight"]?.toDouble(),
         unitCost: json["unitCost"],
         price: json["price"]?.toDouble(),
+        weightBalance: json["weightBalance"]?.toDouble(),
+        unitCostBalance: json["unitCostBalance"],
+        priceBalance: json["priceBalance"]?.toDouble(),
         createdDate: json["createdDate"] == null
             ? null
             : DateTime.parse(json["createdDate"]).toLocal(),
@@ -93,6 +102,9 @@ class StockMovementModel {
         "weight": weight,
         "unitCost": unitCost,
         "price": price,
+        "weightBalance": weightBalance,
+        "unitCostBalance": unitCostBalance,
+        "priceBalance": priceBalance,
         "createdDate": createdDate?.toIso8601String(),
         "updatedDate": updatedDate?.toIso8601String(),
         "product": product?.toJson(),

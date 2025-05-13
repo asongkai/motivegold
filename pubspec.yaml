@@ -51,12 +51,13 @@ dependencies:
   flutter_modal_dialog: ^0.0.4
   dialogx: ^1.0.0
   loading_indicator: ^3.1.1
-  easy_sidemenu: ^0.6.0
+  easy_sidemenu: #^0.6.1
+    path: ./plugins/easy_sidemenu
   font_awesome_flutter: ^10.7.0
   badges: ^3.1.2
   empty_widget_fork: ^0.0.6
 #  pattern_formatter: ^4.0.0
-  pdf: ^3.11.2
+  pdf: ^3.11.3
   printing: ^5.14.0
   thai_idcard_reader_flutter: ^0.0.7
   mirai_dropdown_menu: ^0.0.8+2

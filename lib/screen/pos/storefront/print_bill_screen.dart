@@ -7,9 +7,13 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/response.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_buy_theng_pdf.dart';
 import 'package:motivegold/screen/pos/storefront/theng/bill/preview_pdf.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/preview.dart';
-import 'package:motivegold/screen/pos/wholesale/used/preview.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/preview_sell_theng_pdf.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/used/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/refill/preview.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/used/preview.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -387,7 +391,6 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           }
 
                           if (order.orderTypeId == 3 ||
-                              order.orderTypeId == 4 ||
                               order.orderTypeId == 8) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -398,12 +401,47 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           }
 
                           if (order.orderTypeId == 33 ||
-                              order.orderTypeId == 44 ||
                               order.orderTypeId == 9) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
                                     PdfThengPreviewPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 4) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewSellThengPdfPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 44) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewBuyThengPdfPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 10) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewRefillThengGoldPage(invoice: invoice),
+                              ),
+                            );
+                          }
+
+                          if (order.orderTypeId == 11) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewSellUsedThengGoldPage(invoice: invoice),
                               ),
                             );
                           }

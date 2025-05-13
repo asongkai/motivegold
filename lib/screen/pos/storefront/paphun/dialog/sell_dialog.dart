@@ -178,7 +178,7 @@ class _SaleDialogState extends State<SaleDialog> {
       }
       // await pr.hide();
 
-      motivePrint(productWeightRemainCtrl.text);
+      // motivePrint(productWeightRemainCtrl.text);
 
       productWeightRemainCtrl.text =
           Global.format(Global.getTotalWeightByLocation(qtyLocationList));
@@ -893,6 +893,13 @@ class _SaleDialogState extends State<SaleDialog> {
                       if (productPriceTotalCtrl.text.isEmpty) {
                         Alert.warning(
                             context, 'คำเตือน', 'กรุณากรอกราคา', 'OK');
+                        return;
+                      }
+
+                      if (Global.toNumber(productWeightGramCtrl.text) > Global.toNumber(productWeightRemainCtrl.text)) {
+                        Alert.warning(context, 'Warning'.tr(),
+                            'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightGramCtrl.text}', 'OK',
+                            action: () {});
                         return;
                       }
 

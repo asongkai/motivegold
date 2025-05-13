@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:motivegold/model/invoice.dart';
-import 'package:motivegold/screen/pos/wholesale/used/bill/make_bill.dart';
+import 'package:motivegold/model/order.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:printing/printing.dart';
 
-class PreviewSellUsedGoldPage extends StatelessWidget {
-  final Invoice invoice;
-  const PreviewSellUsedGoldPage({super.key, required this.invoice});
+import 'make_pdf.dart';
+
+class PreviewMoneyMovementReportPage extends StatelessWidget {
+  final List<OrderModel>? orders;
+  final int type;
+  final String date;
+  const PreviewMoneyMovementReportPage({super.key, required this.orders, required this.type, required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class PreviewSellUsedGoldPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeSellUsedBill(invoice),
+        build: (context) => makeMoneyMovementReportPdf(orders, type, date),
       ),
     );
   }

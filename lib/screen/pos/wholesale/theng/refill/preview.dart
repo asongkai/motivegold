@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/invoice.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/bill/make_bill.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/bill/make_bill.dart';
+import 'package:motivegold/screen/pos/wholesale/theng/refill/bill/make_bill.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:printing/printing.dart';
 
 
-class PreviewRefillGoldPage extends StatelessWidget {
+class PreviewRefillThengGoldPage extends StatelessWidget {
   final Invoice invoice;
-  const PreviewRefillGoldPage({super.key, required this.invoice});
+  const PreviewRefillThengGoldPage({super.key, required this.invoice});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class PreviewRefillGoldPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeRefillBill(invoice),
+        build: (context) => makeRefillThengBill(invoice),
       ),
     );
   }

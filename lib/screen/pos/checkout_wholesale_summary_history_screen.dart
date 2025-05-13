@@ -8,6 +8,7 @@ import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -66,28 +67,11 @@ class _CheckOutWholesaleSummaryHistoryScreenState
       if (resultO?.status == "success") {
         setState(() {
           customer = orders.first.customer;
-          Global.paymentList =
-              paymentListModelFromJson(jsonEncode(payment?.data));
-          Global.currentPaymentMethod = Global.payment?.paymentMethod;
-
-          paymentMethodCtrl.text = paymentTypes()
-              .where((element) => element.code == Global.currentPaymentMethod)
-              .first
-              .name!;
-          Global.paymentDateCtrl.text =
-              Global.formatDateD(Global.payment!.paymentDate.toString());
-          if (Global.currentPaymentMethod == 'TR') {
-            Global.bankCtrl.text = Global.payment!.bankName ?? '';
-            Global.refNoCtrl.text = Global.payment!.referenceNumber ?? '';
-          } else if (Global.currentPaymentMethod == 'CR') {
-            Global.cardNameCtrl.text = Global.payment!.cardName ?? '';
-            Global.cardExpireDateCtrl.text =
-                Global.formatDateD(Global.payment!.cardExpiryDate.toString());
-          } else {
-            Global.paymentDetailCtrl.text = Global.payment!.paymentDetail ?? '';
-          }
           discountCtrl.text = Global.format(orders.first.discount ?? 0);
           discount = orders.first.discount ?? 0;
+          Global.discount = discount;
+          Global.paymentList =
+              paymentListModelFromJson(jsonEncode(payment?.data));
         });
       } else {
         orders = [];
@@ -99,7 +83,6 @@ class _CheckOutWholesaleSummaryHistoryScreenState
         loading = false;
       });
     }
-
   }
 
   @override
@@ -122,55 +105,116 @@ class _CheckOutWholesaleSummaryHistoryScreenState
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: loading ? const Center(child: LoadingProgress()) : orders.isEmpty
-              ? const Center(
-                  child: NoDataFoundWidget(),
-                )
-              : Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: getProportionateScreenWidth(8.0),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'ลูกค้า',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
+          child: loading
+              ? const Center(child: LoadingProgress())
+              : orders.isEmpty
+                  ? const Center(
+                      child: NoDataFoundWidget(),
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        getProportionateScreenWidth(8.0),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 25),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(5),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(.1),
-                                            blurRadius: 1,
-                                            spreadRadius: 1,
-                                            offset: const Offset(2, 2),
-                                          ),
-                                        ]),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'ลูกค้า',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 25),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color:
+                                                    Colors.grey.withOpacity(.1),
+                                                blurRadius: 1,
+                                                spreadRadius: 1,
+                                                offset: const Offset(2, 2),
+                                              ),
+                                            ]),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "${customer!.firstName} ${customer!.lastName}",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize:
+                                                        size!.getWidthPx(6),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
                                             Text(
-                                              "${customer!.firstName} ${customer!.lastName}",
+                                              "${customer!.phoneNumber}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                                fontSize: size!.getWidthPx(6),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              "${customer!.email}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.black,
+                                                fontSize: size!.getWidthPx(6),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text(
+                                              "${customer!.address}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: size!.getWidthPx(6),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text(
+                                              "${getIdTitleCustomer(customer)}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: size!.getWidthPx(6),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                            Text(
+                                              "${customer?.customerType == 'company' ? customer?.taxNumber : customer?.idCard}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: size!.getWidthPx(6),
@@ -178,346 +222,325 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(
-                                          height: 8,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        'รายการสั่งซื้อ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(0),
+                                          color: bgColor,
                                         ),
-                                        Text(
-                                          "${customer!.phoneNumber}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.black,
-                                            fontSize: size!.getWidthPx(6),
-                                          ),
+                                        child: Column(
+                                          children: [
+                                            ...orders.map((e) {
+                                              return _itemOrderList(
+                                                  order: e, index: 0);
+                                            }),
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          height: 8,
+                                      ),
+                                      Text(
+                                        'ราคา',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                      const SizedBox(
+                                        height: 40,
+                                      ),
+                                      buildTextFieldBig(
+                                          labelText: "ส่วนลด (บาทไทย)",
+                                          labelColor: Colors.orange,
+                                          controller: discountCtrl,
+                                          inputType: TextInputType.phone,
+                                          enabled: false,
+                                          inputFormat: [
+                                            ThousandsFormatter(
+                                                allowFraction: true)
+                                          ],
+                                          onChanged: (value) {
+                                            discount = value.isNotEmpty
+                                                ? Global.toNumber(value)
+                                                : 0;
+                                            setState(() {});
+                                          }),
+                                      PriceBreakdown(
+                                        title: 'จำนวนเงินที่ชำระ'.tr(),
+                                        price:
+                                            '${Global.format(Global.getPaymentTotalWholeSale(orders))} THB',
+                                      ),
+                                      const Divider(),
+                                      PriceBreakdown(
+                                        title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
+                                        price:
+                                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(orders, Global.discount))} ${Global.payToCustomerOrShopWholeSale(orders, Global.discount)}',
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'วิธีการชำระเงิน'.tr(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
                                         ),
-                                        Text(
-                                          "${customer!.email}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.black,
-                                            fontSize: size!.getWidthPx(6),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Text(
-                                          "${customer!.address}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: size!.getWidthPx(6),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Text(
-                                          "${getIdTitleCustomer(customer)}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: size!.getWidthPx(6),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 3,
-                                        ),
-                                        Text(
-                                          "${customer?.customerType == 'company' ? customer?.taxNumber : customer?.idCard}",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: size!.getWidthPx(6),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    'รายการสั่งซื้อ',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(0),
-                                      color: bgColor,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        ...orders.map((e) {
-                                          return _itemOrderList(
-                                              order: e, index: 0);
-                                        }),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    'ราคา',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                  const SizedBox(
-                                    height: 40,
-                                  ),
-                                  buildTextFieldBig(
-                                      labelText: "ส่วนลด (บาทไทย)",
-                                      labelColor: Colors.orange,
-                                      controller: discountCtrl,
-                                      inputType: TextInputType.phone,
-                                      enabled: false,
-                                      inputFormat: [
-                                        ThousandsFormatter(allowFraction: true)
-                                      ],
-                                      onChanged: (value) {
-                                        discount = value.isNotEmpty
-                                            ? Global.toNumber(value)
-                                            : 0;
-                                        setState(() {});
-                                      }),
-                                  PriceBreakdown(
-                                    title: 'จำนวนเงินที่ชำระ'.tr(),
-                                    price:
-                                    '${Global.format(Global.getPaymentTotalWholeSale(orders))} THB',
-                                  ),
-                                  const Divider(),
-                                  PriceBreakdown(
-                                    title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
-                                    price: '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(orders, Global.discount))} ${Global.payToCustomerOrShopWholeSale(orders, Global.discount)}',
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'วิธีการชำระเงิน'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  if (Global.paymentList!.isNotEmpty)
-                                    SizedBox(
-                                      height: 300,
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            decoration: const BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                left: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                right: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                top: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Text('ลำดับ',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size?.getWidthPx(8),
-                                                        color: kPrimaryGreen,
-                                                      )),
-                                                ),
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: Text('วิธีการชำระเงิน',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size?.getWidthPx(8),
-                                                        color: kPrimaryGreen,
-                                                      )),
-                                                ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: Text('วันที่ชำระเงิน',
-                                                      textAlign:
-                                                          TextAlign.right,
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size?.getWidthPx(8),
-                                                        color: kPrimaryGreen,
-                                                      )),
-                                                ),
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Text('จำนวนเงิน',
-                                                        textAlign:
-                                                            TextAlign.right,
-                                                        style: TextStyle(
-                                                          fontSize: size
-                                                              ?.getWidthPx(8),
-                                                          color: kPrimaryGreen,
-                                                        )),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      if (Global.paymentList!.isNotEmpty)
+                                        SizedBox(
+                                          height: 300,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                decoration: const BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    left: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    right: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    top: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
                                                   ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: ListView.builder(
-                                                itemCount:
-                                                    Global.paymentList!.length,
-                                                itemBuilder: (context, index) {
-                                                  return _paymentItemList(
-                                                      order: Global
-                                                          .paymentList![index],
-                                                      index: index);
-                                                }),
-                                          ),
-                                          Container(
-                                            decoration: const BoxDecoration(
-                                              color: bgColor,
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                left: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                right: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                                top: BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Text('',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
-                                                          fontSize: size
-                                                              ?.getWidthPx(8),
-                                                          color: kPrimaryGreen,
-                                                        )),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Text('',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
-                                                          fontSize: size
-                                                              ?.getWidthPx(8),
-                                                          color: kPrimaryGreen,
-                                                        )),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Text('ทั้งหมด',
-                                                        textAlign:
-                                                            TextAlign.right,
-                                                        style: TextStyle(
-                                                          fontSize: size
-                                                              ?.getWidthPx(12),
-                                                          color: kPrimaryGreen,
-                                                        )),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                          '${Global.format(getPaymentTotal())}',
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Text('ลำดับ',
                                                           textAlign:
-                                                              TextAlign.right,
+                                                              TextAlign.center,
                                                           style: TextStyle(
                                                             fontSize: size
-                                                                ?.getWidthPx(
-                                                                    12),
+                                                                ?.getWidthPx(8),
                                                             color:
                                                                 kPrimaryGreen,
                                                           )),
                                                     ),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Text('',
-                                                        style: TextStyle(
-                                                          fontSize: size
-                                                              ?.getWidthPx(8),
-                                                          color: kPrimaryGreen,
-                                                        )),
-                                                  ),
-                                                ],
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Text(
+                                                          'วิธีการชำระเงิน',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontSize: size
+                                                                ?.getWidthPx(8),
+                                                            color:
+                                                                kPrimaryGreen,
+                                                          )),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                          'วันที่ชำระเงิน',
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: TextStyle(
+                                                            fontSize: size
+                                                                ?.getWidthPx(8),
+                                                            color:
+                                                                kPrimaryGreen,
+                                                          )),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text('จำนวนเงิน',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                            'สลิปการชำระเงิน',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
+                                              Expanded(
+                                                child: ListView.builder(
+                                                    itemCount: Global
+                                                        .paymentList!.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      return _paymentItemList(
+                                                          payment: Global
+                                                                  .paymentList![
+                                                              index],
+                                                          index: index);
+                                                    }),
+                                              ),
+                                              Container(
+                                                decoration: const BoxDecoration(
+                                                  color: bgColor,
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    left: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    right: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                    top: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Text('',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 3,
+                                                        child: Text('',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 2,
+                                                        child: Text('ทั้งหมด',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      12),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 3,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Text(
+                                                              '${Global.format(getPaymentTotal())}',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontSize: size
+                                                                    ?.getWidthPx(
+                                                                        12),
+                                                                color:
+                                                                    kPrimaryGreen,
+                                                              )),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        flex: 3,
+                                                        child: Text('',
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
+                                      const SizedBox(
+                                        height: 30,
                                       ),
-                                    ),
-                                  SizedBox(
-                                    height: Global.paymentAttachment == null
-                                        ? 100
-                                        : 0,
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
         ),
       ),
     );
   }
 
-  Widget _paymentItemList({required PaymentModel order, required index}) {
-    // motivePrint(Global.formatDateNT(order.paymentDate.toString()));
-    // motivePrint(order.paymentDate.toString());
+  Widget _paymentItemList({required PaymentModel payment, required index}) {
     return Container(
       decoration: const BoxDecoration(
         color: snBgColorLight,
@@ -551,7 +574,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
             ),
             Expanded(
               flex: 3,
-              child: Text(order.paymentMethod ?? '',
+              child: Text(payment.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: size?.getWidthPx(8),
@@ -562,7 +585,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(Global.formatDateNT(order.paymentDate.toString()),
+                child: Text(Global.formatDateNT(payment.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: size?.getWidthPx(8),
@@ -574,7 +597,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(Global.format(order.amount ?? 0),
+                child: Text(Global.format(payment.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: size?.getWidthPx(8),
@@ -582,9 +605,56 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                     )),
               ),
             ),
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: payment.attachement == null
+                    ? Container()
+                    : GestureDetector(
+
+                      onTap: () {
+                        _showImageAlertDialog(context, payment);
+                      },
+                      child: Image.network(
+                                        '${Constants.DOMAIN_URL}/images/${payment.attachement}',
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                    ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  // Function to display the AlertDialog with an image
+  void _showImageAlertDialog(BuildContext context, PaymentModel payment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('สลิปการชำระเงิน'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Image.network(
+                '${Constants.DOMAIN_URL}/images/${payment.attachement}',
+                fit: BoxFit.fitHeight,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the AlertDialog
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -602,16 +672,16 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                     children: [
                       Expanded(
                           child: Text(
-                            '${getOrderListTitle(order)}',
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )),
+                        '${getOrderListTitle(order)}',
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      )),
                       Expanded(
                           child: Text(
-                            '${Global.format(order.priceIncludeTax ?? 0)} บาท',
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          ))
+                        '${Global.format(order.priceIncludeTax ?? 0)} บาท',
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      ))
                     ],
                   )),
             ],
@@ -671,8 +741,8 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                         style: TextStyle(fontSize: size?.getWidthPx(8))),
                     paddedTextBigL(
                         Global.format(order.orderTypeId == 5
-                            ? order.details![j].priceExcludeTax!
-                            : order.details![j].priceIncludeTax!) +
+                                ? order.details![j].priceExcludeTax!
+                                : order.details![j].priceIncludeTax!) +
                             '  บาท',
                         align: TextAlign.right,
                         style: TextStyle(

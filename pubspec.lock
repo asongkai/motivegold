@@ -276,11 +276,10 @@ packages:
   easy_sidemenu:
     dependency: "direct main"
     description:
-      name: easy_sidemenu
-      sha256: "946e6846094a1be39a53065329ff54661b600f1769d9095c62e4c8c3ca4ffd58"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.0"
+      path: "plugins/easy_sidemenu"
+      relative: true
+    source: path
+    version: "0.6.1"
   empty_widget_fork:
     dependency: "direct main"
     description:
@@ -992,10 +991,10 @@ packages:
     dependency: "direct main"
     description:
       name: pdf
-      sha256: adbdec5bc84d20e6c8d67f9c64270aa64d1e9e1ed529f0fef7e7bc7e9400f894
+      sha256: "28eacad99bffcce2e05bba24e50153890ad0255294f4dd78a17075a2ba5c8416"
       url: "https://pub.dev"
     source: hosted
-    version: "3.11.2"
+    version: "3.11.3"
   pdf_widget_wrapper:
     dependency: transitive
     description:

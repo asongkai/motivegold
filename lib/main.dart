@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
               outlinedButtonTheme: customTheme.outlinedButtonTheme(),
               textButtonTheme: customTheme.textButtonTheme(),
               dividerTheme: customTheme.dividerTheme(),
-              fontFamily: 'NotoSansLao',
+              // fontFamily: 'NotoSansLao',
             ),
             home: const LandingScreen(),
           );

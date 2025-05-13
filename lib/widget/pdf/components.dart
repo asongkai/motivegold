@@ -39,6 +39,8 @@ Future<Widget> header(OrderModel order, String? title,
 
   final image = imageData != null ? MemoryImage(imageData) : null;
 
+  // motivePrint(image?.bytes);
+
   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
     Row(children: [
       Expanded(
@@ -48,14 +50,14 @@ Future<Widget> header(OrderModel order, String? title,
               padding: const EdgeInsets.all(8.0),
               child: image == null
                   ? Container()
-                  : Image(image, fit: BoxFit.fitWidth, width: 60),
+                  : Image(image, fit: BoxFit.fitWidth, width: 60, height: 60),
             ),
           )),
       Expanded(
           flex: 9,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${Global.company?.name} (${Global.branch!.name})',
+            Text('${Global.company?.name} (สาขา  ${Global.branch!.name})',
                 style: const TextStyle(fontSize: 9)),
             Text(
                 '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
@@ -84,7 +86,7 @@ Future<Widget> header(OrderModel order, String? title,
 Widget headerRefill(OrderModel order, String? title) {
   return Center(
       child: Column(children: [
-    Text('${Global.company?.name}  (${Global.branch?.name})',
+    Text('${Global.company?.name}  (สาขา ${Global.branch?.name})',
         style: const TextStyle(fontSize: 10)),
     if (title != null)
       Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
@@ -101,7 +103,10 @@ Widget docNo(OrderModel order) {
           children: [
             Text('เลขที่ : ${order.orderId}',
                 style: const TextStyle(fontSize: 9)),
-            if (order.orderTypeId == 5 || order.orderTypeId == 6)
+            if (order.orderTypeId == 5 ||
+                order.orderTypeId == 6 ||
+                order.orderTypeId == 10 ||
+                order.orderTypeId == 11)
               Text('เลขที่อ้างอิง : ${order.referenceNo}',
                   style: const TextStyle(fontSize: 9)),
           ],
@@ -250,6 +255,80 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
                   style: const TextStyle(fontSize: 9)),
               Text(
                   '${Global.format((order.buyPrice ?? 0) / getUnitWeightValue())} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+          ]),
+        ])),
+      ]));
+}
+
+Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
+  motivePrint(customer.toJson());
+  return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            children: [
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('${getNameTitle(order)} : ',
+                          style: const TextStyle(fontSize: 9)),
+                      Text('${customer.firstName} ${customer.lastName}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+                      Text('${customer.address}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(''),
+                      Text('โทร: ${customer.phoneNumber}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+            child: Column(children: [
+          Table(children: [
+            TableRow(children: [
+              Text('ทองคําแท่งขายออกบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.details![0].sellTPrice ?? 0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคำแท่งรับซื้อบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(order.details![0].buyPrice ?? 0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคำแท่งรับซื้อกรัมละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  '${Global.format((order.details![0].buyPrice ?? 0) / getUnitWeightValue())} บาท',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
             ]),

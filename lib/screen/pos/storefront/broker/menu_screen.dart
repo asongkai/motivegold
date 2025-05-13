@@ -189,29 +189,28 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
           SideMenu(
             controller: sideMenu,
             style: SideMenuStyle(
-              showTooltip: true,
-              iconSize: 90,
-              compactSideMenuWidth: 130,
-              itemHeight: 130,
-              displayMode: SideMenuDisplayMode.compact,
-              hoverColor: Colors.teal[100],
-              selectedHoverColor: Colors.teal[100],
-              selectedColor: Colors.teal,
-              selectedTitleTextStyle: const TextStyle(color: Colors.white),
-              selectedIconColor: Colors.white,
-            ),
-            title: Column(
+                showHamburger: true,
+                displayMode: SideMenuDisplayMode.auto,
+                hoverColor: Colors.teal[100],
+                selectedHoverColor: Colors.teal[100],
+                selectedColor: Colors.teal,
+                selectedTitleTextStyle: const TextStyle(color: Colors.white),
+                selectedIconColor: Colors.white,
+                openSideMenuWidth: 190,
+                itemHeight: 100,
+                itemOuterPadding: const EdgeInsets.all(4.0)),
+            title: const Column(
               children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 150,
-                    maxWidth: 150,
-                  ),
-                  child: Image.asset(
-                    'assets/icons/start.gif',
-                  ),
-                ),
-                const Divider(
+                // ConstrainedBox(
+                //   constraints: const BoxConstraints(
+                //     maxHeight: 150,
+                //     maxWidth: 150,
+                //   ),
+                //   child: Image.asset(
+                //     'assets/icons/start.gif',
+                //   ),
+                // ),
+                Divider(
                   indent: 8.0,
                   endIndent: 8.0,
                 ),
@@ -219,20 +218,22 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
             ),
             items: [
               SideMenuItem(
-                title: 'ขายทองแท่ง',
+                title: 'ร้านทองขาย',
+                subTitle: 'โบรกเกอร์รับซื้อ',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.s),
-                tooltipContent: 'ขายทองแท่ง',
+                icon: null, //const Icon(FontAwesomeIcons.s),
+                tooltipContent: 'ร้านทองขาย โบรกเกอร์รับซื้อ',
               ),
               SideMenuItem(
-                title: 'ซื้อทองแท่ง',
+                title: 'ร้านทองซื้อ',
+                subTitle: 'โบรกเกอร์ขาย',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.b),
-                tooltipContent: 'ซื้อทองแท่ง',
+                icon: null, //const Icon(FontAwesomeIcons.b),
+                tooltipContent: 'ร้านทองซื้อ โบรกเกอร์ขาย',
               ),
             ],
           ),

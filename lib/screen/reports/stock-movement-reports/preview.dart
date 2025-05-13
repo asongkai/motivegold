@@ -9,7 +9,7 @@ import 'make_pdf.dart';
 class PreviewStockMovementReportPage extends StatelessWidget {
   final List<StockMovementModel> list;
   final int type;
-  const PreviewStockMovementReportPage({Key? key, required this.list, required this.type}) : super(key: key);
+  const PreviewStockMovementReportPage({super.key, required this.list, required this.type});
 
   @override
   Widget build(BuildContext context) {

@@ -54,28 +54,30 @@ class _CustomerScreenState extends State<CustomerScreen> {
     super.initState();
     customerTypeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[1]);
     selectedCustomerType = customerTypes()[1];
-    loadData();
     // search();
+    defaultCustomerType();
+  }
+
+  defaultCustomerType() {
+
+    final validOrderTypeIds = {5, 10, 6, 11, 8, 9}; // Use Set for faster lookup
+
+    if (Global.orders.any((order) => validOrderTypeIds.contains(order.orderTypeId))) {
+      customerTypeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[0]);
+      selectedCustomerType = customerTypes()[0];
+    } else {
+      customerTypeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[1]);
+      selectedCustomerType = customerTypes()[1];
+    }
+
+    loadData();
+
   }
 
   void loadData() async {
     setState(() {
       loading = true;
     });
-
-    // motivePrint({
-    //   "customerType": selectedCustomerType?.code,
-    //   "idCard":
-    //   selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
-    //   "taxNumber":
-    //   selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
-    //   "firstName": firstNameCtrl.text,
-    //   "lastName": lastNameCtrl.text,
-    //   "companyName": companyNameCtrl.text,
-    //   "email": emailCtrl.text,
-    //   "phoneNumber": phoneCtrl.text,
-    //   "type": widget.type ?? "",
-    // });
 
     try {
       var result = await ApiServices.post(

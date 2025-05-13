@@ -141,6 +141,49 @@ Map<String, dynamic> readWindowsDeviceInfo(WindowsDeviceInfo data) {
   };
 }
 
+double priceIncludeTaxTotalSN(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i].orderTypeId == 1) {
+      for (int j = 0; j < orders[i].details.length; j++) {
+        amount += orders[i]!.priceIncludeTax ?? 0;
+      }
+    }
+  }
+  return amount;
+}
+
+double priceIncludeTaxTotalBU(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i].orderTypeId == 2) {
+      for (int j = 0; j < orders[i].details.length; j++) {
+        amount += orders[i]!.priceIncludeTax ?? 0;
+      }
+    }
+  }
+  return amount;
+}
+
+double discountTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i].orderTypeId == 1) {
+      amount += orders[i]!.discount ?? 0;
+    }
+  }
+  return amount;
+}
+
 double priceIncludeTaxTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
@@ -207,6 +250,21 @@ double priceExcludeTaxTotal(List<dynamic> orders) {
   return amount;
 }
 
+double commissionTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    for (int j = 0; j < orders[i].details.length; j++) {
+      amount += orders[i]!.details[j].commission ?? 0;
+      amount += orders[i]!.details[j].taxAmount ?? 0;
+      amount += orders[i]!.details[j].packagePrice ?? 0;
+    }
+  }
+  return amount;
+}
+
 double getWeightTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
@@ -214,6 +272,32 @@ double getWeightTotal(List<dynamic> orders) {
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
     amount += getWeight(orders[i]!);
+  }
+  return amount;
+}
+
+double getWeightTotalBU(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i].orderTypeId == 2) {
+      amount += getWeight(orders[i]!);
+    }
+  }
+  return amount;
+}
+
+double getWeightTotalSN(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i].orderTypeId == 1) {
+      amount += getWeight(orders[i]!);
+    }
   }
   return amount;
 }

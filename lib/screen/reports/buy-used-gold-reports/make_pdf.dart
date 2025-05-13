@@ -53,7 +53,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(
       TableRow(children: [
         paddedText('วัน/เดือน/ปี', align: TextAlign.center),
         paddedText('เลขท่ีใบสําคัญรับเงิน', align: TextAlign.center),
-        paddedText('ผู้ซื้อ', align: TextAlign.center),
+        paddedText('ผู้ขาย', align: TextAlign.center),
         paddedText('เลขประจําตัวผู้เสียภาษี', align: TextAlign.center),
         paddedText('รายการสินค้า', align: TextAlign.center),
         paddedText('น้ําหนัก (กรัม) \n(น.น.สินค้า/น.น.96.5)', align: TextAlign.center),

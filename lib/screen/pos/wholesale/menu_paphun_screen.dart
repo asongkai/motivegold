@@ -9,19 +9,19 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-import 'refill/refill_gold_stock_screen.dart';
-import 'used/sell_used_gold_screen.dart';
+import 'paphun/refill/refill_gold_stock_screen.dart';
+import 'paphun/used/sell_used_gold_screen.dart';
 
-class WholeSaleMenuScreen extends StatefulWidget {
-  const WholeSaleMenuScreen({super.key, required this.title});
+class WholeSalePaphunMenuScreen extends StatefulWidget {
+  const WholeSalePaphunMenuScreen({super.key, required this.title});
 
   final String title;
 
   @override
-  WholeSaleMenuScreenState createState() => WholeSaleMenuScreenState();
+  WholeSalePaphunMenuScreenState createState() => WholeSalePaphunMenuScreenState();
 }
 
-class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
+class WholeSalePaphunMenuScreenState extends State<WholeSalePaphunMenuScreen> {
   PageController pageController = PageController();
   SideMenuController sideMenu = SideMenuController();
   int cartCount = 0;
@@ -134,29 +134,29 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
           SideMenu(
             controller: sideMenu,
             style: SideMenuStyle(
-              showTooltip: true,
-              iconSize: 90,
-              compactSideMenuWidth: 130,
-              itemHeight: 130,
-              displayMode: SideMenuDisplayMode.compact,
-              hoverColor: Colors.teal[100],
-              selectedHoverColor: Colors.teal[100],
-              selectedColor: Colors.teal,
-              selectedTitleTextStyle: const TextStyle(color: Colors.white),
-              selectedIconColor: Colors.white,
+                showHamburger: true,
+                displayMode: SideMenuDisplayMode.auto,
+                hoverColor: Colors.teal[100],
+                selectedHoverColor: Colors.teal[100],
+                selectedColor: Colors.teal,
+                selectedTitleTextStyle: const TextStyle(color: Colors.white),
+                selectedIconColor: Colors.white,
+                openSideMenuWidth: 150,
+                itemHeight: 100,
+                itemOuterPadding: const EdgeInsets.all(4.0)
             ),
-            title: Column(
+            title: const Column(
               children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxHeight: 150,
-                    maxWidth: 150,
-                  ),
-                  child: Image.asset(
-                    'assets/icons/start.gif',
-                  ),
-                ),
-                const Divider(
+                // ConstrainedBox(
+                //   constraints: const BoxConstraints(
+                //     maxHeight: 150,
+                //     maxWidth: 150,
+                //   ),
+                //   child: Image.asset(
+                //     'assets/icons/start.gif',
+                //   ),
+                // ),
+                Divider(
                   indent: 8.0,
                   endIndent: 8.0,
                 ),
@@ -164,20 +164,22 @@ class WholeSaleMenuScreenState extends State<WholeSaleMenuScreen> {
             ),
             items: [
               SideMenuItem(
-                title: 'ขายทองคำใหม่',
+                title: 'เติมทอง',
+                subTitle: 'รูปพรรณ',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.b),
-                tooltipContent: "ขายทองคำใหม่",
+                icon: null, //const Icon(FontAwesomeIcons.b),
+                tooltipContent: "เติมทองรูปพรรณ",
               ),
               SideMenuItem(
-                title: 'รับซื้อทองเก่า',
+                title: 'ขายทอง',
+                subTitle: 'รูปพรรณเก่า',
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: const Icon(FontAwesomeIcons.s),
-                tooltipContent: 'รับซื้อทองเก่า',
+                icon: null, //const Icon(FontAwesomeIcons.s),
+                tooltipContent: 'ขายทองรูปพรรณเก่า',
               ),
             ],
           ),

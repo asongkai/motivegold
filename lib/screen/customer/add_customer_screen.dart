@@ -11,6 +11,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/screen/customer/ocr/id_data_screen.dart';
 import 'package:motivegold/screen/customer/widget/card_reader_info.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -239,15 +240,56 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Text("เพิ่มลูกค้า",
-              style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900)),
+          title: Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("เพิ่มลูกค้า",
+                    style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (context) => const IDCardOCRScreen(),
+                      ),
+                    )
+                        .whenComplete(() {
+                    });
+                  },
+                  child: Container(
+                    color: Colors.teal[900],
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.add,
+                            size: 50,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            'เพิ่มลูกค้า',
+                            style: TextStyle(
+                                fontSize: size.getWidthPx(10),
+                                color: Colors.white),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       // AppBar(

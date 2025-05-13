@@ -1,30 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
-import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/dialog/refill_dialog.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
+
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
-import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
@@ -32,52 +29,56 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/screen/gold/gold_price_screen.dart';
 
-class EditRefillGoldStockScreen extends StatefulWidget {
+class EditSellUsedThengGoldScreen extends StatefulWidget {
   final int index;
   final int? j;
 
-  const EditRefillGoldStockScreen({super.key, required this.index, this.j});
+  const EditSellUsedThengGoldScreen({super.key, required this.index, this.j});
 
   @override
-  State<EditRefillGoldStockScreen> createState() =>
-      _EditRefillGoldStockScreenState();
+  State<EditSellUsedThengGoldScreen> createState() =>
+      _EditSellUsedThengGoldScreenState();
 }
 
-class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
+class _EditSellUsedThengGoldScreenState
+    extends State<EditSellUsedThengGoldScreen> {
   bool loading = false;
+  Screen? size;
   List<ProductModel> productList = [];
-  List<WarehouseModel> warehouseList = [];
-  ProductModel? selectedProduct;
-  ProductTypeModel? selectedProductType;
-  WarehouseModel? selectedWarehouse;
-  ValueNotifier<dynamic>? productNotifier;
-  ValueNotifier<dynamic>? productTypeNotifier;
-  ValueNotifier<dynamic>? warehouseNotifier;
+  List<WarehouseModel> fromWarehouseList = [];
+  List<WarehouseModel> toWarehouseList = [];
+  List<QtyLocationModel> qtyLocationList = [];
+  WarehouseModel? selectedFromLocation;
+  WarehouseModel? selectedToLocation;
 
   TextEditingController productCodeCtrl = TextEditingController();
   TextEditingController productNameCtrl = TextEditingController();
   TextEditingController productWeightCtrl = TextEditingController();
   TextEditingController productWeightBahtCtrl = TextEditingController();
-  TextEditingController productSellPriceCtrl = TextEditingController();
-  TextEditingController productBuyPriceCtrl = TextEditingController();
+  TextEditingController productEntryWeightCtrl = TextEditingController();
+  TextEditingController productEntryWeightBahtCtrl = TextEditingController();
   TextEditingController productBuyPricePerGramCtrl = TextEditingController();
   TextEditingController warehouseCtrl = TextEditingController();
 
   TextEditingController referenceNumberCtrl = TextEditingController();
   TextEditingController remarkCtrl = TextEditingController();
+  TextEditingController priceAdjCtrl = TextEditingController();
 
   TextEditingController productSellThengPriceCtrl = TextEditingController();
   TextEditingController productBuyThengPriceCtrl = TextEditingController();
-
   TextEditingController priceExcludeTaxCtrl = TextEditingController();
   TextEditingController priceIncludeTaxCtrl = TextEditingController();
   TextEditingController priceDiffCtrl = TextEditingController();
   TextEditingController taxBaseCtrl = TextEditingController();
   TextEditingController taxAmountCtrl = TextEditingController();
   TextEditingController purchasePriceCtrl = TextEditingController();
+
+  TextEditingController toWarehouseCtrl = TextEditingController();
+  TextEditingController productSellPriceCtrl = TextEditingController();
+  TextEditingController productBuyPriceCtrl = TextEditingController();
 
   TextEditingController priceExcludeTaxTotalCtrl = TextEditingController();
   TextEditingController priceIncludeTaxTotalCtrl = TextEditingController();
@@ -87,93 +88,158 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
   TextEditingController purchasePriceTotalCtrl = TextEditingController();
 
   TextEditingController orderDateCtrl = TextEditingController();
-  final boardCtrl = BoardDateTimeController();
 
-  DateTime date = DateTime.now();
+  ProductModel? selectedProduct;
+  ValueNotifier<dynamic>? fromWarehouseNotifier;
+  ValueNotifier<dynamic>? toWarehouseNotifier;
+  ValueNotifier<dynamic>? branchNotifier;
+  ValueNotifier<dynamic>? productNotifier;
+
   String? txt;
   bool showCal = false;
 
   FocusNode priceIncludeTaxFocus = FocusNode();
   FocusNode gramFocus = FocusNode();
+  FocusNode bahtFocus = FocusNode();
   FocusNode priceExcludeTaxFocus = FocusNode();
   FocusNode purchasePriceFocus = FocusNode();
   FocusNode priceDiffFocus = FocusNode();
   FocusNode taxAmountFocus = FocusNode();
+  FocusNode priceAdjFocus = FocusNode();
 
   bool priceIncludeTaxReadOnly = false;
   bool gramReadOnly = false;
+  bool bahtReadOnly = false;
   bool priceExcludeTaxReadOnly = false;
   bool purchasePriceReadOnly = false;
   bool priceDiffReadOnly = false;
   bool taxAmountReadOnly = false;
+  bool priceAdjReadOnly = false;
 
   @override
   void initState() {
     // implement initState
-    super.initState();
 
+    super.initState();
     // Sample data
-    // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    // productBuyThengPriceCtrl.text = "0";
+    orderDateCtrl.text = "01-02-2025";
+    referenceNumberCtrl.text = "90803535";
+    productSellThengPriceCtrl.text =
+        Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+    productBuyThengPriceCtrl.text =
+        Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy));
     // productSellPriceCtrl.text = "0";
     // productBuyPriceCtrl.text =
     //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
     // productBuyPricePerGramCtrl.text = Global.format(
     //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // purchasePriceCtrl.text = Global.format(944603.10);
-    // priceIncludeTaxCtrl.text = Global.format(929918.17);
+    // // purchasePriceCtrl.text = Global.format(944603.10);
+    // priceIncludeTaxCtrl.text = Global.format(1464946.60);
+    // productEntryWeightCtrl.text = Global.format(434.70);
+    // productEntryWeightBahtCtrl.text =
+    //     Global.format(434.70 / getUnitWeightValue());
+    //
+    // gramChanged();
 
-    Global.appBarColor = rfBgColor;
-    productTypeNotifier = ValueNotifier<ProductTypeModel>(
-        ProductTypeModel(id: 0, name: 'เลือกประเภท'));
+    Global.appBarColor = suBgColor;
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    fromWarehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้าต้นทาง'));
+    toWarehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้าปลายทาง'));
+    branchNotifier = ValueNotifier<BranchModel>(
+        BranchModel(id: 0, name: 'เลือกสาขาปลายทาง'));
     loadProducts();
     getCart();
 
     orderDateCtrl.text = Global.formatDateD(
-        Global.ordersWholesale![widget.index].orderDate.toString());
+        Global.ordersThengWholesale![widget.index].orderDate.toString());
     referenceNumberCtrl.text =
-        Global.ordersWholesale![widget.index].referenceNo ?? '';
+        Global.ordersThengWholesale![widget.index].referenceNo ?? '';
     productSellThengPriceCtrl.text =
-        Global.format(Global.ordersWholesale![widget.index].sellTPrice ?? 0);
-    productBuyPriceCtrl.text =
-        Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
-    productBuyPricePerGramCtrl.text = Global.format(
-        Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-
-    productWeightCtrl.text = Global.format(
-        Global.ordersWholesale![widget.index].details![widget.j!].weight ?? 0);
+        Global.format(Global.ordersThengWholesale![widget.index].sellTPrice ?? 0);
+    productBuyThengPriceCtrl.text =
+        Global.format(Global.ordersThengWholesale![widget.index].buyTPrice ?? 0);
+    productEntryWeightCtrl.text = Global.format(
+        Global.ordersThengWholesale![widget.index].details![widget.j!].weight ?? 0);
+    productEntryWeightBahtCtrl.text = Global.format(
+        Global.ordersThengWholesale![widget.index].details![widget.j!].weightBath ??
+            0);
+    priceAdjCtrl.text = Global.format(
+        Global.ordersThengWholesale![widget.index].details![widget.j!].weightAdj ??
+            0);
     priceIncludeTaxCtrl.text = Global.format(Global
-            .ordersWholesale![widget.index]
+            .ordersThengWholesale![widget.index]
             .details![widget.j!]
             .priceIncludeTax ??
         0);
     priceExcludeTaxCtrl.text = Global.format(Global
-            .ordersWholesale![widget.index]
+            .ordersThengWholesale![widget.index]
             .details![widget.j!]
             .priceExcludeTax ??
         0);
     purchasePriceCtrl.text = Global.format(Global
-            .ordersWholesale![widget.index].details![widget.j!].purchasePrice ??
+            .ordersThengWholesale![widget.index].details![widget.j!].purchasePrice ??
         0);
     priceDiffCtrl.text = Global.format(
-        Global.ordersWholesale![widget.index].details![widget.j!].priceDiff ??
+        Global.ordersThengWholesale![widget.index].details![widget.j!].priceDiff ??
             0);
     taxAmountCtrl.text = Global.format(
-        Global.ordersWholesale![widget.index].details![widget.j!].taxAmount ??
+        Global.ordersThengWholesale![widget.index].details![widget.j!].taxAmount ??
             0);
     taxBaseCtrl.text = Global.format(
-        Global.ordersWholesale![widget.index].details![widget.j!].taxBase ?? 0);
-    remarkCtrl.text = Global.ordersWholesale![widget.index].remark ?? '';
+        Global.ordersThengWholesale![widget.index].details![widget.j!].taxBase ?? 0);
+    priceAdjCtrl.text = Global.format(
+        Global.ordersThengWholesale![widget.index].details![widget.j!].weightAdj ??
+            0);
+    remarkCtrl.text = Global.ordersThengWholesale![widget.index].remark ?? '';
+    priceIncludeTaxChanged();
+  }
 
-    priceExcludeTaxChanged();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    productCodeCtrl.dispose();
+    productNameCtrl.dispose();
+    productWeightCtrl.dispose();
+    productWeightBahtCtrl.dispose();
+    productEntryWeightCtrl.dispose();
+    productEntryWeightBahtCtrl.dispose();
+    warehouseCtrl.dispose();
+
+    productSellThengPriceCtrl.dispose();
+    productBuyThengPriceCtrl.dispose();
+    priceExcludeTaxCtrl.dispose();
+    priceIncludeTaxCtrl.dispose();
+    priceDiffCtrl.dispose();
+    taxBaseCtrl.dispose();
+    taxAmountCtrl.dispose();
+    purchasePriceCtrl.dispose();
+
+    toWarehouseCtrl.dispose();
+    productSellPriceCtrl.dispose();
+    productBuyPriceCtrl.dispose();
+
+    priceExcludeTaxTotalCtrl.dispose();
+    priceIncludeTaxTotalCtrl.dispose();
+    priceDiffTotalCtrl.dispose();
+    taxBaseTotalCtrl.dispose();
+    taxAmountTotalCtrl.dispose();
+    purchasePriceTotalCtrl.dispose();
+
+    orderDateCtrl.dispose();
+    referenceNumberCtrl.dispose();
+    priceAdjCtrl.dispose();
+
+    priceIncludeTaxFocus.dispose();
+    gramFocus.dispose();
+    priceExcludeTaxFocus.dispose();
+    purchasePriceFocus.dispose();
+    priceDiffFocus.dispose();
+    taxAmountFocus.dispose();
+    priceAdjFocus.dispose();
   }
 
   void loadProducts() async {
@@ -181,23 +247,22 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
       loading = true;
     });
     try {
-      // motivePrint(Global.ordersWholesale![widget.index].attachement);
-      Global.refillAttach =
-          Global.ordersWholesale![widget.index].attachement != null
+      Global.sellUsedThengAttach =
+          Global.ordersThengWholesale![widget.index].attachement != null
               ? await Global.createFileFromString(
-                  Global.ordersWholesale![widget.index].attachement ?? '')
+                  Global.ordersThengWholesale![widget.index].attachement ?? '')
               : null;
-      // var result = await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
-      var result =
-          await ApiServices.post('/product/refill', Global.requestObj(null));
+
+      var result = await ApiServices.post(
+          '/product/type/BAR/11', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        motivePrint(data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
           if (productList.isNotEmpty) {
             selectedProduct = productList.where((e) => e.isDefault == 1).first;
+            // motivePrint(selectedProduct?.toJson());
             productNotifier = ValueNotifier<ProductModel>(
                 selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
             productCodeCtrl.text =
@@ -211,72 +276,86 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/type/NEW/5', Global.requestObj(null));
-      // motivePrint(warehouse?.toJson());
+          '/binlocation/all/type/BAR/11', Global.requestObj(null));
+      // print(warehouse!.data);
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
-        List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
         setState(() {
-          warehouseList = warehouses;
-          selectedWarehouse =
-              warehouseList.where((e) => e.isDefault == 1).first;
-          warehouseNotifier = ValueNotifier<WarehouseModel>(selectedWarehouse ??
-              WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+          fromWarehouseList = warehouseListModelFromJson(data);
+          if (fromWarehouseList.isNotEmpty) {
+            selectedFromLocation =
+                fromWarehouseList.where((e) => e.isDefault == 1).first;
+            selectedFromLocation ??= fromWarehouseList.first;
+            fromWarehouseNotifier = ValueNotifier<WarehouseModel>(
+                selectedFromLocation ??
+                    WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+
+            loadToWarehouseNoId(selectedFromLocation!.id!);
+            loadQtyByLocation(selectedFromLocation!.id!);
+          } else {
+            toWarehouseList = warehouseListModelFromJson(data);
+          }
         });
       } else {
-        warehouseList = [];
+        fromWarehouseList = [];
+        toWarehouseList = [];
       }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
     }
-    if (mounted) {
-      setState(() {
-        loading = false;
-      });
+    setState(() {
+      loading = false;
+    });
+  }
+
+  Future<void> loadQtyByLocation(int id) async {
+    try {
+      var result = await ApiServices.get(
+          '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
+      if (result?.status == "success") {
+        var data = jsonEncode(result?.data);
+        List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
+        setState(() {
+          qtyLocationList = qtys;
+        });
+      } else {
+        qtyLocationList = [];
+      }
+
+      productWeightCtrl.text =
+          Global.format(Global.getTotalWeightByLocation(qtyLocationList));
+      productWeightBahtCtrl.text = Global.format(
+          Global.getTotalWeightByLocation(qtyLocationList) /
+              getUnitWeightValue());
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    productCodeCtrl.dispose();
-    productNameCtrl.dispose();
-    productWeightCtrl.dispose();
-    productWeightBahtCtrl.dispose();
-    productSellPriceCtrl.dispose();
-    productBuyPriceCtrl.dispose();
-    warehouseCtrl.dispose();
-
-    referenceNumberCtrl.dispose();
-
-    productSellThengPriceCtrl.dispose();
-    productBuyThengPriceCtrl.dispose();
-
-    priceExcludeTaxCtrl.dispose();
-    priceIncludeTaxCtrl.dispose();
-    priceDiffCtrl.dispose();
-    taxBaseCtrl.dispose();
-    taxAmountCtrl.dispose();
-    purchasePriceCtrl.dispose();
-
-    priceExcludeTaxTotalCtrl.dispose();
-    priceIncludeTaxTotalCtrl.dispose();
-    priceDiffTotalCtrl.dispose();
-    taxBaseTotalCtrl.dispose();
-    taxAmountTotalCtrl.dispose();
-    purchasePriceTotalCtrl.dispose();
-
-    orderDateCtrl.dispose();
-
-    priceIncludeTaxFocus.dispose();
-    gramFocus.dispose();
-    priceExcludeTaxFocus.dispose();
-    purchasePriceFocus.dispose();
-    priceDiffFocus.dispose();
-    taxAmountFocus.dispose();
+  void loadToWarehouseNoId(int id) async {
+    try {
+      setState(() {
+        toWarehouseList.clear();
+        toWarehouseCtrl.text = "";
+      });
+      var data =
+          fromWarehouseList.where((element) => element.id != id).toList();
+      toWarehouseList.addAll(data);
+      Future.delayed(const Duration(seconds: 1), () {
+        setState(() {
+          toWarehouseNotifier = ValueNotifier<WarehouseModel>(
+              WarehouseModel(id: 0, name: 'เลือกคลังสินค้าปลายทาง'));
+        });
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
   }
 
   void openCal() {
@@ -298,6 +377,9 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     if (txt == 'tax_amount') {
       taxAmountReadOnly = true;
     }
+    if (txt == 'price_adj') {
+      priceAdjReadOnly = true;
+    }
     setState(() {
       showCal = true;
     });
@@ -310,6 +392,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     priceExcludeTaxReadOnly = false;
     priceDiffReadOnly = false;
     taxAmountReadOnly = false;
+    priceAdjReadOnly = false;
     setState(() {
       showCal = false;
     });
@@ -317,16 +400,16 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
+    size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        backgroundColor: rfBgColor,
-        title: Text(
-          'เติมทอง – ซื้อทองรูปพรรณใหม่ 96.5%',
-          style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),
-        ),
+        backgroundColor: suBgColor,
         centerTitle: true,
+        title: Text(
+          'ขายทองคำแท่งเก่าให้ร้านค้าส่ง',
+          style: TextStyle(fontSize: size!.getWidthPx(10)),
+        ),
         actions: [
           GestureDetector(
             onTap: () {
@@ -343,12 +426,10 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                 const Icon(
                   Icons.money,
                   size: 50,
-                  color: textColor,
                 ),
                 Text(
                   'ราคาทองคำ',
-                  style:
-                      TextStyle(fontSize: size.getWidthPx(6), color: textColor),
+                  style: TextStyle(fontSize: size!.getWidthPx(6)),
                 )
               ],
             ),
@@ -370,13 +451,12 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                     },
                     child: SingleChildScrollView(
                       child: Container(
-                        // height: size.hp(100),
                         margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
-                          color: rfBgColorLight,
+                          color: suBgColorLight,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -413,7 +493,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(10),
+                                          fontSize: size?.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductModel value) {
@@ -425,7 +505,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(10),
+                                        fontSize: size?.getWidthPx(10),
                                         projectValueNotifier: productNotifier!,
                                       ),
                                     ),
@@ -442,13 +522,13 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       keyboardType: TextInputType.number,
                                       //editing controller of this TextField
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(12)),
+                                          fontSize: size?.getWidthPx(12)),
                                       decoration: InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white70,
                                         hintText: 'dd-mm-yyyy',
                                         labelStyle: TextStyle(
-                                            fontSize: size.getWidthPx(12),
+                                            fontSize: size?.getWidthPx(12),
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon:
@@ -494,80 +574,92 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                   inputType: TextInputType.text,
                                   enabled: true,
                                   controller: referenceNumberCtrl,
-                                  fontSize: size.getWidthPx(12)),
+                                  fontSize: size!.getWidthPx(12)),
                             ),
                             const SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 5,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: buildTextFieldX(
-                                        labelText: "ทองคำแท่งขายออกบาทละ",
-                                        inputType: TextInputType.number,
-                                        controller: productSellThengPriceCtrl,
-                                        fontSize: size.getWidthPx(12),
-                                        inputFormat: [
-                                          ThousandsFormatter(
-                                              allowFraction: true)
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Expanded(
-                                    flex: 5,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: buildTextFieldX(
-                                        labelText: "ทองรูปพรรณรับซื้อกรัมละ",
-                                        inputType: TextInputType.number,
-                                        controller: productBuyPricePerGramCtrl,
-                                        fontSize: size.getWidthPx(12),
-                                        inputFormat: [
-                                          ThousandsFormatter(
-                                              allowFraction: true)
-                                        ],
-                                        onChanged: (value) {
-                                          if (value.isNotEmpty) {
-                                            productBuyPriceCtrl.text =
-                                                Global.format(
-                                                    Global.toNumber(value) *
-                                                        getUnitWeightValue());
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              height: 0,
                             ),
                             Row(
                               children: [
                                 Expanded(
-                                  flex: 6,
+                                  flex: 5,
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: numberTextField(
-                                        labelText: "น้ำหนักรวม (กรัม)",
+                                    child: buildTextFieldX(
+                                      labelText: "ทองคำแท่งขายออกบาทละ",
+                                      inputType: TextInputType.phone,
+                                      controller: productSellThengPriceCtrl,
+                                      fontSize: size!.getWidthPx(12),
+                                      inputFormat: [
+                                        ThousandsFormatter(allowFraction: true)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: buildTextFieldX(
+                                        labelText: "ทองคำแท่งรับซื้อบาทละ",
+                                        inputType: TextInputType.number,
+                                        controller: productBuyThengPriceCtrl,
+                                        fontSize: size!.getWidthPx(12),
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                        onChanged: (value) {}),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 6,
+                                    child: buildTextField(
+                                        labelText:
+                                            "น้ำหนักรวม (กรัม) ในคลังสินค้า: ${selectedFromLocation?.name}",
                                         inputType: TextInputType.number,
                                         controller: productWeightCtrl,
+                                        enabled: false,
+                                        fontSize: size!.getWidthPx(12),
+                                        labelColor: Colors.black87,
+                                        inputFormat: [
+                                          ThousandsFormatter(
+                                              allowFraction: true)
+                                        ],
+                                        onChanged: (String value) {}),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 6,
+                                    child: numberTextField(
+                                        labelText: "น้ำหนักรวม (กรัม) ",
+                                        inputType: TextInputType.number,
+                                        controller: productEntryWeightCtrl,
                                         focusNode: gramFocus,
                                         readOnly: gramReadOnly,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: size!.getWidthPx(12),
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
                                         ],
                                         clear: () {
                                           setState(() {
-                                            productWeightCtrl.text = "";
+                                            productEntryWeightCtrl.text = "";
                                           });
                                           gramChanged();
                                         },
@@ -586,39 +678,103 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                           gramChanged();
                                         }),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 6,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    flex: 6,
                                     child: numberTextField(
-                                        labelText: "จำนวนเงินสุทธิ",
+                                        labelText: "น้ำหนักรวม(บาททอง)",
                                         inputType: TextInputType.phone,
-                                        controller: priceIncludeTaxCtrl,
-                                        focusNode: priceIncludeTaxFocus,
-                                        readOnly: priceIncludeTaxReadOnly,
-                                        fontSize: size.getWidthPx(12),
+                                        controller: productEntryWeightBahtCtrl,
+                                        focusNode: bahtFocus,
+                                        readOnly: bahtReadOnly,
+                                        fontSize: size!.getWidthPx(12),
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
                                         ],
                                         clear: () {
                                           setState(() {
-                                            priceIncludeTaxCtrl.text = "";
+                                            productEntryWeightBahtCtrl.text =
+                                                "";
                                           });
+                                          bahtChanged();
                                         },
                                         onTap: () {
-                                          txt = 'price_include';
+                                          txt = 'baht';
                                           closeCal();
                                         },
                                         openCalc: () {
                                           if (!showCal) {
-                                            txt = 'price_include';
-                                            priceIncludeTaxFocus.requestFocus();
+                                            txt = 'baht';
+                                            bahtFocus.requestFocus();
                                             openCal();
                                           }
                                         },
-                                        onFocusChange: (bool value) {}),
+                                        onFocusChange: (bool value) {
+                                          if (!value) {
+                                            bahtChanged();
+                                          }
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                    flex: 4,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'จำนวนเงินสุทธิ',
+                                        style: TextStyle(
+                                            fontSize: size!.getWidthPx(10),
+                                            color: textColor),
+                                      ),
+                                    )),
+                                Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: numberTextField(
+                                      labelText: "",
+                                      inputType: TextInputType.phone,
+                                      controller: priceIncludeTaxCtrl,
+                                      focusNode: priceIncludeTaxFocus,
+                                      readOnly: priceIncludeTaxReadOnly,
+                                      fontSize: size!.getWidthPx(12),
+                                      inputFormat: [
+                                        ThousandsFormatter(allowFraction: true)
+                                      ],
+                                      clear: () {
+                                        setState(() {
+                                          priceIncludeTaxCtrl.text = "";
+                                        });
+                                        priceIncludeTaxChanged();
+                                      },
+                                      onTap: () {
+                                        txt = 'price_include';
+                                        closeCal();
+                                      },
+                                      openCalc: () {
+                                        if (!showCal) {
+                                          txt = 'price_include';
+                                          priceIncludeTaxFocus.requestFocus();
+                                          openCal();
+                                        }
+                                      },
+                                      onChanged: (String value) {
+                                        // priceIncludeTaxChanged();
+                                      },
+                                      onFocusChange: (value) {
+                                        if (!value) {
+                                          priceIncludeTaxChanged();
+                                        }
+                                      },
+                                    ),
                                   ),
                                 ),
                               ],
@@ -631,9 +787,9 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                          'ราคารวมค่ากำเหน็จก่อนภาษี',
+                                          'น้ำหนักสูญเสีย (กรัม) ',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: size!.getWidthPx(10),
                                               color: textColor),
                                         ),
                                       )),
@@ -643,224 +799,65 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
                                         labelText: "",
-                                        inputType: TextInputType.phone,
-                                        controller: priceExcludeTaxCtrl,
-                                        focusNode: priceExcludeTaxFocus,
-                                        readOnly: priceExcludeTaxReadOnly,
+                                        inputType: TextInputType.number,
+                                        controller: priceAdjCtrl,
+                                        focusNode: priceAdjFocus,
+                                        readOnly: priceAdjReadOnly,
+                                        fontSize: size!.getWidthPx(12),
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
                                         ],
                                         clear: () {
                                           setState(() {
-                                            priceExcludeTaxCtrl.text = "";
+                                            priceAdjCtrl.text = "";
                                           });
-                                          priceExcludeTaxChanged();
                                         },
                                         onTap: () {
-                                          txt = 'price_exclude';
+                                          txt = 'price_adj';
                                           closeCal();
                                         },
                                         openCalc: () {
                                           if (!showCal) {
-                                            txt = 'price_exclude';
-                                            priceExcludeTaxFocus.requestFocus();
+                                            txt = 'price_adj';
+                                            priceAdjFocus.requestFocus();
                                             openCal();
                                           }
                                         },
-                                        onFocusChange: (bool value) {
-                                          if (!value) {
-                                            priceExcludeTaxChanged();
-                                          }
-                                        },
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'หักราคารับซื้อทองประจำวัน',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: numberTextField(
-                                          labelText: "",
-                                          inputType: TextInputType.phone,
-                                          controller: purchasePriceCtrl,
-                                          focusNode: purchasePriceFocus,
-                                          readOnly: purchasePriceReadOnly,
-                                          inputFormat: [
-                                            ThousandsFormatter(
-                                                allowFraction: true)
-                                          ],
-                                          clear: () {
-                                            setState(() {
-                                              purchasePriceCtrl.text = "";
-                                            });
-                                          },
-                                          onTap: () {
-                                            txt = 'purchase';
-                                            closeCal();
-                                          },
-                                          openCalc: () {
-                                            if (!showCal) {
-                                              txt = 'purchase';
-                                              purchasePriceFocus.requestFocus();
-                                              openCal();
-                                            }
-                                          },
-                                          onChanged: (String value) {}),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'จำนวนส่วนต่างฐานภาษี',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: numberTextField(
-                                          labelText: "",
-                                          inputType: TextInputType.phone,
-                                          controller: priceDiffCtrl,
-                                          focusNode: priceDiffFocus,
-                                          readOnly: priceDiffReadOnly,
-                                          inputFormat: [
-                                            ThousandsFormatter(
-                                                allowFraction: true)
-                                          ],
-                                          clear: () {
-                                            setState(() {
-                                              priceDiffCtrl.text = "";
-                                            });
-                                          },
-                                          onTap: () {
-                                            txt = 'price_diff';
-                                            closeCal();
-                                          },
-                                          openCalc: () {
-                                            if (!showCal) {
-                                              txt = 'price_diff';
-                                              priceDiffFocus.requestFocus();
-                                              openCal();
-                                            }
-                                          },
-                                          onChanged: (String value) {}),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'ภาษีมูลค่าเพิ่ม 7%',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: numberTextField(
-                                          labelText: "",
-                                          inputType: TextInputType.phone,
-                                          controller: taxAmountCtrl,
-                                          focusNode: taxAmountFocus,
-                                          readOnly: taxAmountReadOnly,
-                                          inputFormat: [
-                                            ThousandsFormatter(
-                                                allowFraction: true)
-                                          ],
-                                          clear: () {
-                                            setState(() {
-                                              taxAmountCtrl.text = "";
-                                            });
-                                          },
-                                          onTap: () {
-                                            txt = 'tax_amount';
-                                            closeCal();
-                                          },
-                                          openCalc: () {
-                                            if (!showCal) {
-                                              txt = 'tax_amount';
-                                              taxAmountFocus.requestFocus();
-                                              openCal();
-                                            }
-                                          },
-                                          onChanged: (String value) {}),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: buildTextFieldX(
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: buildTextFieldX(
                                         labelText: "หมายเหตุ",
                                         inputType: TextInputType.text,
                                         controller: remarkCtrl,
-                                        fontSize: size.getWidthPx(12),
-                                      ),
-                                    ),
+                                        fontSize: size!.getWidthPx(12)),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-
                             // Attachment
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(12),
+                                    fontSize: size!.getWidthPx(10),
                                     color: textColor),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: 200,
+                            SizedBox(
+                              width: 200,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton.icon(
                                   onPressed: showOptions,
                                   icon: const Icon(
@@ -868,8 +865,8 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                   ),
                                   label: Text(
                                     'เลือกรูปภาพ',
-                                    style:
-                                        TextStyle(fontSize: size.getWidthPx(8)),
+                                    style: TextStyle(
+                                        fontSize: size?.getWidthPx(8)),
                                   ),
                                 ),
                               ),
@@ -877,11 +874,11 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Center(
-                                child: Global.refillAttach == null
+                                child: Global.sellUsedThengAttach == null
                                     ? Text(
                                         'ไม่ได้เลือกรูปภาพ',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10)),
+                                            fontSize: size?.getWidthPx(8)),
                                       )
                                     : SizedBox(
                                         width:
@@ -893,7 +890,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Image.file(
-                                                  Global.refillAttach!),
+                                                  Global.sellUsedThengAttach!),
                                             ),
                                             Positioned(
                                               right: 0.0,
@@ -901,7 +898,8 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                               child: InkWell(
                                                 onTap: () {
                                                   setState(() {
-                                                    Global.refillAttach = null;
+                                                    Global.sellUsedThengAttach =
+                                                        null;
                                                   });
                                                 },
                                                 child: const CircleAvatar(
@@ -936,34 +934,27 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                   onChanged: (key, value, expression) {
                                     if (key == 'ENT') {
                                       if (txt == 'gram') {
-                                        productWeightCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
+                                        productEntryWeightCtrl.text =
+                                            value != null
+                                                ? "${Global.format(value)}"
+                                                : "";
                                         gramChanged();
+                                      }
+                                      if (txt == 'baht') {
+                                        productEntryWeightBahtCtrl.text =
+                                            value != null
+                                                ? "${Global.format(value)}"
+                                                : "";
+                                        bahtChanged();
                                       }
                                       if (txt == 'price_include') {
                                         priceIncludeTaxCtrl.text = value != null
                                             ? "${Global.format(value)}"
                                             : "";
+                                        priceIncludeTaxChanged();
                                       }
-                                      if (txt == 'price_exclude') {
-                                        priceExcludeTaxCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                        priceExcludeTaxChanged();
-                                      }
-                                      if (txt == 'purchase') {
-                                        purchasePriceCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                      }
-                                      if (txt == 'price_diff') {
-                                        priceDiffCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                      }
-                                      if (txt == 'tax_amount') {
-                                        taxAmountCtrl.text = value != null
+                                      if (txt == 'price_adj') {
+                                        priceAdjCtrl.text = value != null
                                             ? "${Global.format(value)}"
                                             : "";
                                       }
@@ -1003,7 +994,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
           margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: rfBgColorLight,
+            color: suBgColorLight,
           ),
           child: Column(
             children: [
@@ -1013,39 +1004,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          Global.refillOrderDetail = [];
-                          resetText();
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.close, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เคลียร์',
-                            style: TextStyle(fontSize: size.getWidthPx(10)),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: rfBgColor,
+                        backgroundColor: Colors.blue[700],
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -1065,33 +1024,133 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                           return;
                         }
 
-                        if (selectedProduct == null) {
+                        if (productEntryWeightCtrl.text.isEmpty ||
+                            priceIncludeTaxCtrl.text.isEmpty) {
                           Alert.warning(
-                              context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK',
+                              context, 'คำเตือน', 'กรุณาเพิ่มข้อมูลก่อน', 'OK',
                               action: () {});
                           return;
                         }
 
-                        if (selectedWarehouse == null) {
+                        if (selectedFromLocation == null) {
                           Alert.warning(context, 'คำเตือน',
-                              'ยังไม่ได้ตั้งค่าโกดังเริ่มต้น', 'OK',
+                              'กรุณาเลือกคลังสินค้าต้นทาง', 'OK',
                               action: () {});
                           return;
                         }
 
-                        if (productWeightCtrl.text.isEmpty) {
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                            action: () async {
+                          try {
+                            saveData();
+                            if (mounted) {
+                              resetText();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                  "เพิ่มลงรถเข็นสำเร็จ...",
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                backgroundColor: Colors.teal,
+                              ));
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  e.toString(), 'OK'.tr(),
+                                  action: () {});
+                            }
+                          }
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'เพิ่มลงในรถเข็น',
+                            style: TextStyle(fontSize: size?.getWidthPx(8)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          Global.sellUsedThengOrderDetail = [];
+                          resetText();
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.close, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'เคลียร์',
+                            style: TextStyle(fontSize: size!.getWidthPx(8)),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: suBgColor,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (orderDateCtrl.text.isEmpty) {
+                          Alert.warning(context, 'คำเตือน',
+                              'กรุณาป้อนวันที่ใบกำกับภาษี', 'OK');
+                          return;
+                        }
+
+                        if (!checkDate(orderDateCtrl.text)) {
+                          Alert.warning(context, 'คำเตือน',
+                              'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
+                              action: () {});
+                          return;
+                        }
+
+                        if (productEntryWeightCtrl.text.isEmpty ||
+                            priceIncludeTaxCtrl.text.isEmpty) {
                           Alert.warning(
-                              context, 'คำเตือน', 'กรุณากรอกน้ำหนัก', 'OK',
+                              context, 'คำเตือน', 'กรุณาเพิ่มข้อมูลก่อน', 'OK',
                               action: () {});
                           return;
                         }
 
-                        if (priceExcludeTaxCtrl.text.isEmpty) {
+                        if (selectedFromLocation == null) {
                           Alert.warning(context, 'คำเตือน',
-                              'ราคารวมค่ากำเหน็จก่อนภาษี', 'OK',
+                              'กรุณาเลือกคลังสินค้าต้นทาง', 'OK',
                               action: () {});
                           return;
                         }
+
                         Alert.info(
                             context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                             action: () async {
@@ -1125,16 +1184,11 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.save,
-                            color: textColor,
-                          ),
+                          const Icon(Icons.save),
                           const SizedBox(width: 6),
                           Text(
                             'บันทึก',
-                            style: TextStyle(
-                                fontSize: size.getWidthPx(10),
-                                color: textColor),
+                            style: TextStyle(fontSize: size!.getWidthPx(8)),
                           )
                         ],
                       ),
@@ -1149,61 +1203,36 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     );
   }
 
-  void gramChanged() {
-    if (productWeightCtrl.text.isNotEmpty &&
-        productBuyPricePerGramCtrl.text.isNotEmpty) {
-      purchasePriceCtrl.text = Global.format(
-          Global.toNumber(productWeightCtrl.text) *
-              Global.toNumber(productBuyPricePerGramCtrl.text));
-      productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
-    } else {
-      productWeightBahtCtrl.text = "";
-    }
-    getOtherAmount();
-  }
-
-  void priceExcludeTaxChanged() {
-    if (purchasePriceCtrl.text.isNotEmpty &&
-        priceExcludeTaxCtrl.text.isNotEmpty) {
-      priceDiffCtrl.text = Global.format(
-          (Global.toNumber(priceExcludeTaxCtrl.text) -
-              Global.toNumber(purchasePriceCtrl.text)));
-    } else {
-      priceDiffCtrl.text = "";
-    }
-    getOtherAmount();
-  }
-
-  void getOtherAmount() {
-    double priceDiff = Global.toNumber(priceDiffCtrl.text);
-    if (priceDiff <= 0) {
-      taxAmountCtrl.text = '0';
-    } else {
-      taxAmountCtrl.text = Global.format(priceDiff * getVatValue());
-    }
-
-    taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
-        ? "0"
-        : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);
-
-    calTotal();
-  }
-
-  void calTotal() {
-    purchasePriceTotalCtrl.text = purchasePriceCtrl.text;
+  void priceIncludeTaxChanged() {
     priceIncludeTaxTotalCtrl.text = priceIncludeTaxCtrl.text;
-    priceExcludeTaxTotalCtrl.text = priceExcludeTaxCtrl.text;
-    taxAmountTotalCtrl.text = taxAmountCtrl.text;
-    taxBaseTotalCtrl.text = taxBaseCtrl.text;
-    priceDiffTotalCtrl.text = priceDiffCtrl.text;
-    setState(() {});
+  }
+
+  void gramChanged() {
+    if (productEntryWeightCtrl.text.isNotEmpty) {
+      productEntryWeightBahtCtrl.text = Global.format(
+          (Global.toNumber(productEntryWeightCtrl.text) /
+              getUnitWeightValue()));
+    } else {
+      productEntryWeightBahtCtrl.text = "";
+    }
+  }
+
+  void bahtChanged() {
+    if (productEntryWeightBahtCtrl.text.isNotEmpty) {
+      productEntryWeightCtrl.text = Global.format(
+          (Global.toNumber(productEntryWeightBahtCtrl.text) *
+              getUnitWeightValue()));
+    } else {
+      productEntryWeightCtrl.text = "";
+    }
   }
 
   resetText() {
     productWeightCtrl.text = "";
+    productEntryWeightCtrl.text = "";
     priceIncludeTaxCtrl.text = "";
     productWeightBahtCtrl.text = "";
+    productEntryWeightBahtCtrl.text = "";
     priceExcludeTaxCtrl.text = "";
     purchasePriceCtrl.text = "";
     priceDiffCtrl.text = "";
@@ -1222,7 +1251,13 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
-    Global.refillAttach = null;
+    Global.sellUsedThengAttach = null;
+    Global.sellUsedThengOrderDetail?.clear();
+    setState(() {});
+  }
+
+  void calTotal() {
+    priceIncludeTaxTotalCtrl.text = priceIncludeTaxCtrl.text;
     setState(() {});
   }
 
@@ -1234,7 +1269,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
+        Global.sellUsedThengAttach = File(pickedFile.path);
       }
     });
   }
@@ -1245,7 +1280,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
+        Global.sellUsedThengAttach = File(pickedFile.path);
       }
     });
   }
@@ -1279,52 +1314,63 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
   }
 
   void saveData() {
-    Global.refillOrderDetail?.clear();
-    Global.refillOrderDetail!.add(OrderDetailModel(
-      productName: selectedProduct!.name,
-      productId: selectedProduct!.id,
-      binLocationId: selectedWarehouse!.id,
-      binLocationName: selectedWarehouse!.name,
-      sellTPrice: Global.toNumber(productSellThengPriceCtrl.text),
-      buyTPrice: Global.toNumber(productBuyThengPriceCtrl.text),
-      sellPrice: Global.toNumber(productSellPriceCtrl.text),
-      buyPrice: Global.toNumber(productBuyPriceCtrl.text),
-      weight: Global.toNumber(productWeightCtrl.text),
-      weightBath: Global.toNumber(productWeightBahtCtrl.text),
-      commission: 0,
-      unitCost: Global.toNumber(priceExcludeTaxCtrl.text) /
-          Global.toNumber(productWeightCtrl.text),
-      priceIncludeTax: Global.toNumber(priceIncludeTaxCtrl.text),
-      priceExcludeTax: Global.toNumber(priceExcludeTaxCtrl.text),
-      purchasePrice: Global.toNumber(purchasePriceCtrl.text),
-      priceDiff: Global.toNumber(priceDiffCtrl.text),
-      taxBase: Global.toNumber(taxBaseCtrl.text),
-      taxAmount: Global.toNumber(taxAmountCtrl.text),
-    ));
+    Global.sellUsedThengOrderDetail!.clear();
+    Global.sellUsedThengOrderDetail!.add(
+      OrderDetailModel(
+        productName: selectedProduct!.name,
+        productId: selectedProduct!.id,
+        binLocationId: selectedFromLocation!.id,
+        toBinLocationId: selectedToLocation?.id,
+        binLocationName: selectedFromLocation!.name,
+        toBinLocationName: selectedToLocation?.name,
+        sellTPrice: Global.toNumber(productSellThengPriceCtrl.text),
+        buyTPrice: Global.toNumber(productBuyThengPriceCtrl.text),
+        sellPrice: Global.toNumber(productSellPriceCtrl.text),
+        buyPrice: Global.toNumber(productBuyPriceCtrl.text),
+        weight: Global.toNumber(productEntryWeightCtrl.text),
+        weightBath: Global.toNumber(productEntryWeightBahtCtrl.text),
+        weightAdj: Global.toNumber(priceAdjCtrl.text),
+        weightBathAdj:
+            Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(),
+        commission: 0,
+        unitCost: Global.toNumber(priceIncludeTaxCtrl.text) /
+            Global.toNumber(productEntryWeightCtrl.text),
+        priceIncludeTax: Global.toNumber(priceIncludeTaxCtrl.text),
+        priceExcludeTax: Global.toNumber(priceExcludeTaxCtrl.text),
+        purchasePrice: Global.toNumber(purchasePriceCtrl.text),
+        priceDiff: Global.toNumber(priceDiffCtrl.text),
+        taxBase: Global.toNumber(taxBaseCtrl.text),
+        taxAmount: Global.toNumber(taxAmountCtrl.text),
+      ),
+    );
 
     OrderModel order = OrderModel(
         orderId: "",
         orderDate: Global.convertDate(orderDateCtrl.text),
-        details: Global.refillOrderDetail!,
+        details: Global.sellUsedThengOrderDetail!,
         referenceNo: referenceNumberCtrl.text,
         remark: remarkCtrl.text,
         sellTPrice: Global.toNumber(productSellThengPriceCtrl.text),
         buyTPrice: Global.toNumber(productBuyThengPriceCtrl.text),
         sellPrice: Global.toNumber(productSellPriceCtrl.text),
         buyPrice: Global.toNumber(productBuyPriceCtrl.text),
+        weight: Global.toNumber(productEntryWeightCtrl.text),
         priceIncludeTax: Global.toNumber(priceIncludeTaxTotalCtrl.text),
         priceExcludeTax: Global.toNumber(priceExcludeTaxTotalCtrl.text),
         purchasePrice: Global.toNumber(purchasePriceTotalCtrl.text),
         priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-        attachement: Global.refillAttach != null
-            ? Global.imageToBase64(Global.refillAttach!)
+        orderTypeId: 11,
+        attachement: Global.sellUsedThengAttach != null
+            ? Global.imageToBase64(Global.sellUsedThengAttach!)
             : null,
-        orderTypeId: 5);
+        orderStatus: 'COMPLETED');
     final data = order.toJson();
-    Global.ordersWholesale?[widget.index] = OrderModel.fromJson(data);
+    // motivePrint(data);
+    // return;
+    Global.ordersThengWholesale?[widget.index] = OrderModel.fromJson(data);
     writeCart();
-    Global.refillOrderDetail!.clear();
+    Global.sellUsedThengOrderDetail!.clear();
   }
 }

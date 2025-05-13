@@ -30,6 +30,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import '../model/order.dart';
 import 'global.dart';
 
+final formatterInt = NumberFormat("#,###");
 final formatter = NumberFormat("#,###.##");
 final formatter4 = NumberFormat("#,###.####");
 final formatter6 = NumberFormat("#,###.######");
@@ -1014,6 +1015,10 @@ String dataType(OrderModel list) {
       return "ขายทองแท่งกับโบรกเกอร์";
     case 9:
       return "ซื้อทองแท่งกับโบรกเกอร์";
+    case 10:
+      return "เติมทองคำแท่งกับร้านค้าส่ง";
+    case 11:
+      return "ขายทองคำแท่งเก่าให้ร้านค้าส่ง";
     default:
       return "";
   }
@@ -1040,6 +1045,10 @@ Color colorType(OrderModel list) {
     case 8:
       return Colors.green;
     case 9:
+      return Colors.blueGrey;
+    case 10:
+      return Colors.green;
+    case 11:
       return Colors.blueGrey;
     default:
       return Colors.transparent;

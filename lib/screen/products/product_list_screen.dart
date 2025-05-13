@@ -55,15 +55,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         fontSize: 30,
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
+                if (Global.user!.userRole == 'Administrator')
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NewProductScreen(
-                                showBackButton: true,
-                              ),
-                              fullscreenDialog: true))
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const NewProductScreen(
+                                        showBackButton: true,
+                                      ),
+                                  fullscreenDialog: true))
                           .whenComplete(() {
                         loadProducts();
                       });
@@ -98,17 +99,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : productList!.isEmpty ? const NoDataFoundWidget() : SingleChildScrollView(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: ListView.builder(
-                      itemCount: productList!.length,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (BuildContext context, int index) {
-                        return productCard(productList, index);
-                      }),
-                ),
-              ),
+            : productList!.isEmpty
+                ? const NoDataFoundWidget()
+                : SingleChildScrollView(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: ListView.builder(
+                          itemCount: productList!.length,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (BuildContext context, int index) {
+                            return productCard(productList, index);
+                          }),
+                    ),
+                  ),
       ),
     );
   }
@@ -118,7 +121,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/product/all', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/product/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -160,7 +164,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 productList[index].name,
                 style: const TextStyle(fontSize: 20),
               ),
-              subtitle: Text('${productList[index].productCategory != null ? productList[index].productCategory!.name : ''}'),
+              subtitle: Text(
+                  '${productList[index].productCategory != null ? productList[index].productCategory!.name : ''}'),
             ),
           ),
           Expanded(
@@ -168,17 +173,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                if (Global.user!.userRole == 'Administrator')
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditProductScreen(
-                              showBackButton: true,
-                              product: productList[index],
-                              index: index
-                            ),
-                            fullscreenDialog: true))
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditProductScreen(
+                                    showBackButton: true,
+                                    product: productList[index],
+                                    index: index),
+                                fullscreenDialog: true))
                         .whenComplete(() {
                       loadProducts();
                     });
@@ -195,7 +200,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(
+                  width: 10,
+                ),
+                if (Global.user!.userRole == 'Administrator')
                 GestureDetector(
                   onTap: () {
                     removeProduct(productList[index].id!, index);
@@ -221,7 +229,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void removeProduct(int id, int i) async {
-    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง', action: () async {
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
       final ProgressDialog pr = ProgressDialog(context,
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
       await pr.show();

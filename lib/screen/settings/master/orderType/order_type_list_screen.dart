@@ -205,6 +205,9 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                       } if (list[index].id == 5) {
                         result = await ApiServices.post(
                             '/product/refill', Global.requestObj(null));
+                      } else if (list[index].id == 10 || list[index].id == 11) {
+                        result = await ApiServices.post(
+                            '/product/type/BAR', Global.requestObj(null));
                       } else {
                         result = await ApiServices.post(
                             '/product/type/${Global.getOrderTypeCode(list[index].id)}',
@@ -380,7 +383,7 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                                   showSearchTextField: true,
                                   selectedItemBackgroundColor:
                                       Colors.transparent,
-                                  emptyListMessage: 'ບໍ່ມີຂໍ້ມູນ',
+                                  emptyListMessage: 'ไม่มีข้อมูล',
                                   showSelectedItemBackgroundColor: true,
                                   itemWidgetBuilder: (
                                     int index,

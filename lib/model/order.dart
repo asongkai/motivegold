@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/gold_data.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/global.dart';
 
 import 'order_detail.dart';
@@ -53,6 +54,11 @@ class OrderModel {
   GoldDataModel? goldDataModel;
   String? referenceNo;
   String? remark;
+  ProductModel? package;
+  double? cashPayment;
+  double? transferPayment;
+  double? creditPayment;
+  double? otherPayment;
 
   OrderModel({
     this.id,
@@ -86,6 +92,11 @@ class OrderModel {
     this.goldDataModel,
     this.referenceNo,
     this.remark,
+    this.package,
+    this.cashPayment,
+    this.transferPayment,
+    this.creditPayment,
+    this.otherPayment,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
@@ -136,6 +147,13 @@ class OrderModel {
             : GoldDataModel.fromJson(json["goldDataModel"]),
         referenceNo: json['referenceNo'],
         remark: json['remark'],
+        package: json["package"] == null
+            ? null
+            : ProductModel.fromJson(json["package"]),
+        cashPayment: json["cashPayment"],
+        transferPayment: json["transferPayment"],
+        creditPayment: json["creditPayment"],
+        otherPayment: json["otherPayment"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -172,6 +190,11 @@ class OrderModel {
         "goldDataModel": goldDataModel?.toJson(),
         "referenceNo": referenceNo,
         "remark": remark,
+        "package": package?.toJson(),
+        "cashPayment": cashPayment,
+        "transferPayment": transferPayment,
+        "creditPayment": creditPayment,
+        "otherPayment": otherPayment,
       };
 
   @override

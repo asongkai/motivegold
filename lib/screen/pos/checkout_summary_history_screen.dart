@@ -8,6 +8,7 @@ import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -58,6 +59,7 @@ class _CheckOutSummaryHistoryScreenState
           '/order/print-order-list/${Global.pairId}', Global.requestObj(null));
 
       var data = jsonEncode(resultO?.data);
+      motivePrint(data);
       orders = orderListModelFromJson(data);
 
       var payment = await ApiServices.post(
@@ -68,37 +70,20 @@ class _CheckOutSummaryHistoryScreenState
           customer = orders.first.customer;
           Global.paymentList =
               paymentListModelFromJson(jsonEncode(payment?.data));
-          Global.currentPaymentMethod = Global.payment?.paymentMethod;
-
-          paymentMethodCtrl.text = paymentTypes()
-              .where((element) => element.code == Global.currentPaymentMethod)
-              .first
-              .name!;
-          Global.paymentDateCtrl.text =
-              Global.formatDateD(Global.payment!.paymentDate.toString());
-          if (Global.currentPaymentMethod == 'TR') {
-            Global.bankCtrl.text = Global.payment!.bankName ?? '';
-            Global.refNoCtrl.text = Global.payment!.referenceNumber ?? '';
-          } else if (Global.currentPaymentMethod == 'CR') {
-            Global.cardNameCtrl.text = Global.payment!.cardName ?? '';
-            Global.cardExpireDateCtrl.text =
-                Global.formatDateD(Global.payment!.cardExpiryDate.toString());
-          } else {
-            Global.paymentDetailCtrl.text = Global.payment!.paymentDetail ?? '';
-          }
           discountCtrl.text = Global.format(orders.first.discount ?? 0);
           discount = orders.first.discount ?? 0;
+          Global.discount = discount;
         });
       } else {
         orders = [];
       }
     } catch (e) {
       motivePrint(e.toString());
-    } finally {
-      setState(() {
-        loading = false;
-      });
-    }
+    } finally {}
+
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -400,6 +385,25 @@ class _CheckOutSummaryHistoryScreenState
                                                             )),
                                                       ),
                                                     ),
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                            'สลิปการชำระเงิน',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontSize: size
+                                                                  ?.getWidthPx(
+                                                                      8),
+                                                              color:
+                                                                  kPrimaryGreen,
+                                                            )),
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -410,7 +414,7 @@ class _CheckOutSummaryHistoryScreenState
                                                     itemBuilder:
                                                         (context, index) {
                                                       return _paymentItemList(
-                                                          order: Global
+                                                          payment: Global
                                                                   .paymentList![
                                                               index],
                                                           index: index);
@@ -542,7 +546,7 @@ class _CheckOutSummaryHistoryScreenState
     );
   }
 
-  Widget _paymentItemList({required PaymentModel order, required index}) {
+  Widget _paymentItemList({required PaymentModel payment, required index}) {
     // motivePrint(Global.formatDateNT(order.paymentDate.toString()));
     // motivePrint(order.paymentDate.toString());
     return Container(
@@ -578,7 +582,7 @@ class _CheckOutSummaryHistoryScreenState
             ),
             Expanded(
               flex: 3,
-              child: Text(order.paymentMethod ?? '',
+              child: Text(payment.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: size?.getWidthPx(8),
@@ -589,7 +593,7 @@ class _CheckOutSummaryHistoryScreenState
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(Global.formatDateNT(order.paymentDate.toString()),
+                child: Text(Global.formatDateNT(payment.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: size?.getWidthPx(8),
@@ -601,7 +605,7 @@ class _CheckOutSummaryHistoryScreenState
               flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(Global.format(order.amount ?? 0),
+                child: Text(Global.format(payment.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: size?.getWidthPx(8),
@@ -609,9 +613,55 @@ class _CheckOutSummaryHistoryScreenState
                     )),
               ),
             ),
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: payment.attachement == null
+                    ? Container()
+                    : GestureDetector(
+                        onTap: () {
+                          _showImageAlertDialog(context, payment);
+                        },
+                        child: Image.network(
+                          '${Constants.DOMAIN_URL}/images/${payment.attachement}',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  // Function to display the AlertDialog with an image
+  void _showImageAlertDialog(BuildContext context, PaymentModel payment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('สลิปการชำระเงิน'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Image.network(
+                '${Constants.DOMAIN_URL}/images/${payment.attachement}',
+                fit: BoxFit.fitHeight,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the AlertDialog
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 

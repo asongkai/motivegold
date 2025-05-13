@@ -50,6 +50,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void initState() {
     // implement initState
     super.initState();
+    Global.discount = 0;
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -64,6 +65,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    Global.discount = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
@@ -71,7 +79,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Text("เช็คเอาท์",
+          title: Text("ชำระเงิน",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white,
@@ -439,7 +447,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               PriceBreakdown(
                                 title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                 price:
-                                    '${Global.format(Global.getPaymentTotal(Global.orders))} THB',
+                                    '${Global.format(Global.getPaymentTotal(Global.orders))} บาท',
                               ),
                               PriceBreakdown(
                                 title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
@@ -811,7 +819,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 100 /
                                 107;
                     Global.orders[i].taxAmount = Global
-                                .ordersPapun![i].orderTypeId ==
+                                .orders[i].orderTypeId ==
                             2
                         ? 0
                         : ((Global.getOrderTotal(Global.orders[i]) -
@@ -849,7 +857,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 Global.getBuyPrice(
                                     Global.orders[i].details![j].weight!);
                     Global.orders[i].details![j].taxBase = Global
-                                .ordersPapun![i].orderTypeId ==
+                                .orders[i].orderTypeId ==
                             2
                         ? 0
                         : (Global.orders[i].details![j].priceIncludeTax! -
@@ -862,7 +870,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             ? 0
                             : ((Global.orders[i].details![j].priceIncludeTax! -
                                         Global.getBuyPrice(Global
-                                            .ordersPapun![i].details![j].weight!)) *
+                                            .orders[i].details![j].weight!)) *
                                     100 /
                                     107) *
                                 getVatValue();
@@ -1376,6 +1384,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.orders.removeAt(i);
     if (Global.orders.isEmpty) {
       Global.customer = null;
+      Global.discount = 0;
       Global.paymentList?.clear();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {

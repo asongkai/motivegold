@@ -18,7 +18,6 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 
-
 class ProductTypeListScreen extends StatefulWidget {
   const ProductTypeListScreen({super.key});
 
@@ -58,46 +57,50 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
-                Expanded(
-                    flex: 6,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AddProductTypeScreen(
+                if (Global.user!.userRole == 'Administrator')
+                  Expanded(
+                      flex: 6,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddProductTypeScreen(),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                loadData();
+                              });
+                            },
+                            child: Container(
+                              color: Colors.teal[900],
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.add,
+                                      size: 50,
+                                      color: Colors.white,
                                     ),
-                                    fullscreenDialog: true))
-                                .whenComplete(() {
-                              loadData();
-                            });
-                          },
-                          child: Container(
-                            color: Colors.teal[900],
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.add,
-                                    size: 50,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    'เพิ่มประเภทสินค้า',
-                                    style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
-                                  )
-                                ],
+                                    Text(
+                                      'เพิ่มประเภทสินค้า',
+                                      style: TextStyle(
+                                          fontSize: size.getWidthPx(8),
+                                          color: Colors.white),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ))
+                        ],
+                      ))
               ],
             ),
           ),
@@ -106,22 +109,24 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : productTypeList!.isEmpty ? const NoDataFoundWidget() : SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: ListView.builder(
-                    itemCount: productTypeList!.length,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (BuildContext context, int index) {
-                      return productCard(productTypeList, index);
-                    }),
-              ),
-            ),
-          ),
-        ),
+            : productTypeList!.isEmpty
+                ? const NoDataFoundWidget()
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          child: ListView.builder(
+                              itemCount: productTypeList!.length,
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (BuildContext context, int index) {
+                                return productCard(productTypeList, index);
+                              }),
+                        ),
+                      ),
+                    ),
+                  ),
       ),
     );
   }
@@ -131,7 +136,8 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/producttype/all', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/producttype/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductTypeModel> products = productTypeListModelFromJson(data);
@@ -176,49 +182,51 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditProductTypeScreen(
-                                productType: list[index],
-                                index: index
-                            ),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      loadData();
-                    });
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
+                if (Global.user!.userRole == 'Administrator')
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditProductTypeScreen(
+                                      productType: list[index], index: index),
+                                  fullscreenDialog: true))
+                          .whenComplete(() {
+                        loadData();
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
+                const SizedBox(
+                  width: 10,
                 ),
-                const SizedBox(width: 10,),
-                GestureDetector(
-                  onTap: () {
-                    remove(list[index].id!, index);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
+                if (Global.user!.userRole == 'Administrator')
+                  GestureDetector(
+                    onTap: () {
+                      remove(list[index].id!, index);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           )
@@ -228,7 +236,8 @@ class _ProductTypeListScreenState extends State<ProductTypeListScreen> {
   }
 
   void remove(int id, int i) async {
-    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง', action: () async {
+    Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
       final ProgressDialog pr = ProgressDialog(context,
           type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
       await pr.show();

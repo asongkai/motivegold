@@ -9,7 +9,8 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/theng_menu.dart';
 import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/menu_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/menu_paphun_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/menu_theng_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -70,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: const CustomAppBar(
-        height: 220,
+        height: 250,
         child: TitleContent(backButton: false,),
       ),
       body: Stack(
@@ -351,10 +352,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
                   ),
                   iconDashboard(
-                    'ซื้อขายทองกับร้านขายส่ง',
+                    'ซื้อขายทองกับร้านขายส่ง(ทองรูปพรรณ)',
                     Image.asset('assets/icons/gold/gold-dealer.png'),
                     primer,
-                    const WholeSaleMenuScreen(title: 'POS'),
+                    const WholeSalePaphunMenuScreen(title: 'POS'),
+                  ),
+                  iconDashboard(
+                    'ซื้อขายทองกับร้านขายส่ง(ทองแท่ง)',
+                    Image.asset('assets/icons/gold/gold-dealer.png'),
+                    Colors.teal,
+                    const WholeSaleThengMenuScreen(title: 'POS'),
                   ),
                   itemDashboard(
                     'โอนทอง \n',

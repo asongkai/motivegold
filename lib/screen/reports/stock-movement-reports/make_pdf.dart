@@ -60,8 +60,8 @@ Future<Uint8List> makeStockMovementReportPdf(
   widgets.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text("ชื่อสถานประกอบการ ${Global.company!.name}"),
-      Text('ลําดับเลขที่สาขา ${Global.branch!.branchId}'),
+      Text("ชื่อสถานประกอบการ ${Global.company?.name}"),
+      Text('ลําดับเลขที่สาขา ${Global.branch?.branchId}'),
     ],
   ));
   widgets.add(Container(height: 10));

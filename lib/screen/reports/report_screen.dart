@@ -1,10 +1,11 @@
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:motivegold/screen/pos/wholesale/refill/refill_gold_history_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/refill/refill_gold_history_screen.dart';
 import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/reports/buy-new-gold-reports/buy_new_gold_reports.dart';
 import 'package:motivegold/screen/reports/buy-used-gold-gov-reports/buy_used_gold_gov_report_screen.dart';
 import 'package:motivegold/screen/reports/buy-used-gold-reports/buy_used_gold_report_screen.dart';
+import 'package:motivegold/screen/reports/money-movement-reports/money_movement_reports.dart';
 import 'package:motivegold/screen/reports/sell-new-gold-reports/sell_new_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
@@ -12,7 +13,7 @@ import 'package:motivegold/screen/reports/stock-reports/stock_report_list_screen
 import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_report_screen.dart';
 import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/used/sell_used_gold_history_screen.dart';
+import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
@@ -187,6 +188,29 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                   title: 'รายงานความเคลื่อนไหว',
                   subtitle: "รายงานความเคลื่อนไหวสต๊อกสินค้า",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const MoneyMovementReportScreen()));
+                  },
+                  icons: Icons.pie_chart,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.purple,
+                  ),
+                  title: 'รายงานเส้นทางการเงิน',
+                  subtitle: "รายงานเส้นทางการเงินทองรูปพรรณ",
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
