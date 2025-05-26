@@ -8,6 +8,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -22,6 +23,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class BuyDialog extends StatefulWidget {
   const BuyDialog({super.key});
@@ -179,6 +181,7 @@ class _BuyDialogState extends State<BuyDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -198,28 +201,25 @@ class _BuyDialogState extends State<BuyDialog> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: 70,
-                          decoration: const BoxDecoration(color: buBgColor),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: size.getWidthPx(15),
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
+                        //   decoration: const BoxDecoration(color: buBgColor),
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.all(8.0),
+                        //     child: Text(
+                        //       'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%',
+                        //       textAlign: TextAlign.center,
+                        //       style: TextStyle(
+                        //           fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                        //           color: Colors.white),
+                        //     ),
+                        //   ),
+                        // ),
+                        posHeaderText(context, buBgColor, 'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
                         const Padding(
-                          padding: EdgeInsets.all(18.0),
-                          child: Column(
-                            children: [
-                              GoldPriceMiniScreen(),
-                            ],
-                          ),
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: GoldMiniWidget(),
                         ),
                         const SizedBox(
                           height: 20,
@@ -707,9 +707,9 @@ class _BuyDialogState extends State<BuyDialog> {
                       //   return;
                       // }
 
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.buyOrderDetail!.add(
                           OrderDetailModel.fromJson(
                             jsonDecode(
@@ -745,7 +745,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         sumBuyTotal();
                         setState(() {});
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

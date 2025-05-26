@@ -8,6 +8,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -22,6 +23,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class EditBuyDialog extends StatefulWidget {
   const EditBuyDialog({super.key, required this.index, this.j});
@@ -203,6 +205,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -222,100 +225,16 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 70,
-                    decoration: const BoxDecoration(color: buBgColor),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: size.getWidthPx(15), color: Colors.white),
-                      ),
-                    ),
-                  ),
+                  posHeaderText(context, buBgColor, 'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
                   Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Column(
-                      children: [
-                        GoldPriceMiniScreen(
-                          goldDataModel: widget.j == null ? Global
-                              .buyOrderDetail![widget.index].goldDataModel : Global
-                            .ordersPapun![widget.index].details![widget.j!].goldDataModel,
-                        ),
-                      ],
-                    ),
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: GoldMiniWidget(goldDataModel: widget.j == null ? Global
+                        .buyOrderDetail![widget.index].goldDataModel : Global
+                        .ordersPapun![widget.index].details![widget.j!].goldDataModel,),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Row(
-                  //     children: [
-                  //       const Expanded(
-                  //           flex: 6,
-                  //           child: Row(
-                  //             mainAxisAlignment: MainAxisAlignment.end,
-                  //             children: [
-                  //               Text(
-                  //                 'น้ำหนัก',
-                  //                 style:
-                  //                     TextStyle(fontSize: 50, color: textColor),
-                  //               ),
-                  //               SizedBox(
-                  //                 width: 10,
-                  //               ),
-                  //               Text(
-                  //                 '(บาททอง)',
-                  //                 style:
-                  //                     TextStyle(color: textColor, fontSize: 30),
-                  //               ),
-                  //               SizedBox(
-                  //                 width: 10,
-                  //               ),
-                  //             ],
-                  //           )),
-                  //       Expanded(
-                  //         flex: 6,
-                  //         child: numberTextField(
-                  //             labelText: "",
-                  //             inputType: TextInputType.number,
-                  //             controller: productWeightBahtCtrl,
-                  //             readOnly: bahtReadOnly,
-                  //             focusNode: bahtFocus,
-                  //             inputFormat: [
-                  //               ThousandsFormatter(allowFraction: true)
-                  //             ],
-                  //             clear: () {
-                  //               setState(() {
-                  //                 productWeightBahtCtrl.text = "";
-                  //               });
-                  //               bahtChanged();
-                  //             },
-                  //             onTap: () {
-                  //               txt = 'baht';
-                  //               closeCal();
-                  //             },
-                  //             openCalc: () {
-                  //               if (!showCal) {
-                  //                 txt = 'baht';
-                  //                 bahtFocus.requestFocus();
-                  //                 openCal();
-                  //               }
-                  //             },
-                  //             onChanged: (String value) {
-                  //               bahtChanged();
-                  //             }),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // const SizedBox(
-                  //   height: 10,
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -718,9 +637,9 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                         return;
                       }
 
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         if (widget.j == null) {
                           Global.buyOrderDetail![widget.index] = OrderDetailModel.fromJson(
                               jsonDecode(jsonEncode(OrderDetailModel(
@@ -775,7 +694,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                           setState(() {});
                           Navigator.of(context).pop();
                         }
-                      });
+                      // });
                     },
                   ),
                 ),

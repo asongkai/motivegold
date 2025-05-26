@@ -17,6 +17,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class PaphunSellScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -95,10 +96,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
         backgroundColor: snBgColor,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          'ขายลูกค้า - ทองรูปพรรณใหม่ 96.5%',
-          style: TextStyle(fontSize: size.getWidthPx(10)),
-        ),
+        title: titleText(context, 'ขายลูกค้า - ทองรูปพรรณใหม่ 96.5%'),
         // backgroundColor: bgColor,
         actions: [
           GestureDetector(
@@ -543,8 +541,8 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                           return;
                                         }
 
-                                        Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
-                                            'ตกลง', action: () async {
+                                        // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
+                                        //     'ตกลง', action: () async {
                                           // final ProgressDialog pr =
                                           //     ProgressDialog(context,
                                           //         type:
@@ -624,7 +622,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen> {
                                                   action: () {});
                                             }
                                           }
-                                        });
+                                        // });
                                       },
                                       child: Row(
                                         mainAxisAlignment:

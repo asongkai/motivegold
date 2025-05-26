@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 
 class IDCardOCRScreen extends StatefulWidget {
@@ -66,6 +68,7 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen> {
       if (response.statusCode == 200) {
         setState(() {
           ocrResult = json.decode(responseBody);
+          Global.printLongString(responseBody);
           isLoading = false;
         });
       } else {

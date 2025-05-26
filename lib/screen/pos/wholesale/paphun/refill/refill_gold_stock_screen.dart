@@ -111,7 +111,6 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     super.initState();
 
     // Sample data
-    // Sample data
     // orderDateCtrl.text = "01-02-2025";
     // referenceNumberCtrl.text = "90803535";
     // productSellThengPriceCtrl.text =
@@ -122,8 +121,10 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
     // productBuyPricePerGramCtrl.text = Global.format(
     //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // purchasePriceCtrl.text = Global.format(944603.10);
+    // purchasePriceCtrl.text = Global.format(924603.10);
     // priceIncludeTaxCtrl.text = Global.format(929918.17);
+    // productWeightCtrl.text = Global.format(270);
+    // priceExcludeTaxCtrl.text = Global.format(929918.17);
 
     Global.appBarColor = rfBgColor;
     productTypeNotifier = ValueNotifier<ProductTypeModel>(
@@ -1028,8 +1029,8 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                           return;
                         }
                         try {
-                          Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
-                              'ตกลง', action: () async {
+                          // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
+                          //     'ตกลง', action: () async {
                             saveData();
                             if (mounted) {
                               resetText();
@@ -1042,7 +1043,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                 backgroundColor: Colors.teal,
                               ));
                             }
-                          });
+                          // });
                         } catch (e) {
                           if (mounted) {
                             Alert.warning(context, 'Warning'.tr(), e.toString(),
@@ -1157,9 +1158,9 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                               action: () {});
                           return;
                         }
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1188,7 +1189,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1390,11 +1391,12 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-        attachement: Global.refillAttach != null
+        attachment: Global.refillAttach != null
             ? Global.imageToBase64(Global.refillAttach!)
             : null,
         orderTypeId: 5);
     final data = order.toJson();
+    // motivePrint(data);
     Global.ordersWholesale?.add(OrderModel.fromJson(data));
     widget.refreshCart(Global.ordersWholesale?.length.toString());
     writeCart();

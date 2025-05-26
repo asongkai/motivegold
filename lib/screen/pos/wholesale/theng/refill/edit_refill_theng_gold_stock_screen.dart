@@ -206,9 +206,9 @@ class _EditRefillThengGoldStockScreenState
     });
     try {
       Global.refillThengAttach =
-      Global.ordersThengWholesale![widget.index].attachement != null
+      Global.ordersThengWholesale![widget.index].attachment != null
           ? await Global.createFileFromString(
-          Global.ordersThengWholesale![widget.index].attachement ?? '')
+          Global.ordersThengWholesale![widget.index].attachment ?? '')
           : null;
 
       var result = await ApiServices.post(
@@ -1399,9 +1399,9 @@ class _EditRefillThengGoldStockScreenState
                           }
                         }
 
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1427,7 +1427,7 @@ class _EditRefillThengGoldStockScreenState
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1650,7 +1650,7 @@ class _EditRefillThengGoldStockScreenState
       priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
       taxBase: Global.toNumber(taxBaseTotalCtrl.text),
       taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-      attachement: Global.refillThengAttach != null
+      attachment: Global.refillThengAttach != null
           ? Global.imageToBase64(Global.refillThengAttach!)
           : null,
       orderTypeId: 10,

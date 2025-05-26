@@ -93,7 +93,9 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.save,
-                                size: size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape)
+                                    ? size.getWidthPx(8)
+                                    : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -148,7 +150,9 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape)
+                                    ? size.getWidthPx(8)
+                                    : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -223,7 +227,8 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.s),
+                icon: null,
+                //const Icon(FontAwesomeIcons.s),
                 tooltipContent: 'ร้านทองขาย โบรกเกอร์รับซื้อ',
               ),
               SideMenuItem(
@@ -232,7 +237,8 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 onTap: (index, _) {
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.b),
+                icon: null,
+                //const Icon(FontAwesomeIcons.b),
                 tooltipContent: 'ร้านทองซื้อ โบรกเกอร์ขาย',
               ),
             ],

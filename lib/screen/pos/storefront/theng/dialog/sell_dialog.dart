@@ -8,6 +8,7 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -25,6 +26,7 @@ import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class SellDialog extends StatefulWidget {
   const SellDialog({super.key});
@@ -273,6 +275,7 @@ class _SellDialogState extends State<SellDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -287,27 +290,10 @@ class _SellDialogState extends State<SellDialog> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 70,
-                    decoration: const BoxDecoration(color: stBgColor),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'ขายทองคำแท่ง',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: size.getWidthPx(15), color: Colors.white),
-                      ),
-                    ),
-                  ),
+                  posHeaderText(context, stBgColor, 'ขายทองคำแท่ง'),
                   const Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: Column(
-                      children: [
-                        GoldPriceMiniScreen(),
-                      ],
-                    ),
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: GoldMiniWidget(),
                   ),
                   Row(
                     children: <Widget>[
@@ -1161,9 +1147,9 @@ class _SellDialogState extends State<SellDialog> {
 
                         return;
                       }
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.sellThengOrderDetail!.add(
                           OrderDetailModel(
                               productName: productNameCtrl.text,
@@ -1194,7 +1180,7 @@ class _SellDialogState extends State<SellDialog> {
                         sumSellThengTotal();
                         setState(() {});
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

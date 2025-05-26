@@ -71,7 +71,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
             ),
           )
         : SizedBox(
-      width: 800,
+      width: size.wp(80),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(

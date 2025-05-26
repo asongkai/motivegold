@@ -522,8 +522,8 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                           return;
                         }
 
-                        Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           // final ProgressDialog pr = ProgressDialog(context,
                           //     type: ProgressDialogType.normal,
                           //     isDismissible: true,
@@ -591,7 +591,7 @@ class _SellThengBrokerScreenState extends State<SellThengBrokerScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

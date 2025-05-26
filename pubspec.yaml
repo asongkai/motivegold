@@ -30,8 +30,7 @@ dependencies:
   location: ^6.0.2
   easy_localization: ^3.0.7+1
 
-  getwidget: ^5.0.0
-  ripple_button: ^3.4.1
+  getwidget: ^6.0.0
   #flutter_fast_forms: ^17.1.0
 
   cool_stepper_reloaded: ^3.2.6
@@ -40,7 +39,8 @@ dependencies:
   data_table_2: ^2.5.9
   flutter_slidable: ^3.0.1
   loading_animation_widget: ^1.2.0+4
-  babstrap_settings_screen: ^0.1.6
+  babstrap_settings_screen: ^0.1.7
+#    path: ./plugins/babstrap_settings_screen
   package_info_plus: ^8.0.2
   device_info_plus: ^10.1.2
   url_launcher: ^6.0.20

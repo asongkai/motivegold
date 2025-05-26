@@ -989,9 +989,9 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                           return;
                         }
 
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1012,7 +1012,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1314,7 +1314,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
         orderTypeId: 11,
-        attachement: Global.sellUsedThengAttach != null
+        attachment: Global.sellUsedThengAttach != null
             ? Global.imageToBase64(Global.sellUsedThengAttach!)
             : null,
         orderStatus: 'COMPLETED');

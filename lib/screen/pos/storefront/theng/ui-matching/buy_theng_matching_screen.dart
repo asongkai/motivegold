@@ -548,11 +548,11 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                 .buyThengOrderDetailMatching!.isEmpty) {
                                               return;
                                             }
-                                            Alert.info(
-                                                context,
-                                                'ต้องการบันทึกข้อมูลหรือไม่?',
-                                                '',
-                                                'ตกลง', action: () async {
+                                            // Alert.info(
+                                            //     context,
+                                            //     'ต้องการบันทึกข้อมูลหรือไม่?',
+                                            //     '',
+                                            //     'ตกลง', action: () async {
                                               // final ProgressDialog pr =
                                               //     ProgressDialog(context,
                                               //         type: ProgressDialogType
@@ -638,7 +638,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                       action: () {});
                                                 }
                                               }
-                                            });
+                                            // });
                                           },
                                           child: Row(
                                             mainAxisAlignment:

@@ -268,8 +268,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                           Text('ราคาทองคำแท่งรวม :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text(
-                              'ค่าบล็อกทอง/บรรจุภัณฑ์ รวมภาษีมูลค่าเพิ่ม :',
+                          Text('ค่าบล็อกทอง/บรรจุภัณฑ์ รวมภาษีมูลค่าเพิ่ม :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text('ราคาสินค้ารวมภาษีมูลค่าเพิ่ม :',
@@ -601,16 +600,25 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
           Expanded(
             flex: 2,
             child: Container(
-                height: 55,
-                child: Column(children: [
+              height: 85,
+              child: Column(
+                children: [
+                  SizedBox(height: 5),
+                  Text('(                                )',
+                      style: const TextStyle(fontSize: 9)),
                   SizedBox(height: 5),
                   Text('ผู้รับเงิน/ผู้ส่งมอบทอง',
                       style: const TextStyle(fontSize: 9)),
                   Spacer(),
+                  Text('(                                )',
+                      style: const TextStyle(fontSize: 9)),
+                  SizedBox(height: 5),
                   Text('ผู้ซื้อ/ผู้รับมอบทอง',
                       style: const TextStyle(fontSize: 9)),
                   SizedBox(height: 5),
-                ])),
+                ],
+              ),
+            ),
           ),
         ])),
   );

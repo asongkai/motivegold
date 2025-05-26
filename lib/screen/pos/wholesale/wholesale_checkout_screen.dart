@@ -63,6 +63,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.paymentDetailCtrl.text = "";
     Global.paymentList?.clear();
+    Global.checkOutMode = "O";
   }
 
   @override
@@ -71,6 +72,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     super.dispose();
     Global.discount = 0;
   }
+
   @override
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
@@ -414,7 +416,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                         ),
                         if (Global.paymentList!.isNotEmpty)
                           SizedBox(
-                            height: 300,
+                            // height: 300,
                             child: Column(
                               children: [
                                 Container(
@@ -490,15 +492,16 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: ListView.builder(
-                                      itemCount: Global.paymentList!.length,
-                                      itemBuilder: (context, index) {
-                                        return _paymentItemList(
-                                            order: Global.paymentList![index],
-                                            index: index);
-                                      }),
-                                ),
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: Global.paymentList!.length,
+                                    itemBuilder: (context, index) {
+                                      return _paymentItemList(
+                                          order: Global.paymentList![index],
+                                          index: index);
+                                    }),
                                 Container(
                                   decoration: const BoxDecoration(
                                     color: bgColor,
@@ -687,7 +690,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   Global.orders[i].status = "0";
                   Global.orders[i].discount = Global.discount;
                   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
-                  Global.orders[i].attachement = null;
+                  // Global.orders[i].attachement = null;
                   for (var j = 0; j < Global.orders[i].details!.length; j++) {
                     Global.orders[i].details![j].id = 0;
                     Global.orders[i].details![j].orderId = Global.orders[i].id;
@@ -700,6 +703,9 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                     Global.orders[i].details![j].updatedDate = DateTime.now();
                   }
                 }
+
+                // Global.printLongString(Global.orders[0].toJson().toString());
+                // return;
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                     action: () async {
@@ -969,17 +975,19 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   Future postOrder(int pairId) async {
     await Future.forEach<OrderModel>(Global.orders, (e) async {
       e.pairId = pairId;
+      // Global.printLongString(e.toJson().toString());
       var result =
           await ApiServices.post('/order/create', Global.requestObj(e));
+      motivePrint(result?.toJson());
       if (result?.status == "success") {
         var order = orderModelFromJson(jsonEncode(result?.data));
         int? id = order.id;
         await Future.forEach<OrderDetailModel>(e.details!, (f) async {
           f.orderId = id;
-          motivePrint(Global.requestObj(f));
+          // motivePrint(Global.requestObj(f));
           var detail =
               await ApiServices.post('/orderdetail', Global.requestObj(f));
-          motivePrint(detail?.toJson());
+          // motivePrint(detail?.toJson());
           if (detail?.status == "success") {
             motivePrint("Order completed");
           }
@@ -1127,28 +1135,28 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                               } else if (order.orderTypeId == 10) {
                                 // motivePrint('${index} ${j}');
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditRefillThengGoldStockScreen(
-                                              index: index,
-                                              j: j,
-                                            ),
-                                        fullscreenDialog: true))
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditRefillThengGoldStockScreen(
+                                                  index: index,
+                                                  j: j,
+                                                ),
+                                            fullscreenDialog: true))
                                     .whenComplete(() {
                                   setState(() {});
                                 });
                               } else if (order.orderTypeId == 11) {
                                 // motivePrint('${index} ${j}');
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditSellUsedThengGoldScreen(
-                                              index: index,
-                                              j: j,
-                                            ),
-                                        fullscreenDialog: true))
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditSellUsedThengGoldScreen(
+                                                  index: index,
+                                                  j: j,
+                                                ),
+                                            fullscreenDialog: true))
                                     .whenComplete(() {
                                   setState(() {});
                                 });

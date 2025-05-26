@@ -1011,9 +1011,9 @@ class _SellUsedThengDialogState extends State<SellUsedThengDialog> {
                             'กรุณาเลือกคลังสินค้าปลายทาง', 'OK', action: () {});
                         return;
                       }
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.usedSellDetail!.add(
                           OrderDetailModel(
                             productName: selectedProduct!.name,
@@ -1042,7 +1042,7 @@ class _SellUsedThengDialogState extends State<SellUsedThengDialog> {
                         );
                         setState(() {});
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

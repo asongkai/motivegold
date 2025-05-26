@@ -16,6 +16,8 @@ import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/order_type.dart';
+import 'package:motivegold/model/redeem/redeem.dart';
+import 'package:motivegold/model/redeem/redeem_detail.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/pos_id.dart';
 import 'package:motivegold/model/product_type.dart';
@@ -58,8 +60,17 @@ class Global {
   * 3 is use for buy and sell gold bar real
   * 4 is use for buy and sell gold bar with broker
   * 5 is use for buy new gold and sell used gold with wholesale
+  * 6 is use for buy new and sell used gold bar with wholesale
+  * 7 is use for redeem and sell gold
   * */
   static int currentOrderType = 1;
+
+  /*
+  * 1 is for redeem single
+  * */
+  static int currentRedeemType = 1;
+
+  static String? checkOutMode = "";
 
   static List<OrderModel> orders = [];
   static OrderModel? order;
@@ -84,6 +95,9 @@ class Global {
 
   static List<OrderModel>? ordersTransfer = [];
   static OrderModel? orderTransfer;
+
+  static List<RedeemModel> redeems = [];
+  static RedeemModel? redeem;
 
   static List<String>? orderIds = [];
   static int? pairId;
@@ -131,6 +145,10 @@ class Global {
 
   static List<OrderDetailModel>? refillThengOrderDetail = [];
   static List<OrderDetailModel>? sellUsedThengOrderDetail = [];
+
+  // Redeem
+
+  static List<RedeemDetailModel>? redeemSingleDetail = [];
 
   static OrderModel? posOrder;
   static int posIndex = 0;
@@ -757,6 +775,29 @@ class Global {
     return amount < 0 ? -amount : amount;
   }
 
+  static double getPaymentTotalB(List<OrderModel>? orders) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < orders.length; i++) {
+      for (int j = 0; j < orders[i].details!.length; j++) {
+        double price = orders[i].details![j].priceIncludeTax!;
+        motivePrint(price);
+        int type = orders[i].orderTypeId!;
+        if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
+          price = -price;
+        }
+        amount += price;
+      }
+    }
+    // motivePrint(discount);
+    // amount = amount < 0 ? -amount : amount;
+    amount = discount != 0 ? amount - discount : amount;
+    motivePrint(amount);
+    return amount;// < 0 ? -amount : amount;
+  }
+
   static double getPaymentListTotal() {
     if (Global.paymentList!.isEmpty) {
       return 0;
@@ -876,6 +917,57 @@ class Global {
     }
     return sum;
   }
+
+  /// PAWN
+  ///
+  static double getRedeemTotalWeight(List<RedeemDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.weight ?? 0;
+    }
+    return sum;
+  }
+
+  static double getRedeemTotalPayment(List<RedeemDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.paymentAmount ?? 0;
+    }
+    return sum;
+  }
+
+  static double getRedeemSubPaymentTotal(List<RedeemDetailModel>? details, {double discount = 0}) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+      for (int j = 0; j < details!.length; j++) {
+        double price = details[j].paymentAmount ?? 0;
+        amount += price;
+      }
+    return amount - discount;
+  }
+
+  static double getRedeemPaymentTotal(List<RedeemModel>? orders, {double discount = 0}) {
+    if (orders!.isEmpty) {
+      return 0;
+    }
+    double amount = 0;
+    for (int i = 0; i < orders.length; i++) {
+      for (int j = 0; j < orders[i].details!.length; j++) {
+        double price = orders[i].details![j].paymentAmount ?? 0;
+        amount += price;
+      }
+    }
+    return amount - discount;
+  }
+  /// END PAWN
 
   static Future<File> createFileFromString(encodedStr) async {
     Uint8List bytes = base64.decode(encodedStr);
@@ -1238,7 +1330,8 @@ class Global {
 
   static String timeOnlyF(String date) {
     DateTime tempDate = DateTime.parse(date);
-    return DateFormat('HH:mm a').format(tempDate);
+    // return DateFormat('HH:mm a').format(tempDate);
+    return DateFormat('HH:mm').format(tempDate);
   }
 
   static double removeDecimalZeroFormat(int n) {

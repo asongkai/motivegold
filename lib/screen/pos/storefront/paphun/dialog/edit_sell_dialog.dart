@@ -9,6 +9,7 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -22,6 +23,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class EditSaleDialog extends StatefulWidget {
   const EditSaleDialog({super.key, required this.index, this.j});
@@ -378,6 +380,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -400,31 +403,43 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                       // height: MediaQuery.of(context).size.height,
                       child: Column(
                         children: [
-                          Container(
-                            width: double.infinity,
-                            height: 70,
-                            decoration: const BoxDecoration(color: snBgColor),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'ขายทองรูปพรรณใหม่ 96.5%',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: size.getWidthPx(15),
-                                    color: Colors.white),
-                              ),
-                            ),
-                          ),
+                          // Container(
+                          //   width: double.infinity,
+                          //   height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
+                          //   decoration: const BoxDecoration(color: snBgColor),
+                          //   child: Padding(
+                          //     padding: const EdgeInsets.all(8.0),
+                          //     child: Text(
+                          //       'ขายทองรูปพรรณใหม่ 96.5%',
+                          //       textAlign: TextAlign.center,
+                          //       style: TextStyle(
+                          //           fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                          //           color: Colors.white),
+                          //     ),
+                          //   ),
+                          // ),
+                          posHeaderText(
+                              context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
                           Padding(
                             padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: GoldPriceMiniScreen(
+                            child: GoldMiniWidget(
                               goldDataModel: widget.j == null
-                                  ? Global.sellOrderDetail![widget.index]
+                                  ? Global.buyOrderDetail![widget.index]
                                       .goldDataModel
                                   : Global.ordersPapun![widget.index]
                                       .details![widget.j!].goldDataModel,
                             ),
                           ),
+                          // Padding(
+                          //   padding: const EdgeInsets.only(left: 10, right: 10),
+                          //   child: GoldPriceMiniScreen(
+                          //     goldDataModel: widget.j == null
+                          //         ? Global.sellOrderDetail![widget.index]
+                          //             .goldDataModel
+                          //         : Global.ordersPapun![widget.index]
+                          //             .details![widget.j!].goldDataModel,
+                          //   ),
+                          // ),
                           SizedBox(
                             height: 90,
                             child: Padding(
@@ -994,100 +1009,99 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                         return;
                       }
 
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
-                        if (widget.j == null) {
-                          Global.sellOrderDetail![widget.index] =
-                              OrderDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                OrderDetailModel(
-                                    productName: productNameCtrl.text,
-                                    productId: selectedProduct!.id,
-                                    binLocationId: selectedWarehouse!.id,
-                                    weight: Global.toNumber(
-                                        productWeightGramCtrl.text),
-                                    weightBath: Global.toNumber(
-                                        productWeightBahtCtrl.text),
-                                    commission:
-                                        productCommissionCtrl.text.isEmpty
-                                            ? 0
-                                            : Global.toNumber(
-                                                productCommissionCtrl.text),
-                                    taxBase: productWeightGramCtrl.text.isEmpty
-                                        ? 0
-                                        : Global.taxBase(
-                                            Global.toNumber(
-                                                productPriceTotalCtrl.text),
-                                            Global.toNumber(
-                                                productWeightGramCtrl.text)),
-                                    priceIncludeTax: Global.toNumber(
-                                        productPriceTotalCtrl.text),
-                                    sellPrice: Global
-                                        .sellOrderDetail![widget.index]
-                                        .sellPrice,
-                                    buyPrice: Global
-                                        .sellOrderDetail![widget.index]
-                                        .buyPrice,
-                                    sellTPrice: Global
-                                        .sellOrderDetail![widget.index]
-                                        .sellTPrice,
-                                    buyTPrice: Global
-                                        .sellOrderDetail![widget.index]
-                                        .buyTPrice,
-                                    goldDataModel: Global.sellOrderDetail![widget.index].goldDataModel),
-                              ),
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
+                      if (widget.j == null) {
+                        Global.sellOrderDetail![widget.index] =
+                            OrderDetailModel.fromJson(
+                          jsonDecode(
+                            jsonEncode(
+                              OrderDetailModel(
+                                  productName: productNameCtrl.text,
+                                  productId: selectedProduct!.id,
+                                  binLocationId: selectedWarehouse!.id,
+                                  weight: Global.toNumber(
+                                      productWeightGramCtrl.text),
+                                  weightBath: Global.toNumber(
+                                      productWeightBahtCtrl.text),
+                                  commission: productCommissionCtrl.text.isEmpty
+                                      ? 0
+                                      : Global.toNumber(
+                                          productCommissionCtrl.text),
+                                  taxBase: productWeightGramCtrl.text.isEmpty
+                                      ? 0
+                                      : Global.taxBase(
+                                          Global.toNumber(
+                                              productPriceTotalCtrl.text),
+                                          Global.toNumber(
+                                              productWeightGramCtrl.text)),
+                                  priceIncludeTax: Global.toNumber(
+                                      productPriceTotalCtrl.text),
+                                  sellPrice: Global
+                                      .sellOrderDetail![widget.index].sellPrice,
+                                  buyPrice: Global
+                                      .sellOrderDetail![widget.index].buyPrice,
+                                  sellTPrice: Global
+                                      .sellOrderDetail![widget.index]
+                                      .sellTPrice,
+                                  buyTPrice: Global
+                                      .sellOrderDetail![widget.index].buyTPrice,
+                                  goldDataModel: Global
+                                      .sellOrderDetail![widget.index]
+                                      .goldDataModel),
                             ),
-                          );
-                          sumSellTotal();
-                          setState(() {});
-                          Navigator.of(context).pop();
-                        } else {
-                          Global.ordersPapun![widget.index]
-                              .details![widget.j!] = OrderDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                OrderDetailModel(
-                                    productName: productNameCtrl.text,
-                                    productId: selectedProduct!.id,
-                                    binLocationId: selectedWarehouse!.id,
-                                    weight: Global.toNumber(
-                                        productWeightGramCtrl.text),
-                                    weightBath: Global.toNumber(
-                                        productWeightBahtCtrl.text),
-                                    commission: productCommissionCtrl.text.isEmpty
-                                        ? 0
-                                        : Global.toNumber(
-                                            productCommissionCtrl.text),
-                                    taxBase: productWeightGramCtrl.text.isEmpty
-                                        ? 0
-                                        : Global.taxBase(
-                                            Global.toNumber(
-                                                productPriceTotalCtrl.text),
-                                            Global.toNumber(
-                                                productWeightGramCtrl.text)),
-                                    priceIncludeTax: Global.toNumber(
-                                        productPriceTotalCtrl.text),
-                                    sellPrice: Global.ordersPapun![widget.index]
-                                        .details![widget.j!].sellPrice,
-                                    buyPrice: Global.ordersPapun![widget.index]
-                                        .details![widget.j!].buyPrice,
-                                    sellTPrice: Global
-                                        .ordersPapun![widget.index]
-                                        .details![widget.j!]
-                                        .sellTPrice,
-                                    buyTPrice: Global.ordersPapun![widget.index]
-                                        .details![widget.j!].buyTPrice,
-                                    goldDataModel: Global.ordersPapun![widget.index].details![widget.j!].goldDataModel),
-                              ),
+                          ),
+                        );
+                        sumSellTotal();
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      } else {
+                        Global.ordersPapun![widget.index].details![widget.j!] =
+                            OrderDetailModel.fromJson(
+                          jsonDecode(
+                            jsonEncode(
+                              OrderDetailModel(
+                                  productName: productNameCtrl.text,
+                                  productId: selectedProduct!.id,
+                                  binLocationId: selectedWarehouse!.id,
+                                  weight: Global.toNumber(
+                                      productWeightGramCtrl.text),
+                                  weightBath: Global.toNumber(
+                                      productWeightBahtCtrl.text),
+                                  commission: productCommissionCtrl.text.isEmpty
+                                      ? 0
+                                      : Global.toNumber(
+                                          productCommissionCtrl.text),
+                                  taxBase: productWeightGramCtrl.text.isEmpty
+                                      ? 0
+                                      : Global.taxBase(
+                                          Global.toNumber(
+                                              productPriceTotalCtrl.text),
+                                          Global.toNumber(
+                                              productWeightGramCtrl.text)),
+                                  priceIncludeTax: Global.toNumber(
+                                      productPriceTotalCtrl.text),
+                                  sellPrice: Global.ordersPapun![widget.index]
+                                      .details![widget.j!].sellPrice,
+                                  buyPrice: Global.ordersPapun![widget.index]
+                                      .details![widget.j!].buyPrice,
+                                  sellTPrice: Global.ordersPapun![widget.index]
+                                      .details![widget.j!].sellTPrice,
+                                  buyTPrice: Global.ordersPapun![widget.index]
+                                      .details![widget.j!].buyTPrice,
+                                  goldDataModel: Global
+                                      .ordersPapun![widget.index]
+                                      .details![widget.j!]
+                                      .goldDataModel),
                             ),
-                          );
-                          sumSellTotal();
-                          setState(() {});
-                          Navigator.of(context).pop();
-                        }
-                      });
+                          ),
+                        );
+                        sumSellTotal();
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      }
+                      // });
                     },
                   ),
                 ),

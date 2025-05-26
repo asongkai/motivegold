@@ -322,6 +322,108 @@ double getWeight(dynamic order) {
   return amount;
 }
 
+/// Redeem
+double getRedeemWeightTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.weight ?? 0;
+  }
+  return amount;
+}
+
+double getRedeemWeightBahtTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.weightBath ?? 0;
+  }
+  return amount;
+}
+
+double getTaxBaseTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.taxBase ?? 0;
+  }
+  return amount;
+}
+
+double getTaxAmountTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.taxAmount ?? 0;
+  }
+  return amount;
+}
+
+double getDepositAmountTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.depositAmount ?? 0;
+  }
+  return amount;
+}
+
+double getRedemptionValueTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.redemptionValue ?? 0;
+  }
+  return amount;
+}
+
+double getRedemptionVatTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.redemptionVat ?? 0;
+  }
+  return amount;
+}
+
+double getBenefitAmountTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.benefitAmount ?? 0;
+  }
+  return amount;
+}
+
+double getPaymentAmountTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.paymentAmount ?? 0;
+  }
+  return amount;
+}
+
+/// END Redeem
+
 Widget paddedText(final String text,
     {final TextAlign align = TextAlign.left,
       final TextStyle style = const TextStyle(fontSize: 12)}) =>

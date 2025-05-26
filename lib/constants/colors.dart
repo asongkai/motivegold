@@ -67,3 +67,5 @@ const Color stBgColorLight = Color(0xffe0f7fa);
 
 const Color btBgColor = Color(0xffc5e1a5);
 const Color btBgColorLight = Color(0xfff1f8e9);
+
+const Color textWhite = Colors.white;

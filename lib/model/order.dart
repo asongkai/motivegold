@@ -42,7 +42,7 @@ class OrderModel {
   double? taxBase;
   double? priceExcludeTax;
   double? discount;
-  String? attachement;
+  String? attachment;
   List<OrderDetailModel>? details;
   CustomerModel? customer;
   DateTime? createdDate;
@@ -80,7 +80,7 @@ class OrderModel {
     this.taxBase,
     this.priceExcludeTax,
     this.discount,
-    this.attachement,
+    this.attachment,
     this.details,
     this.customer,
     this.createdDate,
@@ -122,7 +122,7 @@ class OrderModel {
         taxBase: json["taxBase"],
         priceExcludeTax: json["priceExcludeTax"],
         discount: json["discount"],
-        attachement: json['attachement'],
+        attachment: json['attachment'],
         details: json["details"] == null
             ? []
             : List<OrderDetailModel>.from(
@@ -176,7 +176,7 @@ class OrderModel {
         "taxBase": taxBase,
         "priceExcludeTax": priceExcludeTax,
         "discount": discount,
-        "attachement": attachement,
+        "attachment": attachment,
         "details": details == null
             ? []
             : List<dynamic>.from(details!.map((x) => x.toJson())),

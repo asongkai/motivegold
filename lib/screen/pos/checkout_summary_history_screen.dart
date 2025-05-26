@@ -287,7 +287,7 @@ class _CheckOutSummaryHistoryScreenState
                                       PriceBreakdown(
                                         title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
                                         price:
-                                            '${Global.getPayTittle(Global.getPaymentTotal(orders))} ${Global.payToCustomerOrShop(orders, orders[0].discount ?? 0)}',
+                                            '${Global.getPayTittle(Global.getPaymentTotalB(orders))} ${Global.payToCustomerOrShop(orders, orders[0].discount ?? 0)}',
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),

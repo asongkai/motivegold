@@ -66,7 +66,10 @@ void resetAtLogout() {
   Global.usedSellDetail = [];
   Global.transferDetail = [];
   Global.branchList = [];
+  Global.redeemSingleDetail = [];
+  Global.redeems = [];
   resetCart();
+  resetRedeemCart();
 }
 
 getPaymentType(String? paymentMethod) {
@@ -1302,5 +1305,16 @@ checkDate(String date) {
   } catch (e) {
     motivePrint(e.toString());
     return false;
+  }
+}
+
+getWorkId(CustomerModel customer) {
+  if (customer.nationality == 'Foreigner') {
+    return 'Work permit: ${customer.workPermit} Passport: ${customer.passportId} Tax ID: ${customer.taxNumber}';
+  } else {
+    if (customer.customerType == 'company') {
+      return 'เลขประจำตัวผู้เสียภาษี: ${customer.taxNumber ?? customer.idCard}';
+    }
+    return 'เลขบัตรประชาชน: ${customer.idCard}';
   }
 }

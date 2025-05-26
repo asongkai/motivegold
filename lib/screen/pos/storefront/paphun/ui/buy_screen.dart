@@ -19,6 +19,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class PaphunBuyScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -139,10 +140,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: buBgColor,
         centerTitle: true,
-        title: Text(
-          'รับซื้อทองคำเก่า',
-          style: TextStyle(fontSize: size.getWidthPx(10)),
-        ),
+        title: titleText(context, 'รับซื้อทองคำเก่า'),
         // backgroundColor: bgColor,
         actions: [
           GestureDetector(
@@ -273,8 +271,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('ลำดับ',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontSize:
-                                                  size.getWidthPx(8),
+                                                  fontSize: size.getWidthPx(8),
                                                   color: textColor,
                                                 )),
                                           ),
@@ -283,8 +280,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('รายการ',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontSize:
-                                                  size.getWidthPx(8),
+                                                  fontSize: size.getWidthPx(8),
                                                   color: textColor,
                                                 )),
                                           ),
@@ -293,8 +289,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('น้ำหนัก (กรัม)',
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
-                                                  fontSize:
-                                                  size.getWidthPx(8),
+                                                  fontSize: size.getWidthPx(8),
                                                   color: textColor,
                                                 )),
                                           ),
@@ -302,12 +297,12 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             flex: 3,
                                             child: Padding(
                                               padding:
-                                              const EdgeInsets.all(8.0),
+                                                  const EdgeInsets.all(8.0),
                                               child: Text('จำนวนเงิน',
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                     fontSize:
-                                                    size.getWidthPx(8),
+                                                        size.getWidthPx(8),
                                                     color: textColor,
                                                   )),
                                             ),
@@ -316,8 +311,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             flex: 4,
                                             child: Text('',
                                                 style: TextStyle(
-                                                  fontSize:
-                                                  size.getWidthPx(8),
+                                                  fontSize: size.getWidthPx(8),
                                                   color: textColor,
                                                 )),
                                           ),
@@ -326,10 +320,12 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                     ),
                                   Expanded(
                                     child: ListView.builder(
-                                        itemCount: Global.buyOrderDetail!.length,
+                                        itemCount:
+                                            Global.buyOrderDetail!.length,
                                         itemBuilder: (context, index) {
                                           return _itemOrderList(
-                                              order: Global.buyOrderDetail![index],
+                                              order:
+                                                  Global.buyOrderDetail![index],
                                               index: index);
                                         }),
                                   ),
@@ -431,8 +427,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             // if (result!.status == "success") {
                                             OrderModel order = OrderModel(
                                                 orderId: "",
-                                                orderDate:
-                                                    DateTime.now(),
+                                                orderDate: DateTime.now(),
                                                 details: Global.buyOrderDetail!,
                                                 orderTypeId: 2);
                                             final data = order.toJson();
@@ -587,93 +582,91 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                           if (Global.buyOrderDetail!.isEmpty) {
                                             return;
                                           }
-                                          Alert.info(
-                                              context,
-                                              'ต้องการบันทึกข้อมูลหรือไม่?',
-                                              '',
-                                              'ตกลง', action: () async {
-                                            // final ProgressDialog pr =
-                                            // ProgressDialog(context,
-                                            //     type: ProgressDialogType
-                                            //         .normal,
-                                            //     isDismissible: true,
-                                            //     showLogs: true);
-                                            // await pr.show();
-                                            // pr.update(
-                                            //     message: 'processing'.tr());
-                                            try {
-                                              // var result =
-                                              // await ApiServices.post(
-                                              //     '/order/gen/2',
-                                              //     Global.requestObj(null));
-                                              // await pr.hide();
-                                              // if (result!.status == "success") {
-                                              OrderModel order = OrderModel(
-                                                  orderId: "",
-                                                  orderDate:
-                                                      DateTime.now(),
-                                                  details:
-                                                      Global.buyOrderDetail!,
-                                                  orderTypeId: 2);
-                                              final data = order.toJson();
-                                              Global.ordersPapun?.add(
-                                                  OrderModel.fromJson(data));
-                                              widget.refreshCart(Global
-                                                  .ordersPapun?.length
-                                                  .toString());
-                                              writeCart();
-                                              Global.buyOrderDetail!.clear();
-                                              setState(() {
-                                                Global.buySubTotal = 0;
-                                                Global.buyTax = 0;
-                                                Global.buyTotal = 0;
-                                              });
-                                              if (mounted) {
-                                                Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const CheckOutScreen()))
-                                                    .whenComplete(() {
-                                                  Future.delayed(
-                                                      const Duration(
-                                                          milliseconds: 500),
-                                                      () async {
-                                                    String holds = (await Global
-                                                            .getHoldList())
-                                                        .length
-                                                        .toString();
-                                                    widget.refreshHold(holds);
-                                                    widget.refreshCart(Global
-                                                        .ordersPapun?.length
-                                                        .toString());
-                                                    writeCart();
-                                                    setState(() {});
-                                                  });
+                                          // Alert.info(
+                                          //     context,
+                                          //     'ต้องการบันทึกข้อมูลหรือไม่?',
+                                          //     '',
+                                          //     'ตกลง', action: () async {
+                                          // final ProgressDialog pr =
+                                          // ProgressDialog(context,
+                                          //     type: ProgressDialogType
+                                          //         .normal,
+                                          //     isDismissible: true,
+                                          //     showLogs: true);
+                                          // await pr.show();
+                                          // pr.update(
+                                          //     message: 'processing'.tr());
+                                          try {
+                                            // var result =
+                                            // await ApiServices.post(
+                                            //     '/order/gen/2',
+                                            //     Global.requestObj(null));
+                                            // await pr.hide();
+                                            // if (result!.status == "success") {
+                                            OrderModel order = OrderModel(
+                                                orderId: "",
+                                                orderDate: DateTime.now(),
+                                                details: Global.buyOrderDetail!,
+                                                orderTypeId: 2);
+                                            final data = order.toJson();
+                                            Global.ordersPapun?.add(
+                                                OrderModel.fromJson(data));
+                                            widget.refreshCart(Global
+                                                .ordersPapun?.length
+                                                .toString());
+                                            writeCart();
+                                            Global.buyOrderDetail!.clear();
+                                            setState(() {
+                                              Global.buySubTotal = 0;
+                                              Global.buyTax = 0;
+                                              Global.buyTotal = 0;
+                                            });
+                                            if (mounted) {
+                                              Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const CheckOutScreen()))
+                                                  .whenComplete(() {
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 500),
+                                                    () async {
+                                                  String holds = (await Global
+                                                          .getHoldList())
+                                                      .length
+                                                      .toString();
+                                                  widget.refreshHold(holds);
+                                                  widget.refreshCart(Global
+                                                      .ordersPapun?.length
+                                                      .toString());
+                                                  writeCart();
+                                                  setState(() {});
                                                 });
-                                              }
-                                              // } else {
-                                              //   if (mounted) {
-                                              //     Alert.warning(
-                                              //         context,
-                                              //         'Warning'.tr(),
-                                              //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                              //         'OK'.tr(),
-                                              //         action: () {});
-                                              //   }
-                                              // }
-                                            } catch (e) {
-                                              // await pr.hide();
-                                              if (mounted) {
-                                                Alert.warning(
-                                                    context,
-                                                    'Warning'.tr(),
-                                                    e.toString(),
-                                                    'OK'.tr(),
-                                                    action: () {});
-                                              }
+                                              });
                                             }
-                                          });
+                                            // } else {
+                                            //   if (mounted) {
+                                            //     Alert.warning(
+                                            //         context,
+                                            //         'Warning'.tr(),
+                                            //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
+                                            //         'OK'.tr(),
+                                            //         action: () {});
+                                            //   }
+                                            // }
+                                          } catch (e) {
+                                            // await pr.hide();
+                                            if (mounted) {
+                                              Alert.warning(
+                                                  context,
+                                                  'Warning'.tr(),
+                                                  e.toString(),
+                                                  'OK'.tr(),
+                                                  action: () {});
+                                            }
+                                          }
+                                          // });
                                         },
                                         child: Row(
                                           mainAxisAlignment:

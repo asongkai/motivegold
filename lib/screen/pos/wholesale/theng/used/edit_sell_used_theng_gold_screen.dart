@@ -248,9 +248,9 @@ class _EditSellUsedThengGoldScreenState
     });
     try {
       Global.sellUsedThengAttach =
-          Global.ordersThengWholesale![widget.index].attachement != null
+          Global.ordersThengWholesale![widget.index].attachment != null
               ? await Global.createFileFromString(
-                  Global.ordersThengWholesale![widget.index].attachement ?? '')
+                  Global.ordersThengWholesale![widget.index].attachment ?? '')
               : null;
 
       var result = await ApiServices.post(
@@ -1039,9 +1039,9 @@ class _EditSellUsedThengGoldScreenState
                           return;
                         }
 
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1062,7 +1062,7 @@ class _EditSellUsedThengGoldScreenState
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1362,7 +1362,7 @@ class _EditSellUsedThengGoldScreenState
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
         orderTypeId: 11,
-        attachement: Global.sellUsedThengAttach != null
+        attachment: Global.sellUsedThengAttach != null
             ? Global.imageToBase64(Global.sellUsedThengAttach!)
             : null,
         orderStatus: 'COMPLETED');

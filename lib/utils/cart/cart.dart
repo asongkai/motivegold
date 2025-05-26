@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/global.dart';
 
@@ -172,6 +173,74 @@ String getCartKey(int orderType) {
       return 'wholesale_cart';
     case 6:
       return 'theng_wholesale_cart';
+    default:
+      return '';
+  }
+}
+
+/// Redeem
+bool writeRedeemCart() {
+  try {
+    if (Global.currentRedeemType == 1) {
+      LocalStorage.sharedInstance.writeValue(
+          key: getRedeemCartKey(Global.currentRedeemType),
+          value: jsonEncode(Global.redeems));
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+void getRedeemCart() async {
+  var data = await LocalStorage.sharedInstance
+      .readValue(getRedeemCartKey(Global.currentRedeemType));
+  if (data != null) {
+    List<RedeemModel>? orders = redeemListModelFromJson(data);
+    setRedeemCart(orders, Global.currentRedeemType);
+  }
+}
+
+void setRedeemCart(List<RedeemModel> orders, int orderType) {
+  switch (orderType) {
+    case 1:
+      Global.redeems = orders;
+      break;
+    default:
+      break;
+  }
+}
+
+void removeRedeemCart() {
+  if (Global.currentRedeemType == 1) {
+    LocalStorage.sharedInstance.writeValue(
+        key: getRedeemCartKey(Global.currentRedeemType),
+        value: jsonEncode(Global.redeems ?? []));
+  }
+}
+
+void resetRedeemCart() {
+  for (int i = 1; i < 7; i++) {
+    LocalStorage.sharedInstance
+        .writeValue(key: getRedeemCartKey(i), value: jsonEncode([]));
+  }
+}
+
+Future<int> getRedeemCartCount() async {
+  var data = await LocalStorage.sharedInstance
+      .readValue(getRedeemCartKey(Global.currentRedeemType));
+  if (data != null) {
+    List<RedeemModel>? orders = redeemListModelFromJson(data);
+    setRedeemCart(orders, Global.currentRedeemType);
+    return orders.length;
+  }
+  return 0;
+}
+
+String getRedeemCartKey(int orderType) {
+  switch (orderType) {
+    case 1:
+      return 'redeem_cart';
     default:
       return '';
   }

@@ -56,7 +56,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(
         paddedText('ผู้ขาย', align: TextAlign.center),
         paddedText('เลขประจําตัวผู้เสียภาษี', align: TextAlign.center),
         paddedText('รายการสินค้า', align: TextAlign.center),
-        paddedText('น้ําหนัก (กรัม) \n(น.น.สินค้า/น.น.96.5)', align: TextAlign.center),
+        paddedText('น้ําหนัก (กรัม)', align: TextAlign.center),
         paddedText('จํานวนเงิน (บาท)', align: TextAlign.center),
       ]),
       ...orders.map((e) => TableRow(
@@ -91,7 +91,9 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(
   pdf.addPage(
     MultiPage(
         margin: const EdgeInsets.all(20),
-        pageFormat: const PdfPageFormat(1000, 1000),
+        // pageFormat: const PdfPageFormat(1000, 1000),
+        pageFormat: PdfPageFormat.a4,
+        orientation: PageOrientation.landscape,
         build: (context) => widgets,
         footer: (context) {
           return Row(

@@ -59,6 +59,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
           '/order/print-order-list/${Global.pairId}', Global.requestObj(null));
 
       var data = jsonEncode(resultO?.data);
+      Global.printLongString(data);
       orders = orderListModelFromJson(data);
 
       var payment = await ApiServices.post(
@@ -302,10 +303,11 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                       ),
                                       if (Global.paymentList!.isNotEmpty)
                                         SizedBox(
-                                          height: 300,
+                                          // height: 300,
                                           child: Column(
                                             children: [
                                               Container(
+                                                height: 50,
                                                 decoration: const BoxDecoration(
                                                   border: Border(
                                                     bottom: BorderSide(
@@ -406,20 +408,20 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                                   ],
                                                 ),
                                               ),
-                                              Expanded(
-                                                child: ListView.builder(
-                                                    itemCount: Global
-                                                        .paymentList!.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return _paymentItemList(
-                                                          payment: Global
-                                                                  .paymentList![
-                                                              index],
-                                                          index: index);
-                                                    }),
-                                              ),
+                                              ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: Global
+                                                      .paymentList!.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return _paymentItemList(
+                                                        payment: Global
+                                                                .paymentList![
+                                                            index],
+                                                        index: index);
+                                                  }),
                                               Container(
+                                                height: 100,
                                                 decoration: const BoxDecoration(
                                                   color: bgColor,
                                                   border: Border(
@@ -523,6 +525,40 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                             ],
                                           ),
                                         ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: orders[0].attachment == null
+                                            ? Container()
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  _showImageAlertDialogBill(
+                                                      context,
+                                                      orders[0].attachment!);
+                                                },
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
+                                                      style: TextStyle(
+                                                          fontSize: size
+                                                              ?.getWidthPx(10)),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Image.network(
+                                                      '${Constants.DOMAIN_URL}/images/${orders[0].attachment}',
+                                                      fit: BoxFit.fitHeight,
+                                                      height: 200,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                      ),
                                       const SizedBox(
                                         height: 30,
                                       ),
@@ -612,20 +648,50 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                 child: payment.attachement == null
                     ? Container()
                     : GestureDetector(
-
-                      onTap: () {
-                        _showImageAlertDialog(context, payment);
-                      },
-                      child: Image.network(
-                                        '${Constants.DOMAIN_URL}/images/${payment.attachement}',
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                    ),
+                        onTap: () {
+                          _showImageAlertDialog(context, payment);
+                        },
+                        child: Image.network(
+                          '${Constants.DOMAIN_URL}/images/${payment.attachement}',
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showImageAlertDialogBill(BuildContext context, String bill) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี'),
+          content: Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Image.network(
+                  '${Constants.DOMAIN_URL}/images/$bill',
+                  fit: BoxFit.fitHeight,
+                  height: size?.hp(60),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the AlertDialog
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -659,7 +725,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
   }
 
   Widget _itemOrderList({required OrderModel order, required index}) {
-    // motivePrint(index);
+    Global.printLongString(order.toJson().toString());
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

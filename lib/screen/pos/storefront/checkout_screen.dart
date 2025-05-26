@@ -62,6 +62,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.paymentDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.paymentDetailCtrl.text = "";
     Global.paymentList?.clear();
+    Global.checkOutMode = "O";
   }
 
   @override
@@ -310,7 +311,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                   height: 3,
                                                 ),
                                                 Text(
-                                                  "${getIdTitleCustomer(Global.customer)}",
+                                                  "${getWorkId(Global.customer!)}",
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
@@ -320,14 +321,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 const SizedBox(
                                                   height: 3,
                                                 ),
-                                                Text(
-                                                  "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
+                                                // Text(
+                                                //   "${getIdTitleCustomer(Global.customer)}",
+                                                //   style: TextStyle(
+                                                //     fontWeight: FontWeight.w500,
+                                                //     fontSize:
+                                                //         size!.getWidthPx(6),
+                                                //   ),
+                                                // ),
+                                                // const SizedBox(
+                                                //   height: 3,
+                                                // ),
+                                                // Text(
+                                                //   "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
+                                                //   style: TextStyle(
+                                                //     fontWeight: FontWeight.w500,
+                                                //     fontSize:
+                                                //         size!.getWidthPx(6),
+                                                //   ),
+                                                // ),
                                               ],
                                             ),
                                           ),
@@ -502,7 +514,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         ),
                         if (Global.paymentList!.isNotEmpty)
                           SizedBox(
-                            height: 300,
+                            // height: 300,
                             child: Column(
                               children: [
                                 Container(
@@ -578,15 +590,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: ListView.builder(
-                                      itemCount: Global.paymentList!.length,
-                                      itemBuilder: (context, index) {
-                                        return _paymentItemList(
-                                            order: Global.paymentList![index],
-                                            index: index);
-                                      }),
-                                ),
+                                ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: Global.paymentList!.length,
+                                    itemBuilder: (context, index) {
+                                      return _paymentItemList(
+                                          order: Global.paymentList![index],
+                                          index: index);
+                                    }),
                                 Container(
                                   decoration: const BoxDecoration(
                                     color: bgColor,
@@ -795,7 +808,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   Global.orders[i].status = "0";
                   Global.orders[i].discount = Global.discount;
                   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
-                  Global.orders[i].attachement = null;
+                  Global.orders[i].attachment = null;
                   if (Global.orders[i].orderTypeId != 5 &&
                       Global.orders[i].orderTypeId != 6) {
                     Global.orders[i].priceIncludeTax =
@@ -811,15 +824,13 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             ? 0
                             : Global.getOrderTotal(Global.orders[i]) -
                                 Global.getPapunTotal(Global.orders[i]);
-                    Global.orders[i].taxBase =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : (Global.getOrderTotal(Global.orders[i]) -
-                                    Global.getPapunTotal(Global.orders[i])) *
-                                100 /
-                                107;
-                    Global.orders[i].taxAmount = Global
-                                .orders[i].orderTypeId ==
+                    Global.orders[i].taxBase = Global.orders[i].orderTypeId == 2
+                        ? 0
+                        : (Global.getOrderTotal(Global.orders[i]) -
+                                Global.getPapunTotal(Global.orders[i])) *
+                            100 /
+                            107;
+                    Global.orders[i].taxAmount = Global.orders[i].orderTypeId ==
                             2
                         ? 0
                         : ((Global.getOrderTotal(Global.orders[i]) -
@@ -840,8 +851,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   }
                   for (var j = 0; j < Global.orders[i].details!.length; j++) {
                     Global.orders[i].details![j].id = 0;
-                    Global.orders[i].details![j].orderId =
-                        Global.orders[i].id;
+                    Global.orders[i].details![j].orderId = Global.orders[i].id;
                     Global.orders[i].details![j].unitCost =
                         Global.orders[i].details![j].priceIncludeTax! /
                             Global.orders[i].details![j].weight!;
@@ -856,24 +866,24 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             : Global.orders[i].details![j].priceIncludeTax! -
                                 Global.getBuyPrice(
                                     Global.orders[i].details![j].weight!);
-                    Global.orders[i].details![j].taxBase = Global
+                    Global.orders[i].details![j].taxBase =
+                        Global.orders[i].orderTypeId == 2
+                            ? 0
+                            : (Global.orders[i].details![j].priceIncludeTax! -
+                                    Global.getBuyPrice(
+                                        Global.orders[i].details![j].weight!)) *
+                                100 /
+                                107;
+                    Global.orders[i].details![j].taxAmount = Global
                                 .orders[i].orderTypeId ==
                             2
                         ? 0
-                        : (Global.orders[i].details![j].priceIncludeTax! -
-                                Global.getBuyPrice(
-                                    Global.orders[i].details![j].weight!)) *
-                            100 /
-                            107;
-                    Global.orders[i].details![j].taxAmount =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : ((Global.orders[i].details![j].priceIncludeTax! -
-                                        Global.getBuyPrice(Global
-                                            .orders[i].details![j].weight!)) *
-                                    100 /
-                                    107) *
-                                getVatValue();
+                        : ((Global.orders[i].details![j].priceIncludeTax! -
+                                    Global.getBuyPrice(
+                                        Global.orders[i].details![j].weight!)) *
+                                100 /
+                                107) *
+                            getVatValue();
                     Global.orders[i].details![j].priceExcludeTax =
                         Global.orders[i].orderTypeId == 2
                             ? 0

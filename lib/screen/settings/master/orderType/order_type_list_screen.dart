@@ -336,7 +336,7 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width > 1300
+                      width: (MediaQuery.of(context).orientation == Orientation.landscape)
                           ? MediaQuery.of(context).size.width * 2 / 4
                           : MediaQuery.of(context).size.width * 3 / 4,
                       child: SingleChildScrollView(

@@ -93,7 +93,7 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.save,
-                                size: size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -148,7 +148,7 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

@@ -1289,8 +1289,8 @@ class _RefillThengGoldStockScreenState
                         }
 
                         try {
-                          Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
-                              'ตกลง', action: () async {
+                          // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
+                          //     'ตกลง', action: () async {
                             saveData();
                             if (mounted) {
                               resetText();
@@ -1303,7 +1303,7 @@ class _RefillThengGoldStockScreenState
                                 backgroundColor: Colors.teal,
                               ));
                             }
-                          });
+                          // });
                         } catch (e) {
                           if (mounted) {
                             Alert.warning(context, 'Warning'.tr(), e.toString(),
@@ -1422,9 +1422,9 @@ class _RefillThengGoldStockScreenState
                           }
                         }
 
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1453,7 +1453,7 @@ class _RefillThengGoldStockScreenState
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1676,7 +1676,7 @@ class _RefillThengGoldStockScreenState
       priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
       taxBase: Global.toNumber(taxBaseTotalCtrl.text),
       taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-      attachement: Global.refillThengAttach != null
+      attachment: Global.refillThengAttach != null
           ? Global.imageToBase64(Global.refillThengAttach!)
           : null,
       orderTypeId: 10,

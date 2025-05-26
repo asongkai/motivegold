@@ -79,7 +79,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
                 '${orders[i].customer?.firstName} ${orders[i].customer
                     ?.lastName}'),
             paddedText(Global.dateOnly(orders[i].createdDate.toString())),
-            paddedText(Global.timeOnlyF(orders[i].createdDate.toString())),
+            paddedText(Global.timeOnly(orders[i].createdDate.toString())),
             paddedText(
                 (orders[i].orderTypeId == 1)
                     ? Global.format(getWeight(orders[i]))
@@ -156,7 +156,9 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
   pdf.addPage(
     MultiPage(
         margin: const EdgeInsets.all(20),
-        pageFormat: const PdfPageFormat(1000, 1000),
+        // pageFormat: const PdfPageFormat(1000, 1000),
+        pageFormat: PdfPageFormat.a4,
+        orientation: PageOrientation.landscape,
         build: (context) => widgets,
         footer: (context) {
           return Row(
@@ -270,6 +272,40 @@ double getCreditPaymentTotal(List<OrderModel> orders) {
 }
 
 double payToCustomerOrShopValue(List<OrderModel> orders, OrderModel order) {
+  var orders0 = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+  double amount = 0;
+  double buy = 0;
+  double sell = 0;
+  if (orders0.isNotEmpty) {
+    orders0.add(order);
+    for (int i = 0; i < orders0.length; i++) {
+      for (int j = 0; j < orders0[i].details!.length; j++) {
+        int type = orders0[i].orderTypeId!;
+        double price = orders0[i].details![j].priceIncludeTax!;
+
+        if (type == 2) {
+          buy += -price;
+        }
+        if (type == 1) {
+          sell += price;
+        }
+      }
+    }
+    double discount = order.discount ?? 0;
+    amount = sell + buy;
+    amount = amount < 0 ? -amount : amount;
+    amount = discount != 0 ? amount - discount : amount;
+    amount = (sell + buy) < 0 ? -amount : amount;
+    return amount;
+  }
+
+  return order.priceIncludeTax ?? 0;
+}
+
+
+double payToCustomerOrShopValueB(List<OrderModel> orders, OrderModel order) {
   var orders0 = orders
       .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
       .toList();

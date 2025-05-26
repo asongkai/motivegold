@@ -115,8 +115,9 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
   pdf.addPage(
     MultiPage(
       margin: const EdgeInsets.all(30),
-      pageFormat: const PdfPageFormat(1000, 1000),
-      orientation: PageOrientation.natural,
+      // pageFormat: const PdfPageFormat(1000, 1000),
+      pageFormat: PdfPageFormat.a4,
+      orientation: PageOrientation.landscape,
       build: (context) => widgets,
     ),
   );

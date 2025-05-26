@@ -362,7 +362,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
       ),
     ),
   );
-
+  widgets.add(height(h:20));
   widgets.add(
     Padding(
       padding: const EdgeInsets.only(left: 4.0, right: 4.0),
@@ -384,6 +384,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
                     style:
                         TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
+                  height(h: 20),
                   paddedText(
                     'วันที่ ..... / ..... / .........',
                     style:
@@ -404,6 +405,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
                     style:
                         TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
+                  height(h: 20),
                   paddedText(
                     'วันที่ ..... / ..... / .........',
                     style:

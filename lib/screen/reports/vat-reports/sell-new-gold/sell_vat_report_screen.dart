@@ -776,8 +776,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                       paddedTextBig('วัน/เดือน/ปี', align: TextAlign.center),
                       paddedTextBig('เลขที่ใบกํากับภาษี',
                           align: TextAlign.center),
-                      paddedTextBig('ชื่อผู้ซื้อ', align: TextAlign.center),
-                      paddedTextBig('เลขประจําตัวผู้เสียภาษี',
+                      paddedTextBig('ชื่อ', align: TextAlign.center),
+                      paddedTextBig('เลขประจําตัวลูกค้า',
                           align: TextAlign.center),
                       paddedTextBig('น้ําหนัก', align: TextAlign.center),
                       paddedTextBig('หน่วย', align: TextAlign.center),
@@ -863,7 +863,7 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
       // motivePrint(dateList?.length);
       if (dateList!.isNotEmpty) {
         var order = OrderModel(
-            orderId: '${dateList.first?.orderId} - ${dateList.last?.orderId}',
+            orderId: '${dateList.last?.orderId} - ${dateList.first?.orderId}',
             orderDate: dateList.first?.orderDate,
             createdDate: monthDate,
             customerId: 0,

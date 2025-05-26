@@ -599,16 +599,25 @@ Future<Uint8List> makeRefillThengBill(Invoice invoice) async {
           Expanded(
             flex: 2,
             child: Container(
-                height: 55,
-                child: Column(children: [
+              height: 85,
+              child: Column(
+                children: [
+                  SizedBox(height: 5),
+                  Text('(                                )',
+                      style: const TextStyle(fontSize: 9)),
                   SizedBox(height: 5),
                   Text('ผู้รับเงิน/ผู้ส่งมอบทอง',
                       style: const TextStyle(fontSize: 9)),
                   Spacer(),
+                  Text('(                                )',
+                      style: const TextStyle(fontSize: 9)),
+                  SizedBox(height: 5),
                   Text('ผู้ซื้อ/ผู้รับมอบทอง',
                       style: const TextStyle(fontSize: 9)),
                   SizedBox(height: 5),
-                ])),
+                ],
+              ),
+            ),
           ),
         ])),
   );

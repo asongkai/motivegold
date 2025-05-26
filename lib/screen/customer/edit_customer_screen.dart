@@ -54,6 +54,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
   final TextEditingController addressCtrl = TextEditingController();
   TextEditingController companyNameCtrl = TextEditingController();
   TextEditingController remarkCtrl = TextEditingController();
+  TextEditingController occupationCtrl = TextEditingController();
 
   final TextEditingController workPermitCtrl = TextEditingController();
   final TextEditingController passportNoCtrl = TextEditingController();
@@ -826,6 +827,33 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     height: 15,
                                   ),
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, right: 8.0),
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              buildTextFieldBig(
+                                                labelText: 'อาชีพ',
+                                                inputType: TextInputType.phone,
+                                                controller: occupationCtrl,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
@@ -1187,6 +1215,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                   "workPermit": workPermitCtrl.text,
                   "passportId": passportNoCtrl.text,
                   "remark": remarkCtrl.text,
+                  "occupation": occupationCtrl.text,
                 });
 
                 // print(customerObject);

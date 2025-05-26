@@ -95,7 +95,7 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {

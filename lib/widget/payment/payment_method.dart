@@ -246,6 +246,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                               paymentNotifier!.value = value;
                               // motivePrint('amount: ${Global.payToCustomerOrShopValue(Global.ordersPapun, Global.discount)}');
                               double amount = 0;
+
                               if (Global.currentOrderType == 5) {
                                 amount =
                                     Global.payToCustomerOrShopValueWholeSale(
@@ -257,8 +258,16 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                         Global.ordersThengWholesale,
                                         Global.discount);
                               } else {
-                                amount = Global.payToCustomerOrShopValue(
-                                    Global.orders, Global.discount);
+                                if (Global.checkOutMode == 'O') {
+                                  amount = Global.payToCustomerOrShopValue(
+                                      Global.orders, Global.discount);
+                                }
+
+                                if (Global.checkOutMode == 'P') {
+                                  amount = Global.getRedeemPaymentTotal(
+                                      Global.redeems,
+                                      discount: Global.discount);
+                                }
                               }
                               if (amount >= 0) {
                                 Global.amountCtrl.text = Global.format(

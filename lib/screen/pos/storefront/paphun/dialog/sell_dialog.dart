@@ -10,6 +10,7 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -24,6 +25,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 
 class SaleDialog extends StatefulWidget {
   const SaleDialog({super.key});
@@ -280,10 +282,7 @@ class _SaleDialogState extends State<SaleDialog> {
   void priceChanged() {
     if (productPriceCtrl.text.isNotEmpty &&
         productPriceTotalCtrl.text.isNotEmpty) {
-      productCommissionCtrl.text = Global.format(
-          Global.toNumber(productPriceTotalCtrl.text) -
-              (Global.getSellPrice(1) *
-                  Global.toNumber(productWeightGramCtrl.text)));
+      productCommissionCtrl.text = Global.format(Global.toNumber(productPriceTotalCtrl.text) - (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)));
       setState(() {});
     } else {
       productCommissionCtrl.text = "";
@@ -343,6 +342,7 @@ class _SaleDialogState extends State<SaleDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -362,24 +362,10 @@ class _SaleDialogState extends State<SaleDialog> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: 70,
-                          decoration: const BoxDecoration(color: snBgColor),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'ขายทองรูปพรรณใหม่ 96.5%',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: size.getWidthPx(15),
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        posHeaderText(context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
                         const Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
-                          child: GoldPriceMiniScreen(),
+                          child: GoldMiniWidget(),
                         ),
                         SizedBox(
                           height: 90,
@@ -806,7 +792,7 @@ class _SaleDialogState extends State<SaleDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity,),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -824,7 +810,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                           ),
                         ],
                       ),
@@ -838,10 +824,10 @@ class _SaleDialogState extends State<SaleDialog> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity,),
                   child: MaterialButton(
                     color: snBgColor,
                     child: Padding(
@@ -859,7 +845,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                           ),
                         ],
                       ),
@@ -941,9 +927,9 @@ class _SaleDialogState extends State<SaleDialog> {
                         return;
                       }
 
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.sellOrderDetail!.add(
                           OrderDetailModel.fromJson(
                             jsonDecode(
@@ -986,7 +972,7 @@ class _SaleDialogState extends State<SaleDialog> {
                         sumSellTotal();
                         setState(() {});
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

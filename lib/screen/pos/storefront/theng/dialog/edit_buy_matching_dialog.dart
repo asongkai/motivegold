@@ -245,6 +245,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -261,7 +262,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 70,
+                    height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
                     decoration: const BoxDecoration(color: Colors.teal),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -269,7 +270,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                         'ซื้อทองแท่ง (จับคู่)',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(15), color: Colors.white),
+                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15), color: Colors.white),
                       ),
                     ),
                   ),
@@ -737,9 +738,9 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                       //
                       //   return;
                       // }
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.buyThengOrderDetailMatching![widget.index] =
                             OrderDetailModel(
                                 productName: selectedProduct!.name,
@@ -759,7 +760,7 @@ class _EditBuyMatchingDialogState extends State<EditBuyMatchingDialog> {
                         sumBuyThengTotalMatching();
                         setState(() {});
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

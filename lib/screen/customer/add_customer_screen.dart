@@ -48,6 +48,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   final TextEditingController addressCtrl = TextEditingController();
   TextEditingController companyNameCtrl = TextEditingController();
   TextEditingController remarkCtrl = TextEditingController();
+  TextEditingController occupationCtrl = TextEditingController();
 
   final TextEditingController workPermitCtrl = TextEditingController();
   final TextEditingController passportNoCtrl = TextEditingController();
@@ -258,12 +259,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                   onTap: () {
                     Navigator.of(context)
                         .push(
-                      MaterialPageRoute(
-                        builder: (context) => const IDCardOCRScreen(),
-                      ),
-                    )
-                        .whenComplete(() {
-                    });
+                          MaterialPageRoute(
+                            builder: (context) => const IDCardOCRScreen(),
+                          ),
+                        )
+                        .whenComplete(() {});
                   },
                   child: Container(
                     color: Colors.teal[900],
@@ -272,12 +272,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       child: Row(
                         children: [
                           const Icon(
-                            Icons.add,
+                            Icons.search,
                             size: 50,
                             color: Colors.white,
                           ),
                           Text(
-                            'เพิ่มลูกค้า',
+                            'แสดงตนลูกค้า',
                             style: TextStyle(
                                 fontSize: size.getWidthPx(10),
                                 color: Colors.white),
@@ -806,6 +806,33 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                           height: 10,
                                         ),
                                         buildTextFieldBig(
+                                          labelText: 'อาชีพ',
+                                          inputType: TextInputType.phone,
+                                          controller: occupationCtrl,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        buildTextFieldBig(
                                           labelText:
                                               'รหัสไปรษณีย์ / Postal Code',
                                           inputType: TextInputType.phone,
@@ -979,7 +1006,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     "isCustomer": isCustomer ? 1 : 0,
                     "workPermit": workPermitCtrl.text,
                     "passportId": passportNoCtrl.text,
-                    "remark": remarkCtrl.text
+                    "remark": remarkCtrl.text,
+                    "occupation": occupationCtrl.text,
                   });
 
                   // print(customerObject);

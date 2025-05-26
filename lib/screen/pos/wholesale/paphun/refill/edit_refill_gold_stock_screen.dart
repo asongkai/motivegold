@@ -183,9 +183,9 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     try {
       // motivePrint(Global.ordersWholesale![widget.index].attachement);
       Global.refillAttach =
-          Global.ordersWholesale![widget.index].attachement != null
+          Global.ordersWholesale![widget.index].attachment != null
               ? await Global.createFileFromString(
-                  Global.ordersWholesale![widget.index].attachement ?? '')
+                  Global.ordersWholesale![widget.index].attachment ?? '')
               : null;
       // var result = await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
       var result =
@@ -1318,7 +1318,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
         priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-        attachement: Global.refillAttach != null
+        attachment: Global.refillAttach != null
             ? Global.imageToBase64(Global.refillAttach!)
             : null,
         orderTypeId: 5);

@@ -536,8 +536,8 @@ class _SellThengScreenState extends State<SellThengScreen> {
                         if (Global.sellThengOrderDetail!.isEmpty) {
                           return;
                         }
-                        Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           // final ProgressDialog pr = ProgressDialog(context,
                           //     type: ProgressDialogType.normal,
                           //     isDismissible: true,
@@ -605,7 +605,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

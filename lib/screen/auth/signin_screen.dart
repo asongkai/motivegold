@@ -140,15 +140,15 @@ class _SignInTenState extends State<SignInTen> {
                       if (result?.status == "success") {
                         var userData = result?.data;
                         UserModel user = UserModel.fromJson(userData);
-                        LocalStorage.sharedInstance.writeValue(
-                            key: 'user', value: encoder.convert(user));
+                        // LocalStorage.sharedInstance.writeValue(
+                        //     key: 'user', value: encoder.convert(user));
                         setState(() {
                           Global.user = user;
                           Global.isLoggedIn = true;
                         });
                         // print(user.toJson());
-                        LocalStorage.sharedInstance.setAuthStatus(
-                            key: Constants.isLoggedIn, value: "true");
+                        // LocalStorage.sharedInstance.setAuthStatus(
+                        //     key: Constants.isLoggedIn, value: "true");
                         if (mounted) {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(

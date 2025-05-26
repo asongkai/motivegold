@@ -74,7 +74,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     try {
       var result =
           await ApiServices.post('/order/all', Global.requestObj(null));
-      Global.printLongString(result!.toJson().toString());
+      // Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
 
@@ -180,391 +180,397 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(
-                      getProportionateScreenWidth(
-                        8,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: size?.hp(100),
+            child: Column(
+              children: [
+                SizedBox(
+                  child: Container(
+                    margin: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(
+                          getProportionateScreenWidth(
+                            8,
+                          ),
+                        ),
+                        topRight: Radius.circular(
+                          getProportionateScreenWidth(
+                            8,
+                          ),
+                        ),
                       ),
                     ),
-                    topRight: Radius.circular(
-                      getProportionateScreenWidth(
-                        8,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: getProportionateScreenWidth(0),
                       ),
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: getProportionateScreenWidth(0),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'เลือกประเภทธุรกรรม',
-                                    style: TextStyle(
-                                        fontSize: 30, color: textColor),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'เลือกประเภทธุรกรรม',
+                                        style: TextStyle(
+                                            fontSize: 30, color: textColor),
+                                      ),
+                                      SizedBox(
+                                        height: 90,
+                                        child: MiraiDropDownMenu<ProductTypeModel>(
+                                          key: UniqueKey(),
+                                          children: orderTypes()
+                                              .where((e) => e.id != 7)
+                                              .toList(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            ProductTypeModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(10),
+                                            );
+                                          },
+                                          onChanged:
+                                              (ProductTypeModel value) async {
+                                            selectedOrderType = value;
+                                            orderTypeNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(10),
+                                            projectValueNotifier:
+                                                orderTypeNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(
-                                    height: 90,
-                                    child: MiraiDropDownMenu<ProductTypeModel>(
-                                      key: UniqueKey(),
-                                      children: orderTypes().where((e) => e.id != 7).toList(),
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        ProductTypeModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return DropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size?.getWidthPx(10),
-                                        );
-                                      },
-                                      onChanged:
-                                          (ProductTypeModel value) async {
-                                        selectedOrderType = value;
-                                        orderTypeNotifier!.value = value;
-                                        search();
-                                      },
-                                      child: DropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size?.getWidthPx(10),
-                                        projectValueNotifier:
-                                            orderTypeNotifier!,
+                                ),
+                              ),
+                              // if (Global.user?.userRole == 'Administrator')
+                              //   Expanded(
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.all(8.0),
+                              //       child: Column(
+                              //         crossAxisAlignment: CrossAxisAlignment.start,
+                              //         children: [
+                              //           const Text(
+                              //             'เลือกสาขา',
+                              //             style: TextStyle(
+                              //                 fontSize: 30, color: textColor),
+                              //           ),
+                              //           SizedBox(
+                              //             height: 90,
+                              //             child: MiraiDropDownMenu<BranchModel>(
+                              //               key: UniqueKey(),
+                              //               children: Global.branchList,
+                              //               space: 4,
+                              //               maxHeight: 360,
+                              //               showSearchTextField: true,
+                              //               selectedItemBackgroundColor:
+                              //                   Colors.transparent,
+                              //               emptyListMessage: 'ไม่มีข้อมูล',
+                              //               showSelectedItemBackgroundColor: true,
+                              //               itemWidgetBuilder: (
+                              //                 int index,
+                              //                 BranchModel? project, {
+                              //                 bool isItemSelected = false,
+                              //               }) {
+                              //                 return DropDownItemWidget(
+                              //                   project: project,
+                              //                   isItemSelected: isItemSelected,
+                              //                   firstSpace: 10,
+                              //                   fontSize: size?.getWidthPx(10),
+                              //                 );
+                              //               },
+                              //               onChanged: (BranchModel value) async {
+                              //                 selectedBranch = value;
+                              //                 branchNotifier!.value = value;
+                              //                 search();
+                              //               },
+                              //               child: DropDownObjectChildWidget(
+                              //                 key: GlobalKey(),
+                              //                 fontSize: size?.getWidthPx(10),
+                              //                 projectValueNotifier: branchNotifier!,
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         ],
+                              //       ),
+                              //     ),
+                              //   )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  child: TextField(
+                                    controller: fromDateCtrl,
+                                    style: const TextStyle(fontSize: 38),
+                                    //editing controller of this TextField
+                                    decoration: InputDecoration(
+                                      prefixIcon: const Icon(Icons.calendar_today),
+                                      //icon of text field
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                      suffixIcon: fromDateCtrl.text.isNotEmpty
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  fromDateCtrl.text = "";
+                                                  toDateCtrl.text = "";
+                                                  filterList = list;
+                                                });
+                                              },
+                                              child: const Icon(Icons.clear))
+                                          : null,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 10.0),
+                                      labelText: "จากวันที่".tr(),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          getProportionateScreenWidth(2),
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: kGreyShade3,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          getProportionateScreenWidth(2),
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: kGreyShade3,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // if (Global.user?.userRole == 'Administrator')
-                          //   Expanded(
-                          //     child: Padding(
-                          //       padding: const EdgeInsets.all(8.0),
-                          //       child: Column(
-                          //         crossAxisAlignment: CrossAxisAlignment.start,
-                          //         children: [
-                          //           const Text(
-                          //             'เลือกสาขา',
-                          //             style: TextStyle(
-                          //                 fontSize: 30, color: textColor),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 90,
-                          //             child: MiraiDropDownMenu<BranchModel>(
-                          //               key: UniqueKey(),
-                          //               children: Global.branchList,
-                          //               space: 4,
-                          //               maxHeight: 360,
-                          //               showSearchTextField: true,
-                          //               selectedItemBackgroundColor:
-                          //                   Colors.transparent,
-                          //               emptyListMessage: 'ไม่มีข้อมูล',
-                          //               showSelectedItemBackgroundColor: true,
-                          //               itemWidgetBuilder: (
-                          //                 int index,
-                          //                 BranchModel? project, {
-                          //                 bool isItemSelected = false,
-                          //               }) {
-                          //                 return DropDownItemWidget(
-                          //                   project: project,
-                          //                   isItemSelected: isItemSelected,
-                          //                   firstSpace: 10,
-                          //                   fontSize: size?.getWidthPx(10),
-                          //                 );
-                          //               },
-                          //               onChanged: (BranchModel value) async {
-                          //                 selectedBranch = value;
-                          //                 branchNotifier!.value = value;
-                          //                 search();
-                          //               },
-                          //               child: DropDownObjectChildWidget(
-                          //                 key: GlobalKey(),
-                          //                 fontSize: size?.getWidthPx(10),
-                          //                 projectValueNotifier: branchNotifier!,
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ),
-                          //   )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: TextField(
-                                controller: fromDateCtrl,
-                                style: const TextStyle(fontSize: 38),
-                                //editing controller of this TextField
-                                decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.calendar_today),
-                                  //icon of text field
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  suffixIcon: fromDateCtrl.text.isNotEmpty
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              fromDateCtrl.text = "";
-                                              toDateCtrl.text = "";
-                                              filterList = list;
-                                            });
-                                          },
-                                          child: const Icon(Icons.clear))
-                                      : null,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  labelText: "จากวันที่".tr(),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
-                                    ),
+                                    readOnly: true,
+                                    //set it true, so that user will not able to edit text
+                                    onTap: () async {
+                                      // final pickedDate =
+                                      //     await showBoardDateTimePicker(
+                                      //   context: context,
+                                      //   pickerType: DateTimePickerType.date,
+                                      //   initialDate: DateTime.now(),
+                                      //   breakpoint: 5000,
+                                      // );
+                                      // if (pickedDate != null) {
+                                      //   String formattedDate =
+                                      //       DateFormat('yyyy-MM-dd')
+                                      //           .format(pickedDate);
+                                      //   setState(() {
+                                      //     fromDateCtrl.text =
+                                      //         formattedDate; //set output date to TextField value.
+                                      //   });
+                                      // } else {
+                                      //   motivePrint("Date is not selected");
+                                      // }
+                                      DateTime? pickedDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate:
+                                              DateTime(DateTime.now().year - 200),
+                                          //DateTime.now() - not to allow to choose before today.
+                                          lastDate: DateTime(2101));
+                                      if (pickedDate != null) {
+                                        motivePrint(
+                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                        String formattedDate =
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(pickedDate);
+                                        motivePrint(
+                                            formattedDate); //formatted date output using intl package =>  2021-03-16
+                                        //you can implement different kind of Date Format here according to your requirement
+                                        setState(() {
+                                          fromDateCtrl.text =
+                                              formattedDate; //set output date to TextField value.
+                                        });
+                                      } else {
+                                        motivePrint("Date is not selected");
+                                      }
+                                    },
                                   ),
                                 ),
-                                readOnly: true,
-                                //set it true, so that user will not able to edit text
-                                onTap: () async {
-                                  // final pickedDate =
-                                  //     await showBoardDateTimePicker(
-                                  //   context: context,
-                                  //   pickerType: DateTimePickerType.date,
-                                  //   initialDate: DateTime.now(),
-                                  //   breakpoint: 5000,
-                                  // );
-                                  // if (pickedDate != null) {
-                                  //   String formattedDate =
-                                  //       DateFormat('yyyy-MM-dd')
-                                  //           .format(pickedDate);
-                                  //   setState(() {
-                                  //     fromDateCtrl.text =
-                                  //         formattedDate; //set output date to TextField value.
-                                  //   });
-                                  // } else {
-                                  //   motivePrint("Date is not selected");
-                                  // }
-                                  DateTime? pickedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate:
-                                          DateTime(DateTime.now().year - 200),
-                                      //DateTime.now() - not to allow to choose before today.
-                                      lastDate: DateTime(2101));
-                                  if (pickedDate != null) {
-                                    motivePrint(
-                                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    motivePrint(
-                                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                                    //you can implement different kind of Date Format here according to your requirement
-                                    setState(() {
-                                      fromDateCtrl.text =
-                                          formattedDate; //set output date to TextField value.
-                                    });
-                                  } else {
-                                    motivePrint("Date is not selected");
-                                  }
-                                },
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: TextField(
-                                controller: toDateCtrl,
-                                //editing controller of this TextField
-                                style: const TextStyle(fontSize: 38),
-                                //editing controller of this TextField
-                                decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.calendar_today),
-                                  //icon of text field
-                                  suffixIcon: toDateCtrl.text.isNotEmpty
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              toDateCtrl.text = "";
-                                              fromDateCtrl.text = "";
-                                              filterList = list;
-                                            });
-                                          },
-                                          child: const Icon(Icons.clear))
-                                      : null,
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 10.0),
-                                  labelText: "ถึงวันที่".tr(),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  child: TextField(
+                                    controller: toDateCtrl,
+                                    //editing controller of this TextField
+                                    style: const TextStyle(fontSize: 38),
+                                    //editing controller of this TextField
+                                    decoration: InputDecoration(
+                                      prefixIcon: const Icon(Icons.calendar_today),
+                                      //icon of text field
+                                      suffixIcon: toDateCtrl.text.isNotEmpty
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  toDateCtrl.text = "";
+                                                  fromDateCtrl.text = "";
+                                                  filterList = list;
+                                                });
+                                              },
+                                              child: const Icon(Icons.clear))
+                                          : null,
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.always,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 10.0),
+                                      labelText: "ถึงวันที่".tr(),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          getProportionateScreenWidth(2),
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: kGreyShade3,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          getProportionateScreenWidth(2),
+                                        ),
+                                        borderSide: const BorderSide(
+                                          color: kGreyShade3,
+                                        ),
+                                      ),
                                     ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      getProportionateScreenWidth(2),
-                                    ),
-                                    borderSide: const BorderSide(
-                                      color: kGreyShade3,
-                                    ),
+                                    readOnly: true,
+                                    //set it true, so that user will not able to edit text
+                                    onTap: () async {
+                                      // final pickedDate =
+                                      //     await showBoardDateTimePicker(
+                                      //   context: context,
+                                      //   pickerType: DateTimePickerType.date,
+                                      //   initialDate: DateTime.now(),
+                                      //   breakpoint: 5000,
+                                      //   options: const BoardDateTimeOptions(),
+                                      // );
+                                      // if (pickedDate != null) {
+                                      //   motivePrint(
+                                      //       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                      //   String formattedDate =
+                                      //       DateFormat('yyyy-MM-dd')
+                                      //           .format(pickedDate);
+                                      //   motivePrint(
+                                      //       formattedDate); //formatted date output using intl package =>  2021-03-16
+                                      //   //you can implement different kind of Date Format here according to your requirement
+                                      //   setState(() {
+                                      //     toDateCtrl.text =
+                                      //         formattedDate; //set output date to TextField value.
+                                      //   });
+                                      // } else {
+                                      //   motivePrint("Date is not selected");
+                                      // }
+                                      DateTime? pickedDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate:
+                                              DateTime(DateTime.now().year - 200),
+                                          //DateTime.now() - not to allow to choose before today.
+                                          lastDate: DateTime(2101));
+                                      if (pickedDate != null) {
+                                        motivePrint(
+                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                        String formattedDate =
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(pickedDate);
+                                        motivePrint(
+                                            formattedDate); //formatted date output using intl package =>  2021-03-16
+                                        //you can implement different kind of Date Format here according to your requirement
+                                        setState(() {
+                                          toDateCtrl.text =
+                                              formattedDate; //set output date to TextField value.
+                                        });
+                                      } else {
+                                        motivePrint("Date is not selected");
+                                      }
+                                    },
                                   ),
                                 ),
-                                readOnly: true,
-                                //set it true, so that user will not able to edit text
-                                onTap: () async {
-                                  // final pickedDate =
-                                  //     await showBoardDateTimePicker(
-                                  //   context: context,
-                                  //   pickerType: DateTimePickerType.date,
-                                  //   initialDate: DateTime.now(),
-                                  //   breakpoint: 5000,
-                                  //   options: const BoardDateTimeOptions(),
-                                  // );
-                                  // if (pickedDate != null) {
-                                  //   motivePrint(
-                                  //       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                  //   String formattedDate =
-                                  //       DateFormat('yyyy-MM-dd')
-                                  //           .format(pickedDate);
-                                  //   motivePrint(
-                                  //       formattedDate); //formatted date output using intl package =>  2021-03-16
-                                  //   //you can implement different kind of Date Format here according to your requirement
-                                  //   setState(() {
-                                  //     toDateCtrl.text =
-                                  //         formattedDate; //set output date to TextField value.
-                                  //   });
-                                  // } else {
-                                  //   motivePrint("Date is not selected");
-                                  // }
-                                  DateTime? pickedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate:
-                                          DateTime(DateTime.now().year - 200),
-                                      //DateTime.now() - not to allow to choose before today.
-                                      lastDate: DateTime(2101));
-                                  if (pickedDate != null) {
-                                    motivePrint(
-                                        pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(pickedDate);
-                                    motivePrint(
-                                        formattedDate); //formatted date output using intl package =>  2021-03-16
-                                    //you can implement different kind of Date Format here according to your requirement
-                                    setState(() {
-                                      toDateCtrl.text =
-                                          formattedDate; //set output date to TextField value.
-                                    });
-                                  } else {
-                                    motivePrint("Date is not selected");
-                                  }
-                                },
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: getProportionateScreenWidth(3.0),
+                              vertical: getProportionateScreenHeight(5.0),
+                            ),
+                            child: ElevatedButton(
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(bgColor3)),
+                              onPressed: search,
+                              child: Text(
+                                'ค้นหา'.tr(),
+                                style: const TextStyle(fontSize: 32),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(3.0),
-                          vertical: getProportionateScreenHeight(5.0),
-                        ),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  WidgetStateProperty.all<Color>(bgColor3)),
-                          onPressed: search,
-                          child: Text(
-                            'ค้นหา'.tr(),
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                const Divider(
+                  thickness: 1.0,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: loading
+                        ? const LoadingProgress()
+                        : filterList!.isEmpty
+                            ? const NoDataFoundWidget()
+                            : ListView.builder(
+                                // physics: const NeverScrollableScrollPhysics(),
+                                itemCount: filterList!.length,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return dataCard(filterList![index]!, index);
+                                }),
+                  ),
+                ),
+              ],
             ),
-            const Divider(
-              thickness: 1.0,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: loading
-                    ? const LoadingProgress()
-                    : filterList!.isEmpty
-                        ? const NoDataFoundWidget()
-                        : ListView.builder(
-                            itemCount: filterList!.length,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dataCard(filterList![index]!, index);
-                            }),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
-
-
 
   Widget dataCard(OrderModel order, int index) {
     return Stack(
@@ -599,7 +605,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                           style: TextStyle(
                               color: Colors.green,
                               fontSize: size!.getWidthPx(6)),
-                        ),Text(
+                        ),
+                        Text(
                           'วันที่บันทึกรายการ: ${Global.formatDate(order.createdDate.toString())}',
                           style: TextStyle(
                               color: Colors.green,
@@ -678,23 +685,26 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                         GestureDetector(
                           onTap: () {
                             Global.pairId = order.pairId;
-                            if (order.orderTypeId == 5 || order.orderTypeId == 6 || order.orderTypeId == 10 || order.orderTypeId == 11) {
+                            if (order.orderTypeId == 5 ||
+                                order.orderTypeId == 6 ||
+                                order.orderTypeId == 10 ||
+                                order.orderTypeId == 11) {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const CheckOutWholesaleSummaryHistoryScreen(),
-                                      fullscreenDialog: true))
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CheckOutWholesaleSummaryHistoryScreen(),
+                                          fullscreenDialog: true))
                                   .whenComplete(() {
                                 // search();
                               });
                             } else {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const CheckOutSummaryHistoryScreen(),
-                                      fullscreenDialog: true))
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CheckOutSummaryHistoryScreen(),
+                                          fullscreenDialog: true))
                                   .whenComplete(() {
                                 // search();
                               });
@@ -734,8 +744,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                             Global.orderIds!.add(order.orderId);
 
                             if (Global.branch == null) {
-                              Alert.warning(
-                                  context, 'warning'.tr(), 'กรุณาเลือกสาขาก่อนพิมพ์', 'OK'.tr(),
+                              Alert.warning(context, 'warning'.tr(),
+                                  'กรุณาเลือกสาขาก่อนพิมพ์', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
@@ -809,32 +819,35 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PreviewRefillThengGoldPage(invoice: invoice),
+                                        PreviewRefillThengGoldPage(
+                                            invoice: invoice),
                                   ),
                                 );
                               } else if (order.orderTypeId == 11) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PreviewSellUsedThengGoldPage(invoice: invoice),
+                                        PreviewSellUsedThengGoldPage(
+                                            invoice: invoice),
                                   ),
                                 );
                               } else if (order.orderTypeId == 4) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PreviewSellThengPdfPage(invoice: invoice),
+                                        PreviewSellThengPdfPage(
+                                            invoice: invoice),
                                   ),
                                 );
                               } else if (order.orderTypeId == 44) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        PreviewBuyThengPdfPage(invoice: invoice),
+                                        PreviewBuyThengPdfPage(
+                                            invoice: invoice),
                                   ),
                                 );
                               }
-
                             } catch (e) {
                               await pr.hide();
                             }

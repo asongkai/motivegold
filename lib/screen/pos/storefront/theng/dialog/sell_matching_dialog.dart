@@ -226,6 +226,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 220,
+        hasChild: false,
         child: TitleContent(
           backButton: true,
         ),
@@ -243,7 +244,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 70,
+                    height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
                     decoration: const BoxDecoration(color: stmBgColor),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -251,7 +252,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         'ขายทองแท่ง (จับคู่)',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(15), color: Colors.white),
+                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15), color: Colors.white),
                       ),
                     ),
                   ),
@@ -855,9 +856,9 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                       //
                       //   return;
                       // }
-                      Alert.info(
-                          context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                          action: () async {
+                      // Alert.info(
+                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                      //     action: () async {
                         Global.sellThengOrderDetailMatching!.add(
                           OrderDetailModel(
                               productName: selectedProduct!.name,
@@ -879,7 +880,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         setState(() {});
 
                         Navigator.of(context).pop();
-                      });
+                      // });
                     },
                   ),
                 ),

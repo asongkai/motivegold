@@ -69,58 +69,94 @@ class _TitleContentState extends State<TitleContent> {
                 ),
               ),
             Expanded(
-                flex: 7,
+                flex: 5,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(children: [
-                        Expanded(
-                          flex: 2,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Global.company?.logo == null
-                                  ? Container()
-                                  : Image.network(
-                                      '${Constants.DOMAIN_URL}/images/${Global.company?.logo}',
-                                      fit: BoxFit.fitHeight,
-                                    ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Global.company?.logo == null
+                                      ? Container()
+                                      : Image.network(
+                                          '${Constants.DOMAIN_URL}/images/${Global.company?.logo}',
+                                          fit: BoxFit.fitHeight,
+                                        ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                            flex: 9,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    '${Global.company?.name} (สาขา ${Global.branch?.name})',
-                                    style: TextStyle(
-                                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w900),
-                                  ),
-                                  Text(
-                                      '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
-                                          color: Colors.white)),
-                                  Text(
-                                      'โทรศัพท์/Phone : ${Global.branch?.phone}',
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
-                                          color: Colors.white)),
-                                  Text(
-                                      'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(7) : size.getWidthPx(5),
-                                          color: Colors.white)),
-                                ]))
-                      ]),
+                            Expanded(
+                                flex: 9,
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${Global.company?.name} (สาขา ${Global.branch?.name})',
+                                        style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                        .orientation ==
+                                                    Orientation.portrait
+                                                ? size.getWidthPx(8)
+                                                : size.getWidthPx(6),
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                      Text(
+                                          '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                          .orientation ==
+                                                      Orientation.portrait
+                                                  ? size.getWidthPx(7)
+                                                  : size.getWidthPx(5),
+                                              color: Colors.white)),
+                                      Text(
+                                          'โทรศัพท์/Phone : ${Global.branch?.phone}',
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                          .orientation ==
+                                                      Orientation.portrait
+                                                  ? size.getWidthPx(7)
+                                                  : size.getWidthPx(5),
+                                              color: Colors.white)),
+                                      Text(
+                                          'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
+                                          style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                          .orientation ==
+                                                      Orientation.portrait
+                                                  ? size.getWidthPx(7)
+                                                  : size.getWidthPx(5),
+                                              color: Colors.white)),
+                                    ]))
+                          ]),
                     ])),
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: Text(
+                    'ติดต่อฝ่ายช่วยเหลือโปรแกรม 90039450835',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: MediaQuery.of(context).orientation ==
+                                Orientation.portrait
+                            ? size.getWidthPx(7)
+                            : size.getWidthPx(6)),
+                  ),
+                )),
             const SizedBox(
               width: 20,
             ),
@@ -138,7 +174,10 @@ class _TitleContentState extends State<TitleContent> {
                           Text(
                             Global.user != null ? 'ผู้ใช้: ' : '',
                             style: TextStyle(
-                                fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
+                                fontSize: MediaQuery.of(context).orientation ==
+                                        Orientation.portrait
+                                    ? size.getWidthPx(8)
+                                    : size.getWidthPx(6),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -147,7 +186,10 @@ class _TitleContentState extends State<TitleContent> {
                                 ? '${Global.user!.firstName!} ${Global.user!.lastName!}'
                                 : '',
                             style: TextStyle(
-                                fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
+                                fontSize: MediaQuery.of(context).orientation ==
+                                        Orientation.portrait
+                                    ? size.getWidthPx(8)
+                                    : size.getWidthPx(6),
                                 color: Colors.white,
                                 fontWeight: FontWeight.w900),
                           ),
@@ -157,51 +199,70 @@ class _TitleContentState extends State<TitleContent> {
                         width: 20,
                       ),
                       if (Global.user?.userType == 'ADMIN')
-                        Column(
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'บริษัท: ',
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'บริษัท: ',
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).orientation ==
+                                                Orientation.portrait
+                                            ? size.getWidthPx(8)
+                                            : size.getWidthPx(6),
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900),
+                              ),
                             ),
-                            SizedBox(
-                              // height: 60,
-                              child: MiraiDropDownMenu<CompanyModel>(
-                                key: UniqueKey(),
-                                children: Global.companyList,
-                                space: 4,
-                                maxHeight: 360,
-                                showSearchTextField: false,
-                                selectedItemBackgroundColor: Colors.transparent,
-                                emptyListMessage: 'ไม่มีข้อมูล',
-                                showSelectedItemBackgroundColor: true,
-                                itemWidgetBuilder: (
-                                  int index,
-                                  CompanyModel? project, {
-                                  bool isItemSelected = false,
-                                }) {
-                                  return DropDownItemWidget(
-                                    project: project,
-                                    isItemSelected: isItemSelected,
-                                    firstSpace: 10,
-                                    fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
-                                  );
-                                },
-                                onChanged: (CompanyModel value) async {
-                                  Global.company = value;
-                                  companyNotifier!.value = value;
+                            Expanded(
+                              flex: 7,
+                              child: SizedBox(
+                                // height: 60,
+                                child: MiraiDropDownMenu<CompanyModel>(
+                                  key: UniqueKey(),
+                                  children: Global.companyList,
+                                  space: 4,
+                                  maxHeight: 360,
+                                  showSearchTextField: false,
+                                  selectedItemBackgroundColor:
+                                      Colors.transparent,
+                                  emptyListMessage: 'ไม่มีข้อมูล',
+                                  showSelectedItemBackgroundColor: true,
+                                  itemWidgetBuilder: (
+                                    int index,
+                                    CompanyModel? project, {
+                                    bool isItemSelected = false,
+                                  }) {
+                                    return DropDownItemWidget(
+                                      project: project,
+                                      isItemSelected: isItemSelected,
+                                      firstSpace: 10,
+                                      fontSize:
+                                          MediaQuery.of(context).orientation ==
+                                                  Orientation.portrait
+                                              ? size.getWidthPx(8)
+                                              : size.getWidthPx(6),
+                                    );
+                                  },
+                                  onChanged: (CompanyModel value) async {
+                                    Global.company = value;
+                                    companyNotifier!.value = value;
 
-                                  await loadBranchList();
-                                  setState(() {});
-                                },
-                                child: DropDownObjectChildWidget(
-                                  key: GlobalKey(),
-                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
-                                  projectValueNotifier: companyNotifier!,
+                                    await loadBranchList();
+                                    setState(() {});
+                                  },
+                                  child: DropDownObjectChildWidget(
+                                    key: GlobalKey(),
+                                    fontSize:
+                                        MediaQuery.of(context).orientation ==
+                                                Orientation.portrait
+                                            ? size.getWidthPx(8)
+                                            : size.getWidthPx(6),
+                                    projectValueNotifier: companyNotifier!,
+                                  ),
                                 ),
                               ),
                             ),
@@ -209,22 +270,29 @@ class _TitleContentState extends State<TitleContent> {
                         ),
                       if (Global.user?.userRole == 'Administrator')
                         const SizedBox(
-                          width: 20,
+                          height: 10,
                         ),
                       if (Global.user?.userRole == 'Administrator')
-                        Column(
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'สาขา: ',
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'สาขา: ',
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).orientation ==
+                                                Orientation.portrait
+                                            ? size.getWidthPx(8)
+                                            : size.getWidthPx(6),
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900),
+                              ),
                             ),
-                            SizedBox(
-                              // height: 60,
+                            Expanded(
+                              flex: 7,
                               child: Stack(
                                 children: [
                                   MiraiDropDownMenu<BranchModel>(
@@ -246,7 +314,11 @@ class _TitleContentState extends State<TitleContent> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
+                                        fontSize: MediaQuery.of(context)
+                                                    .orientation ==
+                                                Orientation.portrait
+                                            ? size.getWidthPx(8)
+                                            : size.getWidthPx(6),
                                       );
                                     },
                                     onChanged: (BranchModel value) {
@@ -256,7 +328,11 @@ class _TitleContentState extends State<TitleContent> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
+                                      fontSize:
+                                          MediaQuery.of(context).orientation ==
+                                                  Orientation.portrait
+                                              ? size.getWidthPx(8)
+                                              : size.getWidthPx(6),
                                       projectValueNotifier: branchNotifier!,
                                     ),
                                   ),
@@ -316,30 +392,16 @@ class _TitleContentState extends State<TitleContent> {
                               ? 'สาขา: ${Global.branch!.name}'
                               : '',
                           style: TextStyle(
-                              fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6),
+                              fontSize: MediaQuery.of(context).orientation ==
+                                      Orientation.portrait
+                                  ? size.getWidthPx(8)
+                                  : size.getWidthPx(6),
                               color: Colors.white,
                               fontWeight: FontWeight.w900),
                         ),
                     ],
                   ),
                 ))
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: Text(
-                    'ติดต่อฝ่ายช่วยเหลือโปรแกรม 90039450835',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: MediaQuery.of(context).orientation == Orientation.portrait ? size.getWidthPx(8) : size.getWidthPx(6)),
-                  ),
-                )),
-            Expanded(flex: 4, child: Container())
           ],
         ),
         if (widget.title != null)

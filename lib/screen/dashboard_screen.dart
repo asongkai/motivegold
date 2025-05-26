@@ -7,6 +7,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/theng_menu.dart';
+import 'package:motivegold/screen/pos/redeem/redeem_sell_menu.dart';
 import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_paphun_screen.dart';
@@ -72,7 +73,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: const CustomAppBar(
         height: 250,
-        child: TitleContent(backButton: false,),
+        hasChild: false,
+        child: TitleContent(
+          backButton: false,
+        ),
       ),
       body: Stack(
         children: <Widget>[dashBg, content],
@@ -93,14 +97,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       );
 
-  get content => Column(
-        children: <Widget>[
-          // header,
-          const SizedBox(
-            height: 10,
+  get content => SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 200,
+          child: Column(
+            children: <Widget>[
+              // header,
+              const SizedBox(
+                height: 10,
+              ),
+              grid,
+            ],
           ),
-          grid,
-        ],
+        ),
       );
 
   get header => ListTile(
@@ -152,14 +161,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Icon(
                     iconData,
                     color: Colors.white,
-                    size: size!.getWidthPx(50),
+                    size: (MediaQuery.of(context).orientation ==
+                            Orientation.landscape)
+                        ? size!.getWidthPx(30)
+                        : size!.getWidthPx(50),
                   )),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(10), color: Colors.teal),
+                    fontSize: (MediaQuery.of(context).orientation ==
+                            Orientation.landscape)
+                        ? size!.getWidthPx(6)
+                        : size!.getWidthPx(8),
+                    color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -212,7 +228,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(10), color: Colors.teal),
+                    fontSize: (MediaQuery.of(context).orientation ==
+                            Orientation.landscape)
+                        ? size!.getWidthPx(6)
+                        : size!.getWidthPx(8),
+                    color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -277,7 +297,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return GridView.count(
                 crossAxisSpacing: 36,
                 mainAxisSpacing: 36,
-                crossAxisCount: 3,
+                crossAxisCount: (MediaQuery.of(context).orientation ==
+                        Orientation.landscape)
+                    ? 4
+                    : 3,
                 // childAspectRatio: orientation == Orientation.portrait ? .84 : .104,
                 children: [
                   iconDashboard(
@@ -353,13 +376,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   iconDashboard(
                     'ซื้อขายทองกับร้านขายส่ง(ทองรูปพรรณ)',
-                    Image.asset('assets/icons/gold/gold-dealer.png'),
+                    Image.asset(
+                      'assets/icons/gold/gold-dealer.png',
+                      width: (MediaQuery.of(context).orientation ==
+                              Orientation.landscape)
+                          ? size!.getWidthPx(30)
+                          : size!.getWidthPx(50),
+                    ),
                     primer,
                     const WholeSalePaphunMenuScreen(title: 'POS'),
                   ),
                   iconDashboard(
                     'ซื้อขายทองกับร้านขายส่ง(ทองแท่ง)',
-                    Image.asset('assets/icons/gold/gold-dealer.png'),
+                    Image.asset(
+                      'assets/icons/gold/gold-dealer.png',
+                      width: (MediaQuery.of(context).orientation ==
+                              Orientation.landscape)
+                          ? size!.getWidthPx(30)
+                          : size!.getWidthPx(50),
+                    ),
                     Colors.teal,
                     const WholeSaleThengMenuScreen(title: 'POS'),
                   ),
@@ -368,6 +403,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Icons.compare_arrows_outlined,
                     primer,
                     const TransferGoldMenuScreen(),
+                  ),
+                  itemDashboard(
+                    'ขายฝากจำนำ \nไถ่ถอน',
+                    Icons.dashboard,
+                    Colors.pink,
+                    const RedeemMenuScreen(),
                   ),
                 ],
               );

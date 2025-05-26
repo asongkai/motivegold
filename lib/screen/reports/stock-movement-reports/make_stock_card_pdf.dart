@@ -216,7 +216,8 @@ Future<Uint8List> makeStockCardReportPdf(
     MultiPage(
       // maxPages: 100,
       margin: const EdgeInsets.all(20),
-      pageFormat: const PdfPageFormat(1000, 1000),
+      // pageFormat: const PdfPageFormat(1000, 1000),
+      pageFormat: PdfPageFormat.a4,
       orientation: PageOrientation.landscape,
       build: (context) => widgets,
     ),

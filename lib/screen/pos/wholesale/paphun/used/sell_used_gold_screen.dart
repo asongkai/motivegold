@@ -1286,9 +1286,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                               action: () {});
                           return;
                         }
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1309,7 +1309,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1397,9 +1397,9 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                               action: () {});
                           return;
                         }
-                        Alert.info(
-                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                            action: () async {
+                        // Alert.info(
+                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                        //     action: () async {
                           try {
                             saveData();
                             if (mounted) {
@@ -1428,7 +1428,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
                                   action: () {});
                             }
                           }
-                        });
+                        // });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1657,7 +1657,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
         orderTypeId: 6,
-        attachement: Global.sellUsedAttach != null
+        attachment: Global.sellUsedAttach != null
             ? Global.imageToBase64(Global.sellUsedAttach!)
             : null,
         orderStatus: 'PENDING');

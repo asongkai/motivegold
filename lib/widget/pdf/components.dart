@@ -70,7 +70,7 @@ Future<Widget> header(OrderModel order, String? title,
           ]))
     ]),
     SizedBox(
-      height: 0,
+      height: 10,
     ),
     if (title != null)
       Center(
@@ -140,14 +140,16 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                   TableRow(
                     children: [
                       Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
-                      Text('${customer.address}',
+                      Text(
+                          '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text(''),
-                      Text('โทร: ${customer.phoneNumber}',
+                      Text(
+                          'โทร: ${customer.phoneNumber} ${getWorkId(customer)} ',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
@@ -190,7 +192,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
 }
 
 Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
-  motivePrint(customer.toJson());
+  // motivePrint(customer.toJson());
   return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(children: [
@@ -214,14 +216,16 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
                   TableRow(
                     children: [
                       Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
-                      Text('${customer.address}',
+                      Text(
+                          '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text(''),
-                      Text('โทร: ${customer.phoneNumber}',
+                      Text(
+                          'โทร: ${customer.phoneNumber} ${getWorkId(customer)} ',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
@@ -264,7 +268,7 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
 }
 
 Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
-  motivePrint(customer.toJson());
+  // motivePrint(customer.toJson());
   return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(children: [
@@ -288,14 +292,16 @@ Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
                   TableRow(
                     children: [
                       Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
-                      Text('${customer.address}',
+                      Text(
+                          '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
                   TableRow(
                     children: [
                       Text(''),
-                      Text('โทร: ${customer.phoneNumber}',
+                      Text(
+                          'โทร: ${customer.phoneNumber} ${getWorkId(customer)} ',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),

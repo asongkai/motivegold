@@ -62,9 +62,9 @@ class _LandingScreenState extends State<LandingScreen> {
   Future navigateFromSplash() async {
     try {
       var lang = await LocalStorage.sharedInstance.readValue('lang');
-      String? isLoggedIn = await LocalStorage.sharedInstance
-          .loadAuthStatus(Constants.isLoggedIn);
-      var user = await LocalStorage.sharedInstance.readValue('user');
+      // String? isLoggedIn = await LocalStorage.sharedInstance
+      //     .loadAuthStatus(Constants.isLoggedIn);
+      // var user = await LocalStorage.sharedInstance.readValue('user');
       // lang = null;
       if (lang != null) {
         Global.lang = int.parse(lang);
@@ -130,7 +130,7 @@ class _LandingScreenState extends State<LandingScreen> {
         }
       }
 
-      if (isLoggedIn == null || isLoggedIn == "false") {
+      if (Global.isLoggedIn == false) {
         Global.isLoggedIn = false;
         if (mounted) {
           Navigator.of(context).pushReplacement(
@@ -138,7 +138,7 @@ class _LandingScreenState extends State<LandingScreen> {
         }
       } else {
         Global.isLoggedIn = true;
-        Global.user = userModelFromJson(user);
+        // Global.user = userModelFromJson(user);
         if (Global.user!.companyId != null) {
           var c = await ApiServices.get('/company/${Global.user?.companyId}');
           // motivePrint(c!.data);
@@ -253,8 +253,9 @@ class _LandingScreenState extends State<LandingScreen> {
                       )));
         }
       }
-    } catch (e) {
-      Alert.warning(context, 'Error', e.toString(), 'OK', action: () {
+    } catch (e, stack) {
+      motivePrint(e.toString());
+      Alert.warning(context, 'Error: ${e.toString()}', stack.toString(), 'OK', action: () {
         resetAtLogout();
         if (e is PlatformException && e.code == 'BadPaddingException') {
           LocalStorage.sharedInstance.deleteAll();

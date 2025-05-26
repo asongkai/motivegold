@@ -1,11 +1,12 @@
 buildscript {
-    ext.kotlin_version = '2.0.20'
+    ext.kotlin_version = '1.9.22'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
+        classpath "com.android.tools.build:gradle:7.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -26,7 +27,9 @@ ext {
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-    afterEvaluate { android { compileSdkVersion 34 } }
+    afterEvaluate {
+        android { compileSdkVersion 34 }
+    }
 }
 subprojects {
     project.evaluationDependsOn(':app')

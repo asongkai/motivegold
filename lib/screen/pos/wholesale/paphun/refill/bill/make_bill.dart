@@ -30,7 +30,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
 
   List<Widget> widgets = [];
   widgets.add(
-    headerRefill(invoice.order, 'ใบรับทอง (Goods Receive Note)'),
+    await header(invoice.order, 'ใบรับทอง (Goods Receive Note)'),
   );
   widgets.add(
     docNo(invoice.order),
@@ -640,11 +640,12 @@ Future<Uint8List> makeRefillBill(Invoice invoice) async {
             child: Container(
                 height: 55,
                 child: Column(children: [
+                  Spacer(),
+                  Text('(                                     )',
+                      style: const TextStyle(fontSize: 9)),
                   SizedBox(height: 5),
                   Text('ผู้รับทอง/ผู้บันทึกรายการ',
                       style: const TextStyle(fontSize: 9)),
-                  Spacer(),
-                  SizedBox(height: 5),
                 ])),
           ),
         ])),
