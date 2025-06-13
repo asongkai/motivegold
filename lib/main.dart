@@ -9,6 +9,7 @@ import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/custom_theme.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:provider/provider.dart';
+import 'package:sizer/sizer.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -62,29 +63,33 @@ class _MyAppState extends State<MyApp> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final customTheme = CustomTheme(constraints);
-          return MaterialApp(
-            navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            title: 'GOLD',
-            theme: ThemeData(
-              useMaterial3: false,
-              colorScheme: ColorScheme.fromSwatch().copyWith(
-                primary: Colors.teal,
-                secondary: bgColor,
-              ),
-              iconTheme: const IconThemeData(
-                color: textColor2, //change your color here
-              ),
-              elevatedButtonTheme: customTheme.elevatedButtonTheme(),
-              outlinedButtonTheme: customTheme.outlinedButtonTheme(),
-              textButtonTheme: customTheme.textButtonTheme(),
-              dividerTheme: customTheme.dividerTheme(),
-              // fontFamily: 'NotoSansLao',
-            ),
-            home: const LandingScreen(),
+          return Sizer(
+            builder: (context, orientation, screenType) {
+              return MaterialApp(
+                navigatorKey: navigatorKey,
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                title: 'GOLD',
+                theme: ThemeData(
+                  useMaterial3: false,
+                  colorScheme: ColorScheme.fromSwatch().copyWith(
+                    primary: Colors.teal,
+                    secondary: bgColor,
+                  ),
+                  iconTheme: const IconThemeData(
+                    color: textColor2, //change your color here
+                  ),
+                  elevatedButtonTheme: customTheme.elevatedButtonTheme(),
+                  outlinedButtonTheme: customTheme.outlinedButtonTheme(),
+                  textButtonTheme: customTheme.textButtonTheme(),
+                  dividerTheme: customTheme.dividerTheme(),
+                  // fontFamily: 'NotoSansLao',
+                ),
+                home: const LandingScreen(),
+              );
+            },
           );
         },
       ),

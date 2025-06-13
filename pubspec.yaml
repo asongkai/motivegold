@@ -78,12 +78,13 @@ dependencies:
   rename_app: ^1.6.3
   rename: ^3.1.0
   syncfusion_flutter_datepicker: ^29.2.10
+  sizer: ^3.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
   change_app_package_name: ^1.5.0
 

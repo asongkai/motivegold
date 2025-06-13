@@ -28,6 +28,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
 class AddCustomerScreen extends StatefulWidget {
@@ -279,7 +280,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           Text(
                             'แสดงตนลูกค้า',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(10),
+                                fontSize: 14.sp, //size.getWidthPx(10),
                                 color: Colors.white),
                           )
                         ],

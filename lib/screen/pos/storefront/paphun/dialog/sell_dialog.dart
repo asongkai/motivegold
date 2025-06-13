@@ -25,6 +25,7 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class SaleDialog extends StatefulWidget {
   const SaleDialog({super.key});
@@ -423,7 +424,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 14.sp, //size.getWidthPx(10),
                                           );
                                         },
                                         onChanged: (ProductModel value) {
@@ -440,7 +441,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size.getWidthPx(10),
+                                          fontSize: 14.sp, //size.getWidthPx(10),
                                           projectValueNotifier:
                                               productNotifier!,
                                         ),
@@ -464,7 +465,8 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'น้ำหนัก',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(15), color: textColor),
+                                            fontSize: size.getWidthPx(15),
+                                            color: textColor),
                                       ),
                                       const SizedBox(
                                         width: 10,

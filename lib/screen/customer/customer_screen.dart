@@ -24,6 +24,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class CustomerScreen extends StatefulWidget {
   const CustomerScreen({super.key, this.selected, this.type});
@@ -166,7 +167,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             Text(
                               'เพิ่มลูกค้า',
                               style: TextStyle(
-                                  fontSize: size.getWidthPx(10),
+                                  fontSize: 14.sp, //size.getWidthPx(10),
                                   color: Colors.white),
                             )
                           ],
@@ -415,7 +416,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
   Widget productCard(List<CustomerModel?> ods) {
     return filterList!.isEmpty
         ? Container(
-            margin: const EdgeInsets.only(top: 100),
+            margin: const EdgeInsets.only(top: 50),
             child: const NoDataFoundWidget())
         : Expanded(
             child: SingleChildScrollView(

@@ -18,6 +18,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 
 class CompanyListScreen extends StatefulWidget {
   const CompanyListScreen({super.key});
@@ -122,7 +123,8 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
                                     ),
                                     Text(
                                       'เพิ่มบริษัทใหม่',
-                                      style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                      style: TextStyle(fontSize: 14.sp, //size.getWidthPx(8),
+                                          color: Colors.white),
                                     )
                                   ],
                                 ),

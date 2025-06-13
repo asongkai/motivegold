@@ -9,8 +9,7 @@ class GoldPriceListTileData extends StatelessWidget {
   final bool? single;
 
   const GoldPriceListTileData(
-      {Key? key, this.title, this.subTitle, this.value, this.single})
-      : super(key: key);
+      {super.key, this.title, this.subTitle, this.value, this.single});
 
   @override
   Widget build(BuildContext context) {

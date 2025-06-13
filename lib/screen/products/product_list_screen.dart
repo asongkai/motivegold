@@ -15,6 +15,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 import 'edit_product_screen.dart';
 import 'new_product_screen.dart';
 
@@ -83,7 +84,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             Text(
                               'เพิ่มสินค้าใหม่',
                               style: TextStyle(
-                                  fontSize: size.getWidthPx(10),
+                                  fontSize: 14.sp, //size.getWidthPx(10),
                                   color: Colors.white),
                             )
                           ],
