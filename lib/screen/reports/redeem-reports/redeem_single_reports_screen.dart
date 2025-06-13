@@ -215,28 +215,28 @@ class _RedeemSingleReportScreenState
                               value: 1,
                               child: ListTile(
                                 leading: Icon(Icons.print, size: size.getWidthPx(10)),
-                                title: Text('เรียงเลขที่ตั๋วสัญญาขายฝาก', style: TextStyle(fontSize: size.getWidthPx(8)),),
+                                title: Text('เรียงเลขที่ตั๋วสัญญาขายฝาก', style: TextStyle(fontSize: size.getWidthPx(6)),),
                               ),
                             ),
                             PopupMenuItem(
                               value: 2,
                               child: ListTile(
                                 leading: Icon(Icons.print, size:size.getWidthPx(10)),
-                                title: Text('เรียงเลขที่เอกสาร(รายตั๋ว)', style: TextStyle(fontSize: size.getWidthPx(8)),),
+                                title: Text('เรียงเลขที่เอกสาร(รายตั๋ว)', style: TextStyle(fontSize: size.getWidthPx(6)),),
                               ),
                             ),
                             PopupMenuItem(
                               value: 3,
                               child: ListTile(
                                 leading: Icon(Icons.print, size: size.getWidthPx(10)),
-                                title: Text('เรียงเลขที่เอกสาร(สรุปยอด)', style: TextStyle(fontSize: size.getWidthPx(8)),),
+                                title: Text('เรียงเลขที่เอกสาร(สรุปยอด)', style: TextStyle(fontSize: size.getWidthPx(6)),),
                               ),
                             ),
                             PopupMenuItem(
                               value: 4,
                               child: ListTile(
                                 leading: Icon(Icons.print, size: size.getWidthPx(10),),
-                                title: Text('เรียงวันที่', style: TextStyle(fontSize: size.getWidthPx(8)),),
+                                title: Text('เรียงวันที่', style: TextStyle(fontSize: size.getWidthPx(6)),),
                               ),
                             ),
                           ],
@@ -636,7 +636,7 @@ class _RedeemSingleReportScreenState
   Widget productCard(List<RedeemModel?> ods) {
     return filterList!.isEmpty
         ? Container(
-        margin: const EdgeInsets.only(top: 100),
+        margin: const EdgeInsets.only(top:50),
         child: const NoDataFoundWidget())
         : Expanded(
       child: SingleChildScrollView(

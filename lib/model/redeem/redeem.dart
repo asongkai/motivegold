@@ -148,7 +148,7 @@ class RedeemModel {
       redeemId: json['redeemId'],
       companyId: json['companyId'],
       branchId: json['branchId'],
-      redeemDate: json['redeemDate'] != null ? DateTime.parse(json['redeemDate']) : null,
+      redeemDate: json['redeemDate'] != null ? DateTime.parse(json['redeemDate']).toLocal() : null,
       customerId: json['customerId'],
       customer: json["customer"] == null
           ? null
@@ -172,9 +172,9 @@ class RedeemModel {
       referenceNo: json['referenceNo'],
       attachment: json['attachment'] ?? '',
       createdBy: json['createdBy'],
-      createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']) : null,
+      createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']).toLocal() : null,
       updatedBy: json['updatedBy'],
-      updatedDate: json['updatedDate'] != null ? DateTime.parse(json['updatedDate']) : null,
+      updatedDate: json['updatedDate'] != null ? DateTime.parse(json['updatedDate']).toLocal() : null,
       details: json["details"] == null
           ? []
           : List<RedeemDetailModel>.from(

@@ -1,0 +1,2 @@
+/Users/cheng/Projects/motivegold/android/app/.cxx/Debug/316q3n1f/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/cheng/Projects/motivegold/android/app/.cxx/Debug/316q3n1f/armeabi-v7a/CMakeFiles/rebuild_cache.dir

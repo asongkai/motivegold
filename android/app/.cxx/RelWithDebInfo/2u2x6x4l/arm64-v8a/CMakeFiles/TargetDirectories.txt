@@ -1,0 +1,2 @@
+/Users/cheng/Projects/motivegold/android/app/.cxx/RelWithDebInfo/2u2x6x4l/arm64-v8a/CMakeFiles/rebuild_cache.dir
+/Users/cheng/Projects/motivegold/android/app/.cxx/RelWithDebInfo/2u2x6x4l/arm64-v8a/CMakeFiles/edit_cache.dir

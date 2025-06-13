@@ -126,16 +126,16 @@ class RedeemDetailModel {
       attachment: json['attachment'] ?? '',
       createdBy: json['createdBy'],
       createdDate: json['createdDate'] != null
-          ? DateTime.parse(json['createdDate'])
+          ? DateTime.parse(json['createdDate']).toLocal()
           : null,
       updatedBy: json['updatedBy'],
       updatedDate: json['updatedDate'] != null
-          ? DateTime.parse(json['updatedDate'])
+          ? DateTime.parse(json['updatedDate']).toLocal()
           : null,
       customerName: json["customerName"],
       taxNumber: json["taxNumber"],
       redeemDate: json['redeemDate'] != null
-          ? DateTime.parse(json['redeemDate'])
+          ? DateTime.parse(json['redeemDate']).toLocal()
           : null,
     );
   }

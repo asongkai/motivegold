@@ -43,7 +43,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   TextEditingController discountCtrl = TextEditingController();
   Screen? size;
 
-  int? selectedOption = 0;
+  int? selectedOption = 1;
   bool loading = false;
 
   @override
@@ -64,6 +64,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.paymentList?.clear();
     Global.checkOutMode = "O";
     loadDefaultPayment();
+    if (selectedOption == 1) {
+      loadCustomer();
+    }
   }
 
   loadDefaultPayment() async {

@@ -56,9 +56,9 @@ class DefaultPaymentModel {
     accountName: json["accountName"],
     accountNo: json["accountNo"],
     createdBy: json["createdBy"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
     updatedBy: json["updatedBy"],
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {

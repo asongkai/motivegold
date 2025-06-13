@@ -99,8 +99,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
         var data = jsonEncode(result?.data);
         List<CustomerModel> products = customerListModelFromJson(data);
         if (products.isNotEmpty) {
-          customers = products;
-          filterList = products;
+          customers = products.reversed.toList();
+          filterList = products.reversed.toList();
         } else {
           customers!.clear();
           filterList!.clear();
