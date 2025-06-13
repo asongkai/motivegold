@@ -109,8 +109,8 @@ class Constants {
 
   static Color colorCurve =
       Colors.blue[700]!; //Color.fromRGBO(97, 10, 165, 0.8);
-  static Color colorCurveSecondary =
-      Colors.blue[700]!.withValues(alpha: 0.8); //Color.fromRGBO(97, 10, 155, 0.6);
+  static Color colorCurveSecondary = Colors.blue[700]!
+      .withValues(alpha: 0.8); //Color.fromRGBO(97, 10, 155, 0.6);
   static Color backgroundColor = Colors.grey.shade200;
   static Color textPrimaryColor = Colors.black87;
 
@@ -135,11 +135,18 @@ class Constants {
 
   static getBackendUrl() {
     if (env == ENV.PRO) {
+      return "http://203.154.2.96:5000";
+    } else if (env == ENV.UAT) {
       return "http://110.171.172.189:5000";
     } else {
-      return defaultTargetPlatform == TargetPlatform.android
-          ? "http://10.0.2.2:5000"
-          : "http://127.0.0.1:5000";
+      // Check if running on web
+      if (kIsWeb) {
+        return "http://127.0.0.1:5000"; // or "http://localhost:5000"
+      } else {
+        return defaultTargetPlatform == TargetPlatform.android
+            ? "http://10.0.2.2:5000"
+            : "http://127.0.0.1:5000";
+      }
     }
   }
 }

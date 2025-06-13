@@ -243,6 +243,11 @@ class Global {
     return false;
   }
 
+  static formatInt(dynamic value) {
+    String number = formatter.format(value);
+    return number;
+  }
+
   static format(dynamic value) {
     String number = formatter.format(value);
     var part = number.split('.');
@@ -637,8 +642,7 @@ class Global {
             : '${format(-amount)} บาท';
   }
 
-  static dynamic payToCustomerOrShopWholeSale(
-      dynamic orders, double discount) {
+  static dynamic payToCustomerOrShopWholeSale(dynamic orders, double discount) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -691,10 +695,20 @@ class Global {
       // double price = type == 5 ? orders[i].priceExcludeTax ?? 0 : orders[i].priceIncludeTax ?? 0;
       double price = orders[i].priceIncludeTax ?? 0;
 
-      if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9 || type == 10) {
+      if (type == 2 ||
+          type == 5 ||
+          type == 44 ||
+          type == 33 ||
+          type == 9 ||
+          type == 10) {
         buy += -price;
       }
-      if (type == 1 || type == 6 || type == 4 || type == 3 || type == 8 || type == 11) {
+      if (type == 1 ||
+          type == 6 ||
+          type == 4 ||
+          type == 3 ||
+          type == 8 ||
+          type == 11) {
         sell += price;
       }
     }
@@ -795,7 +809,7 @@ class Global {
     // amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     motivePrint(amount);
-    return amount;// < 0 ? -amount : amount;
+    return amount; // < 0 ? -amount : amount;
   }
 
   static double getPaymentListTotal() {
@@ -937,24 +951,27 @@ class Global {
     }
     double sum = 0;
     for (var e in data) {
+      motivePrint(e.paymentAmount);
       sum += e.paymentAmount ?? 0;
     }
     return sum;
   }
 
-  static double getRedeemSubPaymentTotal(List<RedeemDetailModel>? details, {double discount = 0}) {
-    if (orders!.isEmpty) {
+  static double getRedeemSubPaymentTotal(List<RedeemDetailModel>? details,
+      {double discount = 0}) {
+    if (details!.isEmpty) {
       return 0;
     }
     double amount = 0;
-      for (int j = 0; j < details!.length; j++) {
-        double price = details[j].paymentAmount ?? 0;
-        amount += price;
-      }
+    for (int j = 0; j < details!.length; j++) {
+      double price = details[j].paymentAmount ?? 0;
+      amount += price;
+    }
     return amount - discount;
   }
 
-  static double getRedeemPaymentTotal(List<RedeemModel>? orders, {double discount = 0}) {
+  static double getRedeemPaymentTotal(List<RedeemModel>? orders,
+      {double discount = 0}) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -967,6 +984,7 @@ class Global {
     }
     return amount - discount;
   }
+
   /// END PAWN
 
   static Future<File> createFileFromString(encodedStr) async {
@@ -1225,39 +1243,44 @@ class Global {
   }
 
   static String formatDate(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd/MM/yyyy HH:mm:ss').format(tempDate);
   }
 
   static String formatDateNT(String date) {
     // motivePrint(date);
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd/MM/yyyy').format(tempDate);
   }
 
   static String formatDateD(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd-MM-yyyy').format(tempDate);
   }
 
   static String formatDateM(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd-MMM-yyyy').format(tempDate);
   }
 
+  static String formatDateMF(String date) {
+    DateTime tempDate = DateTime.parse(date).toLocal();
+    return DateFormat('dd MMM yyyy').format(tempDate);
+  }
+
   static String formatDateDD(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('yyyy-MM-dd').format(tempDate);
   }
 
   static String formatDateDT(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd-MM-yyyy HH:mm:ss').format(tempDate);
   }
 
   static String formattedDateTH(String dt) {
     try {
-      DateTime dateTime = DateTime.parse(dt);
+      DateTime dateTime = DateTime.parse(dt).toLocal();
       String formattedDate = DateFormat.yMMMMd('th_TH').format(dateTime);
       return formattedDate;
     } catch (e) {
@@ -1299,37 +1322,37 @@ class Global {
   }
 
   static String formatDateT(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(tempDate);
   }
 
   static String monthYear(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('MMM yyyy').format(tempDate);
   }
 
   static String dateOnly(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd/MM/yyyy').format(tempDate);
   }
 
   static String dateOnlyT(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('yyyy-MM-dd').format(tempDate);
   }
 
   static String timeAndSec(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('HH:mm:ss').format(tempDate);
   }
 
   static String timeOnly(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('HH:mm').format(tempDate);
   }
 
   static String timeOnlyF(String date) {
-    DateTime tempDate = DateTime.parse(date);
+    DateTime tempDate = DateTime.parse(date).toLocal();
     // return DateFormat('HH:mm a').format(tempDate);
     return DateFormat('HH:mm').format(tempDate);
   }

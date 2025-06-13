@@ -514,17 +514,17 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                   }
                 });
               },
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "บันทึก",
-                    style: const TextStyle(color: Colors.white, fontSize: 32),
+                    style: TextStyle(color: Colors.white, fontSize: 32),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 2,
                   ),
-                  const Icon(
+                  Icon(
                     Icons.save,
                     color: Colors.white,
                     size: 30,
@@ -544,13 +544,13 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
             children: <Widget>[
               ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('ຖ່າຍຮູບ'),
+                  title: const Text('ถ่ายรูป'),
                   onTap: () {
                     pickProfileImage(context, ImageSource.camera);
                   }),
               ListTile(
                 leading: const Icon(Icons.photo),
-                title: const Text('ເລືອກຮູບ'),
+                title: const Text('เลือกรูป'),
                 onTap: () {
                   pickProfileImage(context, ImageSource.gallery);
                 },

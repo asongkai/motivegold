@@ -4,7 +4,7 @@ import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 
 class Calc extends StatefulWidget {
   Calc({super.key, this.currentValue, this.closeCal, this.onChanged});
-  
+
   double? currentValue;
   final Function()? closeCal;
   final Function(String? key, double? value, String? expression)? onChanged;
@@ -14,13 +14,15 @@ class Calc extends StatefulWidget {
 }
 
 class _CalcState extends State<Calc> {
-  late SimpleCalculator calc;
-  
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    calc = SimpleCalculator(
+  }
+  @override
+  Widget build(BuildContext context) {
+    return SimpleCalculator(
       value: widget.currentValue ?? 0,
       hideExpression: false,
       hideSurroundingBorder: true,
@@ -48,9 +50,5 @@ class _CalcState extends State<Calc> {
             fontSize: 30, color: Colors.black, fontWeight: FontWeight.bold),
       ),
     );
-  }
-  @override
-  Widget build(BuildContext context) {
-    return calc;
   }
 }

@@ -38,6 +38,7 @@ List<ProductTypeModel> paymentTypes() {
   data.add(ProductTypeModel(id: 2, code: 'TR', name: 'Transfer/เงินโอน'));
   data.add(ProductTypeModel(id: 3, code: 'CR', name: 'Credit card/บัตรเครดิต'));
   data.add(ProductTypeModel(id: 4, code: 'OTH', name: 'Other/อื่นๆ'));
+  data.add(ProductTypeModel(id: 5, code: 'DP', name: 'Deposit/ฝากธนาคาร'));
   return data;
 }
 

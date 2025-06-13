@@ -11,7 +11,6 @@ import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/gold/gold_mini_widget.dart';
-import 'package:motivegold/screen/gold/gold_price_mini_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';

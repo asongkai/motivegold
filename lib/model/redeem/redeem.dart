@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
 
 List<RedeemModel> redeemListModelFromJson(String str) =>
@@ -31,6 +32,8 @@ class RedeemModel {
 
   /// Linked customer ID, customer whom take the order: FK
   int? customerId;
+
+  CustomerModel? customer;
 
   /// Transaction state
   int? status;
@@ -111,6 +114,7 @@ class RedeemModel {
     this.branchId,
     this.redeemDate,
     this.customerId,
+    this.customer,
     this.status,
     this.redeemStatus,
     this.docType,
@@ -146,6 +150,9 @@ class RedeemModel {
       branchId: json['branchId'],
       redeemDate: json['redeemDate'] != null ? DateTime.parse(json['redeemDate']) : null,
       customerId: json['customerId'],
+      customer: json["customer"] == null
+          ? null
+          : CustomerModel.fromJson(json["customer"]),
       status: json['status'],
       redeemStatus: json['redeemStatus'],
       docType: json['docType'],
@@ -185,6 +192,7 @@ class RedeemModel {
       'branchId': branchId,
       'redeemDate': redeemDate?.toIso8601String(),
       'customerId': customerId,
+      "customer": customer?.toJson(),
       'status': status,
       'redeemStatus': redeemStatus,
       'docType': docType,

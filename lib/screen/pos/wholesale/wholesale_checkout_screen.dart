@@ -1119,7 +1119,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                   setState(() {});
                                 });
                               } else if (order.orderTypeId == 6) {
-                                // motivePrint('${index} ${j}');
                                 Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -1133,7 +1132,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                   setState(() {});
                                 });
                               } else if (order.orderTypeId == 10) {
-                                // motivePrint('${index} ${j}');
                                 Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -1147,7 +1145,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                   setState(() {});
                                 });
                               } else if (order.orderTypeId == 11) {
-                                // motivePrint('${index} ${j}');
                                 Navigator.push(
                                         context,
                                         MaterialPageRoute(

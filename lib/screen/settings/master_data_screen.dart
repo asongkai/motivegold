@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/screen/products/product_list_screen.dart';
 import 'package:motivegold/screen/settings/master/bank/bank_screen.dart';
 import 'package:motivegold/screen/settings/master/bankAccount/bank_account_screen.dart';
-import 'package:motivegold/screen/settings/master/orderType/order_type_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';

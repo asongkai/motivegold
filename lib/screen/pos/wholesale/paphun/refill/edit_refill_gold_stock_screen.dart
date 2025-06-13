@@ -30,6 +30,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
@@ -192,7 +193,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
           await ApiServices.post('/product/refill', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        motivePrint(data);
+        // motivePrint(data);
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
@@ -452,7 +453,28 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon:
-                                            const Icon(Icons.calendar_today),
+                                        GestureDetector(onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => SfDatePickerDialog(
+                                              initialDate: DateTime.now(),
+                                              onDateSelected: (date) {
+                                                motivePrint('You picked: $date');
+                                                // Your logic here
+                                                String formattedDate =
+                                                DateFormat('dd-MM-yyyy')
+                                                    .format(date);
+                                                motivePrint(
+                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                //you can implement different kind of Date Format here according to your requirement
+                                                setState(() {
+                                                  orderDateCtrl.text =
+                                                      formattedDate; //set output date to TextField value.
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -618,7 +640,11 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                             openCal();
                                           }
                                         },
-                                        onFocusChange: (bool value) {}),
+                                        onFocusChange: (bool value) {
+                                          if (!value) {
+                                            calTotal();
+                                          }
+                                        }),
                                   ),
                                 ),
                               ],
@@ -860,7 +886,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SizedBox(
-                                width: 200,
+                                width: size?.wp(30),
                                 child: ElevatedButton.icon(
                                   onPressed: showOptions,
                                   icon: const Icon(
@@ -1099,19 +1125,20 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                             saveData();
                             if (mounted) {
                               resetText();
-                              Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const WholeSaleCheckOutScreen()))
-                                  .whenComplete(() {
-                                Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                    () async {
-                                  writeCart();
-                                  setState(() {});
-                                });
+                              Future.delayed(const Duration(milliseconds: 500),
+                                  () async {
+                                writeCart();
+                                setState(() {});
                               });
+                              Navigator.of(context).pop();
+                              // Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //             builder: (context) =>
+                              //                 const WholeSaleCheckOutScreen()))
+                              //     .whenComplete(() {
+                              //
+                              // });
                             }
                           } catch (e) {
                             if (mounted) {

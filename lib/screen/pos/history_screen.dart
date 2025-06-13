@@ -28,6 +28,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -141,7 +142,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
             "orderTypeId": selectedOrderType?.id,
             "branchId": selectedBranch?.id
           }));
-      Global.printLongString(result!.toJson().toString());
+      // Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
 
@@ -219,7 +220,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Text(
                                         'เลือกประเภทธุรกรรม',
@@ -228,7 +230,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                       ),
                                       SizedBox(
                                         height: 90,
-                                        child: MiraiDropDownMenu<ProductTypeModel>(
+                                        child:
+                                            MiraiDropDownMenu<ProductTypeModel>(
                                           key: UniqueKey(),
                                           children: orderTypes()
                                               .where((e) => e.id != 7)
@@ -270,58 +273,6 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                   ),
                                 ),
                               ),
-                              // if (Global.user?.userRole == 'Administrator')
-                              //   Expanded(
-                              //     child: Padding(
-                              //       padding: const EdgeInsets.all(8.0),
-                              //       child: Column(
-                              //         crossAxisAlignment: CrossAxisAlignment.start,
-                              //         children: [
-                              //           const Text(
-                              //             'เลือกสาขา',
-                              //             style: TextStyle(
-                              //                 fontSize: 30, color: textColor),
-                              //           ),
-                              //           SizedBox(
-                              //             height: 90,
-                              //             child: MiraiDropDownMenu<BranchModel>(
-                              //               key: UniqueKey(),
-                              //               children: Global.branchList,
-                              //               space: 4,
-                              //               maxHeight: 360,
-                              //               showSearchTextField: true,
-                              //               selectedItemBackgroundColor:
-                              //                   Colors.transparent,
-                              //               emptyListMessage: 'ไม่มีข้อมูล',
-                              //               showSelectedItemBackgroundColor: true,
-                              //               itemWidgetBuilder: (
-                              //                 int index,
-                              //                 BranchModel? project, {
-                              //                 bool isItemSelected = false,
-                              //               }) {
-                              //                 return DropDownItemWidget(
-                              //                   project: project,
-                              //                   isItemSelected: isItemSelected,
-                              //                   firstSpace: 10,
-                              //                   fontSize: size?.getWidthPx(10),
-                              //                 );
-                              //               },
-                              //               onChanged: (BranchModel value) async {
-                              //                 selectedBranch = value;
-                              //                 branchNotifier!.value = value;
-                              //                 search();
-                              //               },
-                              //               child: DropDownObjectChildWidget(
-                              //                 key: GlobalKey(),
-                              //                 fontSize: size?.getWidthPx(10),
-                              //                 projectValueNotifier: branchNotifier!,
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         ],
-                              //       ),
-                              //     ),
-                              //   )
                             ],
                           ),
                           const SizedBox(
@@ -333,14 +284,15 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: TextField(
                                     controller: fromDateCtrl,
                                     style: const TextStyle(fontSize: 38),
                                     //editing controller of this TextField
                                     decoration: InputDecoration(
-                                      prefixIcon: const Icon(Icons.calendar_today),
+                                      prefixIcon:
+                                          const Icon(Icons.calendar_today),
                                       //icon of text field
                                       floatingLabelBehavior:
                                           FloatingLabelBehavior.always,
@@ -355,8 +307,9 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                               },
                                               child: const Icon(Icons.clear))
                                           : null,
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 10.0),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 10.0),
                                       labelText: "จากวันที่".tr(),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
@@ -378,62 +331,42 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                     readOnly: true,
                                     //set it true, so that user will not able to edit text
                                     onTap: () async {
-                                      // final pickedDate =
-                                      //     await showBoardDateTimePicker(
-                                      //   context: context,
-                                      //   pickerType: DateTimePickerType.date,
-                                      //   initialDate: DateTime.now(),
-                                      //   breakpoint: 5000,
-                                      // );
-                                      // if (pickedDate != null) {
-                                      //   String formattedDate =
-                                      //       DateFormat('yyyy-MM-dd')
-                                      //           .format(pickedDate);
-                                      //   setState(() {
-                                      //     fromDateCtrl.text =
-                                      //         formattedDate; //set output date to TextField value.
-                                      //   });
-                                      // } else {
-                                      //   motivePrint("Date is not selected");
-                                      // }
-                                      DateTime? pickedDate = await showDatePicker(
-                                          context: context,
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => SfDatePickerDialog(
                                           initialDate: DateTime.now(),
-                                          firstDate:
-                                              DateTime(DateTime.now().year - 200),
-                                          //DateTime.now() - not to allow to choose before today.
-                                          lastDate: DateTime(2101));
-                                      if (pickedDate != null) {
-                                        motivePrint(
-                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                        String formattedDate =
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(pickedDate);
-                                        motivePrint(
-                                            formattedDate); //formatted date output using intl package =>  2021-03-16
-                                        //you can implement different kind of Date Format here according to your requirement
-                                        setState(() {
-                                          fromDateCtrl.text =
-                                              formattedDate; //set output date to TextField value.
-                                        });
-                                      } else {
-                                        motivePrint("Date is not selected");
-                                      }
+                                          onDateSelected: (date) {
+                                            motivePrint('You picked: $date');
+                                            // Your logic here
+                                            String formattedDate =
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(date);
+                                            motivePrint(
+                                                formattedDate); //formatted date output using intl package =>  2021-03-16
+                                            //you can implement different kind of Date Format here according to your requirement
+                                            setState(() {
+                                              fromDateCtrl.text =
+                                                  formattedDate; //set output date to TextField value.
+                                            });
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: TextField(
                                     controller: toDateCtrl,
                                     //editing controller of this TextField
                                     style: const TextStyle(fontSize: 38),
                                     //editing controller of this TextField
                                     decoration: InputDecoration(
-                                      prefixIcon: const Icon(Icons.calendar_today),
+                                      prefixIcon:
+                                          const Icon(Icons.calendar_today),
                                       //icon of text field
                                       suffixIcon: toDateCtrl.text.isNotEmpty
                                           ? GestureDetector(
@@ -448,8 +381,9 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                           : null,
                                       floatingLabelBehavior:
                                           FloatingLabelBehavior.always,
-                                      contentPadding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 10.0),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 10.0),
                                       labelText: "ถึงวันที่".tr(),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
@@ -471,53 +405,26 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                     readOnly: true,
                                     //set it true, so that user will not able to edit text
                                     onTap: () async {
-                                      // final pickedDate =
-                                      //     await showBoardDateTimePicker(
-                                      //   context: context,
-                                      //   pickerType: DateTimePickerType.date,
-                                      //   initialDate: DateTime.now(),
-                                      //   breakpoint: 5000,
-                                      //   options: const BoardDateTimeOptions(),
-                                      // );
-                                      // if (pickedDate != null) {
-                                      //   motivePrint(
-                                      //       pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                      //   String formattedDate =
-                                      //       DateFormat('yyyy-MM-dd')
-                                      //           .format(pickedDate);
-                                      //   motivePrint(
-                                      //       formattedDate); //formatted date output using intl package =>  2021-03-16
-                                      //   //you can implement different kind of Date Format here according to your requirement
-                                      //   setState(() {
-                                      //     toDateCtrl.text =
-                                      //         formattedDate; //set output date to TextField value.
-                                      //   });
-                                      // } else {
-                                      //   motivePrint("Date is not selected");
-                                      // }
-                                      DateTime? pickedDate = await showDatePicker(
-                                          context: context,
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => SfDatePickerDialog(
                                           initialDate: DateTime.now(),
-                                          firstDate:
-                                              DateTime(DateTime.now().year - 200),
-                                          //DateTime.now() - not to allow to choose before today.
-                                          lastDate: DateTime(2101));
-                                      if (pickedDate != null) {
-                                        motivePrint(
-                                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                        String formattedDate =
+                                          onDateSelected: (date) {
+                                            motivePrint('You picked: $date');
+                                            // Your logic here
+                                            String formattedDate =
                                             DateFormat('yyyy-MM-dd')
-                                                .format(pickedDate);
-                                        motivePrint(
-                                            formattedDate); //formatted date output using intl package =>  2021-03-16
-                                        //you can implement different kind of Date Format here according to your requirement
-                                        setState(() {
-                                          toDateCtrl.text =
-                                              formattedDate; //set output date to TextField value.
-                                        });
-                                      } else {
-                                        motivePrint("Date is not selected");
-                                      }
+                                                .format(date);
+                                            motivePrint(
+                                                formattedDate); //formatted date output using intl package =>  2021-03-16
+                                            //you can implement different kind of Date Format here according to your requirement
+                                            setState(() {
+                                              toDateCtrl.text =
+                                                  formattedDate; //set output date to TextField value.
+                                            });
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
                                 ),

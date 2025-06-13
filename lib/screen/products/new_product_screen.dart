@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/product_category.dart';
+import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -54,6 +55,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   ValueNotifier<dynamic>? productTypeNotifier;
   ValueNotifier<dynamic>? productCategoryNotifier;
   ValueNotifier<dynamic>? typeNotifier;
+  final TextEditingController unitDefaultValue = TextEditingController();
 
   @override
   void initState() {
@@ -203,7 +205,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductTypeModel value) {
@@ -213,7 +215,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier:
                                             productTypeNotifier!,
                                       ),
@@ -246,7 +248,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductCategoryModel value) {
@@ -256,7 +258,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier:
                                             productCategoryNotifier!,
                                       ),
@@ -316,7 +318,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: size.getWidthPx(10),
                                         );
                                       },
                                       onChanged: (ProductTypeModel value) {
@@ -326,10 +328,49 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: size.getWidthPx(10),
                                         projectValueNotifier: typeNotifier!,
                                       ),
                                     ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          buildTextFieldBig(
+                                            labelText: 'น้ำหนักหน่วยกรัม',
+                                            labelColor: Colors.orange,
+                                            inputType: TextInputType.phone,
+                                            controller: unitDefaultValue,
+                                            inputFormat: [
+                                              ThousandsFormatter(
+                                                  allowFraction: true)
+                                            ],
+                                          ),
+                                          const Text('ตัวอย่าง: 15.16')
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -395,12 +436,20 @@ class _NewProductScreenState extends State<NewProductScreen> {
                   return;
                 }
 
+                if (unitDefaultValue.text.trim() == "") {
+                  Alert.warning(context, 'warning'.tr(),
+                      'กรุณากรอกน้ำหนักหน่วยกรัม', 'OK'.tr(),
+                      action: () {});
+                  return;
+                }
+
                 var object = Global.requestObj({
                   "name": productNameCtrl.text,
                   "productTypeId": selectedProductType!.id,
                   "productCategoryId": selectedCategory!.id,
                   "productCode": productCodeCtrl.text,
-                  "type": selectedType!.code
+                  "type": selectedType!.code,
+                  "unitWeight": Global.toNumber(unitDefaultValue.text),
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

@@ -715,7 +715,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                       depositAmount: Global.toNumber(depositAmountCtrl.text),
                                       redemptionValue: Global.toNumber(redeemValueCtrl.text),
                                       redemptionVat: ((Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text)) * getVatValue()) + Global.toNumber(redeemValueCtrl.text),
-                                      benefitAmount: Global.toNumber(benefitReceiveCtrl.text),
+                                      benefitAmount: Global.toNumber(benefitReceiveCtrl.text) != 0 ? Global.toNumber(benefitReceiveCtrl.text) : Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text),
                                       paymentAmount: totalAmount,
                                       qty: 1,
                                       referenceNo: referenceNumberCtrl.text,
@@ -724,7 +724,6 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                 ),
                               ),
                             );
-                            sumSellTotal();
                             setState(() {});
                             Navigator.of(context).pop();
                           });

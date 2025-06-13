@@ -28,7 +28,6 @@ class SettingValueScreen extends StatefulWidget {
 
 class _SettingValueScreenState extends State<SettingValueScreen> {
   final TextEditingController vatDefaultValue = TextEditingController();
-  final TextEditingController unitDefaultValue = TextEditingController();
   final TextEditingController maxKycValue = TextEditingController();
   final TextEditingController deviceIdCtrl = TextEditingController();
 
@@ -56,8 +55,7 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
         Global.settingValueModel = settingsValueModel;
         // motivePrint(settingsValueModel?.toJson());
         vatDefaultValue.text = Global.format(settingsValueModel!.vatValue ?? 0);
-        unitDefaultValue.text =
-            Global.format(settingsValueModel!.unitWeight ?? 0);
+
         maxKycValue.text = Global.format(settingsValueModel!.maxKycValue ?? 0);
         setState(() {});
       }
@@ -158,39 +156,6 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                                             height: 10,
                                           ),
                                           buildTextFieldBig(
-                                            labelText: 'น้ำหนักหน่วยกรัม',
-                                            labelColor: Colors.orange,
-                                            inputType: TextInputType.phone,
-                                            controller: unitDefaultValue,
-                                            inputFormat: [
-                                              ThousandsFormatter(
-                                                  allowFraction: true)
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
                                             labelText: 'มูลค่าสูงสุดของ KYC',
                                             labelColor: Colors.orange,
                                             inputType: TextInputType.phone,
@@ -239,13 +204,6 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                   return;
                 }
 
-                if (unitDefaultValue.text.trim() == "") {
-                  Alert.warning(context, 'warning'.tr(),
-                      'กรุณากรอกน้ำหนักหน่วยกรัม', 'OK'.tr(),
-                      action: () {});
-                  return;
-                }
-
                 if (maxKycValue.text.trim() == "") {
                   Alert.warning(context, 'warning'.tr(),
                       'กรุณากรอกมูลค่าสูงสุดของ KYC', 'OK'.tr(),
@@ -255,7 +213,6 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
 
                 var object = Global.requestObj({
                   "vatValue": Global.toNumber(vatDefaultValue.text),
-                  "unitWeight": Global.toNumber(unitDefaultValue.text),
                   "maxKycValue": Global.toNumber(maxKycValue.text)
                 });
 

@@ -201,21 +201,6 @@ class _BuyDialogState extends State<BuyDialog> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Container(
-                        //   width: double.infinity,
-                        //   height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
-                        //   decoration: const BoxDecoration(color: buBgColor),
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(8.0),
-                        //     child: Text(
-                        //       'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%',
-                        //       textAlign: TextAlign.center,
-                        //       style: TextStyle(
-                        //           fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
-                        //           color: Colors.white),
-                        //     ),
-                        //   ),
-                        // ),
                         posHeaderText(context, buBgColor, 'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
                         const Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
@@ -224,71 +209,6 @@ class _BuyDialogState extends State<BuyDialog> {
                         const SizedBox(
                           height: 20,
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: Row(
-                        //     children: [
-                        //       const Expanded(
-                        //           flex: 6,
-                        //           child: Row(
-                        //             mainAxisAlignment: MainAxisAlignment.end,
-                        //             children: [
-                        //               Text(
-                        //                 'น้ำหนัก',
-                        //                 style:
-                        //                     TextStyle(fontSize: 50, color: textColor),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //               Text(
-                        //                 '(บาททอง)',
-                        //                 style:
-                        //                     TextStyle(color: textColor, fontSize: 30),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //             ],
-                        //           )),
-                        //       Expanded(
-                        //         flex: 6,
-                        //         child: numberTextField(
-                        //             labelText: "",
-                        //             inputType: TextInputType.number,
-                        //             controller: productWeightBahtCtrl,
-                        //             readOnly: bahtReadOnly,
-                        //             focusNode: bahtFocus,
-                        //             inputFormat: [
-                        //               ThousandsFormatter(allowFraction: true)
-                        //             ],
-                        //             clear: () {
-                        //               setState(() {
-                        //                 productWeightBahtCtrl.text = "";
-                        //               });
-                        //               bahtChanged();
-                        //             },
-                        //             onTap: () {
-                        //               txt = 'baht';
-                        //               closeCal();
-                        //             },
-                        //             openCalc: () {
-                        //               if (!showCal) {
-                        //                 txt = 'baht';
-                        //                 bahtFocus.requestFocus();
-                        //                 openCal();
-                        //               }
-                        //             },
-                        //             onChanged: (String value) {
-                        //               bahtChanged();
-                        //             }),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -588,10 +508,10 @@ class _BuyDialogState extends State<BuyDialog> {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity,),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -609,7 +529,7 @@ class _BuyDialogState extends State<BuyDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                           ),
                         ],
                       ),
@@ -626,7 +546,7 @@ class _BuyDialogState extends State<BuyDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity,),
                   child: MaterialButton(
                     color: buBgColor,
                     child: Row(
@@ -642,7 +562,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                          style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                         ),
                       ],
                     ),

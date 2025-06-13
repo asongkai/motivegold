@@ -28,6 +28,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
@@ -111,19 +112,19 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     super.initState();
 
     // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    // productBuyThengPriceCtrl.text = "0";
-    // productSellPriceCtrl.text = "0";
-    // productBuyPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-    // productBuyPricePerGramCtrl.text = Global.format(
-    //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // purchasePriceCtrl.text = Global.format(924603.10);
-    // priceIncludeTaxCtrl.text = Global.format(929918.17);
-    // productWeightCtrl.text = Global.format(270);
+    orderDateCtrl.text = "01-02-2025";
+    referenceNumberCtrl.text = "90803535";
+    productSellThengPriceCtrl.text =
+        Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+    productBuyThengPriceCtrl.text = "0";
+    productSellPriceCtrl.text = "0";
+    productBuyPriceCtrl.text =
+        Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
+    productBuyPricePerGramCtrl.text = Global.format(
+        Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
+    purchasePriceCtrl.text = Global.format(924603.10);
+    priceIncludeTaxCtrl.text = Global.format(929918.17);
+    productWeightCtrl.text = Global.format(270);
     // priceExcludeTaxCtrl.text = Global.format(929918.17);
 
     Global.appBarColor = rfBgColor;
@@ -407,7 +408,28 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon:
-                                            const Icon(Icons.calendar_today),
+                                        GestureDetector(onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => SfDatePickerDialog(
+                                              initialDate: DateTime.now(),
+                                              onDateSelected: (date) {
+                                                motivePrint('You picked: $date');
+                                                // Your logic here
+                                                String formattedDate =
+                                                DateFormat('dd-MM-yyyy')
+                                                    .format(date);
+                                                motivePrint(
+                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                //you can implement different kind of Date Format here according to your requirement
+                                                setState(() {
+                                                  orderDateCtrl.text =
+                                                      formattedDate; //set output date to TextField value.
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -820,7 +842,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SizedBox(
-                                width: 200,
+                                width: size?.wp(30),
                                 child: ElevatedButton.icon(
                                   onPressed: showOptions,
                                   icon: const Icon(

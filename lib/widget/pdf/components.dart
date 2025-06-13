@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -41,46 +42,150 @@ Future<Widget> header(OrderModel order, String? title,
 
   // motivePrint(image?.bytes);
 
-  return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Row(children: [
-      Expanded(
-          flex: 2,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: image == null
-                  ? Container()
-                  : Image(image, fit: BoxFit.fitWidth, width: 60, height: 60),
-            ),
-          )),
-      Expanded(
-          flex: 9,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${Global.company?.name} (สาขา  ${Global.branch!.name})',
-                style: const TextStyle(fontSize: 9)),
-            Text(
-                '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
-                style: const TextStyle(fontSize: 9)),
-            Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
-                style: const TextStyle(fontSize: 9)),
-            Text(
-                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
-                style: const TextStyle(fontSize: 9)),
-          ]))
-    ]),
-    SizedBox(
-      height: 10,
-    ),
-    if (title != null)
-      Center(
-          child: Column(children: [
-        Text(title, style: const TextStyle(fontSize: 9)),
-        if (showPosId != null)
-          Text('เลขรหัสประจําเครื่อง POS ID : ${Global.posIdModel?.posId}',
-              style: const TextStyle(fontSize: 9))
-      ])),
-  ]);
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(children: [
+        Expanded(
+            flex: 2,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: image == null
+                    ? Container()
+                    : Image(image, fit: BoxFit.fitWidth, width: 60, height: 60),
+              ),
+            )),
+        Expanded(
+            flex: 9,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('${Global.company?.name} (สาขา  ${Global.branch!.name})',
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
+                  style: const TextStyle(fontSize: 9)),
+              Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
+                  style: const TextStyle(fontSize: 9)),
+            ]))
+      ]),
+      if (title != null)
+        Center(
+          child: Column(
+            children: [
+              Row(children: [
+                Expanded(flex: 2, child: Container()),
+                Expanded(
+                  flex: 6,
+                  child: Text(title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12)),
+                ),
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                      width: 100, // Adjust the width as needed
+                      height: 50, // Adjust the height as needed
+                      decoration: BoxDecoration(
+                        color: PdfColors.grey200, // Light gray background
+                        borderRadius:
+                            BorderRadius.circular(8), // Rounded corners
+                        border: Border.all(
+                          color: PdfColors.black, // Black border
+                          width: 1.0, // Border width
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'ต้นฉบับ', // Thai text
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.black, // Text color
+                          ),
+                        ),
+                      ),
+                    )),
+              ]),
+              if (showPosId != null)
+                Text(
+                    'เลขรหัสประจําเครื่อง POS ID : ${Global.posIdModel?.posId}',
+                    style: const TextStyle(fontSize: 9))
+            ],
+          ),
+        ),
+    ],
+  );
+}
+
+Future<Widget> headerRedeem(RedeemModel order, String? title,
+    {bool? showPosId}) async {
+  // Load network image
+  final Uint8List? imageData = await loadNetworkImage(
+      '${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
+
+  final image = imageData != null ? MemoryImage(imageData) : null;
+
+  // motivePrint(image?.bytes);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Row(children: [
+        Expanded(
+            flex: 2,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: image == null
+                    ? Container()
+                    : Image(image, fit: BoxFit.fitWidth, width: 60, height: 60),
+              ),
+            )),
+        Expanded(
+            flex: 9,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('${Global.company?.name} (สาขา  ${Global.branch!.name})',
+                  style: const TextStyle(fontSize: 12)),
+              Text(
+                  '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
+                  style: const TextStyle(fontSize: 9)),
+              Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
+                  style: const TextStyle(fontSize: 9)),
+              Text(
+                  'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} (สาขาที่ ${Global.branch?.branchId})',
+                  style: const TextStyle(fontSize: 9)),
+            ]))
+      ]),
+      if (title != null)
+        Center(
+          child: Column(
+            children: [
+              height(),
+              Row(
+                children: [
+                  Expanded(flex: 2, child: Container()),
+                  Expanded(
+                    flex: 5,
+                    child: Text(title,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 12)),
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child: Container(
+                          child: Text('เลขที่ : ${order.redeemId} '), alignment: Alignment.centerRight)),
+                ],
+              ),
+            ],
+          ),
+        ),
+    ],
+  );
 }
 
 Widget headerRefill(OrderModel order, String? title) {
@@ -89,7 +194,39 @@ Widget headerRefill(OrderModel order, String? title) {
     Text('${Global.company?.name}  (สาขา ${Global.branch?.name})',
         style: const TextStyle(fontSize: 10)),
     if (title != null)
-      Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+      Row(children: [
+        Expanded(flex: 2, child: Container()),
+        Expanded(
+          flex: 6,
+          child: Text(title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12)),
+        ),
+        Expanded(
+            flex: 2,
+            child: Container(
+              width: 100, // Adjust the width as needed
+              height: 50, // Adjust the height as needed
+              decoration: BoxDecoration(
+                color: PdfColors.grey200, // Light gray background
+                borderRadius: BorderRadius.circular(8), // Rounded corners
+                border: Border.all(
+                  color: PdfColors.black, // Black border
+                  width: 1.0, // Border width
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'ต้นฉบับ', // Thai text
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: PdfColors.black, // Text color
+                  ),
+                ),
+              ),
+            )),
+      ]),
   ]));
 }
 
@@ -113,6 +250,34 @@ Widget docNo(OrderModel order) {
         ),
         Text('วันที่ : ${Global.formatDateNT(order.orderDate.toString())} ',
             style: const TextStyle(fontSize: 9)),
+      ]);
+}
+
+Widget docNoRedeem(RedeemModel order) {
+  return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+                'ชื่อ-สกุลผู้ไถ่ถอน : ${order.customer?.firstName} ${order.customer?.lastName}',
+                style: const TextStyle(fontSize: 9)),
+            Text('วันที่ : ${Global.formatDateNT(order.redeemDate.toString())}',
+                style: const TextStyle(fontSize: 9)),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('ที่อยู่ : ${order.customer?.address} ',
+                style: const TextStyle(fontSize: 9)),
+            Text('เลขประจำตัว ผู้เสียภาษี : ${order.customer?.taxNumber}',
+                style: const TextStyle(fontSize: 9)),
+          ],
+        ),
+
       ]);
 }
 
@@ -183,6 +348,80 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                   style: const TextStyle(fontSize: 9)),
               Text(
                   '${Global.format((order.details![0].buyPrice ?? 0) / getUnitWeightValue())} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+          ]),
+        ])),
+      ]));
+}
+
+Widget buyerSellerInfoRedeem(CustomerModel customer, RedeemModel order) {
+  return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            children: [
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('ชื่อ-สกุลผู้ไถ่ถอน : ',
+                          style: const TextStyle(fontSize: 9)),
+                      Text('${customer.firstName} ${customer.lastName}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+                      Text(
+                          '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(''),
+                      Text(
+                          'โทร: ${customer.phoneNumber} ${getWorkId(customer)} ',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+            child: Column(children: [
+          Table(children: [
+            TableRow(children: [
+              Text('ทองคําแท่งขายออกบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format(0)} บาท',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+            ]),
+            TableRow(children: [
+              Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(fontSize: 9)),
+              Text('${Global.format((0) / getUnitWeightValue())} บาท',
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9)),
             ]),

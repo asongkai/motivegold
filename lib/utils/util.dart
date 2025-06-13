@@ -6,6 +6,7 @@ import 'dart:math';
 //import 'package:connectivity/connectivity.dart';
 // import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,6 +21,8 @@ import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
+import 'package:motivegold/model/payment.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/utils/cart/cart.dart';
@@ -73,10 +76,18 @@ void resetAtLogout() {
 }
 
 getPaymentType(String? paymentMethod) {
-  return paymentTypes().where((e) => e.code == paymentMethod).first.name;
+  List<ProductTypeModel> data =
+      paymentTypes().where((e) => e.code == paymentMethod).toList();
+  if (data.isNotEmpty) {
+    return data.first.name;
+  }
+  return null;
 }
 
-Future<String?> getDeviceId() {
+Future<String?> getDeviceId() async {
+  if (kIsWeb || Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    return null; // or generate a UUID, etc.
+  }
   final mobileDeviceIdentifier = MobileDeviceIdentifier().getDeviceId();
   return mobileDeviceIdentifier;
 }
@@ -1287,12 +1298,11 @@ getTaxAmount(double? amount) {}
 
 getTaxBase(double? amount) {}
 
-enum ENV { PRO, DEV }
+enum ENV { PRO, DEV, UAT }
 
 extension DateOnlyCompare on DateTime {
   bool isSameDate(DateTime other) {
-    return year == other.year && month == other.month
-        && day == other.day - 1;
+    return year == other.year && month == other.month && day == other.day - 1;
   }
 }
 

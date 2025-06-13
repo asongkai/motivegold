@@ -13,6 +13,7 @@ import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -27,6 +28,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -154,9 +156,9 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
         Global.ordersWholesale![widget.index].referenceNo ?? '';
     productSellThengPriceCtrl.text =
         Global.format(Global.ordersWholesale![widget.index].sellTPrice ?? 0);
-    productBuyPricePerGramCtrl.text = Global.format(
-        Global.ordersWholesale![widget.index].buyPrice ??
-            0 / getUnitWeightValue());
+    productBuyPricePerGramCtrl.text = Global.ordersWholesale![widget.index].buyPrice == null ? "0" : Global.format(
+        Global.ordersWholesale![widget.index].buyPrice! / getUnitWeightValue());
+    motivePrint(Global.ordersWholesale![widget.index].buyPrice);
     productBuyPriceCtrl.text =
         Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
     productEntryWeightCtrl.text = Global.format(
@@ -526,7 +528,28 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon:
-                                            const Icon(Icons.calendar_today),
+                                        GestureDetector(onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => SfDatePickerDialog(
+                                              initialDate: DateTime.now(),
+                                              onDateSelected: (date) {
+                                                motivePrint('You picked: $date');
+                                                // Your logic here
+                                                String formattedDate =
+                                                DateFormat('dd-MM-yyyy')
+                                                    .format(date);
+                                                motivePrint(
+                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                //you can implement different kind of Date Format here according to your requirement
+                                                setState(() {
+                                                  orderDateCtrl.text =
+                                                      formattedDate; //set output date to TextField value.
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -1142,7 +1165,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                               ),
                             ),
                             SizedBox(
-                              width: 200,
+                              width: size?.wp(30),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: ElevatedButton.icon(
@@ -1372,26 +1395,32 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                           return;
                         }
 
-                        // Alert.info(
-                        //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                        //     action: () async {
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                            action: () async {
                           try {
                             saveData();
                             if (mounted) {
                               resetText();
-                              Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const WholeSaleCheckOutScreen()))
-                                  .whenComplete(() {
-                                Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                    () async {
-                                  writeCart();
-                                  setState(() {});
-                                });
-                              });
+                              Future.delayed(const Duration(milliseconds: 500),
+                                      () async {
+                                    writeCart();
+                                    setState(() {});
+                                  });
+                              Navigator.of(context).pop();
+                              // Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //             builder: (context) =>
+                              //                 const WholeSaleCheckOutScreen()))
+                              //     .whenComplete(() {
+                              //   Future.delayed(
+                              //       const Duration(milliseconds: 500),
+                              //       () async {
+                              //     writeCart();
+                              //     setState(() {});
+                              //   });
+                              // });
                             }
                           } catch (e) {
                             if (mounted) {
@@ -1400,7 +1429,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   action: () {});
                             }
                           }
-                        // });
+                        });
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

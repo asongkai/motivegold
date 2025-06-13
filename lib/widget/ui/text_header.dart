@@ -5,7 +5,7 @@ Widget posHeaderText(BuildContext context, Color color, String text) {
   Screen? size = Screen(MediaQuery.of(context).size);
   return Container(
     width: double.infinity,
-    height: (MediaQuery.of(context).orientation == Orientation.portrait) ? 50 : 55,
+    height: (MediaQuery.of(context).orientation == Orientation.portrait) ? 50 : 65,
     decoration: BoxDecoration(color: color),
     child: Padding(
       padding: const EdgeInsets.all(8.0),

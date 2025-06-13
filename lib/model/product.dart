@@ -35,6 +35,7 @@ class ProductModel {
   int? isDefault;
   int? qty;
   double? price;
+  double? unitWeight;
 
   ProductModel({
     this.id,
@@ -53,7 +54,8 @@ class ProductModel {
     this.updatedDate,
     this.isDefault,
     this.qty,
-    this.price
+    this.price,
+    this.unitWeight
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -74,6 +76,7 @@ class ProductModel {
     binLocation: json["binLocation"] == null ? null : WarehouseModel.fromJson(json["binLocation"]),
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
     updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
+    unitWeight: json["unitWeight"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -94,6 +97,7 @@ class ProductModel {
     "binLocation": binLocation?.toJson(),
     "createdDate": createdDate?.toIso8601String(),
     "updatedDate": updatedDate?.toIso8601String(),
+    "unitWeight": unitWeight,
   };
 
   @override

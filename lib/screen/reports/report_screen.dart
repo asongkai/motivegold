@@ -6,6 +6,7 @@ import 'package:motivegold/screen/reports/buy-new-gold-reports/buy_new_gold_repo
 import 'package:motivegold/screen/reports/buy-used-gold-gov-reports/buy_used_gold_gov_report_screen.dart';
 import 'package:motivegold/screen/reports/buy-used-gold-reports/buy_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/money-movement-reports/money_movement_reports.dart';
+import 'package:motivegold/screen/reports/redeem-reports/redeem_single_reports_screen.dart';
 import 'package:motivegold/screen/reports/sell-new-gold-reports/sell_new_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
@@ -370,6 +371,29 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                   title: 'บัญชีสำหรับผู้ทำการค้าของเก่า',
                   subtitle: "รายงานบัญชีสำหรับผู้ทำการค้าของเก่า",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const RedeemSingleReportScreen()));
+                  },
+                  icons: Icons.checklist_rtl_outlined,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.deepPurple,
+                  ),
+                  title: 'รายงานภาษีขายตามสัญญาขายฝาก ',
+                  subtitle: "รายงานภาษีขายตามสัญญาขายฝากทองคำรูปพรรณใหม่ 96.5%",
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge

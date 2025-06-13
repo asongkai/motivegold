@@ -10,6 +10,7 @@ import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_c
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -530,30 +531,27 @@ class _StockMovementReportListScreenState
                                   readOnly: true,
                                   //set it true, so that user will not able to edit text
                                   onTap: () async {
-                                    DateTime? pickedDate = await showDatePicker(
-                                        context: context,
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => SfDatePickerDialog(
                                         initialDate: DateTime.now(),
-                                        firstDate:
-                                            DateTime(DateTime.now().year - 200),
-                                        //DateTime.now() - not to allow to choose before today.
-                                        lastDate: DateTime(2101));
-                                    if (pickedDate != null) {
-                                      motivePrint(
-                                          pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                      String formattedDate =
+                                        onDateSelected: (date) {
+                                          motivePrint('You picked: $date');
+                                          // Your logic here
+                                          String formattedDate =
                                           DateFormat('yyyy-MM-dd')
-                                              .format(pickedDate);
-                                      motivePrint(
-                                          formattedDate); //formatted date output using intl package =>  2021-03-16
-                                      //you can implement different kind of Date Format here according to your requirement
-                                      setState(() {
-                                        fromDateCtrl.text =
-                                            formattedDate; //set output date to TextField value.
-                                      });
-                                      search();
-                                    } else {
-                                      motivePrint("Date is not selected");
-                                    }
+                                              .format(date);
+                                          motivePrint(
+                                              formattedDate); //formatted date output using intl package =>  2021-03-16
+                                          //you can implement different kind of Date Format here according to your requirement
+                                          setState(() {
+                                            fromDateCtrl.text =
+                                                formattedDate; //set output date to TextField value.
+                                          });
+                                        },
+                                      ),
+                                    );
                                   },
                                 ),
                               ),
@@ -608,30 +606,26 @@ class _StockMovementReportListScreenState
                                   readOnly: true,
                                   //set it true, so that user will not able to edit text
                                   onTap: () async {
-                                    DateTime? pickedDate = await showDatePicker(
-                                        context: context,
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => SfDatePickerDialog(
                                         initialDate: DateTime.now(),
-                                        firstDate:
-                                            DateTime(DateTime.now().year - 200),
-                                        //DateTime.now() - not to allow to choose before today.
-                                        lastDate: DateTime(2101));
-                                    if (pickedDate != null) {
-                                      motivePrint(
-                                          pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                      String formattedDate =
+                                        onDateSelected: (date) {
+                                          motivePrint('You picked: $date');
+                                          // Your logic here
+                                          String formattedDate =
                                           DateFormat('yyyy-MM-dd')
-                                              .format(pickedDate);
-                                      motivePrint(
-                                          formattedDate); //formatted date output using intl package =>  2021-03-16
-                                      //you can implement different kind of Date Format here according to your requirement
-                                      setState(() {
-                                        toDateCtrl.text =
-                                            formattedDate; //set output date to TextField value.
-                                      });
-                                      search();
-                                    } else {
-                                      motivePrint("Date is not selected");
-                                    }
+                                              .format(date);
+                                          motivePrint(
+                                              formattedDate); //formatted date output using intl package =>  2021-03-16
+                                          //you can implement different kind of Date Format here according to your requirement
+                                          setState(() {
+                                            toDateCtrl.text =
+                                                formattedDate; //set output date to TextField value.
+                                          });
+                                        },
+                                      ),
+                                    );
                                   },
                                 ),
                               ),

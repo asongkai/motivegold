@@ -18,6 +18,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -293,7 +294,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
               const SizedBox(
                 height: 10,
               ),
-              if (Global.currentPaymentMethod == 'TR')
+              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,11 +386,11 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ],
                 ),
-              if (Global.currentPaymentMethod == 'TR')
+              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
                 const SizedBox(
                   height: 30,
                 ),
-              if (Global.currentPaymentMethod == 'TR')
+              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -478,27 +479,23 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                           readOnly: true,
                           //set it true, so that user will not able to edit text
                           onTap: () async {
-                            DateTime? pickedDate = await showDatePicker(
-                                context: context,
+                            showDialog(
+                              context: context,
+                              builder: (_) => SfDatePickerDialog(
                                 initialDate: DateTime.now(),
-                                firstDate: DateTime(1990),
-                                //DateTime.now() - not to allow to choose before today.
-                                lastDate: DateTime(2101));
-                            if (pickedDate != null) {
-                              motivePrint(
-                                  pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                              String formattedDate =
-                                  DateFormat('yyyy-MM-dd').format(pickedDate);
-                              motivePrint(
-                                  formattedDate); //formatted date output using intl package =>  2021-03-16
-                              //you can implement different kind of Date Format here according to your requirement
-                              setState(() {
-                                Global.cardExpireDateCtrl.text =
-                                    formattedDate; //set output date to TextField value.
-                              });
-                            } else {
-                              motivePrint("Date is not selected");
-                            }
+                                onDateSelected: (date) {
+                                  motivePrint('You picked: $date');
+                                  // Your logic here
+                                  String formattedDate =
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(date);
+                                  setState(() {
+                                    Global.cardExpireDateCtrl.text =
+                                        formattedDate; //set output date to TextField value.
+                                  });
+                                },
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -575,47 +572,43 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                           readOnly: true,
                           //set it true, so that user will not able to edit text
                           onTap: () async {
-                            DateTime? pickedDate = await showDatePicker(
-                                context: context,
+                            showDialog(
+                              context: context,
+                              builder: (_) => SfDatePickerDialog(
                                 initialDate: DateTime.now(),
-                                firstDate: DateTime(1990),
-                                //DateTime.now() - not to allow to choose before today.
-                                lastDate: DateTime(2101));
-                            if (pickedDate != null) {
-                              // motivePrint(DateTime.now());
-                              DateTime date = Global.currentOrderType != 5
-                                  ? DateTime.now()
-                                  : Global.ordersWholesale![0].orderDate!;
-                              if (pickedDate.isSameDate(date)) {
-                                Alert.warning(
-                                    context,
-                                    'Warning'.tr(),
-                                    'วันที่ชำระเงินไม่ตรงกับวันที่ทำธุรกรรม',
-                                    'OK',
-                                    action: () {});
-                              }
-                              if (pickedDate.compareTo(date) > 0) {
-                                Alert.warning(
-                                    context,
-                                    'Warning'.tr(),
-                                    'วันที่ชำระเงินมากกว่าวันที่ทำธุรกรรม',
-                                    'OK',
-                                    action: () {});
-                              }
-                              motivePrint(
-                                  pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                              String formattedDate =
-                                  DateFormat('yyyy-MM-dd').format(pickedDate);
-                              motivePrint(
-                                  formattedDate); //formatted date output using intl package =>  2021-03-16
-                              //you can implement different kind of Date Format here according to your requirement
-                              setState(() {
-                                Global.paymentDateCtrl.text =
-                                    formattedDate; //set output date to TextField value.
-                              });
-                            } else {
-                              motivePrint("Date is not selected");
-                            }
+                                onDateSelected: (pickDate) {
+                                  motivePrint('You picked: $pickDate');
+                                  // Your logic here
+                                  String formattedDate =
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(pickDate);
+                                  DateTime date = Global.currentOrderType != 5
+                                      ? DateTime.now()
+                                      : Global.ordersWholesale![0].orderDate!;
+                                  if (pickDate.isSameDate(date)) {
+                                    Alert.warning(
+                                        context,
+                                        'Warning'.tr(),
+                                        'วันที่ชำระเงินไม่ตรงกับวันที่ทำธุรกรรม',
+                                        'OK',
+                                        action: () {});
+                                  }
+                                  if (pickDate.compareTo(date) > 0) {
+                                    Alert.warning(
+                                        context,
+                                        'Warning'.tr(),
+                                        'วันที่ชำระเงินมากกว่าวันที่ทำธุรกรรม',
+                                        'OK',
+                                        action: () {});
+                                  }
+
+                                  setState(() {
+                                    Global.paymentDateCtrl.text =
+                                        formattedDate; //set output date to TextField value.
+                                  });
+                                },
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -688,7 +681,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'เพิ่มสลิปการชำระเงิน'.tr(),
+                    Global.currentPaymentMethod == 'DP' ? "เพิ่มสลิปฝากธนาคาร" : "เพิ่มสลิปการชำระเงิน",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),

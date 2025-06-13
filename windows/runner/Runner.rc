@@ -92,7 +92,7 @@ BEGIN
             VALUE "CompanyName", "com.motive.motivegold" "\0"
             VALUE "FileDescription", "motivegold" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "motivegold" "\0"
+            VALUE "InternalName", "com.motive.quickgold" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.motive.motivegold. All rights reserved." "\0"
             VALUE "OriginalFilename", "motivegold.exe" "\0"
             VALUE "ProductName", "motivegold" "\0"

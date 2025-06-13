@@ -526,10 +526,10 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -547,7 +547,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                           ),
                         ],
                       ),
@@ -564,7 +564,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity,),
                   child: MaterialButton(
                     color: buBgColor,
                     child: Row(
@@ -580,7 +580,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                          style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
                         ),
                       ],
                     ),

@@ -24,14 +24,14 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 
-class OrderTypeListScreen extends StatefulWidget {
-  const OrderTypeListScreen({super.key});
+class DefaultProductScreen extends StatefulWidget {
+  const DefaultProductScreen({super.key});
 
   @override
-  State<OrderTypeListScreen> createState() => _OrderTypeListScreenState();
+  State<DefaultProductScreen> createState() => _DefaultProductScreenState();
 }
 
-class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
+class _DefaultProductScreenState extends State<DefaultProductScreen> {
   bool loading = false;
   List<OrderTypeModel>? dataList = [];
   List<ProductModel> productList = [];
@@ -54,46 +54,6 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
     loadData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    size = Screen(MediaQuery.of(context).size);
-    return Scaffold(
-      appBar: const CustomAppBar(
-        height: 300,
-        child: TitleContent(
-          backButton: true,
-          title: Text("จัดการค่าเริ่มต้นของหน้าจอ",
-              style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900)),
-        ),
-      ),
-      body: SafeArea(
-        child: loading
-            ? const LoadingProgress()
-            : dataList!.isEmpty
-                ? const NoDataFoundWidget()
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height - 350,
-                          child: ListView.builder(
-                              itemCount: dataList!.length,
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (BuildContext context, int index) {
-                                return productCard(dataList, index);
-                              }),
-                        ),
-                      ),
-                    ),
-                  ),
-      ),
-    );
-  }
-
   void loadData() async {
     setState(() {
       loading = true;
@@ -101,7 +61,7 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
     try {
       // motivePrint(Global.requestObj(null));
       var result =
-          await ApiServices.post('/ordertype/all', Global.requestObj(null));
+      await ApiServices.post('/ordertype/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         // motivePrint(data);
@@ -123,6 +83,40 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    size = Screen(MediaQuery.of(context).size);
+    return Scaffold(
+      appBar: const CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: true,
+          title: Text("จัดการค่าเริ่มต้นของหน้าจอ",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
+      ),
+      body: SafeArea(
+        child: loading
+            ? const LoadingProgress()
+            : dataList!.isEmpty
+                ? const NoDataFoundWidget()
+                : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                      itemCount: dataList!.length,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (BuildContext context, int index) {
+                        return productCard(dataList, index);
+                      }),
+                ),
+      ),
+    );
+  }
+
   Widget productCard(List<OrderTypeModel>? list, int index) {
     return Card(
       child: Row(
@@ -132,52 +126,48 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
             child: ListTile(
               title: Text(
                 'หน้าจอ ${list![index].name!}',
-                style: const TextStyle(fontSize: 30),
+                style: const TextStyle(fontSize: 25),
               ),
-              subtitle: Row(
+              subtitle: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'สินค้าเริ่มต้น: ',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        Flexible(
-                            child: Text(
-                          '${list[index].productName}',
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
-                        )),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'สินค้าเริ่มต้น: ',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Flexible(
+                          child: Text(
+                        '${list[index].productName}',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900),
+                      )),
+                    ],
                   ),
                   const SizedBox(
                     width: 20,
                   ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'คลังสินค้าเริ่มต้น: ',
-                          style: TextStyle(fontSize: 20),
-                          overflow: TextOverflow.visible,
-                        ),
-                        Flexible(
-                            child: Text(
-                          '${list[index].warehouseName}',
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
-                          overflow: TextOverflow.visible,
-                        )),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'คลังสินค้าเริ่มต้น: ',
+                        style: TextStyle(fontSize: 20),
+                        overflow: TextOverflow.visible,
+                      ),
+                      Flexible(
+                          child: Text(
+                        '${list[index].warehouseName}',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900),
+                        overflow: TextOverflow.visible,
+                      )),
+                    ],
                   )
                 ],
               ),
@@ -185,120 +175,123 @@ class _OrderTypeListScreenState extends State<OrderTypeListScreen> {
           ),
           Expanded(
             flex: 5,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final ProgressDialog pr = ProgressDialog(context,
-                        type: ProgressDialogType.normal,
-                        isDismissible: true,
-                        showLogs: true);
-                    await pr.show();
-                    pr.update(message: 'processing'.tr());
-                    try {
-                      productModel = null;
-                      Response? result;
-                      if (list[index].id == 7) {
-                        result = await ApiServices.post(
-                            '/product/all', Global.requestObj(null));
-                      } if (list[index].id == 5) {
-                        result = await ApiServices.post(
-                            '/product/refill', Global.requestObj(null));
-                      } else if (list[index].id == 10 || list[index].id == 11) {
-                        result = await ApiServices.post(
-                            '/product/type/BAR', Global.requestObj(null));
-                      } else {
-                        result = await ApiServices.post(
-                            '/product/type/${Global.getOrderTypeCode(list[index].id)}',
-                            Global.requestObj(null));
-                      }
-                      if (result?.status == "success") {
-                        var data = jsonEncode(result?.data);
-                        List<ProductModel> products =
-                            productListModelFromJson(data);
-                        setState(() {
-                          productList = products;
-                          if (productList.isNotEmpty) {
-                            if (list[index].defaultProductId != null) {
-                              for (int i = 0; i < productList.length; i++) {
-                                if (list[index].defaultProductId ==
-                                    productList[i].id) {
-                                  productModel = productList[i];
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final ProgressDialog pr = ProgressDialog(context,
+                          type: ProgressDialogType.normal,
+                          isDismissible: true,
+                          showLogs: true);
+                      await pr.show();
+                      pr.update(message: 'processing'.tr());
+                      try {
+                        productModel = null;
+                        Response? result;
+                        if (list[index].id == 7) {
+                          result = await ApiServices.post(
+                              '/product/all', Global.requestObj(null));
+                        } if (list[index].id == 5) {
+                          result = await ApiServices.post(
+                              '/product/refill', Global.requestObj(null));
+                        } else if (list[index].id == 10 || list[index].id == 11) {
+                          result = await ApiServices.post(
+                              '/product/type/BAR', Global.requestObj(null));
+                        } else {
+                          result = await ApiServices.post(
+                              '/product/type/${Global.getOrderTypeCode(list[index].id)}',
+                              Global.requestObj(null));
+                        }
+                        if (result?.status == "success") {
+                          var data = jsonEncode(result?.data);
+                          List<ProductModel> products =
+                              productListModelFromJson(data);
+                          setState(() {
+                            productList = products;
+                            if (productList.isNotEmpty) {
+                              if (list[index].defaultProductId != null) {
+                                for (int i = 0; i < productList.length; i++) {
+                                  if (list[index].defaultProductId ==
+                                      productList[i].id) {
+                                    productModel = productList[i];
+                                  }
+                                }
+                              }
+                              productNotifier = ValueNotifier<ProductModel>(
+                                  productModel ??
+                                      ProductModel(name: 'เลือกสินค้า', id: 0));
+                            }
+                          });
+                        } else {
+                          productList = [];
+                        }
+                        warehouseModel = null;
+                        var warehouse = await ApiServices.post(
+                            '/binlocation/all/branch', Global.requestObj(null));
+                        if (warehouse?.status == "success") {
+                          var data = jsonEncode(warehouse?.data);
+                          List<WarehouseModel> warehouses =
+                              warehouseListModelFromJson(data);
+                          warehouseList = warehouses;
+                          if (warehouseList.isNotEmpty) {
+                            if (list[index].defaultWarehouseId != null) {
+                              for (int i = 0; i < warehouseList.length; i++) {
+                                if (list[index].defaultWarehouseId ==
+                                    warehouseList[i].id) {
+                                  warehouseModel = warehouseList[i];
                                 }
                               }
                             }
-                            productNotifier = ValueNotifier<ProductModel>(
-                                productModel ??
-                                    ProductModel(name: 'เลือกสินค้า', id: 0));
+                            warehouseNotifier = ValueNotifier<WarehouseModel>(
+                                warehouseModel ??
+                                    WarehouseModel(
+                                        id: 0, name: 'เลือกคลังสินค้า'));
                           }
-                        });
-                      } else {
-                        productList = [];
-                      }
-                      warehouseModel = null;
-                      var warehouse = await ApiServices.post(
-                          '/binlocation/all/branch', Global.requestObj(null));
-                      if (warehouse?.status == "success") {
-                        var data = jsonEncode(warehouse?.data);
-                        List<WarehouseModel> warehouses =
-                            warehouseListModelFromJson(data);
-                        warehouseList = warehouses;
-                        if (warehouseList.isNotEmpty) {
-                          if (list[index].defaultWarehouseId != null) {
-                            for (int i = 0; i < warehouseList.length; i++) {
-                              if (list[index].defaultWarehouseId ==
-                                  warehouseList[i].id) {
-                                warehouseModel = warehouseList[i];
-                              }
-                            }
-                          }
-                          warehouseNotifier = ValueNotifier<WarehouseModel>(
-                              warehouseModel ??
-                                  WarehouseModel(
-                                      id: 0, name: 'เลือกคลังสินค้า'));
+                        } else {
+                          warehouseList = [];
                         }
-                      } else {
-                        warehouseList = [];
+                        await pr.hide();
+                      } catch (e) {
+                        await pr.hide();
+                        if (mounted) {
+                          Alert.warning(
+                              context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                              action: () {});
+                        }
+                      } finally {
+                        productDialog(list[index]);
                       }
-                      await pr.hide();
-                    } catch (e) {
-                      await pr.hide();
-                      if (mounted) {
-                        Alert.warning(
-                            context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                            action: () {});
-                      }
-                    } finally {
-                      productDialog(list[index]);
-                    }
-                  },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            'ตั้งค่าเริ่มต้น',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          )
-                        ],
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              'ตั้งค่าเริ่มต้น',
+                              style: TextStyle(fontSize: 20, color: Colors.white),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],

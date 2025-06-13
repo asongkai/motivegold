@@ -47,6 +47,23 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
   widgets.add(
     Table(
       border: TableBorder.all(color: PdfColors.grey500),
+      columnWidths: {
+        0: const FixedColumnWidth(10),
+        1: const FixedColumnWidth(30),
+        2: const FixedColumnWidth(30),
+        3: const FixedColumnWidth(20),
+        4: const FixedColumnWidth(20),
+        5: const FixedColumnWidth(20),
+        6: const FixedColumnWidth(20),
+        7: const FixedColumnWidth(20),
+        8: const FixedColumnWidth(60),
+        9: const FixedColumnWidth(40),
+        10: const FixedColumnWidth(30),
+        11: const FixedColumnWidth(20),
+        12: const FixedColumnWidth(20),
+        13: const FixedColumnWidth(20),
+        14: const FixedColumnWidth(20)
+      },
       children: [
         TableRow(children: [
           paddedText('ลำดับ', align: TextAlign.center),
@@ -102,7 +119,10 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
     MultiPage(
       margin: const EdgeInsets.all(20),
       // pageFormat: const PdfPageFormat(1000, 1000),
-      pageFormat: PdfPageFormat.a4,
+      pageFormat: PdfPageFormat(
+        PdfPageFormat.a4.height, // height becomes width
+        PdfPageFormat.a4.width,  // width becomes height
+      ),
       orientation: PageOrientation.landscape,
       build: (context) => widgets,
       footer: (context) {

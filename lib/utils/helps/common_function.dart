@@ -323,6 +323,19 @@ double getWeight(dynamic order) {
 }
 
 /// Redeem
+///
+
+int getQtyTotalB(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += orders[i]!.qty ?? 0;
+  }
+  return amount.toInt();
+}
+
 double getRedeemWeightTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;

@@ -63,6 +63,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.paymentDetailCtrl.text = "";
     Global.paymentList?.clear();
     Global.checkOutMode = "O";
+    loadDefaultPayment();
+  }
+
+  loadDefaultPayment() async {
+
   }
 
   @override
@@ -514,7 +519,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         ),
                         if (Global.paymentList!.isNotEmpty)
                           SizedBox(
-                            // height: 300,
                             child: Column(
                               children: [
                                 Container(

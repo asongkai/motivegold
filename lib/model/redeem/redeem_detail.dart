@@ -71,6 +71,12 @@ class RedeemDetailModel {
   /// Date updated
   DateTime? updatedDate;
 
+  String? customerName;
+
+  String? taxNumber;
+
+  DateTime? redeemDate;
+
   RedeemDetailModel({
     this.id,
     this.redeemId,
@@ -93,6 +99,9 @@ class RedeemDetailModel {
     this.createdDate,
     this.updatedBy,
     this.updatedDate,
+    this.customerName,
+    this.taxNumber,
+    this.redeemDate,
   });
 
   // From JSON method
@@ -123,6 +132,11 @@ class RedeemDetailModel {
       updatedDate: json['updatedDate'] != null
           ? DateTime.parse(json['updatedDate'])
           : null,
+      customerName: json["customerName"],
+      taxNumber: json["taxNumber"],
+      redeemDate: json['redeemDate'] != null
+          ? DateTime.parse(json['redeemDate'])
+          : null,
     );
   }
 
@@ -150,6 +164,9 @@ class RedeemDetailModel {
       'createdDate': createdDate?.toIso8601String(),
       'updatedBy': updatedBy,
       'updatedDate': updatedDate?.toIso8601String(),
+      'customerName': customerName,
+      'taxNumber': taxNumber,
+      'redeemDate': redeemDate?.toIso8601String(),
     };
   }
 
@@ -176,6 +193,9 @@ class RedeemDetailModel {
     DateTime? createdDate,
     String? updatedBy,
     DateTime? updatedDate,
+    String? customerName,
+    String? taxNumber,
+    DateTime? redeemDate,
   }) {
     return RedeemDetailModel(
       id: id ?? this.id,
@@ -199,6 +219,9 @@ class RedeemDetailModel {
       createdDate: createdDate ?? this.createdDate,
       updatedBy: updatedBy ?? this.updatedBy,
       updatedDate: updatedDate ?? this.updatedDate,
+      customerName: customerName ?? this.customerName,
+      taxNumber: taxNumber ?? this.taxNumber,
+      redeemDate: redeemDate ?? this.redeemDate,
     );
   }
 }

@@ -48,6 +48,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
   void initState() {
     // implement initState
     super.initState();
+    Global.currentOrderType = 0;
     Global.discount = 0;
     Global.customer = null;
     Global.selectedPayment = null;
@@ -479,7 +480,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
-                                          '${Global.format(Global.getRedeemPaymentTotal(Global.redeems))} บาท',
+                                          '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.discount))} บาท',
                                           textAlign: TextAlign.right,
                                           style: const TextStyle(
                                             fontSize: 32,
@@ -744,6 +745,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                   Global.redeems[i].updatedDate = DateTime.now();
                   Global.redeems[i].customerId = Global.customer!.id!;
                   Global.redeems[i].status = 0;
+                  Global.redeems[i].discount = Global.discount;
                   Global.redeems[i].qty = 1;
                   Global.redeems[i].redemptionVat = 0;
                   Global.redeems[i].weight =
@@ -791,7 +793,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                         '/redeem/gen-pair/${Global.redeems.first.redeemTypeId}',
                         Global.requestObj(null));
 
-                    // print(pair?.toJson());
+                    print(pair?.toJson());
                     // return;
                     if (pair?.status == "success") {
                       await postPayment(pair?.data);
@@ -811,6 +813,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                 builder: (context) => const PrintRedeemBillScreen()));
                       }
                     } else {
+                      await pr.hide();
                       if (mounted) {
                         Alert.warning(context, 'Warning'.tr(),
                             'Unable to generate pairing ID', 'OK'.tr(),
@@ -1083,11 +1086,6 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                     ],
                   )),
             ],
-          ),
-          Text(
-            'เลขที่ขายฝาก: ${order.referenceNo}',
-            style: TextStyle(
-                fontSize: size?.getWidthPx(10), fontWeight: FontWeight.normal),
           ),
           Table(
             border: TableBorder.all(color: Colors.grey.shade300),

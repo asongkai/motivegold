@@ -56,7 +56,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
         paddedText('ชื่อผู้ซื้อ', align: TextAlign.center),
         paddedText('เลขประจําตัวผู้เสียภาษี', align: TextAlign.center),
         paddedText('รายการสินค้า', align: TextAlign.center),
-        paddedText('น้ําหนัก (กรัม) \n(น.น.สินค้า/น.น.96.5)',
+        paddedText('น้ําหนัก (กรัม)',
             align: TextAlign.center),
         paddedText('จํานวนเงิน (บาท)', align: TextAlign.center),
       ]),
@@ -101,7 +101,10 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
     MultiPage(
         margin: const EdgeInsets.all(20),
         // pageFormat: const PdfPageFormat(1000, 1000),
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat(
+          PdfPageFormat.a4.height, // height becomes width
+          PdfPageFormat.a4.width,  // width becomes height
+        ),
         orientation: PageOrientation.landscape,
         build: (context) => widgets,
         footer: (context) {

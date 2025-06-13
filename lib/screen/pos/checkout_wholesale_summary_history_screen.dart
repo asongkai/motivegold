@@ -281,7 +281,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                       PriceBreakdown(
                                         title: 'จำนวนเงินที่ชำระ'.tr(),
                                         price:
-                                            '${Global.format(Global.getPaymentTotalWholeSale(orders))} THB',
+                                            '${Global.format(Global.getPaymentTotalWholeSale(orders))} บาท',
                                       ),
                                       const Divider(),
                                       PriceBreakdown(

@@ -669,7 +669,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                                   labelText: 'ชื่อบริษัท'.tr(),
                                                   validator: null,
                                                   inputType: TextInputType.text,
-                                                  controller: lastNameCtrl,
+                                                  controller: companyNameCtrl,
                                                 ),
                                               ],
                                             ),

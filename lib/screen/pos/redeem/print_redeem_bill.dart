@@ -7,6 +7,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/response.dart';
+import 'package:motivegold/screen/pos/redeem/bill/preview.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/bill/preview_pdf.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -87,7 +88,7 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Text("พิมพ์บิล",
+          title: Text("พิมพ์บิล Redeem",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white,
@@ -336,21 +337,22 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
                           Global.paymentList = paymentListModelFromJson(
                               jsonEncode(payment?.data));
 
-                          //
-                          // Invoice invoice = Invoice(
-                          //     order: order,
-                          //     customer: order.customer!,
-                          //     payments: Global.paymentList,
-                          //     orders: redeems,
-                          //     items: order.details!);
 
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         PdfPreviewPage(invoice: invoice),
-                          //   ),
-                          // );
+                          InvoiceRedeem invoice = InvoiceRedeem(
+                              order: order,
+                              customer: order.customer!,
+                              payments: Global.paymentList,
+                              orders: redeems,
+                              items: order.details!);
+
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PdfPreviewRedeemPage(invoice: invoice),
+                            ),
+                          );
                         } catch (e) {
+                          motivePrint(e.toString());
                           await pr.hide();
                         }
                       },

@@ -650,7 +650,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                             labelText: 'ชื่อบริษัท'.tr(),
                                             validator: null,
                                             inputType: TextInputType.text,
-                                            controller: lastNameCtrl,
+                                            controller: companyNameCtrl,
                                           ),
                                         ],
                                       ),

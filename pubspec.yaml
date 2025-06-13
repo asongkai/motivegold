@@ -75,6 +75,9 @@ dependencies:
   dropdown_button2: ^3.0.0-beta.19
   mobile_device_identifier: ^0.0.3
   jiffy: ^6.3.2
+  rename_app: ^1.6.3
+  rename: ^3.1.0
+  syncfusion_flutter_datepicker: ^29.2.10
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +85,7 @@ dev_dependencies:
 
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.13.1
+  change_app_package_name: ^1.5.0
 
 flutter_icons:
   ios: true
