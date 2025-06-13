@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
+import 'package:motivegold/model/default/default_payment.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
@@ -43,8 +44,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   TextEditingController discountCtrl = TextEditingController();
   Screen? size;
 
-  int? selectedOption = 1;
+  int? selectedOption = 0;
   bool loading = false;
+
+  DefaultPaymentModel? defaultPayment;
 
   @override
   void initState() {
@@ -64,13 +67,72 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.paymentList?.clear();
     Global.checkOutMode = "O";
     loadDefaultPayment();
-    if (selectedOption == 1) {
+    if (Global.currentOrderType == 1) {
+      selectedOption = 1;
       loadCustomer();
     }
+    loadDefaultPayment();
   }
 
   loadDefaultPayment() async {
+    int orderTypeId = 0;
+    if (Global.currentOrderType == 1) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 2;
+      } else {
+        orderTypeId = 1;
+      }
+    }
 
+    if (Global.currentOrderType == 2) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 33;
+      } else {
+        orderTypeId = 3;
+      }
+    }
+
+    if (Global.currentOrderType == 3) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 44;
+      } else {
+        orderTypeId = 4;
+      }
+    }
+
+    if (Global.currentOrderType == 4) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 9;
+      } else {
+        orderTypeId = 8;
+      }
+    }
+
+    if (Global.currentOrderType == 5) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 5;
+      } else {
+        orderTypeId = 6;
+      }
+    }
+
+    if (Global.currentOrderType == 6) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+        orderTypeId = 10;
+      } else {
+        orderTypeId = 11;
+      }
+    }
+
+    var payment = await ApiServices.post(
+        '/defaultpayment/by-order-type/$orderTypeId', Global.requestObj(null));
+    motivePrint(payment?.toJson());
+    if (payment?.status == "success") {
+      var data = DefaultPaymentModel.fromJson(payment?.data);
+      setState(() {
+        defaultPayment = data;
+      });
+    }
   }
 
   @override
@@ -1404,6 +1466,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       Global.discount = 0;
       Global.paymentList?.clear();
     }
+    loadDefaultPayment();
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});
     });
@@ -1415,6 +1478,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       Global.orders.removeAt(i);
       removeCart();
     }
+    loadDefaultPayment();
     Future.delayed(const Duration(milliseconds: 500), () async {
       setState(() {});
     });
@@ -1472,6 +1536,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: PaymentMethodWidget(
                             index: i,
+                            payment: defaultPayment,
                           ),
                         ),
                         Padding(
@@ -1606,9 +1671,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             ),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: PaymentMethodWidget(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: PaymentMethodWidget(
+                            payment: defaultPayment,
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(18.0),

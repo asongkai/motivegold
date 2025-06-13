@@ -679,6 +679,7 @@ class Global {
     amount = amount < 0 ? -amount : amount;
     amount = discount != 0 ? amount - discount : amount;
     amount = (sell + buy) < 0 ? -amount : amount;
+    // motivePrint(amount);
     return amount;
   }
 

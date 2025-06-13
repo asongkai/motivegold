@@ -11,6 +11,7 @@ import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/bank/bank.dart';
 import 'package:motivegold/model/bank/bank_account.dart';
+import 'package:motivegold/model/default/default_payment.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
@@ -27,9 +28,10 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 
 class PaymentMethodWidget extends StatefulWidget {
-  const PaymentMethodWidget({super.key, this.index});
+  const PaymentMethodWidget({super.key, this.index, this.payment});
 
   final int? index;
+  final DefaultPaymentModel? payment;
 
   @override
   State<PaymentMethodWidget> createState() => _PaymentMethodWidgetState();
@@ -137,6 +139,35 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
           Global.cardExpireDateCtrl.text = Global.formatDateDD(
               Global.paymentList![widget.index!].cardExpiryDate.toString());
         }
+      }
+
+      if (widget.payment != null && widget.index == null) {
+        Global.selectedPayment = paymentTypes()
+            .where((e) => e.code == widget.payment?.paymentCode)
+            .first;
+        paymentNotifier = ValueNotifier<ProductTypeModel>(Global
+                .selectedPayment ??
+            ProductTypeModel(name: 'เลือกวิธีการชำระเงิน', code: '', id: 0));
+        Global.currentPaymentMethod = widget.payment?.paymentCode ?? '';
+
+        if (widget.payment?.paymentCode == 'TR') {
+          Global.selectedBank = Global.bankList
+              .where((e) => e.id == widget.payment?.bankId)
+              .first;
+          Global.selectedAccount = Global.accountList
+              .where((e) => e.accountNo == widget.payment?.accountNo)
+              .first;
+          filterAccount(Global.selectedBank?.id);
+          bankNotifier = ValueNotifier<BankModel>(Global.selectedBank ??
+              BankModel(name: 'เลือกธนาคาร', code: '', id: 0));
+          accountNotifier = ValueNotifier<BankAccountModel>(
+              Global.selectedAccount ??
+                  BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0));
+        }
+        motivePrint(Global.currentPaymentMethod);
+        setState(() {
+
+        });
       }
     } catch (e) {
       motivePrint(e.toString());
@@ -294,7 +325,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
               const SizedBox(
                 height: 10,
               ),
-              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
+              if (Global.currentPaymentMethod == 'TR' ||
+                  Global.currentPaymentMethod == 'DP')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,11 +418,13 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                     ),
                   ],
                 ),
-              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
+              if (Global.currentPaymentMethod == 'TR' ||
+                  Global.currentPaymentMethod == 'DP')
                 const SizedBox(
                   height: 30,
                 ),
-              if (Global.currentPaymentMethod == 'TR' || Global.currentPaymentMethod == 'DP')
+              if (Global.currentPaymentMethod == 'TR' ||
+                  Global.currentPaymentMethod == 'DP')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -487,8 +521,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                   motivePrint('You picked: $date');
                                   // Your logic here
                                   String formattedDate =
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(date);
+                                      DateFormat('yyyy-MM-dd').format(date);
                                   setState(() {
                                     Global.cardExpireDateCtrl.text =
                                         formattedDate; //set output date to TextField value.
@@ -580,8 +613,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                   motivePrint('You picked: $pickDate');
                                   // Your logic here
                                   String formattedDate =
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(pickDate);
+                                      DateFormat('yyyy-MM-dd').format(pickDate);
                                   DateTime date = Global.currentOrderType != 5
                                       ? DateTime.now()
                                       : Global.ordersWholesale![0].orderDate!;
@@ -681,7 +713,9 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    Global.currentPaymentMethod == 'DP' ? "เพิ่มสลิปฝากธนาคาร" : "เพิ่มสลิปการชำระเงิน",
+                    Global.currentPaymentMethod == 'DP'
+                        ? "เพิ่มสลิปฝากธนาคาร"
+                        : "เพิ่มสลิปการชำระเงิน",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),

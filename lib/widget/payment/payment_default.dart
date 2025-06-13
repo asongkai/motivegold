@@ -56,8 +56,10 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
         Global.formatDateDD(DateTime.now().toString());
     init();
 
-    if (widget.payment != null) {
-
+    if (widget.payment == null) {
+      Global.selectedPayment = null;
+      paymentNotifier = ValueNotifier<ProductTypeModel>(Global.selectedPayment ??
+          ProductTypeModel(name: 'เลือกวิธีการชำระเงิน', code: '', id: 0));
     }
   }
 
