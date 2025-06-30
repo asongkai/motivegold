@@ -315,12 +315,23 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                   padding: const EdgeInsets.only(
                                       left: 8.0, right: 8.0),
                                   child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(
                                         height: 10,
                                       ),
+                                      Text(
+                                        'ชื่อสินค้า',
+                                        style: TextStyle(
+                                            fontSize: size.getWidthPx(10),
+                                            color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
                                       buildTextField(
-                                        labelText: 'ชื่อสินค้า'.tr(),
+                                        labelText: '',
                                         validator: null,
                                         inputType: TextInputType.text,
                                         controller: productNameCtrl,
@@ -329,10 +340,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),

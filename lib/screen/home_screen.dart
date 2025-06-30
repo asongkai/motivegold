@@ -258,19 +258,22 @@ class _HomeScreenState extends State<HomeScreen> {
         for (int i = 0; i < items.length; i += 4)
           Padding(
             padding: EdgeInsets.only(bottom: i + 4 < items.length ? 12 : 0),
-            child: Row(
-              children: [
-                for (int j = i; j < i + 4 && j < items.length; j++)
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: _buildMenuItem(items[j], context),
+            child: IntrinsicHeight( // This is the key change!
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch children to fill vertical space
+                children: [
+                  for (int j = i; j < i + 4 && j < items.length; j++)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: _buildMenuItem(items[j], context),
+                      ),
                     ),
-                  ),
-                // Fill empty spaces if less than 4 items in the row
-                for (int k = 0; k < 4 - (items.length - i).clamp(0, 4); k++)
-                  Expanded(child: SizedBox()),
-              ],
+                  // Fill empty spaces if less than 4 items in the row
+                  for (int k = 0; k < 4 - (items.length - i).clamp(0, 4); k++)
+                    Expanded(child: SizedBox()),
+                ],
+              ),
             ),
           ),
       ],
@@ -280,7 +283,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMenuItem(MenuItemData item, BuildContext context) {
     return InkWell(
       onTap: () {
-        motivePrint('Tapped: ${item.label}'); // Debug print
         if (item.pageBuilder != null) {
           Navigator.push(
             context,
@@ -293,13 +295,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       child: Container(
-        height: 180,
+        // Removed the fixed height: 'height: 180'
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
+              color: Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 3,
               offset: Offset(0, 2),
@@ -310,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 8),
+            // Icon Container
             Container(
               width: 100,
               height: 100,
@@ -324,22 +327,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 24.sp,
               ),
             ),
-            SizedBox(height: 8),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Text(
-                  item.label,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: item.color,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+            SizedBox(height: 12), // Add some space
+            // Text widget with flexible height
+            Text(
+              item.label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: item.color,
               ),
+              textAlign: TextAlign.center,
+              // Allow text to wrap without overflow
+              overflow: TextOverflow.clip, // Or ellipsis, based on preference
             ),
           ],
         ),

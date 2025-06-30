@@ -94,28 +94,28 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.screen == 3 || widget.screen == 1)
+                if (widget.screen == 3 || widget.screen == 1 || widget.screen == 2)
                 GoldPriceListTileData(
                   title: 'ทองคำแท่ง 96.5%',
                   subTitle: "ขายออก",
                   value:
                       "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))} บาท",
                 ),
-                if (widget.screen == 3)
+                if (widget.screen == 3 || widget.screen == 2)
                 GoldPriceListTileData(
                   title: '',
                   subTitle: "รับซื้อ",
                   value:
                   "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))} บาท",
                 ),
-                if (widget.screen == 1)
+                if (widget.screen == 1 || widget.screen == 2)
                   GoldPriceListTileData(
                     title: 'ทองรูปพรรณ 96.5%',
                     subTitle: "รับซื้อบาทละ",
                     value:
                         "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))} บาท",
                   ),
-                if (widget.screen == 1)
+                if (widget.screen == 1 || widget.screen == 2)
                   GoldPriceListTileData(
                     title: '',
                     subTitle: "รับซื้อกรัมละ",

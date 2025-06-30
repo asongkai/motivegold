@@ -104,13 +104,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     Global.addressCtrl.text = "";
     ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
     // init();
+    Global.provinceModel = null;
+    Global.amphureModel = null;
+    Global.tambonModel = null;
     Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-        Global.provinceModel ??
             ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(
-        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
-    Global.tambonNotifier = ValueNotifier<TambonModel>(
-        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    Global.tambonNotifier = ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
   }
 
   init() async {
@@ -992,6 +992,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                       Global.provinceModel = value;
                                       Global.provinceNotifier!.value = value;
                                       loadAmphureByProvince(value.id);
+                                      setState(() {
+
+                                      });
                                     },
                                     child: LocationDropDownObjectChildWidget(
                                       key: GlobalKey(),
@@ -1041,6 +1044,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                       Global.amphureModel = value;
                                       Global.amphureNotifier!.value = value;
                                       loadTambonByAmphure(value.id);
+                                      setState(() {
+
+                                      });
                                     },
                                     child: LocationDropDownObjectChildWidget(
                                       key: GlobalKey(),

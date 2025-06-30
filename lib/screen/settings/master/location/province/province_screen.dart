@@ -50,7 +50,7 @@ class _ProvinceScreenState extends State<ProvinceScreen> {
     });
     try {
       var result = await ApiServices.get('/location/province');
-      // motivePrint(result?.toJson());
+      motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProvinceModel> products = provinceModelFromJson(data);

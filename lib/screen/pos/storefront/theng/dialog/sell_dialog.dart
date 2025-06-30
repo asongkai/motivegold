@@ -219,10 +219,12 @@ class _SellDialogState extends State<SellDialog> {
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
               getUnitWeightValue());
-      if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
-        Alert.warning(context, 'Warning'.tr(),
-            '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
-            action: () {});
+      if (Global.company?.stock == 1) {
+        if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
+          Alert.warning(context, 'Warning'.tr(),
+              '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
+              action: () {});
+        }
       }
       setState(() {});
       setState(() {});
@@ -293,7 +295,9 @@ class _SellDialogState extends State<SellDialog> {
                   posHeaderText(context, stBgColor, 'ขายทองคำแท่ง'),
                   const Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
-                    child: GoldMiniWidget(screen: 3,),
+                    child: GoldMiniWidget(
+                      screen: 3,
+                    ),
                   ),
                   Row(
                     children: <Widget>[
@@ -1070,7 +1074,6 @@ class _SellDialogState extends State<SellDialog> {
                       ],
                     ),
                     onPressed: () async {
-
                       if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
                         Alert.warning(context, 'Warning'.tr(),
                             '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
@@ -1111,12 +1114,17 @@ class _SellDialogState extends State<SellDialog> {
                             action: () {});
                         return;
                       }
-
-                      if (Global.toNumber(productWeightCtrl.text) > Global.toNumber(productWeightRemainCtrl.text)) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightCtrl.text}', 'OK',
-                            action: () {});
-                        return;
+                      if (Global.company?.stock == 1) {
+                        if (Global.toNumber(productWeightCtrl.text) >
+                            Global.toNumber(productWeightRemainCtrl.text)) {
+                          Alert.warning(
+                              context,
+                              'Warning'.tr(),
+                              'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightCtrl.text}',
+                              'OK',
+                              action: () {});
+                          return;
+                        }
                       }
 
                       var realPrice = Global.getBuyThengPrice(
@@ -1135,8 +1143,6 @@ class _SellDialogState extends State<SellDialog> {
                       //   return;
                       // }
 
-
-
                       if (price < realPrice) {
                         Alert.warning(
                             context,
@@ -1150,36 +1156,40 @@ class _SellDialogState extends State<SellDialog> {
                       // Alert.info(
                       //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                       //     action: () async {
-                        Global.sellThengOrderDetail!.add(
-                          OrderDetailModel(
-                              productName: productNameCtrl.text,
-                              productId: selectedProduct!.id,
-                              binLocationId: selectedWarehouse!.id,
-                              sellTPrice: Global.toNumber(Global.goldDataModel?.theng!.sell),
-                              buyTPrice: Global.toNumber(Global.goldDataModel?.theng!.buy),
-                              sellPrice: Global.toNumber(Global.goldDataModel?.paphun!.sell),
-                              buyPrice: Global.toNumber(Global.goldDataModel?.paphun!.buy),
-                              weight: Global.toNumber(productWeightCtrl.text),
-                              weightBath:
-                                  Global.toNumber(productWeightBahtCtrl.text),
-                              commission:
-                                  Global.toNumber(productCommissionCtrl.text),
-                              taxBase: 0,
-                              taxAmount: Global.toNumber(taxAmountCtrl.text),
-                              priceIncludeTax:
-                                  Global.toNumber(priceIncludeTaxCtrl.text),
-                              priceExcludeTax:
-                                  Global.toNumber(priceExcludeTaxCtrl.text),
-                              packageId: selectedPackage?.id,
-                              packageQty: Global.toInt(packageQtyCtrl.text),
-                              packagePrice:
-                                  Global.toNumber(packagePriceCtrl.text),
-                              vatOption: vatOption,
-                              bookDate: null),
-                        );
-                        sumSellThengTotal();
-                        setState(() {});
-                        Navigator.of(context).pop();
+                      Global.sellThengOrderDetail!.add(
+                        OrderDetailModel(
+                            productName: productNameCtrl.text,
+                            productId: selectedProduct!.id,
+                            binLocationId: selectedWarehouse!.id,
+                            sellTPrice: Global.toNumber(
+                                Global.goldDataModel?.theng!.sell),
+                            buyTPrice: Global.toNumber(
+                                Global.goldDataModel?.theng!.buy),
+                            sellPrice: Global.toNumber(
+                                Global.goldDataModel?.paphun!.sell),
+                            buyPrice: Global.toNumber(
+                                Global.goldDataModel?.paphun!.buy),
+                            weight: Global.toNumber(productWeightCtrl.text),
+                            weightBath:
+                                Global.toNumber(productWeightBahtCtrl.text),
+                            commission:
+                                Global.toNumber(productCommissionCtrl.text),
+                            taxBase: 0,
+                            taxAmount: Global.toNumber(taxAmountCtrl.text),
+                            priceIncludeTax:
+                                Global.toNumber(priceIncludeTaxCtrl.text),
+                            priceExcludeTax:
+                                Global.toNumber(priceExcludeTaxCtrl.text),
+                            packageId: selectedPackage?.id,
+                            packageQty: Global.toInt(packageQtyCtrl.text),
+                            packagePrice:
+                                Global.toNumber(packagePriceCtrl.text),
+                            vatOption: vatOption,
+                            bookDate: null),
+                      );
+                      sumSellThengTotal();
+                      setState(() {});
+                      Navigator.of(context).pop();
                       // });
                     },
                   ),

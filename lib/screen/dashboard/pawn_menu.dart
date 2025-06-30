@@ -197,7 +197,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
             children: [
               iconDashboard(
                 'ขายฝากจำนำ\nไถ่ถอน',
-                Image.asset('assets/icons/gold/gold.png'),
+                Image.asset('assets/icons/gold/gold.png', height: 110,),
                 stmBgColor,
                 const RedeemMenuScreen(),
               ),

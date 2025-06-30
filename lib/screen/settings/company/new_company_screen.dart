@@ -66,362 +66,362 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           child: SingleChildScrollView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    if (logo != null)
-                      Container(
-                        height: 220.0,
-                        color: Colors.white,
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Center(
-                                child: Text(
-                              'โลโก้บริษัท',
-                              style: TextStyle(fontSize: 30, color: textColor),
-                            )),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
-                              child:
-                                  Stack(fit: StackFit.loose, children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {},
-                                      child: ProfilePhoto(
-                                        totalWidth: 140,
-                                        cornerRadius: 80,
-                                        color: Colors.blue,
-                                        image: FileImage(file!),
-                                      ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if (logo != null)
+                    Container(
+                      height: 220.0,
+                      color: Colors.white,
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Center(
+                              child: Text(
+                            'โลโก้บริษัท',
+                            style: TextStyle(fontSize: 30, color: textColor),
+                          )),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child:
+                                Stack(fit: StackFit.loose, children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: ProfilePhoto(
+                                      totalWidth: 140,
+                                      cornerRadius: 80,
+                                      color: Colors.blue,
+                                      image: FileImage(file!),
                                     ),
-                                  ],
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    _settingModalBottomSheet(context);
-                                  },
-                                  child: const Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 90.0, right: 100.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          CircleAvatar(
-                                            backgroundColor: Colors.red,
-                                            radius: 25.0,
-                                            child: Icon(
-                                              Icons.camera_alt,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        ],
-                                      )),
-                                ),
-                              ]),
-                            )
-                          ],
-                        ),
-                      ),
-                    if (logo == null)
-                      Container(
-                        height: 220.0,
-                        color: Colors.white,
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            const Center(
-                                child: Text(
-                              'โลโก้บริษัท',
-                              style: TextStyle(fontSize: 30, color: textColor),
-                            )),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20.0),
-                              child:
-                                  Stack(fit: StackFit.loose, children: <Widget>[
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Container(
-                                        width: 140.0,
-                                        height: 140.0,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/no_image.png'),
-                                            fit: BoxFit.cover,
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _settingModalBottomSheet(context);
+                                },
+                                child: const Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 90.0, right: 100.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          radius: 25.0,
+                                          child: Icon(
+                                            Icons.camera_alt,
+                                            color: Colors.white,
                                           ),
-                                        )),
-                                  ],
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    _settingModalBottomSheet(context);
-                                  },
-                                  child: const Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 90.0, right: 100.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          CircleAvatar(
-                                            backgroundColor: Colors.red,
-                                            radius: 25.0,
-                                            child: Icon(
-                                              Icons.camera_alt,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        ],
+                                        )
+                                      ],
+                                    )),
+                              ),
+                            ]),
+                          )
+                        ],
+                      ),
+                    ),
+                  if (logo == null)
+                    Container(
+                      height: 220.0,
+                      color: Colors.white,
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Center(
+                              child: Text(
+                            'โลโก้บริษัท',
+                            style: TextStyle(fontSize: 30, color: textColor),
+                          )),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20.0),
+                            child:
+                                Stack(fit: StackFit.loose, children: <Widget>[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                      width: 140.0,
+                                      height: 140.0,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/no_image.png'),
+                                          fit: BoxFit.cover,
+                                        ),
                                       )),
-                                ),
-                              ]),
-                            )
-                          ],
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _settingModalBottomSheet(context);
+                                },
+                                child: const Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 90.0, right: 100.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          radius: 25.0,
+                                          child: Icon(
+                                            Icons.camera_alt,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    )),
+                              ),
+                            ]),
+                          )
+                        ],
+                      ),
+                    ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'ชื่อบริษัท'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: nameCtrl,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ชื่อบริษัท'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: nameCtrl,
-                                ),
-                              ],
-                            ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'โทรศัพท์'.tr(),
+                                validator: null,
+                                enabled: true,
+                                inputType: TextInputType.phone,
+                                controller: phoneCtrl,
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'โทรศัพท์'.tr(),
-                                  validator: null,
-                                  enabled: true,
-                                  inputType: TextInputType.phone,
-                                  controller: phoneCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'อีเมล'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.emailAddress,
-                                  controller: emailCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'จังหวัด'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: provinceCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'เขต'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: districtCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'บ้าน'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: villageCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: addressCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextFieldBig(
-                                  labelText: 'หมายเลขประจำตัวผู้เสียภาษี'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: taxNumberCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (Global.user!.userType == 'ADMIN')
-                      CheckboxListTile(
-                        title: const Text(
-                          "Non Stock",
-                          style: TextStyle(fontSize: 30, color: textColor),
-                        ),
-                        value: nonStock,
-                        visualDensity: VisualDensity.standard,
-                        activeColor: Colors.teal,
-                        onChanged: (newValue) {
-                          setState(() {
-                            nonStock = newValue!;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity
-                            .leading, //  <-- leading Checkbox
                       ),
-                  ],
-                ),
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'อีเมล'.tr(),
+                                validator: null,
+                                inputType: TextInputType.emailAddress,
+                                controller: emailCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'จังหวัด'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: provinceCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'เขต'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: districtCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'บ้าน'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: villageCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'ที่อยู่'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: addressCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              buildTextFieldBig(
+                                labelText: 'หมายเลขประจำตัวผู้เสียภาษี'.tr(),
+                                validator: null,
+                                inputType: TextInputType.text,
+                                controller: taxNumberCtrl,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (Global.user!.userType == 'ADMIN')
+                    CheckboxListTile(
+                      title: const Text(
+                        "Non Stock",
+                        style: TextStyle(fontSize: 30, color: textColor),
+                      ),
+                      value: nonStock,
+                      visualDensity: VisualDensity.standard,
+                      activeColor: Colors.teal,
+                      onChanged: (newValue) {
+                        setState(() {
+                          nonStock = newValue!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity
+                          .leading, //  <-- leading Checkbox
+                    ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                ],
               ),
             ),
           ),

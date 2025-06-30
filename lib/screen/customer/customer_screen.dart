@@ -78,7 +78,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
       selectedCustomerType = customerTypes()[1];
     }
 
-    loadData();
+    search();
   }
 
   void loadData() async {

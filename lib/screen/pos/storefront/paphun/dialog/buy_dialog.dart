@@ -204,7 +204,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         posHeaderText(context, buBgColor, 'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
                         const Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
-                          child: GoldMiniWidget(screen: 1,),
+                          child: GoldMiniWidget(screen: 2,),
                         ),
                         const SizedBox(
                           height: 20,

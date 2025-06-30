@@ -188,11 +188,12 @@ class _SaleDialogState extends State<SaleDialog> {
       productWeightBahtRemainCtrl.text = Global.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
               getUnitWeightValue());
-
-      if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
-        Alert.warning(context, 'Warning'.tr(),
-            '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
-            action: () {});
+      if (Global.company?.stock == 1) {
+        if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
+          Alert.warning(context, 'Warning'.tr(),
+              '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
+              action: () {});
+        }
       }
 
       setState(() {});
@@ -883,11 +884,16 @@ class _SaleDialogState extends State<SaleDialog> {
                         return;
                       }
 
-                      if (Global.toNumber(productWeightGramCtrl.text) > Global.toNumber(productWeightRemainCtrl.text)) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightGramCtrl.text}', 'OK',
-                            action: () {});
-                        return;
+                      if (Global.company?.stock == 1) {
+                        if (Global.toNumber(productWeightGramCtrl.text) >
+                            Global.toNumber(productWeightRemainCtrl.text)) {
+                          Alert.warning(context, 'Warning'.tr(),
+                              'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl
+                                  .text}\nขาย: ${productWeightGramCtrl.text}',
+                              'OK',
+                              action: () {});
+                          return;
+                        }
                       }
 
                       // if (Global.toNumber(productWeightCtrl

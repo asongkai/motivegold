@@ -100,6 +100,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   FocusNode purchasePriceFocus = FocusNode();
   FocusNode priceDiffFocus = FocusNode();
   FocusNode taxAmountFocus = FocusNode();
+  FocusNode taxBaseFocus = FocusNode();
 
   bool priceIncludeTaxReadOnly = false;
   bool gramReadOnly = false;
@@ -107,6 +108,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   bool purchasePriceReadOnly = false;
   bool priceDiffReadOnly = false;
   bool taxAmountReadOnly = false;
+  bool taxBaseReadOnly = false;
 
   @override
   void initState() {
@@ -256,8 +258,8 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     if (txt == 'price_exclude') {
       priceExcludeTaxReadOnly = true;
     }
-    if (txt == 'price_diff') {
-      priceDiffReadOnly = true;
+    if (txt == 'tax_base') {
+      taxBaseReadOnly = true;
     }
     if (txt == 'tax_amount') {
       taxAmountReadOnly = true;
@@ -272,7 +274,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     gramReadOnly = false;
     priceIncludeTaxReadOnly = false;
     priceExcludeTaxReadOnly = false;
-    priceDiffReadOnly = false;
+    taxBaseReadOnly = false;
     taxAmountReadOnly = false;
     setState(() {
       showCal = false;
@@ -754,9 +756,9 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                           bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
-                                          controller: priceDiffCtrl,
-                                          focusNode: priceDiffFocus,
-                                          readOnly: priceDiffReadOnly,
+                                          controller: taxBaseCtrl,
+                                          focusNode: taxBaseFocus,
+                                          readOnly: taxBaseReadOnly,
                                           inputFormat: [
                                             ThousandsFormatter(
                                                 allowFraction: true)
@@ -767,13 +769,13 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                             });
                                           },
                                           onTap: () {
-                                            txt = 'price_diff';
+                                            txt = 'tax_base';
                                             closeCal();
                                           },
                                           openCalc: () {
                                             if (!showCal) {
-                                              txt = 'price_diff';
-                                              priceDiffFocus.requestFocus();
+                                              txt = 'tax_base';
+                                              taxBaseFocus.requestFocus();
                                               openCal();
                                             }
                                           },
@@ -963,8 +965,8 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                             ? "${Global.format(value)}"
                                             : "";
                                       }
-                                      if (txt == 'price_diff') {
-                                        priceDiffCtrl.text = value != null
+                                      if (txt == 'tax_base') {
+                                        taxBaseCtrl.text = value != null
                                             ? "${Global.format(value)}"
                                             : "";
                                       }
@@ -1291,16 +1293,16 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   }
 
   void getOtherAmount() {
+    taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
+        ? "0"
+        : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);
+
     double priceDiff = Global.toNumber(priceDiffCtrl.text);
     if (priceDiff <= 0) {
       taxAmountCtrl.text = '0';
     } else {
-      taxAmountCtrl.text = Global.format(priceDiff * getVatValue());
+      taxAmountCtrl.text = Global.format(Global.toNumber(priceDiffCtrl.text) * 7 / 107);
     }
-
-    taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
-        ? "0"
-        : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);
 
     priceExcludeTaxCtrl.text = Global.format(
         Global.toNumber(priceIncludeTaxCtrl.text) -
@@ -1341,6 +1343,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     priceDiffTotalCtrl.text = "";
     taxAmountTotalCtrl.text = "";
     taxBaseTotalCtrl.text = "";
+    taxBaseCtrl.text = "";
     Global.refillAttach = null;
     setState(() {});
   }
