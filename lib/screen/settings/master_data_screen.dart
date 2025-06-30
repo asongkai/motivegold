@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/screen/products/product_list_screen.dart';
 import 'package:motivegold/screen/settings/master/bank/bank_screen.dart';
 import 'package:motivegold/screen/settings/master/bankAccount/bank_account_screen.dart';
+import 'package:motivegold/screen/settings/master/location/amphure/amphure_screen.dart';
+import 'package:motivegold/screen/settings/master/location/province/province_screen.dart';
+import 'package:motivegold/screen/settings/master/location/tambon/tambon_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
@@ -80,6 +83,32 @@ class MasterDataScreen extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) =>
                               const BankAccountListScreen()));
+                    }),
+                    const SizedBox(height: 32),
+                    Text("ที่อยู่", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
+                    const SizedBox(height: 8),
+                    _buildListTile('จังหวัด', Icons.line_style_outlined, '', Colors.blue, theme, onTab: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const ProvinceScreen()));
+                    }),
+                    const SizedBox(height: 8),
+                    _buildListTile('อำเภอ', Icons.line_style_outlined, '', Colors.teal, theme, onTab: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const AmphureScreen()));
+                    }),
+                    const SizedBox(height: 8),
+                    _buildListTile('ตำบล', Icons.line_style_outlined, '', Colors.purple, theme, onTab: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const TambonScreen()));
                     }),
                   ],
                 ),

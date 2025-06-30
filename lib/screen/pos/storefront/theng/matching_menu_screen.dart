@@ -1,6 +1,7 @@
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/screen/pos/storefront/checkout_screen.dart';
@@ -12,6 +13,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:sizer/sizer.dart';
 
 class ThengSaleMatchingMenuScreen extends StatefulWidget {
   const ThengSaleMatchingMenuScreen({Key? key, required this.title})
@@ -30,6 +32,7 @@ class ThengSaleMatchingMenuScreenState
   SideMenuController sideMenu = SideMenuController();
   int cartCount = 0;
   int holdCount = 0;
+  int posIndex = 0;
 
   @override
   void initState() {
@@ -43,6 +46,7 @@ class ThengSaleMatchingMenuScreenState
 
   void init() async {
     sideMenu.changePage(Global.posIndex);
+    posIndex = Global.posIndex;
     int count = (await Global.getHoldList()).length;
     int cart = await getCartCount();
     setState(() {
@@ -70,7 +74,7 @@ class ThengSaleMatchingMenuScreenState
                   flex: 5,
                   child: Text("ซื้อขายทองคำแท่ง (จับคู่)",
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 14.sp, //size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -97,7 +101,12 @@ class ThengSaleMatchingMenuScreenState
                           child: IconButton(
                               icon: Icon(
                                 Icons.save,
-                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation ==
+                                        Orientation.landscape)
+                                    ? Device.deviceType == DeviceType.web
+                                        ? 16.sp
+                                        : size.getWidthPx(8)
+                                    : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -152,7 +161,12 @@ class ThengSaleMatchingMenuScreenState
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation ==
+                                        Orientation.landscape)
+                                    ? Device.deviceType == DeviceType.web
+                                        ? 16.sp
+                                        : size.getWidthPx(8)
+                                    : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -197,13 +211,12 @@ class ThengSaleMatchingMenuScreenState
                 displayMode: SideMenuDisplayMode.auto,
                 hoverColor: Colors.teal[100],
                 selectedHoverColor: Colors.teal[100],
-                selectedColor: Colors.teal,
+                selectedColor: posIndex == 0 ? stmBgColor : Colors.teal,
                 selectedTitleTextStyle: const TextStyle(color: Colors.white),
                 selectedIconColor: Colors.white,
                 openSideMenuWidth: 160,
                 itemHeight: 100,
-                itemOuterPadding: const EdgeInsets.all(4.0)
-            ),
+                itemOuterPadding: const EdgeInsets.all(4.0)),
             title: const Column(
               children: [
                 // ConstrainedBox(
@@ -226,18 +239,24 @@ class ThengSaleMatchingMenuScreenState
                 title: 'ลูกค้าซื้อ',
                 subTitle: 'ร้านทองขาย',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {});
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.s),
+                icon: null,
+                //const Icon(FontAwesomeIcons.s),
                 tooltipContent: 'ลูกค้าซื้อ ร้านทองขาย',
               ),
               SideMenuItem(
                 title: 'ลูกค้าขาย',
                 subTitle: 'ร้านทองรับซื้อ',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {});
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.b),
+                icon: null,
+                //const Icon(FontAwesomeIcons.b),
                 tooltipContent: 'ลูกค้าขาย ร้านทองรับซื้อ',
               ),
             ],

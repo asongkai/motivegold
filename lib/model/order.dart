@@ -42,6 +42,7 @@ class OrderModel {
   double? taxBase;
   double? priceExcludeTax;
   double? discount;
+  double? addPrice;
   String? attachment;
   List<OrderDetailModel>? details;
   CustomerModel? customer;
@@ -80,6 +81,7 @@ class OrderModel {
     this.taxBase,
     this.priceExcludeTax,
     this.discount,
+    this.addPrice,
     this.attachment,
     this.details,
     this.customer,
@@ -122,6 +124,7 @@ class OrderModel {
         taxBase: json["taxBase"],
         priceExcludeTax: json["priceExcludeTax"],
         discount: json["discount"],
+        addPrice: json["addPrice"],
         attachment: json['attachment'],
         details: json["details"] == null
             ? []
@@ -176,6 +179,7 @@ class OrderModel {
         "taxBase": taxBase,
         "priceExcludeTax": priceExcludeTax,
         "discount": discount,
+        "addPrice": addPrice,
         "attachment": attachment,
         "details": details == null
             ? []

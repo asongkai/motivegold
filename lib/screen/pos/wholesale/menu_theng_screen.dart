@@ -2,6 +2,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/pos/wholesale/theng/refill/refill_theng_gold_stock_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/theng/used/sell_used_theng_gold_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
@@ -11,6 +12,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:sizer/sizer.dart';
 import 'paphun/refill/refill_gold_stock_screen.dart';
 import 'paphun/used/sell_used_gold_screen.dart';
 
@@ -20,7 +22,8 @@ class WholeSaleThengMenuScreen extends StatefulWidget {
   final String title;
 
   @override
-  WholeSaleThengMenuScreenState createState() => WholeSaleThengMenuScreenState();
+  WholeSaleThengMenuScreenState createState() =>
+      WholeSaleThengMenuScreenState();
 }
 
 class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
@@ -28,6 +31,7 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
   SideMenuController sideMenu = SideMenuController();
   int cartCount = 0;
   int holdCount = 0;
+  int posIndex = 0;
 
   @override
   void initState() {
@@ -41,6 +45,7 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
 
   void init() async {
     sideMenu.changePage(Global.posIndex);
+    posIndex = Global.posIndex;
     int count = (await Global.getHoldList()).length;
     int cart = await getCartCount();
     setState(() {
@@ -68,7 +73,7 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
                   flex: 5,
                   child: Text(widget.title,
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 14.sp, //size.getWidthPx(10),
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -95,7 +100,10 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation ==
+                                        Orientation.landscape)
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
+                                    : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -140,13 +148,13 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
                 displayMode: SideMenuDisplayMode.auto,
                 hoverColor: Colors.teal[100],
                 selectedHoverColor: Colors.teal[100],
-                selectedColor: Colors.teal,
-                selectedTitleTextStyle: const TextStyle(color: Colors.white),
+                selectedColor: posIndex == 0 ? rfBgColor : suBgColor,
+                selectedTitleTextStyle:
+                    TextStyle(color: posIndex == 0 ? textColor : Colors.white),
                 selectedIconColor: Colors.white,
                 openSideMenuWidth: 150,
                 itemHeight: 100,
-                itemOuterPadding: const EdgeInsets.all(4.0)
-            ),
+                itemOuterPadding: const EdgeInsets.all(4.0)),
             title: const Column(
               children: [
                 // ConstrainedBox(
@@ -169,18 +177,24 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
                 title: 'เติม',
                 subTitle: 'ทองคำแท่ง',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {});
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.b),
+                icon: null,
+                //const Icon(FontAwesomeIcons.b),
                 tooltipContent: "เติมทองคำแท่ง",
               ),
               SideMenuItem(
                 title: 'ขาย',
                 subTitle: 'ทองคำแท่ง',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {});
                   sideMenu.changePage(index);
                 },
-                icon: null, //const Icon(FontAwesomeIcons.s),
+                icon: null,
+                //const Icon(FontAwesomeIcons.s),
                 tooltipContent: 'ขายทองคำแท่ง',
               ),
             ],

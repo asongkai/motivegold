@@ -21,9 +21,8 @@ class PriceBreakdown extends StatelessWidget {
           title!,
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 color: kTextColorAccent,
-            fontSize: size.getWidthPx(8),
+            fontSize: size.getWidthPx(10),
             fontWeight: FontWeight.w500,
-            fontFamily: 'NotoSansLao',
               ),
         ),
         const Spacer(),
@@ -31,9 +30,8 @@ class PriceBreakdown extends StatelessWidget {
           price!,
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 color: kTextColor,
-                fontSize: size.getWidthPx(8),
+                fontSize: size.getWidthPx(10),
                 fontWeight: FontWeight.w500,
-            fontFamily: 'NotoSansLao',
               ),
         ),
       ],

@@ -319,7 +319,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                               .getOrderSubTotalAmountApiWholeSale(
                                                   order.orderTypeId!,
                                                   order.details),
-                                          order.discount)),
+                                          order.discount, order.addPrice ?? 0)),
                                   textAlign: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -367,6 +367,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => PreviewRefillGoldPage(
                                           invoice: invoice,
+                                          goHome: true,
                                         )));
                           }
 
@@ -377,6 +378,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                     builder: (context) =>
                                         PreviewSellUsedGoldPage(
                                           invoice: invoice,
+                                          goHome: true,
                                         )));
                           }
 
@@ -384,9 +386,11 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => PreviewRefillThengGoldPage(
-                                      invoice: invoice,
-                                    )));
+                                    builder: (context) =>
+                                        PreviewRefillThengGoldPage(
+                                          invoice: invoice,
+                                          goHome: true,
+                                        )));
                           }
 
                           if (order.orderTypeId == 11) {
@@ -396,6 +400,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen> {
                                     builder: (context) =>
                                         PreviewSellUsedThengGoldPage(
                                           invoice: invoice,
+                                          goHome: true,
                                         )));
                           }
                         } catch (e) {

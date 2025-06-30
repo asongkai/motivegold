@@ -230,7 +230,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GoldMiniWidget(goldDataModel: widget.j == null ? Global
                         .buyOrderDetail![widget.index].goldDataModel : Global
-                        .ordersPapun![widget.index].details![widget.j!].goldDataModel,),
+                        .ordersPapun![widget.index].details![widget.j!].goldDataModel, screen: 1,),
                   ),
                   const SizedBox(
                     height: 20,

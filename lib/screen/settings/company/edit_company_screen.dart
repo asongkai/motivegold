@@ -42,6 +42,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   final TextEditingController villageCtrl = TextEditingController();
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
+  bool nonStock = false;
 
   bool loading = false;
   String? logo;
@@ -61,6 +62,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
     districtCtrl.text = widget.company.district ?? '';
     provinceCtrl.text = widget.company.province ?? '';
     taxNumberCtrl.text = widget.company.taxNumber ?? '';
+    nonStock = widget.company.stock == 1 ? false : true;
   }
 
   @override
@@ -435,6 +437,23 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                               ),
                             ],
                           ),
+                          if (Global.user!.userType == 'ADMIN')
+                          CheckboxListTile(
+                            title: const Text(
+                              "Non Stock",
+                              style: TextStyle(fontSize: 30, color: textColor),
+                            ),
+                            value: nonStock,
+                            visualDensity: VisualDensity.standard,
+                            activeColor: Colors.teal,
+                            onChanged: (newValue) {
+                              setState(() {
+                                nonStock = newValue!;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity
+                                .leading, //  <-- leading Checkbox
+                          ),
                         ],
                       ),
                     ),
@@ -472,7 +491,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
                   "taxNumber": taxNumberCtrl.text,
-                  "logo": logo
+                  "logo": logo,
+                  "stock": nonStock ? 0 : 1
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

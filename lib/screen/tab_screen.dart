@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/screen/customer/customer_screen.dart';
 import 'package:motivegold/screen/dashboard_screen.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:motivegold/screen/home_screen.dart';
 import 'package:motivegold/screen/pos/history_screen.dart';
 import 'package:motivegold/screen/reports/report_screen.dart';
 import 'package:motivegold/screen/settings/setting_screen.dart';
@@ -140,7 +141,7 @@ class _TabScreenState extends State<TabScreen>
               controller: _tabController,
               physics: const NeverScrollableScrollPhysics(),
               children: const [
-                DashboardScreen(),
+                HomeScreen(),
                 PosOrderHistoryScreen(),
                 GoldPriceScreen(
                   showBackButton: false,

@@ -23,6 +23,7 @@ import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
@@ -788,35 +789,26 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                               readOnly: true,
                                               //set it true, so that user will not able to edit text
                                               onTap: () async {
-                                                DateTime? pickedDate =
-                                                    await showDatePicker(
-                                                        context: context,
-                                                        initialDate:
-                                                            DateTime.now(),
-                                                        firstDate: DateTime(
-                                                            DateTime.now()
-                                                                    .year -
-                                                                200),
-                                                        //DateTime.now() - not to allow to choose before today.
-                                                        lastDate:
-                                                            DateTime(2101));
-                                                if (pickedDate != null) {
-                                                  motivePrint(
-                                                      pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                                  String formattedDate =
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (_) => SfDatePickerDialog(
+                                                    initialDate: DateTime.now(),
+                                                    onDateSelected: (date) {
+                                                      motivePrint('You picked: $date');
+                                                      // Your logic here
+                                                      String formattedDate =
                                                       DateFormat('yyyy-MM-dd')
-                                                          .format(pickedDate);
-                                                  motivePrint(
-                                                      formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                  //you can implement different kind of Date Format here according to your requirement
-                                                  setState(() {
-                                                    birthDateCtrl.text =
-                                                        formattedDate; //set output date to TextField value.
-                                                  });
-                                                } else {
-                                                  motivePrint(
-                                                      "Date is not selected");
-                                                }
+                                                          .format(date);
+                                                      motivePrint(
+                                                          formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                      //you can implement different kind of Date Format here according to your requirement
+                                                      setState(() {
+                                                        birthDateCtrl.text =
+                                                            formattedDate; //set output date to TextField value.
+                                                      });
+                                                    },
+                                                  ),
+                                                );
                                               },
                                             ),
                                           ),
@@ -886,7 +878,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                         Expanded(
                                           child: CheckboxListTile(
                                             title: const Text(
-                                              "คือลูกค้า",
+                                              "ซื้อขายหน้าร้าน",
                                               style: TextStyle(fontSize: 30),
                                             ),
                                             value: isCustomer,
@@ -905,7 +897,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                         Expanded(
                                           child: CheckboxListTile(
                                             title: const Text(
-                                              "เป็นผู้ซื้อ",
+                                              "ซื้อขายกับร้านค้าส่ง",
                                               style: TextStyle(fontSize: 30),
                                             ),
                                             value: isBuyer,
@@ -924,7 +916,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                         Expanded(
                                           child: CheckboxListTile(
                                             title: const Text(
-                                              "เป็นผู้ขาย",
+                                              "ซื้อขายกับร้านทองตู้แดง",
                                               style: TextStyle(fontSize: 30),
                                             ),
                                             value: isSeller,
@@ -961,84 +953,98 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child: MiraiDropDownMenu<ProvinceModel>(
-                                      key: UniqueKey(),
-                                      children: Global.provinceList,
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        ProvinceModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return LocationDropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(8),
-                                        );
-                                      },
-                                      onChanged: (ProvinceModel value) {
-                                        Global.provinceModel = value;
-                                        Global.provinceNotifier!.value = value;
-                                        loadAmphureByProvince(value.id);
-                                      },
-                                      child: LocationDropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(8),
-                                        projectValueNotifier:
-                                            Global.provinceNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                      const SizedBox(height: 4,),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<ProvinceModel>(
+                                          key: UniqueKey(),
+                                          children: Global.provinceList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            ProvinceModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(8),
+                                            );
+                                          },
+                                          onChanged: (ProvinceModel value) {
+                                            Global.provinceModel = value;
+                                            Global.provinceNotifier!.value = value;
+                                            loadAmphureByProvince(value.id);
+                                          },
+                                          child: LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(8),
+                                            projectValueNotifier:
+                                                Global.provinceNotifier!,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child: MiraiDropDownMenu<AmphureModel>(
-                                      key: UniqueKey(),
-                                      children: Global.amphureList,
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        AmphureModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return LocationDropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(8),
-                                        );
-                                      },
-                                      onChanged: (AmphureModel value) {
-                                        Global.amphureModel = value;
-                                        Global.amphureNotifier!.value = value;
-                                        loadTambonByAmphure(value.id);
-                                      },
-                                      child: LocationDropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(8),
-                                        projectValueNotifier:
-                                            Global.amphureNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                      const SizedBox(height: 4,),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<AmphureModel>(
+                                          key: UniqueKey(),
+                                          children: Global.amphureList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            AmphureModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(8),
+                                            );
+                                          },
+                                          onChanged: (AmphureModel value) {
+                                            Global.amphureModel = value;
+                                            Global.amphureNotifier!.value = value;
+                                            loadTambonByAmphure(value.id);
+                                          },
+                                          child: LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(8),
+                                            projectValueNotifier:
+                                                Global.amphureNotifier!,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -1054,41 +1060,48 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child: MiraiDropDownMenu<TambonModel>(
-                                      key: UniqueKey(),
-                                      children: Global.tambonList,
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        TambonModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return LocationDropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(8),
-                                        );
-                                      },
-                                      onChanged: (TambonModel value) {
-                                        Global.tambonModel = value;
-                                        Global.tambonNotifier!.value = value;
-                                      },
-                                      child: LocationDropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(8),
-                                        projectValueNotifier:
-                                            Global.tambonNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                      const SizedBox(height: 4,),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<TambonModel>(
+                                          key: UniqueKey(),
+                                          children: Global.tambonList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            TambonModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(8),
+                                            );
+                                          },
+                                          onChanged: (TambonModel value) {
+                                            Global.tambonModel = value;
+                                            Global.tambonNotifier!.value = value;
+                                          },
+                                          child: LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(8),
+                                            projectValueNotifier:
+                                                Global.tambonNotifier!,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ),

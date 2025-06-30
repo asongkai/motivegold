@@ -4,7 +4,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
-import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
@@ -34,6 +33,7 @@ class _CheckOutSummaryHistoryScreenState
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
   TextEditingController paymentMethodCtrl = TextEditingController();
+  TextEditingController addPriceCtrl = TextEditingController();
   bool loading = false;
   List<OrderModel> orders = [];
   double discount = 0;
@@ -72,7 +72,7 @@ class _CheckOutSummaryHistoryScreenState
               paymentListModelFromJson(jsonEncode(payment?.data));
           discountCtrl.text = Global.format(orders.first.discount ?? 0);
           discount = orders.first.discount ?? 0;
-          Global.discount = discount;
+          addPriceCtrl.text = Global.format(orders.first.addPrice ?? 0);
         });
       } else {
         orders = [];
@@ -147,7 +147,7 @@ class _CheckOutSummaryHistoryScreenState
                                             boxShadow: [
                                               BoxShadow(
                                                 color:
-                                                    Colors.grey.withOpacity(.1),
+                                                    Colors.grey.withValues(alpha: 0.1),
                                                 blurRadius: 1,
                                                 spreadRadius: 1,
                                                 offset: const Offset(2, 2),
@@ -281,13 +281,13 @@ class _CheckOutSummaryHistoryScreenState
                                       PriceBreakdown(
                                         title: 'จำนวนเงินที่ชำระ'.tr(),
                                         price:
-                                            '${Global.format(Global.getPaymentTotal(orders))} บาท',
+                                            '${Global.format(Global.getPaymentTotal(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                                       ),
                                       const Divider(),
                                       PriceBreakdown(
-                                        title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
+                                        title: '${Global.getPayTittle(Global.getPaymentTotalB(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                                         price:
-                                            '${Global.getPayTittle(Global.getPaymentTotalB(orders))} ${Global.payToCustomerOrShop(orders, orders[0].discount ?? 0)}',
+                                            '${Global.payToCustomerOrShop(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -493,7 +493,7 @@ class _CheckOutSummaryHistoryScreenState
                                                               const EdgeInsets
                                                                   .all(8.0),
                                                           child: Text(
-                                                              '${Global.format(Global.getPaymentTotal(orders))}',
+                                                              '${Global.format(Global.getPaymentTotal(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                                                               textAlign:
                                                                   TextAlign
                                                                       .right,

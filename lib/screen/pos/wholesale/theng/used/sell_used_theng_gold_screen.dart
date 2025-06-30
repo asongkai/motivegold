@@ -12,6 +12,7 @@ import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -33,6 +34,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class SellUsedThengGoldScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -124,23 +126,25 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
 
     super.initState();
     // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    // productBuyThengPriceCtrl.text = Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy));
-    // productSellPriceCtrl.text = "0";
-    // productBuyPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-    // productBuyPricePerGramCtrl.text = Global.format(
-    //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // // purchasePriceCtrl.text = Global.format(944603.10);
-    // priceIncludeTaxCtrl.text = Global.format(1464946.60);
-    // productEntryWeightCtrl.text = Global.format(434.70);
-    // productEntryWeightBahtCtrl.text =
-    //     Global.format(434.70 / getUnitWeightValue());
-    //
-    // gramChanged();
+    if (env == ENV.DEV) {
+      orderDateCtrl.text = "01-02-2025";
+      referenceNumberCtrl.text = "90803535";
+      productSellThengPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+      productBuyThengPriceCtrl.text = Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy));
+      productSellPriceCtrl.text = "0";
+      productBuyPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
+      productBuyPricePerGramCtrl.text = Global.format(
+          Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
+      // purchasePriceCtrl.text = Global.format(944603.10);
+      priceIncludeTaxCtrl.text = Global.format(1464946.60);
+      productEntryWeightCtrl.text = Global.format(434.70);
+      productEntryWeightBahtCtrl.text =
+          Global.format(Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue());
+
+      gramChanged();
+    }
 
     Global.appBarColor = suBgColor;
     productNotifier =
@@ -360,7 +364,9 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
         centerTitle: true,
         title: Text(
           'ขายทองคำแท่งเก่าให้ร้านค้าส่ง',
-          style: TextStyle(fontSize: size!.getWidthPx(10)),
+          style: TextStyle(
+            fontSize: 16.sp, //size.getWidthPx(10),
+          ),
         ),
         actions: [
           GestureDetector(
@@ -483,29 +489,35 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                             fontSize: size?.getWidthPx(12),
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
-                                        prefixIcon:
-                                        GestureDetector(onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => SfDatePickerDialog(
-                                              initialDate: DateTime.now(),
-                                              onDateSelected: (date) {
-                                                motivePrint('You picked: $date');
-                                                // Your logic here
-                                                String formattedDate =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(date);
-                                                motivePrint(
-                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //you can implement different kind of Date Format here according to your requirement
-                                                setState(() {
-                                                  orderDateCtrl.text =
-                                                      formattedDate; //set output date to TextField value.
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
+                                        prefixIcon: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    motivePrint(
+                                                        'You picked: $date');
+                                                    // Your logic here
+                                                    String formattedDate =
+                                                        DateFormat('dd-MM-yyyy')
+                                                            .format(date);
+                                                    motivePrint(
+                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    //you can implement different kind of Date Format here according to your requirement
+                                                    setState(() {
+                                                      orderDateCtrl.text =
+                                                          formattedDate; //set output date to TextField value.
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.calendar_today,
+                                              size: 40,
+                                            )),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -559,6 +571,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: buildTextFieldX(
+                                      bgColor: Colors.green.shade50,
                                       labelText: "ทองคำแท่งขายออกบาทละ",
                                       inputType: TextInputType.phone,
                                       controller: productSellThengPriceCtrl,
@@ -1015,26 +1028,26 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                         // Alert.info(
                         //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                         //     action: () async {
-                          try {
-                            saveData();
-                            if (mounted) {
-                              resetText();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              Alert.warning(context, 'Warning'.tr(),
-                                  e.toString(), 'OK'.tr(),
-                                  action: () {});
-                            }
+                        try {
+                          saveData();
+                          if (mounted) {
+                            resetText();
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                "เพิ่มลงรถเข็นสำเร็จ...",
+                                style: TextStyle(fontSize: 22),
+                              ),
+                              backgroundColor: Colors.teal,
+                            ));
                           }
+                        } catch (e) {
+                          if (mounted) {
+                            Alert.warning(context, 'Warning'.tr(), e.toString(),
+                                'OK'.tr(),
+                                action: () {});
+                          }
+                        }
                         // });
                       },
                       child: Row(

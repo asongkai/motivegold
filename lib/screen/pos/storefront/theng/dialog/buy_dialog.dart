@@ -247,7 +247,7 @@ class _BuyDialogState extends State<BuyDialog> {
                   posHeaderText(context, btBgColor, 'ซื้อทองคำแท่ง'),
                   const Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
-                    child: GoldMiniWidget(),
+                    child: GoldMiniWidget(screen: 3),
                   ),
 
                   const SizedBox(

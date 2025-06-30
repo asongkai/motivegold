@@ -11,6 +11,7 @@ import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
@@ -186,8 +187,9 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           posHeaderText(context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
-                          const SizedBox(
-                            height: 20,
+                          const Padding(
+                            padding: EdgeInsets.only(left: 10, right: 10),
+                            child: GoldMiniWidget(),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),

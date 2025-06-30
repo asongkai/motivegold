@@ -81,6 +81,12 @@ class _RedeemSingleReportScreenState
 
     makeSearchDate();
 
+    motivePrint({
+      "year": yearCtrl.text == "" ? null : yearCtrl.text,
+      "month": monthCtrl.text == "" ? null : monthCtrl.text,
+      "fromDate": fromDate.toString(),
+      "toDate": toDate.toString(),
+    });
     // return;
 
     setState(() {
@@ -96,7 +102,7 @@ class _RedeemSingleReportScreenState
             "fromDate": fromDate.toString(),
             "toDate": toDate.toString(),
           }));
-      motivePrint(result?.toJson());
+      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<RedeemModel> products = redeemListModelFromJson(data);
@@ -121,6 +127,56 @@ class _RedeemSingleReportScreenState
     setState(() {
       loading = false;
     });
+  }
+
+  makeSearchDate() {
+    int month = 0;
+    int year = 0;
+
+    if (monthCtrl.text.isEmpty) {
+      month = DateTime.now().month;
+    } else {
+      month = Global.toNumber(monthCtrl.text).toInt();
+    }
+
+    if (yearCtrl.text.isEmpty) {
+      year = DateTime.now().year;
+    } else {
+      year = Global.toNumber(yearCtrl.text).toInt();
+    }
+
+    if (fromDateCtrl.text.isNotEmpty) {
+      fromDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      fromDate = null;
+    }
+
+    if (toDateCtrl.text.isNotEmpty) {
+      toDate = Global.convertDate(
+          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+    } else {
+      toDate = null;
+    }
+
+    if (fromDate == null && toDate == null) {
+      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
+      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
+        fromDate = DateTime(year, 1, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!)
+            .add(months: 12, days: -1)
+            .dateTime;
+      } else {
+        fromDate = DateTime(year, month, 1);
+        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
+      }
+    }
+
+    motivePrint(fromDate.toString());
+    motivePrint(toDate.toString());
+
   }
 
   @override
@@ -699,56 +755,6 @@ class _RedeemSingleReportScreenState
         ),
       ),
     );
-  }
-
-  makeSearchDate() {
-    int month = 0;
-    int year = 0;
-
-    if (monthCtrl.text.isEmpty) {
-      month = DateTime.now().month;
-    } else {
-      month = Global.toNumber(monthCtrl.text).toInt();
-    }
-
-    if (yearCtrl.text.isEmpty) {
-      year = DateTime.now().year;
-    } else {
-      year = Global.toNumber(yearCtrl.text).toInt();
-    }
-
-    if (fromDateCtrl.text.isNotEmpty) {
-      fromDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      fromDate = null;
-    }
-
-    if (toDateCtrl.text.isNotEmpty) {
-      toDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      toDate = null;
-    }
-
-    if (fromDate == null && toDate == null) {
-      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
-        fromDate = DateTime(year, 1, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!)
-            .add(months: 12, days: -1)
-            .dateTime;
-      } else {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      }
-    }
-
-    motivePrint(fromDate.toString());
-    motivePrint(toDate.toString());
-
   }
 
   void resetFilter() {

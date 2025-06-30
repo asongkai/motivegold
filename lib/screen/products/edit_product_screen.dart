@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -199,7 +200,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      buildTextFieldBig(
+                                      buildTextField(
                                         labelText: 'รหัสสินค้า'.tr(),
                                         validator: null,
                                         enabled: true,
@@ -222,85 +223,119 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child: MiraiDropDownMenu<ProductTypeModel>(
-                                      key: UniqueKey(),
-                                      children: productTypeList,
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        ProductTypeModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return DropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
-                                        );
-                                      },
-                                      onChanged: (ProductTypeModel value) {
-                                        productTypeCtrl.text = value.name!;
-                                        selectedProductType = value;
-                                        productTypeNotifier!.value = value;
-                                      },
-                                      child: DropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
-                                        projectValueNotifier:
-                                            productTypeNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'ประเภท',
+                                        style: TextStyle(
+                                            fontSize: size.getWidthPx(10),
+                                            color: textColor),
                                       ),
-                                    ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child:
+                                        MiraiDropDownMenu<ProductTypeModel>(
+                                          key: UniqueKey(),
+                                          children: productTypeList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                              int index,
+                                              ProductTypeModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(10),
+                                            );
+                                          },
+                                          onChanged: (ProductTypeModel value) {
+                                            productTypeCtrl.text = value.name!;
+                                            selectedProductType = value;
+                                            productTypeNotifier!.value = value;
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(10),
+                                            projectValueNotifier:
+                                            productTypeNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child:
-                                        MiraiDropDownMenu<ProductCategoryModel>(
-                                      key: UniqueKey(),
-                                      children: productCategoryList,
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        ProductCategoryModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return DropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
-                                        );
-                                      },
-                                      onChanged: (ProductCategoryModel value) {
-                                        productCategoryCtrl.text = value.name!;
-                                        selectedCategory = value;
-                                        productCategoryNotifier!.value = value;
-                                      },
-                                      child: DropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
-                                        projectValueNotifier:
-                                            productCategoryNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'หมวดหมู่',
+                                        style: TextStyle(
+                                            fontSize: size.getWidthPx(10),
+                                            color: textColor),
                                       ),
-                                    ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: MiraiDropDownMenu<
+                                            ProductCategoryModel>(
+                                          key: UniqueKey(),
+                                          children: productCategoryList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                              int index,
+                                              ProductCategoryModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(10),
+                                            );
+                                          },
+                                          onChanged:
+                                              (ProductCategoryModel value) {
+                                            productCategoryCtrl.text =
+                                            value.name!;
+                                            selectedCategory = value;
+                                            productCategoryNotifier!.value =
+                                                value;
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(10),
+                                            projectValueNotifier:
+                                            productCategoryNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -322,7 +357,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      buildTextFieldBig(
+                                      buildTextField(
                                         labelText: 'ชื่อสินค้า'.tr(),
                                         validator: null,
                                         inputType: TextInputType.text,
@@ -332,44 +367,64 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                          Row(
+                            children: [
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: 70,
-                                    child: MiraiDropDownMenu<ProductTypeModel>(
-                                      key: UniqueKey(),
-                                      children: productTypes(),
-                                      space: 4,
-                                      maxHeight: 360,
-                                      showSearchTextField: true,
-                                      selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                      emptyListMessage: 'ไม่มีข้อมูล',
-                                      showSelectedItemBackgroundColor: true,
-                                      itemWidgetBuilder: (
-                                        int index,
-                                        ProductTypeModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
-                                        return DropDownItemWidget(
-                                          project: project,
-                                          isItemSelected: isItemSelected,
-                                          firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
-                                        );
-                                      },
-                                      onChanged: (ProductTypeModel value) {
-                                        typeCtrl.text = value.name!;
-                                        selectedType = value;
-                                        typeNotifier!.value = value;
-                                      },
-                                      child: DropDownObjectChildWidget(
-                                        key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
-                                        projectValueNotifier: typeNotifier!,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'สถานะสินค้า',
+                                        style: TextStyle(
+                                            fontSize: size.getWidthPx(10),
+                                            color: textColor),
                                       ),
-                                    ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child:
+                                        MiraiDropDownMenu<ProductTypeModel>(
+                                          key: UniqueKey(),
+                                          children: productTypes(),
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                          Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                              int index,
+                                              ProductTypeModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size.getWidthPx(10),
+                                            );
+                                          },
+                                          onChanged: (ProductTypeModel value) {
+                                            typeCtrl.text = value.name!;
+                                            selectedType = value;
+                                            typeNotifier!.value = value;
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size.getWidthPx(10),
+                                            projectValueNotifier: typeNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

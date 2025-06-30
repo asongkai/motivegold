@@ -10,6 +10,9 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/customer.dart';
+import 'package:motivegold/model/location/amphure.dart';
+import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/screen/customer/ocr/id_data_screen.dart';
 import 'package:motivegold/screen/customer/widget/card_reader_info.dart';
@@ -22,8 +25,11 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/customer/location.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/LocationDropDownObjectChildWidget.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
@@ -98,6 +104,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     Global.addressCtrl.text = "";
     ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
     // init();
+    Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+        Global.provinceModel ??
+            ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(
+        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    Global.tambonNotifier = ValueNotifier<TambonModel>(
+        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
   }
 
   init() async {
@@ -184,6 +197,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         }
         emailAddressCtrl.text = "";
         phoneCtrl.text = "";
+        birthDateCtrl.text = Global.formatDateDD(_data!.birthdate!);
         var address0 = _data!.address ?? "";
 
         if (address0.isNotEmpty) {
@@ -208,7 +222,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           });
         }
 
-        birthDateCtrl.text = Global.formatDateDD(_data!.birthdate!);
+
       }
       setState(() {});
     } catch (e) {
@@ -257,14 +271,41 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.of(context)
+                  onTap: () async {
+                    Map<String, dynamic>? ocrResult = await Navigator.of(context)
                         .push(
                           MaterialPageRoute(
                             builder: (context) => const IDCardOCRScreen(),
                           ),
                         )
-                        .whenComplete(() {});
+                        .whenComplete(() {
+                          setState(() {
+
+                          });
+                    });
+                    Global.printLongString(ocrResult.toString());
+
+                    if (ocrResult != null) {
+                      idCardCtrl.text = ocrResult["id_number"];
+                      if (ocrResult["th_fname"] != null) {
+                        firstNameCtrl.text = '${ocrResult["th_init"]} ${ocrResult["th_fname"]}';
+                        lastNameCtrl.text = '${ocrResult["th_lname"]}';
+                      } else {
+                        firstNameCtrl.text = '${ocrResult["en_init"]} ${ocrResult["en_fname"]}';
+                        lastNameCtrl.text = '${ocrResult["en_lname"]}';
+                      }
+                      emailAddressCtrl.text = "";
+                      phoneCtrl.text = "";
+                      birthDateCtrl.text = Global.formatDateThai(ocrResult["en_dob"]);
+                      nationality = "Thai";
+                      postalCodeCtrl.text = ocrResult["postal_code"];
+                      addressCtrl.text = ocrResult["address"].toString().split("/")[1].replaceFirst(' ', '');
+                      Global.addressCtrl.text = ocrResult["address"].toString().split("/")[1].replaceFirst(' ', '');
+                    }
+
+                    setState(() {
+
+                    });
                   },
                   child: Container(
                     color: Colors.teal[900],
@@ -759,31 +800,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                         readOnly: true,
                                         //set it true, so that user will not able to edit text
                                         onTap: () async {
-                                          DateTime? pickedDate =
-                                              await showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(
-                                                      DateTime.now().year -
-                                                          200),
-                                                  //DateTime.now() - not to allow to choose before today.
-                                                  lastDate: DateTime(2101));
-                                          if (pickedDate != null) {
-                                            motivePrint(
-                                                pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                            String formattedDate =
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => SfDatePickerDialog(
+                                              initialDate: DateTime.now(),
+                                              onDateSelected: (date) {
+                                                motivePrint('You picked: $date');
+                                                // Your logic here
+                                                String formattedDate =
                                                 DateFormat('yyyy-MM-dd')
-                                                    .format(pickedDate);
-                                            motivePrint(
-                                                formattedDate); //formatted date output using intl package =>  2021-03-16
-                                            //you can implement different kind of Date Format here according to your requirement
-                                            setState(() {
-                                              birthDateCtrl.text =
-                                                  formattedDate; //set output date to TextField value.
-                                            });
-                                          } else {
-                                            motivePrint("Date is not selected");
-                                          }
+                                                    .format(date);
+                                                motivePrint(
+                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                //you can implement different kind of Date Format here according to your requirement
+                                                setState(() {
+                                                  birthDateCtrl.text =
+                                                      formattedDate; //set output date to TextField value.
+                                                });
+                                              },
+                                            ),
+                                          );
                                         },
                                       ),
                                     ),
@@ -851,7 +887,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   Expanded(
                                     child: CheckboxListTile(
                                       title: const Text(
-                                        "คือลูกค้า",
+                                        "ซื้อขายหน้าร้าน",
                                         style: TextStyle(fontSize: 30),
                                       ),
                                       value: isCustomer,
@@ -863,13 +899,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                         });
                                       },
                                       controlAffinity: ListTileControlAffinity
-                                          .leading, //  <-- leading Checkbox
+                                          .leading,
                                     ),
                                   ),
                                   Expanded(
                                     child: CheckboxListTile(
                                       title: const Text(
-                                        "เป็นผู้ซื้อ",
+                                        "ซื้อขายกับร้านค้าส่ง",
                                         style: TextStyle(fontSize: 30),
                                       ),
                                       value: isBuyer,
@@ -887,7 +923,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   Expanded(
                                     child: CheckboxListTile(
                                       title: const Text(
-                                        "เป็นผู้ขาย",
+                                        "ซื้อขายกับร้านทองตู้แดง",
                                         style: TextStyle(fontSize: 30),
                                       ),
                                       value: isSeller,
@@ -915,7 +951,197 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     const SizedBox(
                       height: 15,
                     ),
-                    const LocationEntryWidget(),
+                    // const LocationEntryWidget(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                const SizedBox(height: 4,),
+                                SizedBox(
+                                  height: 70,
+                                  child: MiraiDropDownMenu<ProvinceModel>(
+                                    key: UniqueKey(),
+                                    children: Global.provinceList,
+                                    space: 4,
+                                    maxHeight: 360,
+                                    showSearchTextField: true,
+                                    selectedItemBackgroundColor:
+                                    Colors.transparent,
+                                    emptyListMessage: 'ไม่มีข้อมูล',
+                                    showSelectedItemBackgroundColor: true,
+                                    itemWidgetBuilder: (
+                                        int index,
+                                        ProvinceModel? project, {
+                                          bool isItemSelected = false,
+                                        }) {
+                                      return LocationDropDownItemWidget(
+                                        project: project,
+                                        isItemSelected: isItemSelected,
+                                        firstSpace: 10,
+                                        fontSize: size.getWidthPx(8),
+                                      );
+                                    },
+                                    onChanged: (ProvinceModel value) {
+                                      Global.provinceModel = value;
+                                      Global.provinceNotifier!.value = value;
+                                      loadAmphureByProvince(value.id);
+                                    },
+                                    child: LocationDropDownObjectChildWidget(
+                                      key: GlobalKey(),
+                                      fontSize: size.getWidthPx(8),
+                                      projectValueNotifier:
+                                      Global.provinceNotifier!,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                const SizedBox(height: 4,),
+                                SizedBox(
+                                  height: 70,
+                                  child: MiraiDropDownMenu<AmphureModel>(
+                                    key: UniqueKey(),
+                                    children: Global.amphureList,
+                                    space: 4,
+                                    maxHeight: 360,
+                                    showSearchTextField: true,
+                                    selectedItemBackgroundColor:
+                                    Colors.transparent,
+                                    emptyListMessage: 'ไม่มีข้อมูล',
+                                    showSelectedItemBackgroundColor: true,
+                                    itemWidgetBuilder: (
+                                        int index,
+                                        AmphureModel? project, {
+                                          bool isItemSelected = false,
+                                        }) {
+                                      return LocationDropDownItemWidget(
+                                        project: project,
+                                        isItemSelected: isItemSelected,
+                                        firstSpace: 10,
+                                        fontSize: size.getWidthPx(8),
+                                      );
+                                    },
+                                    onChanged: (AmphureModel value) {
+                                      Global.amphureModel = value;
+                                      Global.amphureNotifier!.value = value;
+                                      loadTambonByAmphure(value.id);
+                                    },
+                                    child: LocationDropDownObjectChildWidget(
+                                      key: GlobalKey(),
+                                      fontSize: size.getWidthPx(8),
+                                      projectValueNotifier:
+                                      Global.amphureNotifier!,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                const SizedBox(height: 4,),
+                                SizedBox(
+                                  height: 70,
+                                  child: MiraiDropDownMenu<TambonModel>(
+                                    key: UniqueKey(),
+                                    children: Global.tambonList,
+                                    space: 4,
+                                    maxHeight: 360,
+                                    showSearchTextField: true,
+                                    selectedItemBackgroundColor:
+                                    Colors.transparent,
+                                    emptyListMessage: 'ไม่มีข้อมูล',
+                                    showSelectedItemBackgroundColor: true,
+                                    itemWidgetBuilder: (
+                                        int index,
+                                        TambonModel? project, {
+                                          bool isItemSelected = false,
+                                        }) {
+                                      return LocationDropDownItemWidget(
+                                        project: project,
+                                        isItemSelected: isItemSelected,
+                                        firstSpace: 10,
+                                        fontSize: size.getWidthPx(8),
+                                      );
+                                    },
+                                    onChanged: (TambonModel value) {
+                                      Global.tambonModel = value;
+                                      Global.tambonNotifier!.value = value;
+                                    },
+                                    child: LocationDropDownObjectChildWidget(
+                                      key: GlobalKey(),
+                                      fontSize: size.getWidthPx(8),
+                                      projectValueNotifier:
+                                      Global.tambonNotifier!,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                buildTextField(
+                                  line: 3,
+                                  labelText: 'ที่อยู่'.tr(),
+                                  validator: null,
+                                  inputType: TextInputType.text,
+                                  controller: Global.addressCtrl,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(
                       height: 15,
                     ),
@@ -932,7 +1158,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                buildTextFieldBig(
+                                buildTextField(
                                   line: 2,
                                   labelText: 'หมายเหตุ'.tr(),
                                   validator: null,

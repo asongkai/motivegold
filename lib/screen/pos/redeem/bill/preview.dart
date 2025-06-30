@@ -9,16 +9,18 @@ import 'package:printing/printing.dart';
 
 class PdfPreviewRedeemPage extends StatelessWidget {
   final InvoiceRedeem invoice;
+  final bool goHome;
 
-  const PdfPreviewRedeemPage({super.key, required this.invoice});
+  const PdfPreviewRedeemPage({super.key, required this.invoice, this.goHome = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
+          goHome: goHome,
           title: Text("พิมพ์เอกสาร",
               style: TextStyle(
                   fontSize: 30,

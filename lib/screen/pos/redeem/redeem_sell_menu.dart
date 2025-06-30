@@ -1,5 +1,6 @@
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/pos/redeem/redeem_check_screen.dart';
 import 'package:motivegold/screen/pos/redeem/ui/redeem_screen.dart';
 import 'package:badges/badges.dart' as badges;
@@ -21,6 +22,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
   SideMenuController sideMenu = SideMenuController();
   int cartCount = 0;
   int holdCount = 0;
+  int posIndex = 0;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
 
   void init() async {
     sideMenu.changePage(Global.posIndex);
+    posIndex = Global.posIndex;
     int cart = await getRedeemCartCount();
     setState(() {
       cartCount = cart;
@@ -129,7 +132,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
                 displayMode: SideMenuDisplayMode.auto,
                 hoverColor: Colors.teal[100],
                 selectedHoverColor: Colors.teal[100],
-                selectedColor: Colors.teal,
+                selectedColor: posIndex == 0 ? stmBgColor : Colors.teal,
                 selectedTitleTextStyle: const TextStyle(color: Colors.white),
                 selectedIconColor: Colors.white,
                 openSideMenuWidth: 160,
@@ -158,6 +161,10 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
                 title: 'ไถ่ถอน',
                 subTitle: 'ขายฝาก',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {
+
+                  });
                   sideMenu.changePage(index);
                 },
                 icon: null, //const Icon(FontAwesomeIcons.s),

@@ -77,7 +77,7 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
 
     sumSellThengTotalMatching();
-    loadProducts();
+    // loadProducts();
     getCart();
   }
 

@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
+import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
@@ -80,88 +81,99 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  height: 70,
-                  child: MiraiDropDownMenu<ProvinceModel>(
-                    key: UniqueKey(),
-                    children: Global.provinceList,
-                    space: 4,
-                    maxHeight: 360,
-                    showSearchTextField: true,
-                    selectedItemBackgroundColor: Colors.transparent,
-                    emptyListMessage: 'ไม่มีข้อมูล',
-                    showSelectedItemBackgroundColor: true,
-                    itemWidgetBuilder: (
-                        int index,
-                        ProvinceModel? project, {
-                          bool isItemSelected = false,
-                        }) {
-                      return LocationDropDownItemWidget(
-                        project: project,
-                        isItemSelected: isItemSelected,
-                        firstSpace: 10,
-                        fontSize: size.getWidthPx(8),
-                      );
-                    },
-                    onChanged: (ProvinceModel value) {
-                      Global.provinceModel = value;
-                      Global.provinceNotifier!.value = value;
-                      loadAmphureByProvince(value.id);
-                    },
-                    child: LocationDropDownObjectChildWidget(
-                      key: GlobalKey(),
-                      fontSize: size.getWidthPx(8),
-                      projectValueNotifier:
-                      Global.provinceNotifier!,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    const SizedBox(height: 4,),
+                    SizedBox(
+                      height: 70,
+                      child: MiraiDropDownMenu<ProvinceModel>(
+                        key: UniqueKey(),
+                        children: Global.provinceList,
+                        space: 4,
+                        maxHeight: 360,
+                        showSearchTextField: true,
+                        selectedItemBackgroundColor: Colors.transparent,
+                        emptyListMessage: 'ไม่มีข้อมูล',
+                        showSelectedItemBackgroundColor: true,
+                        itemWidgetBuilder: (
+                            int index,
+                            ProvinceModel? project, {
+                              bool isItemSelected = false,
+                            }) {
+                          return LocationDropDownItemWidget(
+                            project: project,
+                            isItemSelected: isItemSelected,
+                            firstSpace: 10,
+                            fontSize: size.getWidthPx(8),
+                          );
+                        },
+                        onChanged: (ProvinceModel value) {
+                          Global.provinceModel = value;
+                          Global.provinceNotifier!.value = value;
+                          loadAmphureByProvince(value.id);
+                        },
+                        child: LocationDropDownObjectChildWidget(
+                          key: GlobalKey(),
+                          fontSize: size.getWidthPx(8),
+                          projectValueNotifier:
+                          Global.provinceNotifier!,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  height: 70,
-                  child: MiraiDropDownMenu<AmphureModel>(
-                    key: UniqueKey(),
-                    children: Global.amphureList,
-                    space: 4,
-                    maxHeight: 360,
-                    showSearchTextField: true,
-                    selectedItemBackgroundColor: Colors.transparent,
-                    emptyListMessage: 'ไม่มีข้อมูล',
-                    showSelectedItemBackgroundColor: true,
-                    itemWidgetBuilder: (
-                        int index,
-                        AmphureModel? project, {
-                          bool isItemSelected = false,
-                        }) {
-                      return LocationDropDownItemWidget(
-                        project: project,
-                        isItemSelected: isItemSelected,
-                        firstSpace: 10,
-                        fontSize: size.getWidthPx(8),
-                      );
-                    },
-                    onChanged: (AmphureModel value) {
-                      Global.amphureModel = value;
-                      Global.amphureNotifier!.value = value;
-                      loadTambonByAmphure(value.id);
-                    },
-                    child: LocationDropDownObjectChildWidget(
-                      key: GlobalKey(),
-                      fontSize: size.getWidthPx(8),
-                      projectValueNotifier: Global.amphureNotifier!,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    const SizedBox(height: 4,),
+                    SizedBox(
+                      height: 70,
+                      child: MiraiDropDownMenu<AmphureModel>(
+                        key: UniqueKey(),
+                        children: Global.amphureList,
+                        space: 4,
+                        maxHeight: 360,
+                        showSearchTextField: true,
+                        selectedItemBackgroundColor: Colors.transparent,
+                        emptyListMessage: 'ไม่มีข้อมูล',
+                        showSelectedItemBackgroundColor: true,
+                        itemWidgetBuilder: (
+                            int index,
+                            AmphureModel? project, {
+                              bool isItemSelected = false,
+                            }) {
+                          return LocationDropDownItemWidget(
+                            project: project,
+                            isItemSelected: isItemSelected,
+                            firstSpace: 10,
+                            fontSize: size.getWidthPx(8),
+                          );
+                        },
+                        onChanged: (AmphureModel value) {
+                          Global.amphureModel = value;
+                          Global.amphureNotifier!.value = value;
+                          loadTambonByAmphure(value.id);
+                        },
+                        child: LocationDropDownObjectChildWidget(
+                          key: GlobalKey(),
+                          fontSize: size.getWidthPx(8),
+                          projectValueNotifier: Global.amphureNotifier!,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
           ],
-        ),
-        const SizedBox(
-          height: 10,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -170,40 +182,47 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  height: 70,
-                  child: MiraiDropDownMenu<TambonModel>(
-                    key: UniqueKey(),
-                    children: Global.tambonList,
-                    space: 4,
-                    maxHeight: 360,
-                    showSearchTextField: true,
-                    selectedItemBackgroundColor: Colors.transparent,
-                    emptyListMessage: 'ไม่มีข้อมูล',
-                    showSelectedItemBackgroundColor: true,
-                    itemWidgetBuilder: (
-                        int index,
-                        TambonModel? project, {
-                          bool isItemSelected = false,
-                        }) {
-                      return LocationDropDownItemWidget(
-                        project: project,
-                        isItemSelected: isItemSelected,
-                        firstSpace: 10,
-                        fontSize: size.getWidthPx(8),
-                      );
-                    },
-                    onChanged: (TambonModel value) {
-                      Global.tambonModel = value;
-                      Global.tambonNotifier!.value = value;
-                    },
-                    child: LocationDropDownObjectChildWidget(
-                      key: GlobalKey(),
-                      fontSize: size.getWidthPx(8),
-                      projectValueNotifier:
-                      Global.tambonNotifier!,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    const SizedBox(height: 4,),
+                    SizedBox(
+                      height: 70,
+                      child: MiraiDropDownMenu<TambonModel>(
+                        key: UniqueKey(),
+                        children: Global.tambonList,
+                        space: 4,
+                        maxHeight: 360,
+                        showSearchTextField: true,
+                        selectedItemBackgroundColor: Colors.transparent,
+                        emptyListMessage: 'ไม่มีข้อมูล',
+                        showSelectedItemBackgroundColor: true,
+                        itemWidgetBuilder: (
+                            int index,
+                            TambonModel? project, {
+                              bool isItemSelected = false,
+                            }) {
+                          return LocationDropDownItemWidget(
+                            project: project,
+                            isItemSelected: isItemSelected,
+                            firstSpace: 10,
+                            fontSize: size.getWidthPx(8),
+                          );
+                        },
+                        onChanged: (TambonModel value) {
+                          Global.tambonModel = value;
+                          Global.tambonNotifier!.value = value;
+                        },
+                        child: LocationDropDownObjectChildWidget(
+                          key: GlobalKey(),
+                          fontSize: size.getWidthPx(8),
+                          projectValueNotifier:
+                          Global.tambonNotifier!,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),

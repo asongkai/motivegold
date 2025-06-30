@@ -33,7 +33,7 @@ Future<Uint8List?> loadNetworkImage(String url) async {
 }
 
 Future<Widget> header(OrderModel order, String? title,
-    {bool? showPosId}) async {
+    {bool? showPosId, String? versionText}) async {
   // Load network image
   final Uint8List? imageData = await loadNetworkImage(
       '${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
@@ -100,7 +100,7 @@ Future<Widget> header(OrderModel order, String? title,
                       ),
                       child: Center(
                         child: Text(
-                          'ต้นฉบับ', // Thai text
+                          '$versionText', // Thai text
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -178,7 +178,8 @@ Future<Widget> headerRedeem(RedeemModel order, String? title,
                   Expanded(
                       flex: 3,
                       child: Container(
-                          child: Text('เลขที่ : ${order.redeemId} '), alignment: Alignment.centerRight)),
+                          child: Text('เลขที่ : ${order.redeemId} '),
+                          alignment: Alignment.centerRight)),
                 ],
               ),
             ],
@@ -261,8 +262,7 @@ Widget docNoRedeem(RedeemModel order) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-                'ชื่อ-สกุลผู้ไถ่ถอน : ${order.customer?.firstName} ${order.customer?.lastName}',
+            Text('ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
                 style: const TextStyle(fontSize: 9)),
             Text('วันที่ : ${Global.formatDateNT(order.redeemDate.toString())}',
                 style: const TextStyle(fontSize: 9)),
@@ -277,7 +277,6 @@ Widget docNoRedeem(RedeemModel order) {
                 style: const TextStyle(fontSize: 9)),
           ],
         ),
-
       ]);
 }
 
@@ -298,7 +297,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                     children: [
                       Text('${getNameTitle(order)} : ',
                           style: const TextStyle(fontSize: 9)),
-                      Text('${customer.firstName} ${customer.lastName}',
+                      Text('${getCustomerName(customer)}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
@@ -373,7 +372,7 @@ Widget buyerSellerInfoRedeem(CustomerModel customer, RedeemModel order) {
                     children: [
                       Text('ชื่อ-สกุลผู้ไถ่ถอน : ',
                           style: const TextStyle(fontSize: 9)),
-                      Text('${customer.firstName} ${customer.lastName}',
+                      Text('${getCustomerName(customer)}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
@@ -448,7 +447,7 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
                     children: [
                       Text('${getNameTitle(order)} : ',
                           style: const TextStyle(fontSize: 9)),
-                      Text('${customer.firstName} ${customer.lastName}',
+                      Text('${getCustomerName(customer)}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),
@@ -524,7 +523,7 @@ Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
                     children: [
                       Text('${getNameTitle(order)} : ',
                           style: const TextStyle(fontSize: 9)),
-                      Text('${customer.firstName} ${customer.lastName}',
+                      Text('${getCustomerName(customer)}',
                           style: const TextStyle(fontSize: 9)),
                     ],
                   ),

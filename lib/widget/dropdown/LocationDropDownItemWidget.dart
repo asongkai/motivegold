@@ -41,6 +41,13 @@ class LocationDropDownItemWidget extends StatelessWidget {
                     fontSize: fontSize,
                   ),
                 ),
+                Text(
+                  '${project!.nameEn}',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Colors.black,
+                    fontSize: fontSize,
+                  ),
+                ),
               ],
             ),
           ),

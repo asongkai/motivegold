@@ -34,4 +34,20 @@ class ProvinceModel {
     "nameEN": nameEn,
     "geographyId": geographyId,
   };
+
+  @override
+  String toString() {
+    return 'ProvinceModel{id: $id, nameTH: $nameTh, nameEN: $nameEn}';
+  }
+
+  @override
+  operator ==(o) => o is ProvinceModel && o.id == id;
+
+  @override
+  int get hashCode => id.hashCode^nameTh.hashCode^nameEn.hashCode;
+
+  @override
+  bool filter(String query) {
+    return nameTh!.toLowerCase().contains(query.toLowerCase());
+  }
 }

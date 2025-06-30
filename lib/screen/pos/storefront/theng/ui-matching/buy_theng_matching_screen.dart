@@ -78,7 +78,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyThengTotalMatching();
-    loadProducts();
+    // loadProducts();
     getCart();
   }
 

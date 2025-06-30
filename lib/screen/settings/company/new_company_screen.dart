@@ -34,6 +34,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
 
+  bool nonStock = false;
+
   String? logo;
   File? file;
   final ImagePicker picker = ImagePicker();
@@ -401,6 +403,23 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                         ),
                       ],
                     ),
+                    if (Global.user!.userType == 'ADMIN')
+                      CheckboxListTile(
+                        title: const Text(
+                          "Non Stock",
+                          style: TextStyle(fontSize: 30, color: textColor),
+                        ),
+                        value: nonStock,
+                        visualDensity: VisualDensity.standard,
+                        activeColor: Colors.teal,
+                        onChanged: (newValue) {
+                          setState(() {
+                            nonStock = newValue!;
+                          });
+                        },
+                        controlAffinity: ListTileControlAffinity
+                            .leading, //  <-- leading Checkbox
+                      ),
                   ],
                 ),
               ),
@@ -438,7 +457,8 @@ class _NewCompanyScreenState extends State<NewCompanyScreen> {
                   "district": districtCtrl.text,
                   "province": provinceCtrl.text,
                   "taxNumber": taxNumberCtrl.text,
-                  "logo": logo
+                  "logo": logo,
+                  "stock": nonStock ? 0 : 1
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',

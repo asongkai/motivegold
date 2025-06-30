@@ -9,15 +9,17 @@ import 'package:printing/printing.dart';
 
 class PreviewRefillThengGoldPage extends StatelessWidget {
   final Invoice invoice;
-  const PreviewRefillThengGoldPage({super.key, required this.invoice});
+  final bool goHome;
+  const PreviewRefillThengGoldPage({super.key, required this.invoice, this.goHome = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
+          goHome: goHome,
           title: Text("พิมพ์เอกสาร",
               style: TextStyle(
                   fontSize: 30,

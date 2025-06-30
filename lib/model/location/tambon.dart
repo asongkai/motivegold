@@ -38,4 +38,20 @@ class TambonModel {
     "nameEN": nameEn,
     "amphureId": amphureId,
   };
+
+  @override
+  String toString() {
+    return 'TambonModel{id: $id, nameTH: $nameTh, nameEN: $nameEn}';
+  }
+
+  @override
+  operator ==(o) => o is TambonModel && o.id == id;
+
+  @override
+  int get hashCode => id.hashCode^nameTh.hashCode^nameEn.hashCode;
+
+  @override
+  bool filter(String query) {
+    return nameTh!.toLowerCase().contains(query.toLowerCase());
+  }
 }

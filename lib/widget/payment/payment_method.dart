@@ -164,7 +164,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
               Global.selectedAccount ??
                   BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0));
         }
-        motivePrint(Global.currentPaymentMethod);
+        triggerAmount();
         setState(() {
 
         });
@@ -277,38 +277,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                   Global.selectedPayment?.code;
                               paymentNotifier!.value = value;
                               // motivePrint('amount: ${Global.payToCustomerOrShopValue(Global.ordersPapun, Global.discount)}');
-                              double amount = 0;
-
-                              if (Global.currentOrderType == 5) {
-                                amount =
-                                    Global.payToCustomerOrShopValueWholeSale(
-                                        Global.ordersWholesale,
-                                        Global.discount);
-                              } else if (Global.currentOrderType == 6) {
-                                amount =
-                                    Global.payToCustomerOrShopValueWholeSale(
-                                        Global.ordersThengWholesale,
-                                        Global.discount);
-                              } else {
-                                if (Global.checkOutMode == 'O') {
-                                  amount = Global.payToCustomerOrShopValue(
-                                      Global.orders, Global.discount);
-                                }
-
-                                if (Global.checkOutMode == 'P') {
-                                  amount = Global.getRedeemPaymentTotal(
-                                      Global.redeems,
-                                      discount: Global.discount);
-                                }
-                              }
-                              if (amount >= 0) {
-                                Global.amountCtrl.text = Global.format(
-                                    amount - Global.getPaymentListTotal());
-                              } else {
-                                Global.amountCtrl.text = Global.format(
-                                    -amount - Global.getPaymentListTotal());
-                              }
-                              setState(() {});
+                              triggerAmount();
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
@@ -724,7 +693,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SizedBox(
-                    width: 200,
+                    width: 300,
                     child: ElevatedButton.icon(
                       onPressed: showOptions,
                       icon: const Icon(
@@ -776,6 +745,41 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 ),
             ],
           );
+  }
+
+  void triggerAmount() {
+    double amount = 0;
+    
+    if (Global.currentOrderType == 5) {
+      amount =
+          Global.payToCustomerOrShopValueWholeSale(
+              Global.ordersWholesale,
+              Global.discount, Global.addPrice);
+    } else if (Global.currentOrderType == 6) {
+      amount =
+          Global.payToCustomerOrShopValueWholeSale(
+              Global.ordersThengWholesale,
+              Global.discount, Global.addPrice);
+    } else {
+      if (Global.checkOutMode == 'O') {
+        amount = Global.payToCustomerOrShopValue(
+            Global.orders, Global.discount, Global.addPrice);
+      }
+    
+      if (Global.checkOutMode == 'P') {
+        amount = Global.getRedeemPaymentTotal(
+            Global.redeems,
+            discount: Global.discount);
+      }
+    }
+    if (amount >= 0) {
+      Global.amountCtrl.text = Global.format(
+          amount - Global.getPaymentListTotal());
+    } else {
+      Global.amountCtrl.text = Global.format(
+          -amount - Global.getPaymentListTotal());
+    }
+    setState(() {});
   }
 
   void filterAccount(int? id) {

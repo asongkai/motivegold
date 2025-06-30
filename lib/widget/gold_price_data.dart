@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class GoldPriceListTileData extends StatelessWidget {
   final String? title;
@@ -24,7 +25,7 @@ class GoldPriceListTileData extends StatelessWidget {
               child: Text(
                 title!,
                 style: TextStyle(
-                    fontSize: size.getWidthPx(10),
+                    fontSize: 14.sp, //size.getWidthPx(10),
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),
@@ -35,7 +36,7 @@ class GoldPriceListTileData extends StatelessWidget {
                 subTitle!,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                    fontSize: size.getWidthPx(10),
+                    fontSize: 14.sp, //size.getWidthPx(10),
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),
@@ -46,7 +47,7 @@ class GoldPriceListTileData extends StatelessWidget {
                 value!,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                    fontSize: size.getWidthPx(10),
+                    fontSize: 14.sp, //size.getWidthPx(10),
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),

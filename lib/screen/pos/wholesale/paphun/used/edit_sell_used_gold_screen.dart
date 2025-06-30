@@ -12,6 +12,7 @@ import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -33,6 +34,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class EditSellUsedGoldScreen extends StatefulWidget {
   final int index;
@@ -120,23 +122,25 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
 
     super.initState();
     // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    // productBuyThengPriceCtrl.text = "0";
-    // productSellPriceCtrl.text = "0";
-    // productBuyPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-    // productBuyPricePerGramCtrl.text = Global.format(
-    //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // // purchasePriceCtrl.text = Global.format(944603.10);
-    // priceIncludeTaxCtrl.text = Global.format(1464946.60);
-    // productEntryWeightCtrl.text = Global.format(434.70);
-    // productEntryWeightBahtCtrl.text =
-    //     Global.format(434.70 / getUnitWeightValue());
-    //
-    // gramChanged();
+    if (env == ENV.DEV) {
+      // orderDateCtrl.text = "01-02-2025";
+      // referenceNumberCtrl.text = "90803535";
+      // productSellThengPriceCtrl.text =
+      //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+      // productBuyThengPriceCtrl.text = "0";
+      // productSellPriceCtrl.text = "0";
+      // productBuyPriceCtrl.text =
+      //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
+      // productBuyPricePerGramCtrl.text = Global.format(
+      //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
+      // // purchasePriceCtrl.text = Global.format(944603.10);
+      // priceIncludeTaxCtrl.text = Global.format(1464946.60);
+      // productEntryWeightCtrl.text = Global.format(434.70);
+      // productEntryWeightBahtCtrl.text =
+      //     Global.format(434.70 / getUnitWeightValue());
+      //
+      // gramChanged();
+    }
 
     Global.appBarColor = suBgColor;
     productNotifier =
@@ -156,8 +160,11 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
         Global.ordersWholesale![widget.index].referenceNo ?? '';
     productSellThengPriceCtrl.text =
         Global.format(Global.ordersWholesale![widget.index].sellTPrice ?? 0);
-    productBuyPricePerGramCtrl.text = Global.ordersWholesale![widget.index].buyPrice == null ? "0" : Global.format(
-        Global.ordersWholesale![widget.index].buyPrice! / getUnitWeightValue());
+    productBuyPricePerGramCtrl.text =
+        Global.ordersWholesale![widget.index].buyPrice == null
+            ? "0"
+            : Global.format(Global.ordersWholesale![widget.index].buyPrice! /
+                getUnitWeightValue());
     motivePrint(Global.ordersWholesale![widget.index].buyPrice);
     productBuyPriceCtrl.text =
         Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
@@ -244,10 +251,10 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
     });
     try {
       Global.sellUsedAttach =
-      Global.ordersWholesale![widget.index].attachment != null
-          ? await Global.createFileFromString(
-          Global.ordersWholesale![widget.index].attachment ?? '')
-          : null;
+          Global.ordersWholesale![widget.index].attachment != null
+              ? await Global.createFileFromString(
+                  Global.ordersWholesale![widget.index].attachment ?? '')
+              : null;
 
       var result = await ApiServices.post(
           '/product/type/USED/6', Global.requestObj(null));
@@ -404,7 +411,9 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
         centerTitle: true,
         title: Text(
           'ขายทองเก่าร้านขายส่ง',
-          style: TextStyle(fontSize: size!.getWidthPx(10)),
+          style: TextStyle(
+            fontSize: 16.sp, //size.getWidthPx(10),
+          ),
         ),
         actions: [
           GestureDetector(
@@ -527,29 +536,35 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                             fontSize: size?.getWidthPx(12),
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
-                                        prefixIcon:
-                                        GestureDetector(onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => SfDatePickerDialog(
-                                              initialDate: DateTime.now(),
-                                              onDateSelected: (date) {
-                                                motivePrint('You picked: $date');
-                                                // Your logic here
-                                                String formattedDate =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(date);
-                                                motivePrint(
-                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //you can implement different kind of Date Format here according to your requirement
-                                                setState(() {
-                                                  orderDateCtrl.text =
-                                                      formattedDate; //set output date to TextField value.
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
+                                        prefixIcon: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    motivePrint(
+                                                        'You picked: $date');
+                                                    // Your logic here
+                                                    String formattedDate =
+                                                        DateFormat('dd-MM-yyyy')
+                                                            .format(date);
+                                                    motivePrint(
+                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    //you can implement different kind of Date Format here according to your requirement
+                                                    setState(() {
+                                                      orderDateCtrl.text =
+                                                          formattedDate; //set output date to TextField value.
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.calendar_today,
+                                              size: 40,
+                                            )),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -593,152 +608,6 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   controller: referenceNumberCtrl,
                                   fontSize: size!.getWidthPx(12)),
                             ),
-                            // Padding(
-                            //   padding:
-                            //   const EdgeInsets.only(left: 8.0, right: 8.0),
-                            //   child: SizedBox(
-                            //     height: 130,
-                            //     child: Row(
-                            //       children: [
-                            //         Expanded(
-                            //             flex: 6,
-                            //             child: Column(
-                            //               mainAxisAlignment:
-                            //                   MainAxisAlignment.start,
-                            //               crossAxisAlignment:
-                            //                   CrossAxisAlignment.start,
-                            //               children: [
-                            //                 const Text(
-                            //                   'คลังสินค้าต้นทาง',
-                            //                   style: TextStyle(
-                            //                       fontSize: 25,
-                            //                       color: textColor),
-                            //                 ),
-                            //                 SizedBox(
-                            //                   height: 80,
-                            //                   child: MiraiDropDownMenu<
-                            //                       WarehouseModel>(
-                            //                     key: UniqueKey(),
-                            //                     children: fromWarehouseList,
-                            //                     space: 4,
-                            //                     maxHeight: 360,
-                            //                     showSearchTextField: true,
-                            //                     selectedItemBackgroundColor:
-                            //                         Colors.transparent,
-                            //                     emptyListMessage: 'ไม่มีข้อมูล',
-                            //                     showSelectedItemBackgroundColor:
-                            //                         true,
-                            //                     itemWidgetBuilder: (
-                            //                       int index,
-                            //                       WarehouseModel? project, {
-                            //                       bool isItemSelected = false,
-                            //                     }) {
-                            //                       return DropDownItemWidget(
-                            //                         project: project,
-                            //                         isItemSelected:
-                            //                             isItemSelected,
-                            //                         firstSpace: 10,
-                            //                         fontSize:
-                            //                             size!.getWidthPx(10),
-                            //                       );
-                            //                     },
-                            //                     onChanged:
-                            //                         (WarehouseModel value) {
-                            //                       warehouseCtrl.text =
-                            //                           value.id!.toString();
-                            //                       selectedFromLocation = value;
-                            //                       fromWarehouseNotifier!.value =
-                            //                           value;
-                            //                       if (productCodeCtrl.text !=
-                            //                           "") {
-                            //                         loadQtyByLocation(
-                            //                             value.id!);
-                            //                       }
-                            //                       if (selectedFromLocation !=
-                            //                           null) {
-                            //                         loadToWarehouseNoId(
-                            //                             selectedFromLocation!
-                            //                                 .id!);
-                            //                       }
-                            //                     },
-                            //                     child:
-                            //                         DropDownObjectChildWidget(
-                            //                       key: GlobalKey(),
-                            //                       fontSize:
-                            //                           size!.getWidthPx(10),
-                            //                       projectValueNotifier:
-                            //                           fromWarehouseNotifier!,
-                            //                     ),
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             )),
-                            //         const SizedBox(width: 10,),
-                            //         Expanded(
-                            //           flex: 6,
-                            //           child: Column(
-                            //             mainAxisAlignment:
-                            //                 MainAxisAlignment.start,
-                            //             crossAxisAlignment:
-                            //                 CrossAxisAlignment.start,
-                            //             children: [
-                            //               const Text(
-                            //                 'คลังสินค้าปลายทาง',
-                            //                 style: TextStyle(
-                            //                     fontSize: 25, color: textColor),
-                            //               ),
-                            //               SizedBox(
-                            //                 height: 80,
-                            //                 child: MiraiDropDownMenu<
-                            //                     WarehouseModel>(
-                            //                   key: UniqueKey(),
-                            //                   children: toWarehouseList,
-                            //                   space: 4,
-                            //                   maxHeight: 360,
-                            //                   showSearchTextField: true,
-                            //                   selectedItemBackgroundColor:
-                            //                       Colors.transparent,
-                            //                   emptyListMessage: 'ไม่มีข้อมูล',
-                            //                   showSelectedItemBackgroundColor:
-                            //                       true,
-                            //                   itemWidgetBuilder: (
-                            //                     int index,
-                            //                     WarehouseModel? project, {
-                            //                     bool isItemSelected = false,
-                            //                   }) {
-                            //                     return DropDownItemWidget(
-                            //                       project: project,
-                            //                       isItemSelected:
-                            //                           isItemSelected,
-                            //                       firstSpace: 10,
-                            //                       fontSize:
-                            //                           size!.getWidthPx(10),
-                            //                     );
-                            //                   },
-                            //                   onChanged:
-                            //                       (WarehouseModel value) {
-                            //                     toWarehouseCtrl.text =
-                            //                         value.id!.toString();
-                            //                     selectedToLocation = value;
-                            //                     toWarehouseNotifier!.value =
-                            //                         value;
-                            //                   },
-                            //                   child: DropDownObjectChildWidget(
-                            //                     key: GlobalKey(),
-                            //                     fontSize: size!.getWidthPx(10),
-                            //                     projectValueNotifier:
-                            //                         toWarehouseNotifier!,
-                            //                   ),
-                            //                 ),
-                            //               ),
-                            //             ],
-                            //           ),
-                            //         ),
-                            //       ],
-                            //     ),
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 10,),
                             const SizedBox(
                               height: 0,
                             ),
@@ -749,6 +618,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: buildTextFieldX(
+                                      bgColor: Colors.green.shade50,
                                       labelText: "ทองคำแท่งขายออกบาทละ",
                                       inputType: TextInputType.phone,
                                       controller: productSellThengPriceCtrl,
@@ -907,6 +777,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: numberTextField(
+                                      bgColor: Colors.grey.shade200,
                                       labelText: "",
                                       inputType: TextInputType.phone,
                                       controller: purchasePriceCtrl,
@@ -964,6 +835,12 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: numberTextField(
+                                        bgColor: Colors.grey.shade200,
+                                        labelColor: Global.toNumber(
+                                            priceDiffCtrl.text) >
+                                            0
+                                            ? null
+                                            : Colors.red,
                                         labelText: "",
                                         inputType: TextInputType.phone,
                                         controller: priceDiffCtrl,
@@ -1012,6 +889,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: numberTextField(
+                                        bgColor: Colors.grey.shade200,
                                         labelText: "",
                                         inputType: TextInputType.phone,
                                         controller: taxAmountCtrl,
@@ -1060,6 +938,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: numberTextField(
+                                      bgColor: Colors.grey.shade200,
                                       labelText: "",
                                       inputType: TextInputType.phone,
                                       controller: priceExcludeTaxCtrl,
@@ -1368,14 +1247,14 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                       ),
                       onPressed: () async {
                         if (orderDateCtrl.text.isEmpty) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'กรุณาป้อนวันที่ใบกำกับภาษี', 'OK');
+                          Alert.warning(context, 'คำเตือน',
+                              'กรุณาป้อนวันที่ใบกำกับภาษี', 'OK');
                           return;
                         }
 
                         if (!checkDate(orderDateCtrl.text)) {
-                          Alert.warning(
-                              context, 'คำเตือน', 'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
+                          Alert.warning(context, 'คำเตือน',
+                              'วันที่ที่ป้อนมีรูปแบบไม่ถูกต้อง', 'OK',
                               action: () {});
                           return;
                         }
@@ -1403,10 +1282,10 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                             if (mounted) {
                               resetText();
                               Future.delayed(const Duration(milliseconds: 500),
-                                      () async {
-                                    writeCart();
-                                    setState(() {});
-                                  });
+                                  () async {
+                                writeCart();
+                                setState(() {});
+                              });
                               Navigator.of(context).pop();
                               // Navigator.push(
                               //         context,

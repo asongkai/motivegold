@@ -68,7 +68,7 @@ class Alert {
         btnCancelText: 'ยกเลิก',
         btnOkText: buttonText,
         btnOkColor: Colors.deepPurple[700],
-        btnCancelColor: Colors.orange,
+        btnCancelColor: Colors.blue,
         title: title,
         desc: message,
         btnCancelOnPress: () {},

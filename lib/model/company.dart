@@ -27,6 +27,7 @@ class CompanyModel {
   String? province;
   String? taxNumber;
   String? logo;
+  int? stock;
 
   CompanyModel({
     this.id,
@@ -39,6 +40,7 @@ class CompanyModel {
     this.province,
     this.taxNumber,
     this.logo,
+    this.stock,
   });
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) => CompanyModel(
@@ -52,6 +54,7 @@ class CompanyModel {
         province: json["province"],
         taxNumber: json["taxNumber"],
         logo: json["logo"],
+        stock: json["stock"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +68,7 @@ class CompanyModel {
         "province": province,
         "taxNumber": taxNumber,
         "logo": logo,
+        "stock": stock,
       };
 
   @override

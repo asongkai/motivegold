@@ -121,9 +121,10 @@ Future<Uint8List> makeStockMovementReportPdf(
     MultiPage(
       // maxPages: 100,
       margin: const EdgeInsets.all(20),
-      // pageFormat: const PdfPageFormat(1000, 1000),
-      // orientation: PageOrientation.natural,
-      pageFormat: PdfPageFormat.a4,
+      pageFormat: PdfPageFormat(
+        PdfPageFormat.a4.height, // height becomes width
+        PdfPageFormat.a4.width,  // width becomes height
+      ),
       orientation: PageOrientation.landscape,
       build: (context) => widgets,
     ),

@@ -8,17 +8,19 @@ import 'package:printing/printing.dart';
 
 class PdfPreviewPage extends StatelessWidget {
   final Invoice invoice;
+  final bool goHome;
 
-  const PdfPreviewPage({super.key, required this.invoice});
+  const PdfPreviewPage({super.key, required this.invoice, this.goHome = false});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Text("พิมพ์เอกสาร",
+          goHome: goHome,
+          title: const Text("พิมพ์เอกสาร",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white,

@@ -18,7 +18,7 @@ Future<Uint8List> makeThengPdf(Invoice invoice) async {
   final pdf = Document(theme: myTheme);
 
   List<Widget> widgets = [];
-  widgets.add(await header(invoice.order, ' ใบเสร็จรับเงิน   /   ใบส่งของ'),);
+  widgets.add(await header(invoice.order, ' ใบเสร็จรับเงิน / ใบส่งของ'),);
   widgets.add(height());
   widgets.add(buyerSellerInfo(invoice.customer, invoice.order),);
   widgets.add(height());

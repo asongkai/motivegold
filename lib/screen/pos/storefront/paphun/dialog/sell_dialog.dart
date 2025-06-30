@@ -365,7 +365,7 @@ class _SaleDialogState extends State<SaleDialog> {
                         posHeaderText(context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
                         const Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
-                          child: GoldMiniWidget(),
+                          child: GoldMiniWidget(screen: 1,),
                         ),
                         SizedBox(
                           height: 90,
@@ -465,6 +465,68 @@ class _SaleDialogState extends State<SaleDialog> {
                                       Text(
                                         'น้ำหนัก',
                                         style: TextStyle(
+                                            fontSize: size.getWidthPx(15), color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        '(กรัม)',
+                                        style: TextStyle(
+                                            color: textColor, fontSize: size.getWidthPx(10)),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                    ],
+                                  )),
+                              Expanded(
+                                flex: 6,
+                                child: numberTextFieldBig(
+                                    labelText: "",
+                                    inputType: TextInputType.number,
+                                    controller: productWeightGramCtrl,
+                                    focusNode: gramFocus,
+                                    readOnly: gramReadOnly,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    clear: () {
+                                      setState(() {
+                                        productWeightGramCtrl.text = "";
+                                      });
+                                      gramChanged();
+                                    },
+                                    onTap: () {
+                                      txt = 'gram';
+                                      closeCal();
+                                    },
+                                    openCalc: () {
+                                      if (!showCal) {
+                                        txt = 'gram';
+                                        gramFocus.requestFocus();
+                                        openCal();
+                                      }
+                                    },
+                                    onChanged: (value) {
+                                      gramChanged();
+                                    }),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        'น้ำหนัก',
+                                        style: TextStyle(
                                             fontSize: size.getWidthPx(15),
                                             color: textColor),
                                       ),
@@ -513,68 +575,6 @@ class _SaleDialogState extends State<SaleDialog> {
                                     },
                                     onChanged: (value) {
                                       bahtChanged();
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'น้ำหนัก',
-                                        style: TextStyle(
-                                            fontSize: size.getWidthPx(15), color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(กรัม)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: size.getWidthPx(10)),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextFieldBig(
-                                    labelText: "",
-                                    inputType: TextInputType.number,
-                                    controller: productWeightGramCtrl,
-                                    focusNode: gramFocus,
-                                    readOnly: gramReadOnly,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    clear: () {
-                                      setState(() {
-                                        productWeightGramCtrl.text = "";
-                                      });
-                                      gramChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'gram';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'gram';
-                                        gramFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    onChanged: (value) {
-                                      gramChanged();
                                     }),
                               ),
                             ],

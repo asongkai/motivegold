@@ -14,6 +14,7 @@ import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -33,6 +34,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class RefillGoldStockScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -112,20 +114,26 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     super.initState();
 
     // Sample data
-    orderDateCtrl.text = "01-02-2025";
-    referenceNumberCtrl.text = "90803535";
-    productSellThengPriceCtrl.text =
-        Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    productBuyThengPriceCtrl.text = "0";
-    productSellPriceCtrl.text = "0";
-    productBuyPriceCtrl.text =
-        Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-    productBuyPricePerGramCtrl.text = Global.format(
-        Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    purchasePriceCtrl.text = Global.format(924603.10);
-    priceIncludeTaxCtrl.text = Global.format(929918.17);
-    productWeightCtrl.text = Global.format(270);
-    // priceExcludeTaxCtrl.text = Global.format(929918.17);
+    if (env == ENV.DEV) {
+      orderDateCtrl.text = "01-06-2025";
+      referenceNumberCtrl.text = "90803535";
+      productSellThengPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+      productBuyThengPriceCtrl.text = "0";
+      productSellPriceCtrl.text = "0";
+      productBuyPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
+      productBuyPricePerGramCtrl.text = Global.format(
+          Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
+
+      productWeightCtrl.text = Global.format(270);
+      purchasePriceCtrl.text = Global.format(
+          Global.toNumber(productWeightCtrl.text) *
+              Global.toNumber(productBuyPricePerGramCtrl.text));
+      priceIncludeTaxCtrl.text = Global.format(929918.17);
+
+      // priceExcludeTaxCtrl.text = Global.format(929918.17);
+    }
 
     Global.appBarColor = rfBgColor;
     productTypeNotifier = ValueNotifier<ProductTypeModel>(
@@ -280,7 +288,10 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         backgroundColor: rfBgColor,
         title: Text(
           'เติมทอง – ซื้อทองรูปพรรณใหม่ 96.5%',
-          style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),
+          style: TextStyle(
+            fontSize: 16.sp, //size.getWidthPx(10),
+            color: textColor,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -407,29 +418,35 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                             fontSize: size.getWidthPx(12),
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
-                                        prefixIcon:
-                                        GestureDetector(onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => SfDatePickerDialog(
-                                              initialDate: DateTime.now(),
-                                              onDateSelected: (date) {
-                                                motivePrint('You picked: $date');
-                                                // Your logic here
-                                                String formattedDate =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(date);
-                                                motivePrint(
-                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //you can implement different kind of Date Format here according to your requirement
-                                                setState(() {
-                                                  orderDateCtrl.text =
-                                                      formattedDate; //set output date to TextField value.
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
+                                        prefixIcon: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    motivePrint(
+                                                        'You picked: $date');
+                                                    // Your logic here
+                                                    String formattedDate =
+                                                        DateFormat('dd-MM-yyyy')
+                                                            .format(date);
+                                                    motivePrint(
+                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    //you can implement different kind of Date Format here according to your requirement
+                                                    setState(() {
+                                                      orderDateCtrl.text =
+                                                          formattedDate; //set output date to TextField value.
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.calendar_today,
+                                              size: 40,
+                                            )),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -484,6 +501,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: buildTextFieldX(
+                                        bgColor: Colors.green.shade50,
                                         labelText: "ทองคำแท่งขายออกบาทละ",
                                         inputType: TextInputType.number,
                                         controller: productSellThengPriceCtrl,
@@ -517,6 +535,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                                 Global.format(
                                                     Global.toNumber(value) *
                                                         getUnitWeightValue());
+                                            gramChanged();
                                           }
                                         },
                                       ),
@@ -624,6 +643,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                        bgColor: Colors.grey.shade200,
                                         labelText: "",
                                         inputType: TextInputType.phone,
                                         controller: priceExcludeTaxCtrl,
@@ -680,6 +700,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: purchasePriceCtrl,
@@ -730,6 +751,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: priceDiffCtrl,
@@ -780,6 +802,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: taxAmountCtrl,
@@ -842,7 +865,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SizedBox(
-                                width: size?.wp(30),
+                                width: size.wp(30),
                                 child: ElevatedButton.icon(
                                   onPressed: showOptions,
                                   icon: const Icon(
@@ -1053,18 +1076,18 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                         try {
                           // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '',
                           //     'ตกลง', action: () async {
-                            saveData();
-                            if (mounted) {
-                              resetText();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
+                          saveData();
+                          if (mounted) {
+                            resetText();
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                "เพิ่มลงรถเข็นสำเร็จ...",
+                                style: TextStyle(fontSize: 22),
+                              ),
+                              backgroundColor: Colors.teal,
+                            ));
+                          }
                           // });
                         } catch (e) {
                           if (mounted) {
@@ -1183,34 +1206,32 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                         // Alert.info(
                         //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                         //     action: () async {
-                          try {
-                            saveData();
-                            if (mounted) {
-                              resetText();
-                              Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const WholeSaleCheckOutScreen()))
-                                  .whenComplete(() {
-                                Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                    () async {
-                                  widget.refreshCart(Global
-                                      .ordersWholesale?.length
-                                      .toString());
-                                  writeCart();
-                                  setState(() {});
-                                });
+                        try {
+                          saveData();
+                          if (mounted) {
+                            resetText();
+                            Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const WholeSaleCheckOutScreen()))
+                                .whenComplete(() {
+                              Future.delayed(const Duration(milliseconds: 500),
+                                  () async {
+                                widget.refreshCart(
+                                    Global.ordersWholesale?.length.toString());
+                                writeCart();
+                                setState(() {});
                               });
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              Alert.warning(context, 'Warning'.tr(),
-                                  e.toString(), 'OK'.tr(),
-                                  action: () {});
-                            }
+                            });
                           }
+                        } catch (e) {
+                          if (mounted) {
+                            Alert.warning(context, 'Warning'.tr(), e.toString(),
+                                'OK'.tr(),
+                                action: () {});
+                          }
+                        }
                         // });
                       },
                       child: Row(
@@ -1224,8 +1245,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                           Text(
                             'บันทึก',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(8),
-                                color: textColor),
+                                fontSize: size.getWidthPx(8), color: textColor),
                           )
                         ],
                       ),
@@ -1255,18 +1275,18 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   }
 
   void priceIncludeTaxChanged() {
-    getOtherAmount();
-  }
-
-  void priceExcludeTaxChanged() {
-    if (purchasePriceCtrl.text.isNotEmpty &&
-        priceExcludeTaxCtrl.text.isNotEmpty) {
+    if (priceIncludeTaxCtrl.text.isNotEmpty &&
+        purchasePriceCtrl.text.isNotEmpty) {
       priceDiffCtrl.text = Global.format(
-          (Global.toNumber(priceExcludeTaxCtrl.text) -
+          (Global.toNumber(priceIncludeTaxCtrl.text) -
               Global.toNumber(purchasePriceCtrl.text)));
     } else {
       priceDiffCtrl.text = "";
     }
+    getOtherAmount();
+  }
+
+  void priceExcludeTaxChanged() {
     getOtherAmount();
   }
 
@@ -1281,6 +1301,10 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
         ? "0"
         : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);
+
+    priceExcludeTaxCtrl.text = Global.format(
+        Global.toNumber(priceIncludeTaxCtrl.text) -
+            Global.toNumber(taxAmountCtrl.text));
 
     calTotal();
   }

@@ -30,7 +30,7 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
 
   List<Widget> widgets = [];
   widgets.add(
-    await header(invoice.order, 'ใบรับซื้อทองเก่า / ใบสําคัญจ่าย'),
+    await header(invoice.order, 'ใบรับซื้อทองเก่า / ใบสําคัญจ่าย', versionText: 'ต้นฉบับ'),
   );
   widgets.add(
     docNo(invoice.order),
@@ -303,7 +303,8 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                 ),
                 Expanded(
                   flex: 2,
-                  child: Text('${Global.format(invoice.order.discount ?? 0)} บาท',
+                  child: Text(
+                      '${Global.format(invoice.order.discount ?? 0)} บาท',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
@@ -317,7 +318,7 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                 Expanded(
                   flex: 8,
                   child: Text(
-                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))}:',
+                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))}:',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
@@ -325,7 +326,7 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                 Expanded(
                   flex: 2,
                   child: Text(
-                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0))} บาท',
+                      '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} บาท',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
@@ -340,21 +341,21 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                   Expanded(
                       child: Container(
                           child: Row(children: [
-                            Expanded(
-                                flex: invoice.payments!.length > 1 ? 3 : 8,
-                                child: Text(
-                                    "${getPaymentType(invoice.payments![i].paymentMethod)} :",
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        fontSize: 9, color: PdfColors.blue700))),
-                            Expanded(
-                                flex: 2,
-                                child: Text(
-                                    "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(
-                                        fontSize: 9, color: PdfColors.blue700)))
-                          ])))
+                    Expanded(
+                        flex: invoice.payments!.length > 1 ? 3 : 8,
+                        child: Text(
+                            "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                                fontSize: 9, color: PdfColors.blue700))),
+                    Expanded(
+                        flex: 2,
+                        child: Text(
+                            "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                                fontSize: 9, color: PdfColors.blue700)))
+                  ])))
               ],
             ),
           ],
@@ -382,12 +383,12 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                   paddedText(
                     'ผู้รับมอบทองเก่า/ผู้จ่ายเงิน',
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
                   paddedText(
                     'วันที่ ..... / ..... / .........',
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
                 ],
               ),
@@ -402,12 +403,12 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice) async {
                   paddedText(
                     'ผู้ส่งมอบทองเก่า/ผู้รับเงิน',
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
                   paddedText(
                     'วันที่ ..... / ..... / .........',
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
                   ),
                 ],
               ),
@@ -443,7 +444,7 @@ Widget sn(List<OrderModel>? orders) {
           Expanded(
               flex: 2,
               child:
-              Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
+                  Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
@@ -478,7 +479,7 @@ Widget bu(List<OrderModel>? orders) {
           Expanded(
               flex: 2,
               child:
-              Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
+                  Text(orders[i].orderId, style: const TextStyle(fontSize: 9))),
           Expanded(
               flex: 3,
               child: Text(
@@ -499,8 +500,8 @@ Widget bu(List<OrderModel>? orders) {
 }
 
 Widget paddedText(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 9)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

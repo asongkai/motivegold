@@ -64,7 +64,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     sumBuyTotal();
-    loadProducts();
+    // loadProducts();
     getCart();
   }
 

@@ -351,7 +351,7 @@ class _TransferGoldCheckOutScreenState
                               Global.transfer!.details!.clear();
                               Global.transfer = null;
                               Global.transferDetail!.clear();
-                              Global.discount = 0;
+                              // Global.discount = 0;
                               Global.customer = null;
                               setState(() {});
                               Navigator.of(context).pop();

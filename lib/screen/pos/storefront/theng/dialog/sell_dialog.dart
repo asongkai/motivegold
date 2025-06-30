@@ -293,7 +293,7 @@ class _SellDialogState extends State<SellDialog> {
                   posHeaderText(context, stBgColor, 'ขายทองคำแท่ง'),
                   const Padding(
                     padding: EdgeInsets.only(left: 10, right: 10),
-                    child: GoldMiniWidget(),
+                    child: GoldMiniWidget(screen: 3,),
                   ),
                   Row(
                     children: <Widget>[

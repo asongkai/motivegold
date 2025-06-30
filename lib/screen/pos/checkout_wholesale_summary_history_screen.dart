@@ -34,6 +34,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
   TextEditingController paymentMethodCtrl = TextEditingController();
+  TextEditingController addPriceCtrl = TextEditingController();
   bool loading = false;
   List<OrderModel> orders = [];
   double discount = 0;
@@ -70,9 +71,9 @@ class _CheckOutWholesaleSummaryHistoryScreenState
           customer = orders.first.customer;
           discountCtrl.text = Global.format(orders.first.discount ?? 0);
           discount = orders.first.discount ?? 0;
-          Global.discount = discount;
           Global.paymentList =
               paymentListModelFromJson(jsonEncode(payment?.data));
+          addPriceCtrl.text = Global.format(orders.first.addPrice ?? 0);
         });
       } else {
         orders = [];
@@ -281,13 +282,14 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                       PriceBreakdown(
                                         title: 'จำนวนเงินที่ชำระ'.tr(),
                                         price:
-                                            '${Global.format(Global.getPaymentTotalWholeSale(orders))} บาท',
+                                            '${Global.format(Global.getPaymentTotalWholeSale(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                                       ),
                                       const Divider(),
                                       PriceBreakdown(
-                                        title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
+                                        title:
+                                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                                         price:
-                                            '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(orders, Global.discount))} ${Global.payToCustomerOrShopWholeSale(orders, Global.discount)}',
+                                            '${Global.payToCustomerOrShopWholeSale(orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -415,9 +417,9 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                                   itemBuilder:
                                                       (context, index) {
                                                     return _paymentItemList(
-                                                        payment: Global
-                                                                .paymentList![
-                                                            index],
+                                                        payment:
+                                                            Global.paymentList![
+                                                                index],
                                                         index: index);
                                                   }),
                                               Container(

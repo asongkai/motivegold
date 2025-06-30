@@ -348,7 +348,7 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  PdfPreviewRedeemPage(invoice: invoice),
+                                  PdfPreviewRedeemPage(invoice: invoice, goHome: true,),
                             ),
                           );
                         } catch (e) {

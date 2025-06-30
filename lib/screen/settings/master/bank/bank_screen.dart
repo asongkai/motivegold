@@ -232,7 +232,7 @@ class _BankListScreenState extends State<BankListScreen> {
       pr.update(message: 'processing'.tr());
       try {
         var result = await ApiServices.post('/bank/$id', Global.requestObj(null));
-        motivePrint(result?.data);
+        // motivePrint(result?.data);
         await pr.hide();
         if (result?.status == "success") {
           dataList!.removeAt(i);

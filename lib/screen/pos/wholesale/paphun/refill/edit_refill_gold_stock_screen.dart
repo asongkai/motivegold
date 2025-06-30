@@ -16,6 +16,7 @@ import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/refill/dialog/refill_dialog.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
@@ -35,6 +36,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class EditRefillGoldStockScreen extends StatefulWidget {
   final int index;
@@ -112,21 +114,6 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
   void initState() {
     // implement initState
     super.initState();
-
-    // Sample data
-    // Sample data
-    // orderDateCtrl.text = "01-02-2025";
-    // referenceNumberCtrl.text = "90803535";
-    // productSellThengPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-    // productBuyThengPriceCtrl.text = "0";
-    // productSellPriceCtrl.text = "0";
-    // productBuyPriceCtrl.text =
-    //     Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-    // productBuyPricePerGramCtrl.text = Global.format(
-    //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
-    // purchasePriceCtrl.text = Global.format(944603.10);
-    // priceIncludeTaxCtrl.text = Global.format(929918.17);
 
     Global.appBarColor = rfBgColor;
     productTypeNotifier = ValueNotifier<ProductTypeModel>(
@@ -325,7 +312,10 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
         backgroundColor: rfBgColor,
         title: Text(
           'เติมทอง – ซื้อทองรูปพรรณใหม่ 96.5%',
-          style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),
+          style: TextStyle(
+            fontSize: 16.sp, //size.getWidthPx(10),
+            color: textColor,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -452,29 +442,35 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                             fontSize: size.getWidthPx(12),
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
-                                        prefixIcon:
-                                        GestureDetector(onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => SfDatePickerDialog(
-                                              initialDate: DateTime.now(),
-                                              onDateSelected: (date) {
-                                                motivePrint('You picked: $date');
-                                                // Your logic here
-                                                String formattedDate =
-                                                DateFormat('dd-MM-yyyy')
-                                                    .format(date);
-                                                motivePrint(
-                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //you can implement different kind of Date Format here according to your requirement
-                                                setState(() {
-                                                  orderDateCtrl.text =
-                                                      formattedDate; //set output date to TextField value.
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        }, child: const Icon(Icons.calendar_today, size: 40,)),
+                                        prefixIcon: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    motivePrint(
+                                                        'You picked: $date');
+                                                    // Your logic here
+                                                    String formattedDate =
+                                                        DateFormat('dd-MM-yyyy')
+                                                            .format(date);
+                                                    motivePrint(
+                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    //you can implement different kind of Date Format here according to your requirement
+                                                    setState(() {
+                                                      orderDateCtrl.text =
+                                                          formattedDate; //set output date to TextField value.
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.calendar_today,
+                                              size: 40,
+                                            )),
                                         //icon of text field
                                         floatingLabelBehavior:
                                             FloatingLabelBehavior.always,
@@ -529,6 +525,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: buildTextFieldX(
+                                        bgColor: Colors.green.shade50,
                                         labelText: "ทองคำแท่งขายออกบาทละ",
                                         inputType: TextInputType.number,
                                         controller: productSellThengPriceCtrl,
@@ -628,6 +625,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                           setState(() {
                                             priceIncludeTaxCtrl.text = "";
                                           });
+                                          priceIncludeTaxChanged();
                                         },
                                         onTap: () {
                                           txt = 'price_include';
@@ -642,7 +640,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         },
                                         onFocusChange: (bool value) {
                                           if (!value) {
-                                            calTotal();
+                                            priceIncludeTaxChanged();
                                           }
                                         }),
                                   ),
@@ -668,6 +666,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                        bgColor: Colors.grey.shade200,
                                         labelText: "",
                                         inputType: TextInputType.phone,
                                         controller: priceExcludeTaxCtrl,
@@ -724,6 +723,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: purchasePriceCtrl,
@@ -774,6 +774,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: priceDiffCtrl,
@@ -824,6 +825,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: numberTextField(
+                                          bgColor: Colors.grey.shade200,
                                           labelText: "",
                                           inputType: TextInputType.phone,
                                           controller: taxAmountCtrl,
@@ -1190,15 +1192,19 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     getOtherAmount();
   }
 
-  void priceExcludeTaxChanged() {
-    if (purchasePriceCtrl.text.isNotEmpty &&
-        priceExcludeTaxCtrl.text.isNotEmpty) {
+  void priceIncludeTaxChanged() {
+    if (priceIncludeTaxCtrl.text.isNotEmpty &&
+        purchasePriceCtrl.text.isNotEmpty) {
       priceDiffCtrl.text = Global.format(
-          (Global.toNumber(priceExcludeTaxCtrl.text) -
+          (Global.toNumber(priceIncludeTaxCtrl.text) -
               Global.toNumber(purchasePriceCtrl.text)));
     } else {
       priceDiffCtrl.text = "";
     }
+    getOtherAmount();
+  }
+
+  void priceExcludeTaxChanged() {
     getOtherAmount();
   }
 
@@ -1213,6 +1219,10 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
         ? "0"
         : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);
+
+    priceExcludeTaxCtrl.text = Global.format(
+        Global.toNumber(priceIncludeTaxCtrl.text) -
+            Global.toNumber(taxAmountCtrl.text));
 
     calTotal();
   }

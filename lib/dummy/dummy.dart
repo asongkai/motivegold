@@ -44,8 +44,8 @@ List<ProductTypeModel> paymentTypes() {
 
 List<ProductTypeModel> customerTypes() {
   List<ProductTypeModel> data = [];
-  data.add(ProductTypeModel(id: 1, code: 'company', name: 'ลูกค้าบริษัท'));
-  data.add(ProductTypeModel(id: 2, code: 'general', name: 'ลูกค้าทั่วไป'));
+  data.add(ProductTypeModel(id: 1, code: 'company', name: 'นิติบุคคล'));
+  data.add(ProductTypeModel(id: 2, code: 'general', name: 'บุคคลธรรมดา'));
   return data;
 }
 
@@ -62,7 +62,7 @@ List<ProductTypeModel> bankAccountTypes() {
 
 List<ProductTypeModel> orderTypes() {
   List<ProductTypeModel> data = [];
-  data.add(ProductTypeModel(id: null, code: null, name: "ทั้งหมด"));
+  // data.add(ProductTypeModel(id: null, code: null, name: "ทั้งหมด"));
   data.add(ProductTypeModel(id: 1, code: 'SN', name: "ขายทองใหม่"));
   data.add(ProductTypeModel(id: 2, code: 'BU', name: "ซื้อทองเก่า"));
   data.add(ProductTypeModel(id: 3, code: 'SMB', name: "ขายทองแท่ง (จับคู่)"));

@@ -298,7 +298,10 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
   pdf.addPage(
     MultiPage(
         margin: const EdgeInsets.all(20),
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat(
+          PdfPageFormat.a4.height, // height becomes width
+          PdfPageFormat.a4.width,  // width becomes height
+        ),
         orientation: PageOrientation.landscape,
         build: (context) => widgets,
         footer: (context) {

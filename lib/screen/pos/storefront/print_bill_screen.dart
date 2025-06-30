@@ -75,7 +75,8 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
         List<OrderModel> dump = orderListModelFromJson(data);
         setState(() {
           orders = dump;
-          Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
+          Global.paymentList =
+              paymentListModelFromJson(jsonEncode(payment?.data));
         });
       } else {
         orders = [];
@@ -316,7 +317,8 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                       Global.getOrderGrantTotalAmountApi(
                                           Global.getOrderSubTotalAmountApi(
                                               order.details),
-                                          order.discount)),
+                                          order.discount,
+                                          order.addPrice ?? 0)),
                                   textAlign: TextAlign.center,
                                   style:
                                       TextStyle(fontSize: size?.getWidthPx(8))),
@@ -344,14 +346,12 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                         pr.update(message: 'processing'.tr());
 
                         try {
-
                           var payment = await ApiServices.post(
                               '/order/payment/${order.pairId}',
                               Global.requestObj(null));
                           await pr.hide();
                           Global.paymentList = paymentListModelFromJson(
                               jsonEncode(payment?.data));
-
 
                           Invoice invoice = Invoice(
                               order: order,
@@ -364,8 +364,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               order.orderTypeId == 2) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PdfPreviewPage(invoice: invoice),
+                                builder: (context) => PdfPreviewPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -374,9 +376,9 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        PreviewRefillGoldPage(
+                                    builder: (context) => PreviewRefillGoldPage(
                                           invoice: invoice,
+                                          goHome: true,
                                         )));
                           }
 
@@ -387,6 +389,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                     builder: (context) =>
                                         PreviewSellUsedGoldPage(
                                           invoice: invoice,
+                                          goHome: true,
                                         )));
                           }
 
@@ -394,8 +397,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               order.orderTypeId == 8) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PdfThengPreviewPage(invoice: invoice),
+                                builder: (context) => PdfThengPreviewPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -404,8 +409,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               order.orderTypeId == 9) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PdfThengPreviewPage(invoice: invoice),
+                                builder: (context) => PdfThengPreviewPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -413,8 +420,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           if (order.orderTypeId == 4) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PreviewSellThengPdfPage(invoice: invoice),
+                                builder: (context) => PreviewSellThengPdfPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -422,8 +431,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                           if (order.orderTypeId == 44) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    PreviewBuyThengPdfPage(invoice: invoice),
+                                builder: (context) => PreviewBuyThengPdfPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -432,7 +443,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    PreviewRefillThengGoldPage(invoice: invoice),
+                                    PreviewRefillThengGoldPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -441,7 +455,10 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    PreviewSellUsedThengGoldPage(invoice: invoice),
+                                    PreviewSellUsedThengGoldPage(
+                                  invoice: invoice,
+                                  goHome: true,
+                                ),
                               ),
                             );
                           }
@@ -505,7 +522,9 @@ class PaymentCard extends StatelessWidget {
               bottom: getProportionateScreenHeight(8.0),
             ),
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withOpacity(0.5),
+              color: isSelected!
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(
                 getProportionateScreenWidth(
                   4,

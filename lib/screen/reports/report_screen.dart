@@ -15,6 +15,7 @@ import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_repor
 import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
@@ -152,59 +153,61 @@ class _ReportScreenState extends State<ReportScreen> {
                       .titleMedium
                       ?.copyWith(color: Colors.grey.shade600),
                 ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const StockReportListScreen()));
-                  },
-                  icons: Icons.pie_chart,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const StockReportListScreen()));
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.green,
+                    ),
+                    title: 'รายงานสต็อก',
+                    subtitle: "รายงานสต็อคคลังสินค้า",
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
                   ),
-                  title: 'รายงานสต็อก',
-                  subtitle: "รายงานสต็อคคลังสินค้า",
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const StockMovementReportListScreen()));
-                  },
-                  icons: Icons.pie_chart,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.orange,
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const StockMovementReportListScreen()));
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.orange,
+                    ),
+                    title: 'รายงานความเคลื่อนไหว',
+                    subtitle: "รายงานความเคลื่อนไหวสต๊อกสินค้า",
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
                   ),
-                  title: 'รายงานความเคลื่อนไหว',
-                  subtitle: "รายงานความเคลื่อนไหวสต๊อกสินค้า",
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const MoneyMovementReportScreen()));
+                                const MoneyMovementReportScreen()));
                   },
                   icons: Icons.pie_chart,
                   iconStyle: IconStyle(
@@ -227,7 +230,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const BuyNewGoldReportScreen()));
+                                const BuyNewGoldReportScreen()));
                   },
                   icons: Icons.checklist_rtl_outlined,
                   iconStyle: IconStyle(
@@ -386,7 +389,7 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const RedeemSingleReportScreen()));
+                                const RedeemSingleReportScreen()));
                   },
                   icons: Icons.checklist_rtl_outlined,
                   iconStyle: IconStyle(

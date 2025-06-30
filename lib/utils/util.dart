@@ -9,20 +9,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
-import 'package:motivegold/model/branch.dart';
-import 'package:motivegold/model/company.dart';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
-import 'package:motivegold/model/payment.dart';
-import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/utils/cart/cart.dart';
@@ -597,7 +592,7 @@ Widget buildTextField(
     Function(String value)? onChanged,
     Function(String value)? onSubmitted,
     String? placeholder,
-    double fontSize = 20.00,
+    double fontSize = 25.00,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -610,7 +605,7 @@ Widget buildTextField(
       style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: const EdgeInsets.all(8),
+        contentPadding: const EdgeInsets.all(18),
         labelText: labelText,
         labelStyle: TextStyle(
             fontSize: fontSize,
@@ -661,6 +656,7 @@ Widget buildTextFieldX(
     Function(String value)? onSubmitted,
     String? placeholder,
     double fontSize = 30.00,
+    Color? bgColor,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -683,7 +679,7 @@ Widget buildTextFieldX(
         filled: true,
         hintText: placeholder,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
-        fillColor: enabled ? Colors.white70 : Colors.white54,
+        fillColor: enabled ? bgColor ?? Colors.white70 : Colors.grey.shade50,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             getProportionateScreenWidth(0),
@@ -723,6 +719,7 @@ Widget buildTextFieldBig(
     TextAlign? align,
     bool isPassword = false,
     double fontSize = 40.00,
+    Color? bgColor,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -746,7 +743,7 @@ Widget buildTextFieldBig(
         suffixText: suffixText,
         filled: true,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
-        fillColor: enabled ? Colors.white70 : Colors.white54,
+        fillColor: enabled ? bgColor ?? Colors.white70 : Colors.grey.shade50,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             getProportionateScreenWidth(2),
@@ -789,6 +786,7 @@ Widget numberTextField(
     bool isPassword = false,
     bool readOnly = false,
     double fontSize = 40,
+    Color? bgColor,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
@@ -850,7 +848,7 @@ Widget numberTextField(
             ),
             onPressed: clear,
           ),
-          fillColor: enabled ? Colors.white54 : Colors.white54,
+          fillColor: enabled ? bgColor ?? Colors.white70 : Colors.grey.shade50,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(
               getProportionateScreenWidth(2),
@@ -894,6 +892,7 @@ Widget numberTextFieldBig(
     bool isPassword = false,
     bool readOnly = false,
     double fontSize = 50.00,
+      Color? bgColor,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
@@ -953,7 +952,7 @@ Widget numberTextFieldBig(
             ),
             onPressed: clear,
           ),
-          fillColor: enabled ? Colors.white54 : Colors.white54,
+          fillColor: enabled ? bgColor ?? Colors.white70 : Colors.grey.shade50,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(
               getProportionateScreenWidth(2),
@@ -1327,4 +1326,11 @@ getWorkId(CustomerModel customer) {
     }
     return 'เลขบัตรประชาชน: ${customer.idCard}';
   }
+}
+
+getCustomerName(CustomerModel customer) {
+  if (customer.customerType == 'company') {
+    return '${customer.companyName}';
+  }
+  return '${customer.firstName} ${customer.lastName}';
 }

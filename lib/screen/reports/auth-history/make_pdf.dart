@@ -162,8 +162,11 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
     MultiPage(
         maxPages: 10000,
         margin: const EdgeInsets.all(20),
-        pageFormat: PdfPageFormat.a4,
-        orientation: PageOrientation.portrait,
+        pageFormat: PdfPageFormat(
+          PdfPageFormat.a4.height, // height becomes width
+          PdfPageFormat.a4.width,  // width becomes height
+        ),
+        orientation: PageOrientation.landscape,
         build: (context) => widgets,
         footer: (context) {
           return Row(

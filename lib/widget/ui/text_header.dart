@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 
 Widget posHeaderText(BuildContext context, Color color, String text) {
-  Screen? size = Screen(MediaQuery.of(context).size);
   return Container(
     width: double.infinity,
-    height: (MediaQuery.of(context).orientation == Orientation.portrait) ? 50 : 65,
+    height:
+        (MediaQuery.of(context).orientation == Orientation.portrait) ? 50 : 65,
     decoration: BoxDecoration(color: color),
     child: Padding(
       padding: const EdgeInsets.all(8.0),
@@ -15,8 +15,8 @@ Widget posHeaderText(BuildContext context, Color color, String text) {
         style: TextStyle(
             fontSize:
                 (MediaQuery.of(context).orientation == Orientation.portrait)
-                    ? size.getWidthPx(10)
-                    : size.getWidthPx(8),
+                    ? 14.sp //size.getWidthPx(7)
+                    : 14.sp, //size.getWidthPx(5),
             color: Colors.white),
       ),
     ),
@@ -24,9 +24,12 @@ Widget posHeaderText(BuildContext context, Color color, String text) {
 }
 
 Widget titleText(BuildContext context, String text) {
-  Screen? size = Screen(MediaQuery.of(context).size);
   return Text(
     text,
-    style: TextStyle(fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(10) : size.getWidthPx(8)),
+    style: TextStyle(
+      fontSize: (MediaQuery.of(context).orientation == Orientation.portrait)
+          ? 16.sp
+          : 14.sp,
+    ),
   );
 }

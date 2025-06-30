@@ -12,6 +12,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:sizer/sizer.dart';
 
 class ThengBrokerMenuScreen extends StatefulWidget {
   const ThengBrokerMenuScreen({super.key, required this.title});
@@ -27,6 +28,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
   SideMenuController sideMenu = SideMenuController();
   int cartCount = 0;
   int holdCount = 0;
+  int posIndex = 0;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
 
   void init() async {
     sideMenu.changePage(Global.posIndex);
+    posIndex = Global.posIndex;
     int count = (await Global.getHoldList()).length;
     int cart = await getCartCount();
     setState(() {
@@ -67,7 +70,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                     flex: 5,
                     child: Text(widget.title,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(10),
+                            fontSize: 14.sp, //size.getWidthPx(10),
                             color: Colors.white,
                             fontWeight: FontWeight.w900))),
                 Expanded(
@@ -94,7 +97,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                               icon: Icon(
                                 Icons.save,
                                 size: (MediaQuery.of(context).orientation == Orientation.landscape)
-                                    ? size.getWidthPx(8)
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
                                     : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
@@ -151,7 +154,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                               icon: Icon(
                                 Icons.shopping_cart,
                                 size: (MediaQuery.of(context).orientation == Orientation.landscape)
-                                    ? size.getWidthPx(8)
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
                                     : size.getWidthPx(15),
                                 color: Colors.white,
                               ),
@@ -197,7 +200,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 displayMode: SideMenuDisplayMode.auto,
                 hoverColor: Colors.teal[100],
                 selectedHoverColor: Colors.teal[100],
-                selectedColor: Colors.teal,
+                selectedColor: posIndex == 0 ? Colors.teal : Colors.deepOrange,
                 selectedTitleTextStyle: const TextStyle(color: Colors.white),
                 selectedIconColor: Colors.white,
                 openSideMenuWidth: 190,
@@ -225,6 +228,10 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 title: 'ร้านทองขาย',
                 subTitle: 'โบรกเกอร์รับซื้อ',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {
+
+                  });
                   sideMenu.changePage(index);
                 },
                 icon: null,
@@ -235,6 +242,10 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                 title: 'ร้านทองซื้อ',
                 subTitle: 'โบรกเกอร์ขาย',
                 onTap: (index, _) {
+                  posIndex = index;
+                  setState(() {
+
+                  });
                   sideMenu.changePage(index);
                 },
                 icon: null,

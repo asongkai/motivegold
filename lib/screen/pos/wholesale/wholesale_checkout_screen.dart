@@ -44,6 +44,7 @@ class WholeSaleCheckOutScreen extends StatefulWidget {
 class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
+  TextEditingController addPriceCtrl = TextEditingController();
   Screen? size;
 
   bool loading = false;
@@ -54,6 +55,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     // implement initState
     super.initState();
     Global.discount = 0;
+    Global.addPrice = 0;
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -72,7 +74,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
   loadDefaultPayment() async {
     int orderTypeId = 0;
     if (Global.currentOrderType == 1) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 2;
       } else {
         orderTypeId = 1;
@@ -80,7 +82,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     }
 
     if (Global.currentOrderType == 2) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 33;
       } else {
         orderTypeId = 3;
@@ -88,7 +90,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     }
 
     if (Global.currentOrderType == 3) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 44;
       } else {
         orderTypeId = 4;
@@ -96,7 +98,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     }
 
     if (Global.currentOrderType == 4) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 9;
       } else {
         orderTypeId = 8;
@@ -104,7 +106,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     }
 
     if (Global.currentOrderType == 5) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 5;
       } else {
         orderTypeId = 6;
@@ -112,7 +114,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     }
 
     if (Global.currentOrderType == 6) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 10;
       } else {
         orderTypeId = 11;
@@ -135,6 +137,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     // TODO: implement dispose
     super.dispose();
     Global.discount = 0;
+    Global.addPrice = 0;
   }
 
   @override
@@ -425,12 +428,12 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                               PriceBreakdown(
                                 title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                 price:
-                                    '${Global.format(Global.getPaymentTotalWholeSale(Global.orders))} บาท',
+                                    '${Global.format(Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                               ),
                               PriceBreakdown(
-                                title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
+                                title: '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                                 price:
-                                    '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.orders, Global.discount))} ${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                               ),
                             ],
                           ),
@@ -689,7 +692,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   }
                 }
                 var amount = Global.payToCustomerOrShopValueWholeSale(
-                    Global.orders, Global.discount);
+                    Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
                 // // motivePrint(selectedOption);
                 // if (amount > getMaxKycValue()) {
                 //   if (selectedOption == 0 && Global.customer == null) {
@@ -716,7 +719,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 // return;
                 if (getPaymentTotal() >
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(Global.orders)))) {
+                        Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -732,7 +735,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
 
                 if (getPaymentTotal() <
                     Global.toNumber(Global.format(
-                        Global.getPaymentTotalWholeSale(Global.orders)))) {
+                        Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -752,7 +755,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   Global.orders[i].updatedDate = DateTime.now();
                   Global.orders[i].customerId = Global.customer!.id!;
                   Global.orders[i].status = "0";
-                  Global.orders[i].discount = Global.discount;
+                  Global.orders[i].discount = Global.toNumber(discountCtrl.text);
+                  Global.orders[i].addPrice = Global.toNumber(addPriceCtrl.text);
                   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
                   // Global.orders[i].attachement = null;
                   for (var j = 0; j < Global.orders[i].details!.length; j++) {
@@ -800,6 +804,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                       if (mounted) {
                         Global.orders.clear();
                         Global.discount = 0;
+                        Global.addPrice = 0;
                         Global.customer = null;
                         Global.posOrder = null;
                         Global.paymentList?.clear();
@@ -1305,6 +1310,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
     if (Global.orders.isEmpty) {
       Global.customer = null;
       Global.discount = 0;
+      Global.addPrice = 0;
       Global.paymentList?.clear();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -1363,7 +1369,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),
@@ -1502,7 +1508,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),

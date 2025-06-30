@@ -35,7 +35,7 @@ class DropDownItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  '${project is int ? project : project!.name}',
+                  '${project is int || project is String ? project : project?.name ?? ''}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: textColor,
                         fontSize: fontSize,

@@ -31,6 +31,7 @@ import 'package:motivegold/widget/price_breakdown.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({super.key});
@@ -42,6 +43,7 @@ class CheckOutScreen extends StatefulWidget {
 class _CheckOutScreenState extends State<CheckOutScreen> {
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
+  TextEditingController addPriceCtrl = TextEditingController();
   Screen? size;
 
   int? selectedOption = 0;
@@ -53,7 +55,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void initState() {
     // implement initState
     super.initState();
-    Global.discount = 0;
+    // Global.discount = 0;
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -77,7 +79,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   loadDefaultPayment() async {
     int orderTypeId = 0;
     if (Global.currentOrderType == 1) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 2;
       } else {
         orderTypeId = 1;
@@ -85,7 +87,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 2) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 33;
       } else {
         orderTypeId = 3;
@@ -93,7 +95,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 3) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 44;
       } else {
         orderTypeId = 4;
@@ -101,7 +103,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 4) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 9;
       } else {
         orderTypeId = 8;
@@ -109,7 +111,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 5) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 5;
       } else {
         orderTypeId = 6;
@@ -117,7 +119,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 6) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.discount) < 0) {
+      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
         orderTypeId = 10;
       } else {
         orderTypeId = 11;
@@ -139,7 +141,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    Global.discount = 0;
+    // Global.discount = 0;
   }
 
   @override
@@ -505,7 +507,23 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           height: 20,
                         ),
                         buildTextFieldBig(
-                            labelText: "ส่วนลด (บาทไทย)",
+                            labelText: "ร้านทองเพิ่มให้ (บาท)",
+                            labelColor: Colors.orange,
+                            controller: addPriceCtrl,
+                            inputType: TextInputType.phone,
+                            inputFormat: [
+                              ThousandsFormatter(allowFraction: true)
+                            ],
+                            onChanged: (value) {
+                              Global.addPrice =
+                              value.isNotEmpty ? Global.toNumber(value) : 0;
+                              setState(() {});
+                            }),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        buildTextFieldBig(
+                            labelText: "ร้านทองลดให้ (บาท)",
                             labelColor: Colors.orange,
                             controller: discountCtrl,
                             inputType: TextInputType.phone,
@@ -529,12 +547,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               PriceBreakdown(
                                 title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                                 price:
-                                    '${Global.format(Global.getPaymentTotal(Global.orders))} บาท',
+                                    '${Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                               ),
                               PriceBreakdown(
-                                title: 'ใครจ่ายให้ใครเท่าไร'.tr(),
+                                title: '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                                 price:
-                                    '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.discount))} ${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                               ),
                             ],
                           ),
@@ -763,7 +781,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       persistentFooterButtons: [
         SizedBox(
             height: 70,
-            width: 150,
+            width: 250,
             child: ElevatedButton(
               style: ButtonStyle(
                   foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
@@ -810,7 +828,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   }
                 }
                 var amount = Global.payToCustomerOrShopValue(
-                    Global.orders, Global.discount);
+                    Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
                 // motivePrint(selectedOption);
                 if (amount > getMaxKycValue()) {
                   if (selectedOption == 0 && Global.customer == null) {
@@ -839,7 +857,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                 if (getPaymentTotal() >
                     Global.toNumber(
-                        Global.format(Global.getPaymentTotal(Global.orders)))) {
+                        Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -855,7 +873,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
                 if (getPaymentTotal() <
                     Global.toNumber(
-                        Global.format(Global.getPaymentTotal(Global.orders)))) {
+                        Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -875,7 +893,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   Global.orders[i].updatedDate = DateTime.now();
                   Global.orders[i].customerId = Global.customer!.id!;
                   Global.orders[i].status = "0";
-                  Global.orders[i].discount = Global.discount;
+                  Global.orders[i].discount = Global.toNumber(discountCtrl.text);
+                  Global.orders[i].addPrice = Global.toNumber(addPriceCtrl.text);
                   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
                   Global.orders[i].attachment = null;
                   if (Global.orders[i].orderTypeId != 5 &&
@@ -997,7 +1016,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       await pr.hide();
                       if (mounted) {
                         Global.orders.clear();
-                        Global.discount = 0;
+                        // Global.discount = 0;
                         Global.customer = null;
                         Global.posOrder = null;
                         Global.paymentList?.clear();
@@ -1463,7 +1482,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     Global.orders.removeAt(i);
     if (Global.orders.isEmpty) {
       Global.customer = null;
-      Global.discount = 0;
+      // Global.discount = 0;
       Global.paymentList?.clear();
     }
     loadDefaultPayment();
@@ -1510,7 +1529,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 150,
+                          height: Device.orientation == Orientation.portrait
+                              ? 8.h
+                              : 12.h,
                           decoration: const BoxDecoration(color: snBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -1524,7 +1545,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),
@@ -1649,7 +1670,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       children: [
                         Container(
                           width: double.infinity,
-                          height: 150,
+                          height: Device.orientation == Orientation.portrait
+                              ? 8.h
+                              : 12.h,
                           decoration: const BoxDecoration(color: snBgColor),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -1659,13 +1682,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
+                                      // size?.getWidthPx(15),
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.payToCustomerOrShop(Global.orders, Global.discount)}',
+                                    '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 14.sp,
+                                        // size?.getWidthPx(8),
                                         color: Colors.white)),
                               ],
                             ),

@@ -193,6 +193,7 @@ class Global {
   static double sellThengTaxBroker = 0;
   static double sellThengTotalBroker = 0;
 
+  static double addPrice = 0;
   static double discount = 0;
   static CustomerModel? customer;
   static CompanyModel? company;
@@ -524,9 +525,9 @@ class Global {
     return subTotal + weightTotal;
   }
 
-  static double getOrderGrantTotalAmountApi(double subTotal, double? discount) {
+  static double getOrderGrantTotalAmountApi(double subTotal, double? discount, double addPrice) {
     discount ??= 0;
-    return subTotal - discount;
+    return subTotal - discount + addPrice;
   }
 
   static double getPriceIncludeTaxTotal(OrderModel? order) {
@@ -630,11 +631,11 @@ class Global {
   }
 
   static dynamic payToCustomerOrShop(
-      List<OrderModel>? orders, double discount) {
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
-    double amount = payToCustomerOrShopValue(orders, discount);
+    double amount = payToCustomerOrShopValue(orders, discount, addPrice);
     return amount > 0
         ? '${format(amount)} บาท'
         : amount == 0
@@ -642,11 +643,11 @@ class Global {
             : '${format(-amount)} บาท';
   }
 
-  static dynamic payToCustomerOrShopWholeSale(dynamic orders, double discount) {
+  static dynamic payToCustomerOrShopWholeSale(dynamic orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
-    double amount = payToCustomerOrShopValueWholeSale(orders, discount);
+    double amount = payToCustomerOrShopValueWholeSale(orders, discount, addPrice);
     return amount > 0
         ? '${format(amount)} บาท'
         : amount == 0
@@ -655,7 +656,7 @@ class Global {
   }
 
   static dynamic payToCustomerOrShopValue(
-      List<OrderModel>? orders, double discount) {
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -677,6 +678,7 @@ class Global {
     }
     amount = sell + buy;
     amount = amount < 0 ? -amount : amount;
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     amount = (sell + buy) < 0 ? -amount : amount;
     // motivePrint(amount);
@@ -684,7 +686,7 @@ class Global {
   }
 
   static dynamic payToCustomerOrShopValueWholeSale(
-      List<OrderModel>? orders, double discount) {
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -715,6 +717,7 @@ class Global {
     }
     amount = sell + buy;
     amount = amount < 0 ? -amount : amount;
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     amount = (sell + buy) < 0 ? -amount : amount;
     // motivePrint(sell + buy);
@@ -738,7 +741,7 @@ class Global {
             : 'ค้าส่งรับ - ร้านจ่ายเงิน (สุทธิ)';
   }
 
-  static dynamic payToBrokerOrShop() {
+  static dynamic payToBrokerOrShop(double discount, double addPrice) {
     if (ordersPapun!.isEmpty) {
       return 0;
     }
@@ -758,7 +761,7 @@ class Global {
       }
     }
     amount = sell + buy;
-
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     return amount > 0
         ? 'โบรกเกอร์จ่ายเงินให้กับเรา ${formatter.format(amount)} บาท'
@@ -767,7 +770,7 @@ class Global {
             : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} บาท';
   }
 
-  static double getPaymentTotal(List<OrderModel>? orders) {
+  static double getPaymentTotal(List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -785,12 +788,13 @@ class Global {
     }
     // motivePrint(discount);
     amount = amount < 0 ? -amount : amount;
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     // motivePrint(amount);
     return amount < 0 ? -amount : amount;
   }
 
-  static double getPaymentTotalB(List<OrderModel>? orders) {
+  static double getPaymentTotalB(List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -808,6 +812,7 @@ class Global {
     }
     // motivePrint(discount);
     // amount = amount < 0 ? -amount : amount;
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     motivePrint(amount);
     return amount; // < 0 ? -amount : amount;
@@ -826,7 +831,7 @@ class Global {
     return amount;
   }
 
-  static double getPaymentTotalWholeSale(List<OrderModel>? orders) {
+  static double getPaymentTotalWholeSale(List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -843,6 +848,7 @@ class Global {
     }
     // motivePrint(discount);
     amount = amount < 0 ? -amount : amount;
+    amount += addPrice;
     amount = discount != 0 ? amount - discount : amount;
     // motivePrint(amount);
     return amount < 0 ? -amount : amount;
@@ -862,7 +868,6 @@ class Global {
       amount += price;
     }
 
-    // amount = discount != 0 ? amount - discount : amount;
     return amount < 0 ? -amount : amount;
   }
 
@@ -876,14 +881,12 @@ class Global {
       double price = type == 5
           ? order.details![j].priceExcludeTax!
           : order.details![j].priceIncludeTax!;
-      // double price = order.details![j].priceIncludeTax!;
       if (type == 2 || type == 5 || type == 44 || type == 33 || type == 9) {
         price = -price;
       }
       amount += price;
     }
 
-    // amount = discount != 0 ? amount - discount : amount;
     return amount < 0 ? -amount : amount;
   }
 
@@ -905,7 +908,6 @@ class Global {
     }
     double sum = 0;
     for (var e in data) {
-      // sum += orderTypeId == 5 ? e.priceExcludeTax! : e.priceIncludeTax!;
       sum += e.priceIncludeTax!;
     }
     return sum;
@@ -964,7 +966,7 @@ class Global {
       return 0;
     }
     double amount = 0;
-    for (int j = 0; j < details!.length; j++) {
+    for (int j = 0; j < details.length; j++) {
       double price = details[j].paymentAmount ?? 0;
       amount += price;
     }
@@ -1267,6 +1269,12 @@ class Global {
   static String formatDateMF(String date) {
     DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd MMM yyyy').format(tempDate);
+  }
+
+  static String formatDateThai(String date) {
+    DateFormat format = DateFormat("d MMM yyyy", "en");
+    DateTime tempDate = format.parse(date).toLocal();
+    return DateFormat('yyyy-MM-dd').format(tempDate);
   }
 
   static String formatDateDD(String date) {

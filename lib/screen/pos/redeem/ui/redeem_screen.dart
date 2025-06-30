@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:board_datetime_picker/board_datetime_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +8,7 @@ import 'package:masked_text/masked_text.dart';
 import 'package:motivegold/constants/device_type.dart';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
+import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/redeem/redeem_check_screen.dart';
 import 'package:motivegold/screen/pos/redeem/dialog/add_redeem_item_dialog.dart';
@@ -28,6 +28,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class RedeemScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -91,7 +92,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
     super.initState();
 
     // Sample data
-    // orderDateCtrl.text = "01-02-2025";
+    orderDateCtrl.text = Global.formatDateD(DateTime.now().toString());
     getRedeemCart();
     calTotal();
   }
@@ -161,7 +162,10 @@ class _RedeemScreenState extends State<RedeemScreen> {
         backgroundColor: stmBgColor,
         title: Text(
           'ธุรกรรมไถ่ถอน - ขายฝาก',
-          style: TextStyle(fontSize: size.getWidthPx(10), color: textWhite),
+          style: TextStyle(
+            fontSize: 16.sp, //size.getWidthPx(10),
+            color: textWhite,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -212,7 +216,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                       child: Container(
                         margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
+                            vertical: 0, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(14),
                           color: stmBgColorLight,
@@ -222,6 +226,10 @@ class _RedeemScreenState extends State<RedeemScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                child: GoldMiniWidget(),
+                              ),
                               SizedBox(
                                 child: Row(
                                   children: [
@@ -258,18 +266,22 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                 fontSize: size.getWidthPx(12),
                                                 color: Colors.blue[900],
                                                 fontWeight: FontWeight.w900),
-                                            prefixIcon:
-                                                GestureDetector(onTap: () {
+                                            prefixIcon: GestureDetector(
+                                                onTap: () {
                                                   showDialog(
                                                     context: context,
-                                                    builder: (_) => SfDatePickerDialog(
-                                                      initialDate: DateTime.now(),
+                                                    builder: (_) =>
+                                                        SfDatePickerDialog(
+                                                      initialDate:
+                                                          DateTime.now(),
                                                       onDateSelected: (date) {
-                                                        motivePrint('You picked: $date');
+                                                        motivePrint(
+                                                            'You picked: $date');
                                                         // Your logic here
                                                         String formattedDate =
-                                                        DateFormat('dd-MM-yyyy')
-                                                            .format(date);
+                                                            DateFormat(
+                                                                    'dd-MM-yyyy')
+                                                                .format(date);
                                                         motivePrint(
                                                             formattedDate); //formatted date output using intl package =>  2021-03-16
                                                         //you can implement different kind of Date Format here according to your requirement
@@ -280,7 +292,11 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                       },
                                                     ),
                                                   );
-                                                }, child: const Icon(Icons.calendar_today, size: 40,)),
+                                                },
+                                                child: const Icon(
+                                                  Icons.calendar_today,
+                                                  size: 40,
+                                                )),
                                             //icon of text field
                                             floatingLabelBehavior:
                                                 FloatingLabelBehavior.always,
@@ -290,7 +306,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                     horizontal: 10.0),
                                             labelText: "",
                                             border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(
+                                              borderRadius:
+                                                  BorderRadius.circular(
                                                 getProportionateScreenWidth(2),
                                               ),
                                               borderSide: const BorderSide(
@@ -298,7 +315,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                               ),
                                             ),
                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(
+                                              borderRadius:
+                                                  BorderRadius.circular(
                                                 getProportionateScreenWidth(2),
                                               ),
                                               borderSide: const BorderSide(
@@ -444,7 +462,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             openCalc: () {
                                               if (!showCal) {
                                                 txt = 'deposit_amount';
-                                                depositAmountFocus.requestFocus();
+                                                depositAmountFocus
+                                                    .requestFocus();
                                                 openCal();
                                               }
                                             },
@@ -501,7 +520,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                           openCalc: () {
                                             if (!showCal) {
                                               txt = 'redemption_value';
-                                              redemptionValueFocus.requestFocus();
+                                              redemptionValueFocus
+                                                  .requestFocus();
                                               openCal();
                                             }
                                           },
@@ -559,7 +579,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                           openCalc: () {
                                             if (!showCal) {
                                               txt = 'benefit_receive';
-                                              benefitReceiveFocus.requestFocus();
+                                              benefitReceiveFocus
+                                                  .requestFocus();
                                               openCal();
                                             }
                                           },
@@ -587,7 +608,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 3),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                       ),
                                       onPressed: () async {
@@ -801,12 +823,11 @@ class _RedeemScreenState extends State<RedeemScreen> {
           child: Column(
             children: [
               Padding(
-                padding:
-                const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -833,8 +854,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                       //   height: 10,
                       // ),
                       Row(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
@@ -853,7 +873,9 @@ class _RedeemScreenState extends State<RedeemScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 children: [
                   Expanded(
@@ -945,7 +967,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                         RedeemModel order = RedeemModel(
                             redeemId: '',
                             redeemDate: Global.convertDate(orderDateCtrl.text),
-                            details: Global.redeemSingleDetail!,
+                            details: Global.redeemSingleDetail!.reversed.toList(),
                             redeemTypeId: 1);
                         final data = order.toJson();
                         Global.redeems.add(RedeemModel.fromJson(data));
@@ -1101,7 +1123,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                         RedeemModel order = RedeemModel(
                             redeemId: '',
                             redeemDate: Global.convertDate(orderDateCtrl.text),
-                            details: Global.redeemSingleDetail!,
+                            details: Global.redeemSingleDetail!.reversed.toList(),
                             redeemTypeId: 1);
                         final data = order.toJson();
                         Global.redeems.add(RedeemModel.fromJson(data));

@@ -50,6 +50,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
     super.initState();
     Global.currentOrderType = 0;
     Global.discount = 0;
+    Global.addPrice = 0;
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -69,6 +70,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
     // TODO: implement dispose
     super.dispose();
     Global.discount = 0;
+    Global.addPrice = 0;
   }
 
   @override
@@ -480,7 +482,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
-                                          '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.discount))} บาท',
+                                          '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.toNumber(discountCtrl.text)))} บาท',
                                           textAlign: TextAlign.right,
                                           style: const TextStyle(
                                             fontSize: 32,
@@ -745,7 +747,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                   Global.redeems[i].updatedDate = DateTime.now();
                   Global.redeems[i].customerId = Global.customer!.id!;
                   Global.redeems[i].status = 0;
-                  Global.redeems[i].discount = Global.discount;
+                  Global.redeems[i].discount = Global.toNumber(discountCtrl.text);
+                  // Global.redeems[i].addPrice = Global.toNumber(addPriceCtrl.text);
                   Global.redeems[i].qty = 1;
                   Global.redeems[i].redemptionVat = 0;
                   Global.redeems[i].weight =
@@ -803,6 +806,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                       if (mounted) {
                         Global.redeems.clear();
                         Global.discount = 0;
+                        Global.addPrice = 0;
                         Global.customer = null;
                         Global.paymentList?.clear();
                         writeRedeemCart();
@@ -1245,6 +1249,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
     if (Global.redeems.isEmpty) {
       Global.customer = null;
       Global.discount = 0;
+      Global.addPrice = 0;
       Global.paymentList?.clear();
     }
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -1303,7 +1308,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.discount))}',
+                                    '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.toNumber(discountCtrl.text)))}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(10),
                                         color: Colors.white)),
@@ -1441,7 +1446,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                       color: Colors.white),
                                 ),
                                 Text(
-                                    '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.discount))}',
+                                    '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.toNumber(discountCtrl.text)))}',
                                     style: TextStyle(
                                         fontSize: size?.getWidthPx(8),
                                         color: Colors.white)),

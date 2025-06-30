@@ -8,6 +8,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/branch.dart';
+import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/payment.dart';
@@ -29,6 +30,8 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
+import 'package:motivegold/widget/dropdown/CustomerDropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/CustomerDropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -55,59 +58,55 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
 
   ProductTypeModel? selectedOrderType;
   static ValueNotifier<dynamic>? orderTypeNotifier;
-  BranchModel? selectedBranch;
+
+  CustomerModel? selectedCustomer;
+  static ValueNotifier<dynamic>? customerNotifier;
+
+  List<CustomerModel>? customers = [];
+  bool loadingCustomer = false;
 
   @override
   void initState() {
     super.initState();
-    selectedOrderType = orderTypes()[0];
-    orderTypeNotifier = ValueNotifier<ProductTypeModel>(selectedOrderType ??
-        ProductTypeModel(id: 0, code: '', name: 'เลือกประเภทธุรกรรม'));
-    // loadData();
+    selectedOrderType = null; //orderTypes()[0];
+    orderTypeNotifier = ValueNotifier<ProductTypeModel?>(null);
+    customerNotifier = ValueNotifier<CustomerModel?>(null);
+    loadData();
   }
 
   void loadData() async {
     setState(() {
-      loading = true;
-      Global.pairId = null;
-      Global.orderIds!.clear();
+      loadingCustomer = true;
     });
+
     try {
       var result =
-          await ApiServices.post('/order/all', Global.requestObj(null));
-      // Global.printLongString(result!.toJson().toString());
+          await ApiServices.post('/customer/all', Global.requestObj({}));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-
-        List<OrderModel> products = orderListModelFromJson(data);
-        // motivePrint(products.first);
-        setState(() {
-          list = products;
-          filterList!.addAll(products);
-        });
+        List<CustomerModel> products = customerListModelFromJson(data);
+        if (products.isNotEmpty) {
+          customers = products;
+        } else {
+          customers = [];
+        }
+        setState(() {});
       } else {
-        list = [];
+        customers = [];
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
+      motivePrint(e.toString());
     }
     setState(() {
-      loading = false;
+      loadingCustomer = false;
     });
   }
 
   void search() async {
-    // if (fromDateCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-    //   return;
-    // }
-    //
-    // if (toDateCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-    //   return;
-    // }
+    if (selectedOrderType == null && selectedCustomer == null && toDateCtrl.text.isEmpty && toDateCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกตัวกรองข้อมูลก่อน', 'OK', action: () {});
+      return;
+    }
 
     setState(() {
       loading = true;
@@ -125,7 +124,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     //       ? DateTime.parse(toDateCtrl.text).toString()
     //       : null,
     //   "orderTypeId": selectedOrderType?.id,
-    //   "branchId": selectedBranch?.id
+    //   "customer_id": selectedCustomer?.id,
     // }));
     try {
       var result = await ApiServices.post(
@@ -140,7 +139,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                 ? DateTime.parse(toDateCtrl.text).toString()
                 : null,
             "orderTypeId": selectedOrderType?.id,
-            "branchId": selectedBranch?.id
+            "customerId": selectedCustomer?.id,
           }));
       // Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
@@ -181,13 +180,13 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: size?.hp(100),
-            child: Column(
-              children: [
-                SizedBox(
-                  child: Container(
+        child: loadingCustomer
+            ? Center(
+                child: LoadingProgress(),
+              )
+            : Column(
+                children: [
+                  Container(
                     margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -228,8 +227,11 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                         style: TextStyle(
                                             fontSize: 30, color: textColor),
                                       ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
                                       SizedBox(
-                                        height: 90,
+                                        height: 60,
                                         child:
                                             MiraiDropDownMenu<ProductTypeModel>(
                                           key: UniqueKey(),
@@ -266,6 +268,64 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                             fontSize: size?.getWidthPx(10),
                                             projectValueNotifier:
                                                 orderTypeNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'เลือกลูกค้า',
+                                        style: TextStyle(
+                                            fontSize: 30, color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      SizedBox(
+                                        height: 60,
+                                        child: MiraiDropDownMenu<CustomerModel>(
+                                          key: UniqueKey(),
+                                          children: customers ?? [],
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            CustomerModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return CustomerDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: size?.getWidthPx(10),
+                                            );
+                                          },
+                                          onChanged:
+                                              (CustomerModel value) async {
+                                            selectedCustomer = value;
+                                            customerNotifier!.value = value;
+                                            search();
+                                          },
+                                          child:
+                                              CustomerDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: size?.getWidthPx(10),
+                                            projectValueNotifier:
+                                                customerNotifier!,
                                           ),
                                         ),
                                       ),
@@ -413,8 +473,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                             motivePrint('You picked: $date');
                                             // Your logic here
                                             String formattedDate =
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(date);
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(date);
                                             motivePrint(
                                                 formattedDate); //formatted date output using intl package =>  2021-03-16
                                             //you can implement different kind of Date Format here according to your requirement
@@ -431,50 +491,81 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                               ),
                             ],
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: getProportionateScreenWidth(3.0),
-                              vertical: getProportionateScreenHeight(5.0),
-                            ),
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStateProperty.all<Color>(bgColor3)),
-                              onPressed: search,
-                              child: Text(
-                                'ค้นหา'.tr(),
-                                style: const TextStyle(fontSize: 32),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: getProportionateScreenWidth(3.0),
+                                    vertical: getProportionateScreenHeight(5.0),
+                                  ),
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                        WidgetStateProperty.all<Color>(Colors.red)),
+                                    onPressed: () {
+                                      selectedOrderType = null;
+                                      selectedCustomer = null;
+                                      fromDateCtrl.text = "";
+                                      toDateCtrl.text = "";
+                                      orderTypeNotifier = ValueNotifier<ProductTypeModel?>(null);
+                                      customerNotifier = ValueNotifier<CustomerModel?>(null);
+                                      filterList?.clear();
+                                      setState(() {
+
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reset'.tr(),
+                                      style: const TextStyle(fontSize: 32),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 20,),
+                              Flexible(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: getProportionateScreenWidth(3.0),
+                                    vertical: getProportionateScreenHeight(5.0),
+                                  ),
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all<Color>(bgColor3)),
+                                    onPressed: search,
+                                    child: Text(
+                                      'ค้นหา'.tr(),
+                                      style: const TextStyle(fontSize: 32),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                const Divider(
-                  thickness: 1.0,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: loading
-                        ? const LoadingProgress()
-                        : filterList!.isEmpty
-                            ? const NoDataFoundWidget()
-                            : ListView.builder(
-                                // physics: const NeverScrollableScrollPhysics(),
-                                itemCount: filterList!.length,
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return dataCard(filterList![index]!, index);
-                                }),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: loading
+                          ? const LoadingProgress()
+                          : filterList!.isEmpty
+                              ? Center(child: const NoDataFoundWidget())
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: filterList!.length,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return dataCard(filterList![index]!, index);
+                                  }),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
+                ],
+              ),
       ),
     );
   }
@@ -483,16 +574,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     return Stack(
       children: [
         GestureDetector(
-          onTap: () {
-            // Global.pairId = list.pairId;
-            // Invoice invoice = Invoice(
-            //     order: list, customer: list.customer!, items: list.details!);
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => PdfPreviewPage(invoice: invoice),
-            //   ),
-            // );
-          },
+          onTap: () {},
           child: Card(
             child: Row(
               children: [
@@ -504,7 +586,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '#${order.orderId.toString()}',
+                          '#${order.orderId.toString()} ลูกค้า: ${order.customer?.firstName} ${order.customer?.lastName}',
                           style: TextStyle(fontSize: size?.getWidthPx(8)),
                         ),
                         Text(
@@ -830,31 +912,5 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
         ),
       ],
     );
-  }
-
-  void removeProduct(int id, int i) async {
-    final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-    await pr.show();
-    pr.update(message: 'processing'.tr());
-    try {
-      var result = await ApiServices.delete('/product', id);
-      await pr.hide();
-      if (result?.status == "success") {
-        list!.removeAt(i);
-        setState(() {});
-      } else {
-        if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-              action: () {});
-        }
-      }
-    } catch (e) {
-      await pr.hide();
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-            action: () {});
-      }
-    }
   }
 }
