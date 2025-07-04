@@ -15,6 +15,7 @@ import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_repor
 import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
@@ -49,7 +50,52 @@ class _ThengMatchingReportMenuScreenState extends State<ThengMatchingReportMenuS
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
-
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const StockReportListScreen()));
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.green,
+                    ),
+                    title: 'รายงานสต็อก',
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const StockMovementReportListScreen()));
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.orange,
+                    ),
+                    title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
               ],
             ),
             // You can add a settings title

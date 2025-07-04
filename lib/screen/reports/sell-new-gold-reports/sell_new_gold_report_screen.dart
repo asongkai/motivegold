@@ -18,7 +18,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
-
+import 'package:sizer/sizer.dart';
 class SellNewGoldReportScreen extends StatefulWidget {
   const SellNewGoldReportScreen({super.key});
 
@@ -39,41 +39,18 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
   @override
   void initState() {
     super.initState();
-    // loadProducts();
   }
 
   void loadProducts() async {
-
-    // if (fromDateCtrl.text.isEmpty) {
-    //   Alert.warning(
-    //       context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-    //   return;
-    // }
-    // if (toDateCtrl.text.isEmpty) {
-    //   Alert.warning(
-    //       context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-    //   return;
-    // }
 
     setState(() {
       loading = true;
     });
 
-    motivePrint(Global.requestObj({
-      "year": 0,
-      "month": 0,
-      "fromDate": fromDateCtrl.text.isNotEmpty
-          ? DateTime.parse(fromDateCtrl.text).toString()
-          : null,
-      "toDate": toDateCtrl.text.isNotEmpty
-          ? DateTime.parse(toDateCtrl.text).toString()
-          : null,
-    }));
-
     try {
       var result = await ApiServices.post(
           '/order/all/type/1',
-          Global.requestObj({
+          Global.reportRequestObj({
             "year": 0,
             "month": 0,
             "fromDate": fromDateCtrl.text.isNotEmpty
@@ -83,7 +60,6 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                 ? DateTime.parse(toDateCtrl.text).toString()
                 : null,
           }));
-      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
@@ -171,7 +147,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.white),
                               )
                             ],

@@ -16,7 +16,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class BranchListScreen extends StatefulWidget {
   const BranchListScreen({super.key});
 
@@ -118,7 +118,7 @@ class _BranchListScreenState extends State<BranchListScreen> {
                                   ),
                                   Text(
                                     'เพิ่มสาขา',
-                                    style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.white),
+                                    style: TextStyle(fontSize: 16.sp, color: Colors.white),
                                   )
                                 ],
                               ),

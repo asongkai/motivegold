@@ -22,6 +22,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class BuyThengScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -211,7 +212,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                 ),
                 Text(
                   'ราคาทองคำ',
-                  style: TextStyle(fontSize: size.getWidthPx(6)),
+                  style: TextStyle(fontSize: 16.sp),
                 )
               ],
             ),
@@ -335,14 +336,14 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                                       Text(
                                         'ยอดรวม',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.blue[900]),
                                       ),
                                       Text(
                                         "${Global.format(Global.buyThengSubTotal)} บาท",
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.blue[900]),
                                       ),
@@ -448,7 +449,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: size.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -511,7 +512,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'ระงับการสั่งซื้อ',
-                            style: TextStyle(fontSize: size.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -612,7 +613,7 @@ class _BuyThengScreenState extends State<BuyThengScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เช็คเอาท์',
-                            style: TextStyle(fontSize: size.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),

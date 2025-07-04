@@ -155,8 +155,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
         var data = jsonEncode(result?.data);
         List<CustomerModel> products = customerListModelFromJson(data);
         if (products.isNotEmpty) {
-          customers = products.reversed.toList();
-          filterList = products.reversed.toList();
+          customers = products;
+          filterList = products;
         } else {
           customers!.clear();
           filterList!.clear();
@@ -218,7 +218,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             Text(
                               'เพิ่มลูกค้า',
                               style: TextStyle(
-                                  fontSize: 14.sp, //size.getWidthPx(10),
+                                  fontSize: 14.sp, //16.sp,
                                   color: Colors.white),
                             )
                           ],
@@ -280,7 +280,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                       Text(
                                         'เลือกประเภทลูกค้า',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                       const SizedBox(
@@ -308,7 +308,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged:
@@ -319,7 +319,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 customerTypeNotifier!,
                                           ),
@@ -561,6 +561,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
 // Function to build each data row
   Widget _buildDataRow(int index, CustomerModel? customer) {
+    motivePrint(customer?.updatedDate.toString());
     return InkWell(
       onTap: () {
         // 🔥 Handle full row tap here
@@ -601,6 +602,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     paddedTextBigL(
                         'Work permit: ${customer.workPermit} \nPassport: ${customer.passportId} \nTax ID: ${customer.taxNumber}',
                         align: TextAlign.left),
+                  paddedTextBigL(
+                      'อัปเดตวันที่: \n${Global.formatDate(customer.updatedDate.toString())}',
+                      align: TextAlign.left),
                 ],
               ),
             ),

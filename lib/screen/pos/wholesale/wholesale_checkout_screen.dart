@@ -32,6 +32,7 @@ import 'package:motivegold/widget/price_breakdown.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class WholeSaleCheckOutScreen extends StatefulWidget {
   const WholeSaleCheckOutScreen({super.key});
@@ -260,7 +261,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 "${Global.customer!.firstName} ${Global.customer!.lastName}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -271,7 +272,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -282,7 +283,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   color: Colors.black,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -292,7 +293,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 "${Global.customer!.address}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -302,7 +303,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 "${getIdTitleCustomer(Global.customer)}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                               const SizedBox(
@@ -312,7 +313,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: size!.getWidthPx(6),
+                                                  fontSize: 16.sp,
                                                 ),
                                               ),
                                             ],
@@ -514,7 +515,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                         child: Text('ลำดับ',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               color: kPrimaryGreen,
                                             )),
                                       ),
@@ -523,7 +524,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                         child: Text('วิธีการชำระเงิน',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               color: kPrimaryGreen,
                                             )),
                                       ),
@@ -532,7 +533,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                         child: Text('วันที่ชำระเงิน',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               color: kPrimaryGreen,
                                             )),
                                       ),
@@ -543,7 +544,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                           child: Text('จำนวนเงิน',
                                               textAlign: TextAlign.right,
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -552,7 +553,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                         flex: 3,
                                         child: Text('',
                                             style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               color: kPrimaryGreen,
                                             )),
                                       ),
@@ -600,7 +601,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                           child: Text('',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -609,7 +610,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                           child: Text('',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -618,7 +619,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                           child: Text('ทั้งหมด',
                                               textAlign: TextAlign.right,
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(12),
+                                                fontSize: 18.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -631,7 +632,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
                                                   fontSize:
-                                                      size?.getWidthPx(12),
+                                                      18.sp,
                                                   color: kPrimaryGreen,
                                                 )),
                                           ),
@@ -640,7 +641,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                           flex: 2,
                                           child: Text('',
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -842,7 +843,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   Text(
                     "บันทึก".tr(),
                     style: TextStyle(
-                        color: Colors.white, fontSize: size!.getWidthPx(8)),
+                        color: Colors.white, fontSize: 18.sp),
                   ),
                   const SizedBox(
                     width: 2,
@@ -889,7 +890,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
               child: Text('${index + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -898,7 +899,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
               child: Text(order.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -909,7 +910,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 child: Text(Global.formatDateNT(order.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -921,7 +922,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                 child: Text(Global.format(order.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -1130,19 +1131,19 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Text('น้ำหนัก',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('ราคา',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                 ],
               ),
@@ -1151,10 +1152,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                   decoration: const BoxDecoration(),
                   children: [
                     paddedTextBigL('${j + 1}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                         align: TextAlign.center),
                     paddedTextBigL(order.details![j].productName,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(Global.format(order.details![j].weight!),
                         align: TextAlign.right,
                         style: TextStyle(fontSize: size?.getWidthPx(8))),
@@ -1365,7 +1366,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                                 Text(
@@ -1504,7 +1505,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                                 Text(

@@ -21,7 +21,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-
+import 'package:sizer/sizer.dart';
 class NewUserScreen extends StatefulWidget {
   final bool showBackButton;
 
@@ -194,7 +194,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(10),
+                                          fontSize: 18.sp,
                                         );
                                       },
                                       onChanged: (CompanyModel value) async {
@@ -212,7 +212,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(10),
+                                        fontSize: 18.sp,
                                         projectValueNotifier: companyNotifier!,
                                       ),
                                     ),
@@ -243,7 +243,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(10),
+                                          fontSize: 18.sp,
                                         );
                                       },
                                       onChanged: (BranchModel value) {
@@ -253,7 +253,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(10),
+                                        fontSize: 18.sp,
                                         projectValueNotifier: branchNotifier!,
                                       ),
                                     ),
@@ -417,7 +417,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size!.getWidthPx(10),
+                                          fontSize: 18.sp,
                                         );
                                       },
                                       onChanged: (ProductTypeModel project) {
@@ -427,7 +427,7 @@ class _NewUserScreenState extends State<NewUserScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size!.getWidthPx(10),
+                                        fontSize: 18.sp,
                                         projectValueNotifier: userRoleNotifier!,
                                       ),
                                     ),

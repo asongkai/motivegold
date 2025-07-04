@@ -16,7 +16,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-
+import 'package:sizer/sizer.dart';
 class TransferGoldPendingScreen extends StatefulWidget {
   const TransferGoldPendingScreen({super.key});
 
@@ -116,7 +116,7 @@ class _TransferGoldPendingScreenState extends State<TransferGoldPendingScreen> {
                     children: [
                       Text(
                         '#${list.transferId.toString()}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                       ),
                       Text(
                         Global.formatDate(list.transferDate.toString()),

@@ -9,6 +9,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:sizer/sizer.dart';
 
 class RedeemMenuScreen extends StatefulWidget {
   const RedeemMenuScreen({super.key});
@@ -60,7 +61,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
                   flex: 5,
                   child: Text('ขายฝากจำนำ - ไถ่ถอน',
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -87,7 +88,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
                           child: IconButton(
                               icon: Icon(
                                 Icons.shopping_cart,
-                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                                size: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {

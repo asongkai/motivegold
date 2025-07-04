@@ -24,6 +24,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class RefillDialog extends StatefulWidget {
   const RefillDialog({super.key});
@@ -260,7 +261,7 @@ class _RefillDialogState extends State<RefillDialog> {
                               'เติมทองรูปพรรณใหม่',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: size.getWidthPx(15),
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                           ),
@@ -315,7 +316,7 @@ class _RefillDialogState extends State<RefillDialog> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(10),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (ProductModel value) {
@@ -327,7 +328,7 @@ class _RefillDialogState extends State<RefillDialog> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(10),
+                                      fontSize: 16.sp,
                                       projectValueNotifier: productNotifier!,
                                     ),
                                   ),
@@ -571,7 +572,7 @@ class _RefillDialogState extends State<RefillDialog> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(10),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (WarehouseModel value) {
@@ -581,7 +582,7 @@ class _RefillDialogState extends State<RefillDialog> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(10),
+                                      fontSize: 16.sp,
                                       projectValueNotifier: warehouseNotifier!,
                                     ),
                                   ),

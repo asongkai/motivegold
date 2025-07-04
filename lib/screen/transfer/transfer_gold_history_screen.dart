@@ -16,7 +16,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-
+import 'package:sizer/sizer.dart';
 class TransferGoldHistoryScreen extends StatefulWidget {
   const TransferGoldHistoryScreen({super.key});
 
@@ -42,8 +42,8 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/transfer/all', Global.requestObj(null));
-      motivePrint(result?.toJson());
+          await ApiServices.post('/transfer/all', Global.reportRequestObj(null));
+      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<TransferModel> products = transferListModelFromJson(data);
@@ -118,12 +118,12 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                     children: [
                       Text(
                         '#${list.transferId.toString()}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                       ),
                       Text(
                         Global.formatDate(list.transferDate.toString()),
                         style: TextStyle(
-                            color: Colors.green, fontSize: size?.getWidthPx(6)),
+                            color: Colors.green, fontSize: 16.sp),
                       )
                     ],
                   ),
@@ -136,7 +136,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                             child: Text('สินค้า',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                           Padding(
@@ -144,7 +144,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                             child: Text('น้ำหนัก',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                           Padding(
@@ -152,7 +152,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
                             child: Text('คลังสินค้า',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                         ],

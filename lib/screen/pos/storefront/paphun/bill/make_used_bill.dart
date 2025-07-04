@@ -296,17 +296,21 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
               children: [
                 Expanded(
                   flex: 8,
-                  child: Text('ส่วนลด:',
+                  child: Text('ร้านทองเพิ่ม(ลด)ให้:',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
                 Expanded(
                   flex: 2,
-                  child: Text('${Global.format(invoice.order.discount ?? 0)} บาท',
+                  child: Text('${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 9, color: PdfColors.blue700)),
+                      style: TextStyle(
+                          fontSize: 9, color: addDisValue(invoice.order.discount ?? 0,
+                          invoice.order.addPrice ?? 0) <
+                          0
+                          ? PdfColors.red
+                          : PdfColors.blue700)),
                 ),
               ],
             ),
@@ -689,17 +693,21 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
               children: [
                 Expanded(
                   flex: 8,
-                  child: Text('ส่วนลด:',
+                  child: Text('ร้านทองเพิ่ม(ลด)ให้:',
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                           fontSize: 9, color: PdfColors.blue700)),
                 ),
                 Expanded(
                   flex: 2,
-                  child: Text('${Global.format(invoice.order.discount ?? 0)} บาท',
+                  child: Text('${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
-                          fontSize: 9, color: PdfColors.blue700)),
+                      style: TextStyle(
+                          fontSize: 9, color: addDisValue(invoice.order.discount ?? 0,
+                          invoice.order.addPrice ?? 0) <
+                          0
+                          ? PdfColors.red
+                          : PdfColors.blue700)),
                 ),
               ],
             ),

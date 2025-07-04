@@ -17,7 +17,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
-
+import 'package:sizer/sizer.dart';
 class SellUsedGoldReportScreen extends StatefulWidget {
   const SellUsedGoldReportScreen({super.key});
 
@@ -38,7 +38,6 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
   @override
   void initState() {
     super.initState();
-    // loadProducts();
   }
 
   void loadProducts() async {
@@ -49,7 +48,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
     try {
       var result = await ApiServices.post(
           '/order/all/type/6',
-          Global.requestObj({
+          Global.reportRequestObj({
             "year": 0,
             "month": 0,
             "fromDate": fromDateCtrl.text.isNotEmpty
@@ -144,7 +143,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.white),
                               )
                             ],

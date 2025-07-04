@@ -154,7 +154,7 @@ class _TambonScreenState extends State<TambonScreen> {
                                   Text(
                                     'เพิ่มตำบล',
                                     style: TextStyle(
-                                        fontSize: 14.sp, //size.getWidthPx(8),
+                                        fontSize: 14.sp, //16.sp,
                                         color: Colors.white),
                                   )
                                 ],
@@ -224,6 +224,7 @@ class _TambonScreenState extends State<TambonScreen> {
               ),
             ),
           ),
+          if (Global.user!.userType == 'ADMIN')
           Expanded(
             flex: 2,
             child: Row(

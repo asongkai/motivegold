@@ -69,15 +69,16 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
               child: Text(
                 '${Global.goldDataModel?.date}',
                 style: TextStyle(
-                    fontSize: 14.sp, //size.getWidthPx(10),
+                    fontSize: 14.sp, //16.sp,
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),
             ),
-            if (Global.goldDataModel!.different! > 0.0) getIcon(),
-            if (Global.goldDataModel!.different! > 0.0)
+            // if (Global.goldDataModel!.different! > 0.0)
+              getIcon(),
+            // if (Global.goldDataModel!.different! > 0.0)
               const SizedBox(width: 8),
-            if (Global.goldDataModel!.different! > 0.0)
+            // if (Global.goldDataModel!.different! > 0.0)
               Text(
                 '${getSign()}${formatterInt.format(Global.goldDataModel?.different ?? 0)}',
                 textAlign: TextAlign.end,
@@ -135,12 +136,12 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
     return diff > 0
         ? Image.asset(
             'assets/icons/up-arrow.png',
-            height: 42,
+            height: 35,
             color: Colors.green,
           )
         : Image.asset(
             'assets/icons/down-arrow.png',
-            height: 42,
+            height: 35,
             color: Colors.red,
           );
   }

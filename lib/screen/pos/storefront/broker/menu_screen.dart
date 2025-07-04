@@ -70,7 +70,7 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                     flex: 5,
                     child: Text(widget.title,
                         style: TextStyle(
-                            fontSize: 14.sp, //size.getWidthPx(10),
+                            fontSize: 14.sp, //16.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.w900))),
                 Expanded(
@@ -97,8 +97,8 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                               icon: Icon(
                                 Icons.save,
                                 size: (MediaQuery.of(context).orientation == Orientation.landscape)
-                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -154,8 +154,8 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                               icon: Icon(
                                 Icons.shopping_cart,
                                 size: (MediaQuery.of(context).orientation == Orientation.landscape)
-                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {

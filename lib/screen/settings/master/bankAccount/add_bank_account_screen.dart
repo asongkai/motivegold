@@ -19,7 +19,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class AddBankAccountScreen extends StatefulWidget {
   const AddBankAccountScreen({super.key});
 
@@ -144,7 +144,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (BankModel value) {
@@ -153,7 +153,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier: bankNotifier!,
                                           ),
                                         ),
@@ -195,7 +195,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (ProductTypeModel value) {
@@ -205,7 +205,7 @@ class _AddBankAccountScreenState extends State<AddBankAccountScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 bankAccountTypeNotifier!,
                                           ),

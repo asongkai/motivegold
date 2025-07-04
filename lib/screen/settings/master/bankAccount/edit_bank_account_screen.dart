@@ -20,7 +20,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class EditBankAccountScreen extends StatefulWidget {
   final BankAccountModel account;
   final int index;
@@ -157,7 +157,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: 16.sp,
                                         );
                                       },
                                       onChanged: (BankModel value) {
@@ -166,7 +166,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: 16.sp,
                                         projectValueNotifier: bankNotifier!,
                                       ),
                                     ),
@@ -206,7 +206,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: 16.sp,
                                         );
                                       },
                                       onChanged: (ProductTypeModel value) {
@@ -215,7 +215,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(6),
+                                        fontSize: 16.sp,
                                         projectValueNotifier:
                                             bankAccountTypeNotifier!,
                                       ),

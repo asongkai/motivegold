@@ -74,7 +74,7 @@ class ThengSaleMatchingMenuScreenState
                   flex: 5,
                   child: Text("ซื้อขายทองคำแท่ง (จับคู่)",
                       style: TextStyle(
-                          fontSize: 14.sp, //size.getWidthPx(10),
+                          fontSize: 14.sp, //16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -105,8 +105,8 @@ class ThengSaleMatchingMenuScreenState
                                         Orientation.landscape)
                                     ? Device.deviceType == DeviceType.web
                                         ? 16.sp
-                                        : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                        : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -165,8 +165,8 @@ class ThengSaleMatchingMenuScreenState
                                         Orientation.landscape)
                                     ? Device.deviceType == DeviceType.web
                                         ? 16.sp
-                                        : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                        : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:motivegold/utils/app_theme.dart';
+import 'package:sizer/sizer.dart';
 
 
 class LocationDropDownObjectChildWidget extends StatelessWidget {
@@ -56,7 +57,7 @@ class LocationDropDownObjectChildWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.keyTextBlackColor,
-                        fontSize: fontSize,
+                        fontSize: 14.sp,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

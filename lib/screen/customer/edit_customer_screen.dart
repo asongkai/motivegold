@@ -33,6 +33,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
 
 class EditCustomerScreen extends StatefulWidget {
@@ -143,9 +144,12 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
     taxNumberCtrl.text = widget.c.taxNumber ?? '';
     postalCodeCtrl.text = widget.c.postalCode ?? '';
     Global.addressCtrl.text = widget.c.address ?? '';
+    branchCodeCtrl.text = widget.c.branchCode ?? '';
 
     birthDateCtrl.text =
         widget.c.doB != null ? Global.dateOnlyT(widget.c.doB.toString()) : '';
+
+    motivePrint(widget.c.toJson());
 
     try {
       var province =
@@ -345,7 +349,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     project: project,
                                     isItemSelected: isItemSelected,
                                     firstSpace: 10,
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                   );
                                 },
                                 onChanged: (ProductTypeModel value) {
@@ -355,7 +359,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                 },
                                 child: DropDownObjectChildWidget(
                                   key: GlobalKey(),
-                                  fontSize: size.getWidthPx(8),
+                                  fontSize: 16.sp,
                                   projectValueNotifier: typeNotifier!,
                                 ),
                               ),
@@ -511,7 +515,11 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                                       getIdTitle(selectedType),
                                                   validator: null,
                                                   inputType: TextInputType.text,
-                                                  controller: idCardCtrl,
+                                                  controller:
+                                                      selectedType?.code ==
+                                                              'company'
+                                                          ? taxNumberCtrl
+                                                          : idCardCtrl,
                                                 ),
                                               ],
                                             ),
@@ -791,14 +799,17 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                               onTap: () async {
                                                 showDialog(
                                                   context: context,
-                                                  builder: (_) => SfDatePickerDialog(
+                                                  builder: (_) =>
+                                                      SfDatePickerDialog(
                                                     initialDate: DateTime.now(),
                                                     onDateSelected: (date) {
-                                                      motivePrint('You picked: $date');
+                                                      motivePrint(
+                                                          'You picked: $date');
                                                       // Your logic here
                                                       String formattedDate =
-                                                      DateFormat('yyyy-MM-dd')
-                                                          .format(date);
+                                                          DateFormat(
+                                                                  'yyyy-MM-dd')
+                                                              .format(date);
                                                       motivePrint(
                                                           formattedDate); //formatted date output using intl package =>  2021-03-16
                                                       //you can implement different kind of Date Format here according to your requirement
@@ -819,8 +830,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                     height: 15,
                                   ),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Padding(
@@ -954,10 +967,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
-                                      const SizedBox(height: 4,),
+                                      Text(
+                                        'เลือกจังหวัด',
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
                                       SizedBox(
                                         height: 70,
                                         child: MiraiDropDownMenu<ProvinceModel>(
@@ -979,17 +1000,19 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (ProvinceModel value) {
                                             Global.provinceModel = value;
-                                            Global.provinceNotifier!.value = value;
+                                            Global.provinceNotifier!.value =
+                                                value;
                                             loadAmphureByProvince(value.id);
                                           },
-                                          child: LocationDropDownObjectChildWidget(
+                                          child:
+                                              LocationDropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 Global.provinceNotifier!,
                                           ),
@@ -1003,10 +1026,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
-                                      const SizedBox(height: 4,),
+                                      Text(
+                                        'เลือกอำเภอ',
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
                                       SizedBox(
                                         height: 70,
                                         child: MiraiDropDownMenu<AmphureModel>(
@@ -1028,17 +1059,19 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (AmphureModel value) {
                                             Global.amphureModel = value;
-                                            Global.amphureNotifier!.value = value;
+                                            Global.amphureNotifier!.value =
+                                                value;
                                             loadTambonByAmphure(value.id);
                                           },
-                                          child: LocationDropDownObjectChildWidget(
+                                          child:
+                                              LocationDropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 Global.amphureNotifier!,
                                           ),
@@ -1061,10 +1094,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
-                                      const SizedBox(height: 4,),
+                                      Text(
+                                        'เลือกตำบล',
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: textColor),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
                                       SizedBox(
                                         height: 70,
                                         child: MiraiDropDownMenu<TambonModel>(
@@ -1086,16 +1127,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (TambonModel value) {
                                             Global.tambonModel = value;
-                                            Global.tambonNotifier!.value = value;
+                                            Global.tambonNotifier!.value =
+                                                value;
                                           },
-                                          child: LocationDropDownObjectChildWidget(
+                                          child:
+                                              LocationDropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 Global.tambonNotifier!,
                                           ),
@@ -1217,8 +1260,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                       selectedType?.code == "general" ? idCardCtrl.text : "",
                   "taxNumber": selectedType?.code == "company"
                       ? nationality == 'Thai'
-                          ? idCardCtrl.text
-                          : taxNumberCtrl.text
+                          ? taxNumberCtrl.text
+                          : idCardCtrl.text
                       : nationality == 'Thai'
                           ? idCardCtrl.text
                           : taxNumberCtrl.text,

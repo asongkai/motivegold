@@ -16,6 +16,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 
 class PawnMenuScreen extends StatefulWidget {
   const PawnMenuScreen({super.key});
@@ -118,14 +119,14 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
                   child: Icon(
                     iconData,
                     color: Colors.white,
-                    size: size!.getWidthPx(30),
+                    size: 18.sp,
                   )),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(8), color: Colors.teal),
+                    fontSize: 14.sp, color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -167,7 +168,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
                 // Icon(
                 //   iconData,
                 //   color: Colors.white,
-                //   size: size!.getWidthPx(30),
+                //   size: 18.sp,
                 // )
               ),
               const SizedBox(height: 8),
@@ -175,7 +176,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(8), color: Colors.teal),
+                    fontSize: 14.sp, color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -193,7 +194,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
             mainAxisSpacing: 16,
             crossAxisCount: 4,
             childAspectRatio:
-            orientation == Orientation.portrait ? .80 : .90,
+            orientation == Orientation.portrait ? .70 : .90,
             children: [
               iconDashboard(
                 'ขายฝากจำนำ\nไถ่ถอน',

@@ -27,7 +27,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class DefaultPaymentScreen extends StatefulWidget {
   const DefaultPaymentScreen({super.key});
 
@@ -291,7 +291,7 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
                                   'หน้าจอ ${model.name}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                               ),
@@ -305,7 +305,7 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
                                 'การชำระเงินเริ่มต้น',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(10),
+                                    fontSize: 16.sp,
                                     color: textColor),
                               ),
                             ),

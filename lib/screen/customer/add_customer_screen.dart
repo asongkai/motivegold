@@ -321,7 +321,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           Text(
                             'แสดงตนลูกค้า',
                             style: TextStyle(
-                                fontSize: 14.sp, //size.getWidthPx(10),
+                                fontSize: 14.sp, //16.sp,
                                 color: Colors.white),
                           )
                         ],
@@ -374,7 +374,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                               project: project,
                               isItemSelected: isItemSelected,
                               firstSpace: 10,
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 16.sp,
                             );
                           },
                           onChanged: (ProductTypeModel value) {
@@ -384,7 +384,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           },
                           child: DropDownObjectChildWidget(
                             key: GlobalKey(),
-                            fontSize: size.getWidthPx(8),
+                            fontSize: 16.sp,
                             projectValueNotifier: typeNotifier!,
                           ),
                         ),
@@ -962,7 +962,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                Text('เลือกจังหวัด', style: TextStyle(fontSize: 16.sp, color: textColor),),
                                 const SizedBox(height: 4,),
                                 SizedBox(
                                   height: 70,
@@ -985,7 +985,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(8),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (ProvinceModel value) {
@@ -998,7 +998,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                     },
                                     child: LocationDropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(8),
+                                      fontSize: 16.sp,
                                       projectValueNotifier:
                                       Global.provinceNotifier!,
                                     ),
@@ -1014,7 +1014,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                Text('เลือกอำเภอ', style: TextStyle(fontSize: 16.sp, color: textColor),),
                                 const SizedBox(height: 4,),
                                 SizedBox(
                                   height: 70,
@@ -1037,7 +1037,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(8),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (AmphureModel value) {
@@ -1050,7 +1050,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                     },
                                     child: LocationDropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(8),
+                                      fontSize: 16.sp,
                                       projectValueNotifier:
                                       Global.amphureNotifier!,
                                     ),
@@ -1075,7 +1075,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                                Text('เลือกตำบล', style: TextStyle(fontSize: 16.sp, color: textColor),),
                                 const SizedBox(height: 4,),
                                 SizedBox(
                                   height: 70,
@@ -1098,7 +1098,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(8),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (TambonModel value) {
@@ -1107,7 +1107,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                     },
                                     child: LocationDropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(8),
+                                      fontSize: 16.sp,
                                       projectValueNotifier:
                                       Global.tambonNotifier!,
                                     ),
@@ -1229,8 +1229,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         selectedType?.code == "general" ? idCardCtrl.text : "",
                     "taxNumber": selectedType?.code == "company"
                         ? nationality == 'Thai'
-                            ? idCardCtrl.text
-                            : taxNumberCtrl.text
+                            ? taxNumberCtrl.text
+                            : idCardCtrl.text
                         : nationality == 'Thai'
                             ? idCardCtrl.text
                             : taxNumberCtrl.text,

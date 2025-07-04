@@ -84,7 +84,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             Text(
                               'เพิ่มสินค้าใหม่',
                               style: TextStyle(
-                                  fontSize: 14.sp, //size.getWidthPx(10),
+                                  fontSize: 14.sp, //16.sp,
                                   color: Colors.white),
                             )
                           ],

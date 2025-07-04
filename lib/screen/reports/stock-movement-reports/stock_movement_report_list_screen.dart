@@ -26,6 +26,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class StockMovementReportListScreen extends StatefulWidget {
   const StockMovementReportListScreen({super.key});
@@ -62,13 +63,9 @@ class _StockMovementReportListScreenState
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
-    // search();
   }
 
   void loadProducts() async {
-    // setState(() {
-    //   loading = true;
-    // });
     try {
       var result =
           await ApiServices.post('/product/all', Global.requestObj(null));
@@ -82,8 +79,8 @@ class _StockMovementReportListScreenState
         productList = [];
       }
 
-      var warehouse = await ApiServices.post(
-          '/binlocation/all/branch', Global.requestObj(null));
+      var warehouse = await ApiServices.post('/binlocation/all/branch',
+          Global.requestObj({"branchId": Global.branch?.id}));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -98,9 +95,6 @@ class _StockMovementReportListScreenState
         print(e.toString());
       }
     }
-    // setState(() {
-    //   loading = false;
-    // });
   }
 
   void search() async {
@@ -110,7 +104,7 @@ class _StockMovementReportListScreenState
 
     var location = await ApiServices.post(
         '/stockmovement/search',
-        Global.requestObj({
+        Global.reportRequestObj({
           "productId": selectedProduct?.id,
           "binLocationId": selectedWarehouse?.id,
           "fromDate": fromDateCtrl.text.isNotEmpty
@@ -120,7 +114,6 @@ class _StockMovementReportListScreenState
               ? DateTime.parse(toDateCtrl.text).toString()
               : null,
         }));
-    // motivePrint(location?.toJson());
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
       List<StockMovementModel> products = stockMovementListModelFromJson(data);
@@ -155,18 +148,36 @@ class _StockMovementReportListScreenState
                   flex: 6,
                   child: Text("รายงานความเคลื่อนไหวสต๊อกสินค้า",
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
                 Expanded(
-                    flex: 4,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
+                  flex: 4,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      PopupMenuButton<int>(
+                        onSelected: (int value) async {
+                          if (value == 2) {
+                            if (filterList!.isEmpty) {
+                              Alert.warning(
+                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PreviewStockMovementReportPage(
+                                  list: filterList!.reversed.toList(),
+                                  type: 1,
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (value == 1) {
                             if (selectedWarehouse == null) {
                               Alert.warning(context, 'คำเตือน',
                                   'กรุณาเลือกคลังสินค้า', 'OK',
@@ -245,61 +256,55 @@ class _StockMovementReportListScreenState
                                 ),
                               ),
                             );
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.print,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                              Text(
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          PopupMenuItem(
+                            value: 1,
+                            child: ListTile(
+                              leading: Icon(Icons.print, size: 16.sp),
+                              title: Text(
                                 'พิมพ์ Stock card',
-                                style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
-                                    color: Colors.white),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (filterList!.isEmpty) {
-                              Alert.warning(
-                                  context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
-                              return;
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PreviewStockMovementReportPage(
-                                  list: filterList!.reversed.toList(),
-                                  type: 1,
-                                ),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.print,
-                                size: 50,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'พิมพ์',
-                                style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
-                                    color: Colors.white),
-                              )
-                            ],
+                            ),
                           ),
+                          PopupMenuItem(
+                            value: 2,
+                            child: ListTile(
+                              leading: Icon(Icons.print, size: 16.sp),
+                              title: Text(
+                                'พิมพ์ความเคลื่อนไหวสต๊อกสินค้า',
+                                style: TextStyle(fontSize: 16.sp),
+                              ),
+                            ),
+                          ),
+                        ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'พิมพ์',
+                              style: TextStyle(
+                                  fontSize: 16.sp, // Bigger font size
+                                  color: Colors.white // White color
+                                  ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: Colors.white,
+                              size: 16.sp,
+                            ),
+                          ],
                         ),
-                      ],
-                    ))
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           ),
@@ -357,8 +362,7 @@ class _StockMovementReportListScreenState
                                       children: [
                                         Text(
                                           'คลังสินค้า',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(10)),
+                                          style: TextStyle(fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -383,7 +387,7 @@ class _StockMovementReportListScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (WarehouseModel value) {
@@ -395,7 +399,7 @@ class _StockMovementReportListScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   warehouseNotifier!,
                                             ),
@@ -424,8 +428,7 @@ class _StockMovementReportListScreenState
                                       children: [
                                         Text(
                                           'สินค้า',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(10)),
+                                          style: TextStyle(fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -450,7 +453,7 @@ class _StockMovementReportListScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (ProductModel value) {
@@ -461,7 +464,7 @@ class _StockMovementReportListScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   productNotifier!,
                                             ),
@@ -488,8 +491,7 @@ class _StockMovementReportListScreenState
                                     left: 8.0, right: 8.0),
                                 child: TextField(
                                   controller: fromDateCtrl,
-                                  style:
-                                      TextStyle(fontSize: size.getWidthPx(12)),
+                                  style: TextStyle(fontSize: 18.sp),
                                   //editing controller of this TextField
                                   decoration: InputDecoration(
                                     prefixIcon:
@@ -531,7 +533,6 @@ class _StockMovementReportListScreenState
                                   readOnly: true,
                                   //set it true, so that user will not able to edit text
                                   onTap: () async {
-
                                     showDialog(
                                       context: context,
                                       builder: (_) => SfDatePickerDialog(
@@ -540,8 +541,8 @@ class _StockMovementReportListScreenState
                                           motivePrint('You picked: $date');
                                           // Your logic here
                                           String formattedDate =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(date);
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(date);
                                           motivePrint(
                                               formattedDate); //formatted date output using intl package =>  2021-03-16
                                           //you can implement different kind of Date Format here according to your requirement
@@ -563,8 +564,7 @@ class _StockMovementReportListScreenState
                                 child: TextField(
                                   controller: toDateCtrl,
                                   //editing controller of this TextField
-                                  style:
-                                      TextStyle(fontSize: size.getWidthPx(12)),
+                                  style: TextStyle(fontSize: 18.sp),
                                   //editing controller of this TextField
                                   decoration: InputDecoration(
                                     prefixIcon:
@@ -614,8 +614,8 @@ class _StockMovementReportListScreenState
                                           motivePrint('You picked: $date');
                                           // Your logic here
                                           String formattedDate =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(date);
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(date);
                                           motivePrint(
                                               formattedDate); //formatted date output using intl package =>  2021-03-16
                                           //you can implement different kind of Date Format here according to your requirement

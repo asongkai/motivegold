@@ -22,6 +22,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class SellDialog extends StatefulWidget {
   const SellDialog({super.key});
@@ -264,7 +265,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 SizedBox(
@@ -274,7 +275,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '(บาททอง)',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -332,7 +333,7 @@ class _SellDialogState extends State<SellDialog> {
                                   'ราคาขายทอง\nคำแท่ง',
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 SizedBox(
@@ -342,7 +343,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -397,7 +398,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ค่าบล็อกทอง',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 SizedBox(
@@ -407,7 +408,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -461,7 +462,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'รวมราคาขาย',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 SizedBox(
@@ -471,7 +472,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -586,7 +587,7 @@ class _SellDialogState extends State<SellDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.getWidthPx(15)),
+                                fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -621,7 +622,7 @@ class _SellDialogState extends State<SellDialog> {
                           "บันทึก",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: size.getWidthPx(15)),
+                              fontSize: 16.sp),
                         ),
                       ],
                     ),

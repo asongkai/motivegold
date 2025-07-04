@@ -20,6 +20,7 @@ import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_widget.dart';
+import 'package:sizer/sizer.dart';
 
 class BuyMatchingDialog extends StatefulWidget {
   const BuyMatchingDialog({super.key});
@@ -251,7 +252,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                         'ซื้อทองแท่ง (จับคู่)',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp,
                             color: Colors.white),
                       ),
                     ),
@@ -271,7 +272,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                TextStyle(fontSize: size.getWidthPx(15), color: textColor),
+                                TextStyle(fontSize: 16.sp, color: textColor),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -279,7 +280,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                               Text(
                                 '',
                                 style:
-                                TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
+                                TextStyle(color: textColor, fontSize: 16.sp),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -310,7 +311,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15), color: textColor),
+                                      fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -318,7 +319,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style: TextStyle(
-                                      color: textColor, fontSize: size.getWidthPx(10)),
+                                      color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -374,7 +375,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15), color: textColor),
+                                      fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -382,7 +383,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: size.getWidthPx(10)),
+                                      color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -434,7 +435,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15), color: textColor),
+                                      fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -442,7 +443,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 Text(
                                   '',
                                   style: TextStyle(
-                                      color: textColor, fontSize: size.getWidthPx(10)),
+                                      color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -608,7 +609,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                           Text(
                             "ยกเลิก",
                             style: TextStyle(
-                                color: Colors.white, fontSize: size.getWidthPx(15)),
+                                color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -642,7 +643,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                         Text(
                           "บันทึก",
                           style: TextStyle(
-                              color: Colors.white, fontSize: size.getWidthPx(15)),
+                              color: Colors.white, fontSize: 16.sp),
                         ),
                       ],
                     ),

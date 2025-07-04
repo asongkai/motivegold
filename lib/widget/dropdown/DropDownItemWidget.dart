@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:sizer/sizer.dart';
 
 class DropDownItemWidget extends StatelessWidget {
   const DropDownItemWidget({
@@ -38,7 +39,7 @@ class DropDownItemWidget extends StatelessWidget {
                   '${project is int || project is String ? project : project?.name ?? ''}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: textColor,
-                        fontSize: fontSize,
+                        fontSize: 14.sp,
                       ),
                 ),
                 if (Global.ifInt(project) == false && project.toJson().containsKey("accountNo"))

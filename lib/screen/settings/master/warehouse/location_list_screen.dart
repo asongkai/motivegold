@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/settings/master/warehouse/edit_location_screen.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -41,12 +42,12 @@ class _LocationListScreenState extends State<LocationListScreen> {
       loading = true;
     });
     try {
-      // motivePrint(Global.user?.companyId);
+      // motivePrint(Global.requestObj(null));
       var result = await ApiServices.post(
           Global.user?.userRole == 'Administrator'
               ? '/binlocation/all'
               : '/binlocation/branch',
-          Global.requestObj(null));
+          Global.requestObj({"branchId": Global.branch?.id}));
       // print(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -119,7 +120,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                     Text(
                                       'เพิ่มคลังสินค้า',
                                       style: TextStyle(
-                                          fontSize: 14.sp, //size.getWidthPx(8),
+                                          fontSize: 14.sp, //16.sp,
                                           color: Colors.white),
                                     )
                                   ],

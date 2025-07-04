@@ -80,6 +80,8 @@ dependencies:
   syncfusion_flutter_datepicker: ^29.2.10
   sizer: ^3.0.5
   file_picker: ^10.2.0
+  shared_preferences: ^2.5.3
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

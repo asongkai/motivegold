@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SfDatePickerDialog extends StatefulWidget {
@@ -63,7 +64,7 @@ class _SfDatePickerDialogState extends State<SfDatePickerDialog> {
                 Expanded(
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      textStyle: TextStyle(fontSize: size.getWidthPx(6)),
+                      textStyle: TextStyle(fontSize: 16.sp),
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -74,7 +75,7 @@ class _SfDatePickerDialogState extends State<SfDatePickerDialog> {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      textStyle: TextStyle(fontSize: size.getWidthPx(6)),
+                      textStyle: TextStyle(fontSize: 16.sp),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,

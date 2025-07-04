@@ -98,7 +98,7 @@ class _BankAccountListScreenState extends State<BankAccountListScreen> {
                                   ),
                                   Text(
                                     'เพิ่มบัญชีธนาคาร',
-                                    style: TextStyle(fontSize: 14.sp, //size.getWidthPx(8),
+                                    style: TextStyle(fontSize: 14.sp, //16.sp,
                                         color: Colors.white),
                                   )
                                 ],

@@ -19,7 +19,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-
+import 'package:sizer/sizer.dart';
 class ConfigurePosIDScreen extends StatefulWidget {
   const ConfigurePosIDScreen({super.key, this.posIdModel});
 
@@ -167,7 +167,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (BranchModel value) {
@@ -177,7 +177,7 @@ class _ConfigurePosIDScreenState extends State<ConfigurePosIDScreen> {
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   branchNotifier!,
                                             ),

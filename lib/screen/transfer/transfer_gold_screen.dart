@@ -30,7 +30,7 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-
+import 'package:sizer/sizer.dart';
 class TransferGoldScreen extends StatefulWidget {
   const TransferGoldScreen({super.key});
 
@@ -107,7 +107,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/branch', Global.requestObj(null));
+          '/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
       // print(warehouse!.data);
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
@@ -262,7 +262,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                   flex: 4,
                   child: Text("โอนทองไปยังคลังสินค้าใหม่",
                       style: TextStyle(
-                          fontSize: size?.getWidthPx(10),
+                          fontSize: 16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -297,7 +297,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                   Text(
                                     'ราคาทองคำ',
                                     style: TextStyle(
-                                        fontSize: size!.getWidthPx(8),
+                                        fontSize: 18.sp,
                                         color: Colors.white),
                                   )
                                 ],
@@ -359,7 +359,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size!.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (WarehouseModel value) {
@@ -392,7 +392,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                               fromWarehouseNotifier!,
                                         ),
@@ -426,7 +426,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size!.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (ProductTypeModel project) {
@@ -452,7 +452,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                               transferTypeNotifier!,
                                         ),
@@ -493,7 +493,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size!.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (BranchModel value) {
@@ -510,7 +510,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size!.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 branchNotifier!,
                                           ),
@@ -543,7 +543,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size!.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (WarehouseModel value) {
@@ -554,7 +554,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size!.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                               toWarehouseNotifier!,
                                         ),
@@ -747,7 +747,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                             firstSpace:
                                                                                 10,
                                                                             fontSize:
-                                                                                size!.getWidthPx(6),
+                                                                                16.sp,
                                                                           );
                                                                         },
                                                                         onChanged:
@@ -772,7 +772,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                                                           key:
                                                                               GlobalKey(),
                                                                           fontSize:
-                                                                              size!.getWidthPx(6),
+                                                                              16.sp,
                                                                           projectValueNotifier:
                                                                               productNotifier!,
                                                                         ),
@@ -1089,7 +1089,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                       child: Text(
                                         'ยอดรวม',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(8),
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.bold,
                                             color: const Color(0xFF636564)),
                                       ),
@@ -1101,7 +1101,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                           Text(
                                             "${formatter.format(Global.getTransferWeightTotalAmount())} กรัม",
                                             style: TextStyle(
-                                                fontSize: size!.getWidthPx(8),
+                                                fontSize: 18.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: textColor2),
                                           ),
@@ -1109,7 +1109,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                           Text(
                                             "${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue())} บาททอง",
                                             style: TextStyle(
-                                                fontSize: size!.getWidthPx(8),
+                                                fontSize: 18.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: textColor2),
                                           ),
@@ -1159,7 +1159,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                               'เคลียร์',
                                               style: TextStyle(
                                                   fontSize:
-                                                      size!.getWidthPx(8)),
+                                                      18.sp),
                                             )
                                           ],
                                         ),
@@ -1207,7 +1207,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen> {
                                               'บันทึก',
                                               style: TextStyle(
                                                   fontSize:
-                                                      size!.getWidthPx(8)),
+                                                      18.sp),
                                             )
                                           ],
                                         ),

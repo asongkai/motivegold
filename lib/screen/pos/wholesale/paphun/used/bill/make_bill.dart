@@ -302,7 +302,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('${Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "${Global.format(-(invoice.order.priceDiff)!)}" : Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
@@ -335,13 +335,13 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัทฯ โดยปราศจากภาระผูกพัน',
+                'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์ โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัท',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                'และการลิดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ามีความยินยอมให้ทางบริษัทฯ นำทองคำที่ส่งมอบข้างต้นไปดำเนินการตรวจสอบคุณภาพตามวิธีการของบริษัทฯ ',
+                'โดยปราศจากภาระผูกพันและการริดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ายินยอมให้ผู้ซื้อ ซึ่งต่อไปนี้เรียกว่า "บริษัท" นำทองคำที่ส่งมอบข้างต้น',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                'หากไม่ผ่านการตรวจสอบ ข้าพเจ้ายอมให้บริษัทฯ มีสิทธิปฏิเสธการรับทองคำและชดใช้ค่าเสียหายตามที่บริษัทฯ เรียกร้องโดยไม่มีข้อโต้แย้งในทุกกรณี',
+                'ดำเนินการตรวจสอบคุณภาพตามวิธีการของผู้ซื้อ',
                 style: const TextStyle(fontSize: 9)),
           ]),
     ),
@@ -728,7 +728,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('${Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "${Global.format(-(invoice.order.priceDiff)!)}" : Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
@@ -761,13 +761,13 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัทฯ โดยปราศจากภาระผูกพัน',
+                'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์ โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัท',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                'และการลิดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ามีความยินยอมให้ทางบริษัทฯ นำทองคำที่ส่งมอบข้างต้นไปดำเนินการตรวจสอบคุณภาพตามวิธีการของบริษัทฯ ',
+                'โดยปราศจากภาระผูกพันและการริดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ายินยอมให้ผู้ซื้อ ซึ่งต่อไปนี้เรียกว่า "บริษัท" นำทองคำที่ส่งมอบข้างต้น',
                 style: const TextStyle(fontSize: 9)),
             Text(
-                'หากไม่ผ่านการตรวจสอบ ข้าพเจ้ายอมให้บริษัทฯ มีสิทธิปฏิเสธการรับทองคำและชดใช้ค่าเสียหายตามที่บริษัทฯ เรียกร้องโดยไม่มีข้อโต้แย้งในทุกกรณี',
+                'ดำเนินการตรวจสอบคุณภาพตามวิธีการของผู้ซื้อ',
                 style: const TextStyle(fontSize: 9)),
           ]),
     ),

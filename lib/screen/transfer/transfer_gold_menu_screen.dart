@@ -14,7 +14,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/model/transfer.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class TransferGoldMenuScreen extends StatefulWidget {
   const TransferGoldMenuScreen({super.key});
 
@@ -143,14 +143,14 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
                   child: Icon(
                     iconData,
                     color: Colors.white,
-                    size: size!.getWidthPx(30),
+                    size: 18.sp,
                   )),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(8), color: Colors.teal),
+                    fontSize: 18.sp, color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -192,7 +192,7 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
                   // Icon(
                   //   iconData,
                   //   color: Colors.white,
-                  //   size: size!.getWidthPx(30),
+                  //   size: 18.sp,
                   // )
                   ),
               const SizedBox(height: 8),
@@ -200,7 +200,7 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: size!.getWidthPx(8), color: Colors.teal),
+                    fontSize: 18.sp, color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],
@@ -249,7 +249,7 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium!
-                    .copyWith(fontSize: size!.getWidthPx(12)),
+                    .copyWith(fontSize: 18.sp),
                 overflow: TextOverflow.ellipsis,
               ),
             ],

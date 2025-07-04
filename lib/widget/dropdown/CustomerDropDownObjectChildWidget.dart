@@ -5,6 +5,7 @@ import 'package:motivegold/constants/colors.dart';
 
 import 'package:motivegold/utils/app_theme.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:sizer/sizer.dart';
 
 
 class CustomerDropDownObjectChildWidget extends StatelessWidget {
@@ -58,7 +59,7 @@ class CustomerDropDownObjectChildWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         fontWeight: FontWeight.w600,
                         color: textColor,
-                        fontSize: fontSize,
+                        fontSize: 14.sp,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

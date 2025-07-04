@@ -23,6 +23,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:sizer/sizer.dart';
 
 class NewProductScreen extends StatefulWidget {
   final bool showBackButton;
@@ -192,7 +193,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       Text(
                                         'ประเภท',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                       const SizedBox(
@@ -220,7 +221,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (ProductTypeModel value) {
@@ -230,7 +231,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 productTypeNotifier!,
                                           ),
@@ -250,7 +251,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       Text(
                                         'หมวดหมู่',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                       const SizedBox(
@@ -278,7 +279,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged:
@@ -291,7 +292,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 productCategoryNotifier!,
                                           ),
@@ -324,7 +325,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       Text(
                                         'ชื่อสินค้า',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                       const SizedBox(
@@ -350,7 +351,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                       Text(
                                         'สถานะสินค้า',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                       const SizedBox(
@@ -378,7 +379,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (ProductTypeModel value) {
@@ -388,7 +389,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             projectValueNotifier: typeNotifier!,
                                           ),
                                         ),

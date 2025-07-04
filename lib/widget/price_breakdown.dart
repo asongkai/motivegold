@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/constants/colors.dart';
+import 'package:sizer/sizer.dart';
 
 class PriceBreakdown extends StatelessWidget {
   const PriceBreakdown({
@@ -21,7 +22,7 @@ class PriceBreakdown extends StatelessWidget {
           title!,
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 color: kTextColorAccent,
-            fontSize: size.getWidthPx(10),
+            fontSize: 16.sp,
             fontWeight: FontWeight.w500,
               ),
         ),
@@ -30,7 +31,7 @@ class PriceBreakdown extends StatelessWidget {
           price!,
           style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                 color: kTextColor,
-                fontSize: size.getWidthPx(10),
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
         ),

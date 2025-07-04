@@ -142,7 +142,7 @@ class _TabScreenState extends State<TabScreen>
               physics: const NeverScrollableScrollPhysics(),
               children: const [
                 HomeScreen(),
-                PosOrderHistoryScreen(),
+                HistoryScreen(),
                 GoldPriceScreen(
                   showBackButton: false,
                 ),

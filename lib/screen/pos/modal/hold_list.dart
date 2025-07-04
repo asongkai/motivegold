@@ -10,6 +10,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
+import 'package:sizer/sizer.dart';
 
 class HoldListModal extends StatefulWidget {
   const HoldListModal({super.key});
@@ -134,7 +135,7 @@ class _HoldListModalState extends State<HoldListModal> {
                   Text(
                     "เคลียร์".tr(),
                     style: TextStyle(
-                        color: Colors.white, fontSize: size.getWidthPx(8)),
+                        color: Colors.white, fontSize: 16.sp),
                   ),
                   const SizedBox(
                     width: 2,

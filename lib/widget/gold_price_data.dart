@@ -25,7 +25,7 @@ class GoldPriceListTileData extends StatelessWidget {
               child: Text(
                 title!,
                 style: TextStyle(
-                    fontSize: 14.sp, //size.getWidthPx(10),
+                    fontSize: 14.sp, //16.sp,
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),
@@ -36,7 +36,7 @@ class GoldPriceListTileData extends StatelessWidget {
                 subTitle!,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                    fontSize: 14.sp, //size.getWidthPx(10),
+                    fontSize: 14.sp, //16.sp,
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),
@@ -47,7 +47,7 @@ class GoldPriceListTileData extends StatelessWidget {
                 value!,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                    fontSize: 14.sp, //size.getWidthPx(10),
+                    fontSize: 14.sp, //16.sp,
                     color: textColor,
                     fontWeight: FontWeight.w900),
               ),

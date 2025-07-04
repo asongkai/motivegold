@@ -25,6 +25,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 import 'preview.dart';
 
 class SellUsedThengGoldHistoryScreen extends StatefulWidget {
@@ -177,7 +178,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                       Text(
                                         'ปี',
                                         style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
+                                            fontSize: 16.sp),
                                       ),
                                       SizedBox(
                                         height: 70,
@@ -200,7 +201,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (int value) {
@@ -210,7 +211,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier: yearNotifier!,
                                           ),
                                         ),
@@ -239,7 +240,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                       Text(
                                         'เดือน',
                                         style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
+                                            fontSize: 16.sp),
                                       ),
                                       SizedBox(
                                         height: 70,
@@ -262,7 +263,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (int value) {
@@ -272,7 +273,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 monthNotifier!,
                                           ),
@@ -390,13 +391,13 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                         children: [
                           Text(
                             '#${sell.orderId.toString()}',
-                            style: TextStyle(fontSize: size?.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           ),
                           Text(
                             Global.formatDate(sell.orderDate.toString()),
                             style: TextStyle(
                                 color: Colors.green,
-                                fontSize: size?.getWidthPx(6)),
+                                fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -410,7 +411,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                   child: Text('สินค้า',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           color: Colors.orange)),
                                 ),
                               ),
@@ -420,7 +421,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                   child: Text('น้ำหนัก',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           color: Colors.orange)),
                                 ),
                               ),
@@ -430,7 +431,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                   child: Text('คลังสินค้า',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           color: Colors.orange)),
                                 ),
                               ),
@@ -467,7 +468,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                             align: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize:
-                                                    size?.getWidthPx(10))),
+                                                    16.sp)),
                                       ],
                                     ),
                                     Column(
@@ -483,7 +484,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                             align: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize:
-                                                    size?.getWidthPx(10))),
+                                                    16.sp)),
                                       ],
                                     ),
                                   ],

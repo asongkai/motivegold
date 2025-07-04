@@ -18,6 +18,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
+import 'package:sizer/sizer.dart';
 
 class BuyNewGoldReportScreen extends StatefulWidget {
   const BuyNewGoldReportScreen({super.key});
@@ -46,21 +47,10 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
       loading = true;
     });
 
-    // if (fromDateCtrl.text.isEmpty) {
-    //   Alert.warning(
-    //       context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-    //   return;
-    // }
-    // if (toDateCtrl.text.isEmpty) {
-    //   Alert.warning(
-    //       context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-    //   return;
-    // }
-
     try {
       var result = await ApiServices.post(
           '/order/all/type/5',
-          Global.requestObj({
+          Global.reportRequestObj({
             "year": 0,
             "month": 0,
             "fromDate": fromDateCtrl.text.isNotEmpty
@@ -158,7 +148,7 @@ class _BuyNewGoldReportScreenState extends State<BuyNewGoldReportScreen> {
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.white),
                               )
                             ],

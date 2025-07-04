@@ -25,6 +25,7 @@ import 'package:motivegold/widget/loading/loading_progress.dart';
 
 // import 'package:pattern_formatter/numeric_formatter.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:sizer/sizer.dart';
 
 class PaymentDefaultWidget extends StatefulWidget {
   const PaymentDefaultWidget({super.key, this.index, this.payment});
@@ -227,7 +228,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(6),
+                                fontSize: 14.sp,
                               );
                             },
                             onChanged: (ProductTypeModel value) {
@@ -239,7 +240,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 14.sp,
                               projectValueNotifier: paymentNotifier!,
                             ),
                           ),
@@ -278,7 +279,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(6),
+                                fontSize: 14.sp,
                               );
                             },
                             onChanged: (BankModel value) {
@@ -290,7 +291,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 14.sp,
                               projectValueNotifier: bankNotifier!,
                             ),
                           ),
@@ -332,7 +333,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(8),
+                                fontSize: 16.sp,
                               );
                             },
                             onChanged: (BankAccountModel value) {
@@ -343,7 +344,7 @@ class _PaymentDefaultWidgetState extends State<PaymentDefaultWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 16.sp,
                               projectValueNotifier: accountNotifier!,
                             ),
                           ),

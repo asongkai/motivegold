@@ -104,14 +104,21 @@ class Global {
   static String? trackingNumber;
 
   static File? refillAttach;
+  static String? refillAttachWeb;
   static File? sellUsedAttach;
+  static String? sellUsedAttachWeb;
 
   static File? refillThengAttach;
   static File? sellUsedThengAttach;
+  static String? refillThengAttachWeb;
+  static String? sellUsedThengAttachWeb;
 
   // PAYMENT
   static String? currentPaymentMethod;
+
   static File? paymentAttachment;
+  static String? paymentAttachmentWeb;
+
   static ProductTypeModel? selectedPayment;
   static TextEditingController bankCtrl = TextEditingController();
   static TextEditingController accountNoCtrl = TextEditingController();
@@ -147,7 +154,6 @@ class Global {
   static List<OrderDetailModel>? sellUsedThengOrderDetail = [];
 
   // Redeem
-
   static List<RedeemDetailModel>? redeemSingleDetail = [];
 
   static OrderModel? posOrder;
@@ -198,6 +204,11 @@ class Global {
   static CustomerModel? customer;
   static CompanyModel? company;
   static BranchModel? branch;
+
+  static ValueNotifier<dynamic>? branchNotifier = ValueNotifier<BranchModel>(
+      branch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
+  static ValueNotifier<dynamic>? companyNotifier = ValueNotifier<CompanyModel>(
+      company ?? CompanyModel(id: 0, name: 'เลือกบริษัท'));
 
   // DEVICE
   static String? brand;
@@ -733,12 +744,12 @@ class Global {
   }
 
   static dynamic getRefillPayTittle(double amount) {
-    motivePrint(amount);
+    // motivePrint(amount);
     return amount > 0
-        ? 'ค้าส่งจ่าย - ร้านรับเงิน (สุทธิ)'
+        ? 'ร้านค้าส่งจ่าย - ร้านรับเงิน (สุทธิ)'
         : amount == 0
             ? ""
-            : 'ค้าส่งรับ - ร้านจ่ายเงิน (สุทธิ)';
+            : 'ร้านค้าส่งรับ - ร้านจ่ายเงิน (สุทธิ)';
   }
 
   static dynamic payToBrokerOrShop(double discount, double addPrice) {
@@ -1470,6 +1481,18 @@ class Global {
     return encoder.convert(RequestModel(
         companyId: company?.id ?? user?.companyId,
         branchId: branch?.id ?? user?.branchId,
+        userId: user?.id,
+        data: data,
+        status: status,
+        token: token,
+        message: message));
+  }
+
+  static String reportRequestObj(dynamic data,
+      {status = "", message = "", token = ""}) {
+    return encoder.convert(RequestModel(
+        companyId: company?.id,
+        branchId: branch?.id,
         userId: user?.id,
         data: data,
         status: status,

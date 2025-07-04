@@ -24,6 +24,7 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class EditSaleDialog extends StatefulWidget {
   const EditSaleDialog({super.key, required this.index, this.j});
@@ -99,9 +100,9 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
             Global.ordersPapun![widget.index].details![widget.j!].commission ??
                 0);
     productPriceTotalCtrl.text = widget.j == null
-        ? Global.format(
+        ? Global.formatInt(
             Global.sellOrderDetail![widget.index].priceIncludeTax ?? 0)
-        : Global.format(Global.ordersPapun![widget.index].details![widget.j!]
+        : Global.formatInt(Global.ordersPapun![widget.index].details![widget.j!]
                 .priceIncludeTax ??
             0);
   }
@@ -279,17 +280,11 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
               : Global.ordersPapun![widget.index].details![widget.j!]
                   .goldDataModel?.theng?.sell)));
-      // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-      //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-      //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
-      // productCommissionCtrl.text = Global.format(
-      //     Global.getSellPrice(Global.toNumber(productWeightCtrl.text)) - (Global.getSellPrice(1) * Global.toNumber(productWeightCtrl.text)));
     } else {
       productWeightGramCtrl.text = "";
       productWeightBahtCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
-      // productPriceTotalCtrl.text = "";
     }
     productCommissionCtrl.text = "";
     productPriceTotalCtrl.text = "";
@@ -299,7 +294,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
   void comChanged() {
     if (productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-          "${Global.format(Global.toNumber(productCommissionCtrl.text) + (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)))}";
+          "${Global.formatInt(Global.toNumber(productCommissionCtrl.text) + (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)))}";
       setState(() {});
     } else {
       productPriceTotalCtrl.text = "";
@@ -336,14 +331,10 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
               ? Global.sellOrderDetail![widget.index].goldDataModel?.theng?.sell
               : Global.ordersPapun![widget.index].details![widget.j!]
                   .goldDataModel?.theng?.sell)));
-      // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-      //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-      //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
     } else {
       productWeightGramCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
-      // productPriceTotalCtrl.text = "";
     }
     productCommissionCtrl.text = "";
     productPriceTotalCtrl.text = "";
@@ -413,7 +404,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                           //       'ขายทองรูปพรรณใหม่ 96.5%',
                           //       textAlign: TextAlign.center,
                           //       style: TextStyle(
-                          //           fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15),
+                          //           fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp,
                           //           color: Colors.white),
                           //     ),
                           //   ),
@@ -424,7 +415,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             padding: const EdgeInsets.only(left: 10, right: 10),
                             child: GoldMiniWidget(
                               goldDataModel: widget.j == null
-                                  ? Global.buyOrderDetail![widget.index]
+                                  ? Global.sellOrderDetail![widget.index]
                                       .goldDataModel
                                   : Global.ordersPapun![widget.index]
                                       .details![widget.j!].goldDataModel, screen: 1,
@@ -455,7 +446,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           Text(
                                             '',
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(15),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                           const SizedBox(
@@ -465,7 +456,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                             '',
                                             style: TextStyle(
                                                 color: textColor,
-                                                fontSize: size.getWidthPx(10)),
+                                                fontSize: 16.sp),
                                           ),
                                           const SizedBox(
                                             width: 10,
@@ -502,7 +493,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (ProductModel value) {
@@ -519,7 +510,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 productNotifier!,
                                           ),
@@ -544,7 +535,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'น้ำหนัก',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                         const SizedBox(
@@ -554,7 +545,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           '(กรัม)',
                                           style: TextStyle(
                                               color: textColor,
-                                              fontSize: size.getWidthPx(10)),
+                                              fontSize: 16.sp),
                                         ),
                                         const SizedBox(
                                           width: 10,
@@ -608,7 +599,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'น้ำหนัก',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                         const SizedBox(
@@ -618,7 +609,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           '(บาททอง)',
                                           style: TextStyle(
                                               color: textColor,
-                                              fontSize: size.getWidthPx(10)),
+                                              fontSize: 16.sp),
                                         ),
                                         const SizedBox(
                                           width: 10,
@@ -674,7 +665,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                         Text(
                                           'ราคาขายรวม',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                         const SizedBox(
@@ -684,7 +675,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           '(บาท)',
                                           style: TextStyle(
                                               color: textColor,
-                                              fontSize: size.getWidthPx(10)),
+                                              fontSize: 16.sp),
                                         ),
                                         const SizedBox(
                                           width: 10,
@@ -743,7 +734,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                           Text(
                                             'ค่ากำเหน็จ',
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(15),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                           const SizedBox(
@@ -753,7 +744,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                             '(บาท)',
                                             style: TextStyle(
                                                 color: textColor,
-                                                fontSize: size.getWidthPx(10)),
+                                                fontSize: 16.sp),
                                           ),
                                           const SizedBox(
                                             width: 10,
@@ -840,7 +831,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                                     }
                                     if (txt == 'price') {
                                       productPriceTotalCtrl.text = value != null
-                                          ? "${Global.format(value)}"
+                                          ? "${Global.formatInt(value)}"
                                           : "";
                                       priceChanged();
                                     }
@@ -902,7 +893,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
+                                fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? 16.sp : 16.sp),
                           ),
                         ],
                       ),
@@ -939,7 +930,7 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
                             "บันทึก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
+                                fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? 16.sp : 16.sp),
                           ),
                         ],
                       ),

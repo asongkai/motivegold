@@ -71,7 +71,7 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                   flex: 5,
                   child: Text('ซื้อขายทองคำแท่ง (หน้าร้าน)',
                       style: TextStyle(
-                          fontSize: 14.sp, //size.getWidthPx(10),
+                          fontSize: 14.sp, //16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -100,8 +100,8 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                                 Icons.save,
                                 size: (MediaQuery.of(context).orientation ==
                                         Orientation.landscape)
-                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {
@@ -158,8 +158,8 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                                 Icons.shopping_cart,
                                 size: (MediaQuery.of(context).orientation ==
                                         Orientation.landscape)
-                                    ? Device.deviceType == DeviceType.web ? 16.sp : size.getWidthPx(8)
-                                    : size.getWidthPx(15),
+                                    ? Device.deviceType == DeviceType.web ? 16.sp : 16.sp
+                                    : 16.sp,
                                 color: Colors.white,
                               ),
                               onPressed: () {

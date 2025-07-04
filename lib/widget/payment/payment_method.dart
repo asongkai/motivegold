@@ -23,9 +23,12 @@ import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-
-// import 'package:pattern_formatter/numeric_formatter.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:sizer/sizer.dart';
+
+// Platform-specific imports
+import 'web_file_picker.dart' if (dart.library.io) 'mobile_file_picker.dart';
 
 class PaymentMethodWidget extends StatefulWidget {
   const PaymentMethodWidget({super.key, this.index, this.payment});
@@ -165,9 +168,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                   BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0));
         }
         triggerAmount();
-        setState(() {
-
-        });
+        setState(() {});
       }
     } catch (e) {
       motivePrint(e.toString());
@@ -180,26 +181,51 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
 
   final picker = ImagePicker();
 
-  //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  TextEditingController cashCtrl = TextEditingController();
+  TextEditingController diffCtrl = TextEditingController();
 
-    setState(() {
+  Future getImageFromGallery() async {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        Global.paymentAttachment = File(pickedFile.path);
+        setState(() {
+          Global.paymentAttachment = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // Web platform - use platform-specific implementation
+      try {
+        final result = await WebFilePicker.pickImage();
+        if (result != null) {
+          setState(() {
+            Global.paymentAttachmentWeb = result;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          Alert.warning(context, "Error", "Failed to select image: $e", "OK",
+              action: () {});
+        }
+      }
+    }
   }
 
-//Image Picker function to get image from camera
   Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
-        Global.paymentAttachment = File(pickedFile.path);
+        setState(() {
+          Global.paymentAttachment = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // On web, camera isn't directly accessible via InputElement easily.
+      Alert.warning(context, "ไม่รองรับ",
+          "การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน", "OK",
+          action: () {});
+    }
   }
 
   Future showOptions() async {
@@ -232,7 +258,6 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
     return loading
         ? const Center(child: LoadingProgress())
         : Column(
@@ -268,7 +293,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(6),
+                                fontSize: 16.sp,
                               );
                             },
                             onChanged: (ProductTypeModel value) {
@@ -281,7 +306,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 16.sp,
                               projectValueNotifier: paymentNotifier!,
                             ),
                           ),
@@ -324,7 +349,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(6),
+                                fontSize: 16.sp,
                               );
                             },
                             onChanged: (BankModel value) {
@@ -336,7 +361,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 16.sp,
                               projectValueNotifier: bankNotifier!,
                             ),
                           ),
@@ -367,7 +392,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                                 project: project,
                                 isItemSelected: isItemSelected,
                                 firstSpace: 10,
-                                fontSize: size.getWidthPx(8),
+                                fontSize: 16.sp,
                               );
                             },
                             onChanged: (BankAccountModel value) {
@@ -378,7 +403,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                             },
                             child: DropDownObjectChildWidget(
                               key: GlobalKey(),
-                              fontSize: size.getWidthPx(8),
+                              fontSize: 16.sp,
                               projectValueNotifier: accountNotifier!,
                             ),
                           ),
@@ -651,6 +676,79 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
               const SizedBox(
                 height: 10,
               ),
+              if (Global.currentPaymentMethod == "CA")
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            buildTextFieldBig(
+                              labelText: 'จำนวนเงินที่ได้รับ/จ่าย',
+                              validator: null,
+                              inputType: TextInputType.number,
+                              controller: cashCtrl,
+                              onChanged: (value) {
+                                if (value != "") {
+                                  double num = Global.toNumber(cashCtrl.text) -
+                                      Global.toNumber(Global.amountCtrl.text);
+                                  diffCtrl.text =
+                                      num < 0 ? "" : Global.format(num);
+                                } else {
+                                  diffCtrl.text = "";
+                                }
+                              },
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(
+                height: 10,
+              ),
+              if (Global.currentPaymentMethod == "CA")
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            buildTextFieldBig(
+                              labelText: 'ผลต่าง',
+                              validator: null,
+                              inputType: TextInputType.number,
+                              enabled: false,
+                              controller: diffCtrl,
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(
+                height: 10,
+              ),
               if (Global.currentPaymentMethod == 'OTH')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -701,7 +799,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                       ),
                       label: Text(
                         'เลือกรูปภาพ',
-                        style: TextStyle(fontSize: size.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                       ),
                     ),
                   ),
@@ -711,36 +809,46 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
-                    child: Global.paymentAttachment == null
+                    child: Global.paymentAttachment == null &&
+                            Global.paymentAttachmentWeb == null
                         ? Text(
                             'ไม่ได้เลือกรูปภาพ',
-                            style: TextStyle(fontSize: size.getWidthPx(6)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
-                        : SizedBox(
-                            width: MediaQuery.of(context).size.width / 4,
-                            child: Stack(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.file(Global.paymentAttachment!),
-                                ),
-                                Positioned(
-                                  right: 0.0,
-                                  top: 0.0,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        Global.paymentAttachment = null;
-                                      });
-                                    },
-                                    child: const CircleAvatar(
-                                      backgroundColor: Colors.red,
-                                      child: Icon(Icons.close),
+                        : Center(
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width / 4,
+                              child: Stack(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: kIsWeb
+                                        ? Image.memory(base64Decode(Global
+                                            .paymentAttachmentWeb!
+                                            .split(",")
+                                            .last))
+                                        : Image.file(Global.paymentAttachment!),
+                                  ),
+                                  Positioned(
+                                    right: 0.0,
+                                    top: 0.0,
+                                    child: InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          Global.paymentAttachment = null;
+                                          Global.paymentAttachmentWeb = null;
+                                        });
+                                      },
+                                      child: const CircleAvatar(
+                                        backgroundColor: Colors.red,
+                                        child: Icon(Icons.close),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            )),
+                                ],
+                              ),
+                            ),
+                          ),
                   ),
                 ),
             ],
@@ -749,35 +857,30 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget> {
 
   void triggerAmount() {
     double amount = 0;
-    
+
     if (Global.currentOrderType == 5) {
-      amount =
-          Global.payToCustomerOrShopValueWholeSale(
-              Global.ordersWholesale,
-              Global.discount, Global.addPrice);
+      amount = Global.payToCustomerOrShopValueWholeSale(
+          Global.ordersWholesale, Global.discount, Global.addPrice);
     } else if (Global.currentOrderType == 6) {
-      amount =
-          Global.payToCustomerOrShopValueWholeSale(
-              Global.ordersThengWholesale,
-              Global.discount, Global.addPrice);
+      amount = Global.payToCustomerOrShopValueWholeSale(
+          Global.ordersThengWholesale, Global.discount, Global.addPrice);
     } else {
       if (Global.checkOutMode == 'O') {
         amount = Global.payToCustomerOrShopValue(
             Global.orders, Global.discount, Global.addPrice);
       }
-    
+
       if (Global.checkOutMode == 'P') {
-        amount = Global.getRedeemPaymentTotal(
-            Global.redeems,
+        amount = Global.getRedeemPaymentTotal(Global.redeems,
             discount: Global.discount);
       }
     }
     if (amount >= 0) {
-      Global.amountCtrl.text = Global.format(
-          amount - Global.getPaymentListTotal());
+      Global.amountCtrl.text =
+          Global.format(amount - Global.getPaymentListTotal());
     } else {
-      Global.amountCtrl.text = Global.format(
-          -amount - Global.getPaymentListTotal());
+      Global.amountCtrl.text =
+          Global.format(-amount - Global.getPaymentListTotal());
     }
     setState(() {});
   }

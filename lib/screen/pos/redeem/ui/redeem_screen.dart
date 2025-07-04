@@ -163,7 +163,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
         title: Text(
           'ธุรกรรมไถ่ถอน - ขายฝาก',
           style: TextStyle(
-            fontSize: 16.sp, //size.getWidthPx(10),
+            fontSize: 16.sp, //16.sp,
             color: textWhite,
           ),
         ),
@@ -189,7 +189,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                 Text(
                   'ราคาทองคำ',
                   style:
-                      TextStyle(fontSize: size.getWidthPx(6), color: textWhite),
+                      TextStyle(fontSize: 16.sp, color: textWhite),
                 )
               ],
             ),
@@ -241,7 +241,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'วันที่ไถ่ถอน',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -257,13 +257,13 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                           keyboardType: TextInputType.number,
                                           //editing controller of this TextField
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(12)),
+                                              fontSize: 18.sp),
                                           decoration: InputDecoration(
                                             filled: true,
                                             fillColor: Colors.white70,
                                             hintText: 'dd-mm-yyyy',
                                             labelStyle: TextStyle(
-                                                fontSize: size.getWidthPx(12),
+                                                fontSize: 18.sp,
                                                 color: Colors.blue[900],
                                                 fontWeight: FontWeight.w900),
                                             prefixIcon: GestureDetector(
@@ -342,7 +342,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'เลขที่ขายฝาก',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -356,7 +356,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             inputType: TextInputType.text,
                                             enabled: true,
                                             controller: referenceNumberCtrl,
-                                            fontSize: size.getWidthPx(12)),
+                                            fontSize: 18.sp),
                                       ),
                                     ),
                                   ],
@@ -373,7 +373,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'น้ำหนักรวม (กรัม)',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -388,7 +388,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             controller: weightGramCtrl,
                                             focusNode: gramFocus,
                                             readOnly: gramReadOnly,
-                                            // fontSize: size.getWidthPx(12),
+                                            // fontSize: 18.sp,
                                             inputFormat: [
                                               ThousandsFormatter(
                                                   allowFraction: true)
@@ -429,7 +429,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'มูลค่าขายฝาก',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -444,7 +444,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             controller: depositAmountCtrl,
                                             focusNode: depositAmountFocus,
                                             readOnly: depositAmountReadOnly,
-                                            // fontSize: size.getWidthPx(12),
+                                            // fontSize: 18.sp,
                                             inputFormat: [
                                               ThousandsFormatter(
                                                   allowFraction: true)
@@ -488,7 +488,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'มูลค่าสินไถ่',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -547,7 +547,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             'ผลประโยชน์ที่รับวันนี้',
                                             textAlign: TextAlign.right,
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                         )),
@@ -629,12 +629,12 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.add,
-                                              size: size.getWidthPx(10)),
+                                              size: 16.sp),
                                           const SizedBox(width: 6),
                                           Text(
                                             'เพิ่ม',
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10)),
+                                                fontSize: 16.sp),
                                           )
                                         ],
                                       ),
@@ -681,7 +681,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8),
+                                                        16.sp,
                                                     color: textColor,
                                                   )),
                                             ),
@@ -691,7 +691,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8),
+                                                        16.sp,
                                                     color: textColor,
                                                   )),
                                             ),
@@ -704,7 +704,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                                     textAlign: TextAlign.right,
                                                     style: TextStyle(
                                                       fontSize:
-                                                          size.getWidthPx(8),
+                                                          16.sp,
                                                       color: textColor,
                                                     )),
                                               ),
@@ -714,7 +714,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                               child: Text('',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8),
+                                                        16.sp,
                                                     color: textColor,
                                                   )),
                                             ),
@@ -844,7 +844,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                       Text(
                         'จำนวนเงินรวมที่ลูกค้าต้องชำระ (บาท)',
                         style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
                           color: const Color(
                               0xFF1A237E), // Dark blue color for text
@@ -994,7 +994,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                           Text(
                             'เพิ่มลงในรถเข็น',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(8), color: textWhite),
+                                fontSize: 16.sp, color: textWhite),
                           )
                         ],
                       ),
@@ -1025,7 +1025,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เคลียร์',
-                            style: TextStyle(fontSize: size.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -1159,7 +1159,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                           Text(
                             'เช็คเอาท์',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(8), color: textWhite),
+                                fontSize: 16.sp, color: textWhite),
                           )
                         ],
                       ),
@@ -1276,7 +1276,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
               child: Text('${index + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: textColor,
                   )),
             ),
@@ -1287,7 +1287,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                 child: Text(order.weight!.toString(),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: textColor,
                     )),
               ),
@@ -1299,7 +1299,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                 child: Text(Global.format(order.paymentAmount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: textColor,
                     )),
               ),

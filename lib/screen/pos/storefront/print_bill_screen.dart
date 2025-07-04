@@ -28,6 +28,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/widget/product_list_tile.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 import 'paphun/bill/preview_pdf.dart';
 
 class PrintBillScreen extends StatefulWidget {
@@ -207,14 +208,14 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               child: Text('น้ำหนัก',
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),
                               child: Text('ราคา',
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                           ],
                         ),
@@ -226,11 +227,11 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               paddedText(Global.format(e.weight!),
                                   align: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                               paddedText(Global.format(e.priceIncludeTax!),
                                   align: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ],
                           ),
                         ),
@@ -241,7 +242,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               child: Text(
                                 'ผลรวมย่อย',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
                             ),
                             Padding(
@@ -252,7 +253,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                           order.details)),
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),
@@ -262,7 +263,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                           order.details)),
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                           ],
                         ),
@@ -271,9 +272,9 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                             Padding(
                               padding: const EdgeInsets.all(20),
                               child: Text(
-                                'ส่วนลด',
+                                'ร้านทองเพิ่ม(ลด)ให้',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
                             ),
                             Padding(
@@ -281,14 +282,20 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               child: Text('',
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),
-                              child: Text(Global.format(order.discount ?? 0),
+                              child: Text(
+                                  '${addDisValue(order.discount ?? 0, order.addPrice ?? 0) < 0 ? "(${addDisValue(order.discount ?? 0, order.addPrice ?? 0)})" : addDisValue(order.discount ?? 0, order.addPrice ?? 0)}',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: addDisValue(order.discount ?? 0,
+                                                  order.addPrice ?? 0) <
+                                              0
+                                          ? Colors.red
+                                          : Colors.black)),
                             ),
                           ],
                         ),
@@ -299,7 +306,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                               child: Text(
                                 'ยอดรวมทั้งหมด',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
+                                style: TextStyle(fontSize: 16.sp),
                               ),
                             ),
                             Padding(
@@ -308,7 +315,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                   '${Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
                                   style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                                      TextStyle(fontSize: 16.sp)),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(20),

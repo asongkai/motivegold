@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
-
+import 'package:sizer/sizer.dart';
 class LanguageIntro extends StatefulWidget {
   const LanguageIntro({super.key});
 
@@ -18,8 +18,8 @@ class _LanguageIntroState extends State<LanguageIntro> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Positioned(
-        bottom: size!.getWidthPx(10),
-        right: size!.getWidthPx(10),
+        bottom: 18.sp,
+        right: 18.sp,
         child: PopupMenuButton<String>(
           icon: Icon(Icons.language_outlined, color: Colors.blue[700]),
           onSelected: (String result) {

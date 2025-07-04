@@ -47,77 +47,6 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            SettingsGroup(
-              settingsGroupTitle: "ประวัติการทำรายการ",
-              items: [
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const RefillGoldHistoryScreen()));
-                  },
-                  icons: Icons.view_list,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
-                  ),
-                  title: 'ประวัติการเติมทอง',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const SellUsedGoldHistoryScreen()));
-                  },
-                  icons: Icons.view_list,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.orange,
-                  ),
-                  title: 'ประวัติการขายทองเก่า',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const TransferGoldHistoryScreen()));
-                  },
-                  icons: Icons.view_list,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
-                  ),
-                  title: 'ประวัติการโอนทอง',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-              ],
-            ),
 
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
@@ -168,28 +97,7 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         .titleMedium
                         ?.copyWith(color: Colors.grey.shade600),
                   ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const MoneyMovementReportScreen()));
-                  },
-                  icons: Icons.pie_chart,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
-                  ),
-                  title: 'รายงานเส้นทางการเงินทองรูปพรรณ',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
+
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
@@ -283,6 +191,28 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
+                            builder: (context) =>
+                            const MoneyMovementReportScreen()));
+                  },
+                  icons: Icons.pie_chart,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.purple,
+                  ),
+                  title: 'รายงานเส้นทางการเงินทองรูปพรรณ',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
                             builder: (context) => const SellVatReportScreen()));
                   },
                   icons: Icons.checklist_rtl_outlined,
@@ -333,6 +263,72 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                     backgroundColor: Colors.green,
                   ),
                   title: 'รายงานบัญชีสำหรับผู้ทำการค้าของเก่า',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const RefillGoldHistoryScreen()));
+                  },
+                  icons: Icons.view_list,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.teal,
+                  ),
+                  title: 'ประวัติการเติมทอง',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const SellUsedGoldHistoryScreen()));
+                  },
+                  icons: Icons.view_list,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.orange,
+                  ),
+                  title: 'ประวัติการขายทองเก่า',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const TransferGoldHistoryScreen()));
+                  },
+                  icons: Icons.view_list,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.purple,
+                  ),
+                  title: 'ประวัติการโอนทอง',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge

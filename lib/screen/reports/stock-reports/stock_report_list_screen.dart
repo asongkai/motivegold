@@ -22,7 +22,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-
+import 'package:sizer/sizer.dart';
 class StockReportListScreen extends StatefulWidget {
   const StockReportListScreen({super.key});
 
@@ -74,7 +74,8 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/branch', Global.requestObj(null));
+          '/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
+      motivePrint(warehouse?.toJson());
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -99,20 +100,14 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
       loading = true;
     });
 
-    motivePrint(Global.requestObj({
-      "productId": selectedProduct?.id,
-      "binLocationId": selectedWarehouse?.id
-    }));
-
     var location = await ApiServices.post(
         '/qtybylocation/search',
-        Global.requestObj({
+        Global.reportRequestObj({
           "productId": selectedProduct?.id,
           "binLocationId": selectedWarehouse?.id
         }));
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
-      // motivePrint(data);
       List<QtyLocationModel> products = qtyLocationListModelFromJson(data);
       setState(() {
         dataList = products;
@@ -145,7 +140,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                   flex: 6,
                   child: Text("รายงานสต็อก",
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -178,7 +173,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.white),
                               )
                             ],
@@ -244,7 +239,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                         Text(
                                           'สินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -269,7 +264,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (ProductModel value) {
@@ -280,7 +275,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   productNotifier!,
                                             ),
@@ -310,7 +305,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                         Text(
                                           'คลังสินค้า',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(6)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 80,
@@ -335,7 +330,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (WarehouseModel value) {
@@ -347,7 +342,7 @@ class _StockReportListScreenState extends State<StockReportListScreen> {
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(6),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   warehouseNotifier!,
                                             ),

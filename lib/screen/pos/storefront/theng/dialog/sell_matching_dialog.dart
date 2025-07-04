@@ -21,6 +21,7 @@ import 'package:motivegold/widget/date/date_widget.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/model/warehouseModel.dart';
+import 'package:sizer/sizer.dart';
 
 class SellMatchingDialog extends StatefulWidget {
   const SellMatchingDialog({super.key});
@@ -252,7 +253,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         'ขายทองแท่ง (จับคู่)',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? size.getWidthPx(8) : size.getWidthPx(15), color: Colors.white),
+                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp, color: Colors.white),
                       ),
                     ),
                   ),
@@ -306,7 +307,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                   //                   firstSpace:
                   //                       10,
                   //                   fontSize:
-                  //                       size.getWidthPx(8),
+                  //                       16.sp,
                   //                 );
                   //               },
                   //               onChanged:
@@ -332,7 +333,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                   //                 key:
                   //                     GlobalKey(),
                   //                 fontSize:
-                  //                     size.getWidthPx(8),
+                  //                     16.sp,
                   //                 projectValueNotifier:
                   //                     productNotifier!,
                   //               ),
@@ -395,7 +396,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                   //                 firstSpace:
                   //                     10,
                   //                 fontSize:
-                  //                     size.getWidthPx(8),
+                  //                     16.sp,
                   //               );
                   //             },
                   //             onChanged:
@@ -418,7 +419,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                   //               key:
                   //                   GlobalKey(),
                   //               fontSize:
-                  //                   size.getWidthPx(8),
+                  //                   16.sp,
                   //               projectValueNotifier:
                   //                   warehouseNotifier!,
                   //             ),
@@ -443,7 +444,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               Text(
                                 'วันจองราคา',
                                 style:
-                                    TextStyle(fontSize: size.getWidthPx(15), color: textColor),
+                                    TextStyle(fontSize: 16.sp, color: textColor),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -451,7 +452,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                               Text(
                                 '',
                                 style:
-                                    TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
+                                    TextStyle(color: textColor, fontSize: 16.sp),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -482,7 +483,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style:
-                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
+                                      TextStyle(fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -490,7 +491,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style:
-                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
+                                      TextStyle(color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -546,7 +547,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'บาททองละ',
                                   style:
-                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
+                                      TextStyle(fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -554,7 +555,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
+                                      TextStyle(color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -606,7 +607,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   'จำนวนเงิน',
                                   style:
-                                      TextStyle(fontSize: size.getWidthPx(15), color: textColor),
+                                      TextStyle(fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -614,7 +615,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                                 Text(
                                   '',
                                   style:
-                                      TextStyle(color: textColor, fontSize: size.getWidthPx(10)),
+                                      TextStyle(color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -748,7 +749,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                            style: TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -781,7 +782,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         ),
                         Text(
                           "บันทึก",
-                          style: TextStyle(color: Colors.white, fontSize: size.getWidthPx(15)),
+                          style: TextStyle(color: Colors.white, fontSize: 16.sp),
                         ),
                       ],
                     ),

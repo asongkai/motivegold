@@ -19,7 +19,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-
+import 'package:sizer/sizer.dart';
 class EditLocationScreen extends StatefulWidget {
   final WarehouseModel location;
   final int index;
@@ -159,7 +159,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (BranchModel value) {
@@ -169,7 +169,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier: branchNotifier!,
                                         ),
                                       ),

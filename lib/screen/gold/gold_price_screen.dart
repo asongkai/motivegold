@@ -103,7 +103,7 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
                       //     child: Text(
                       //       'ราคาทองตามประกาศของสมาคมค้าทองคำ',
                       //       style: TextStyle(
-                      //           fontSize: size.getWidthPx(8),
+                      //           fontSize: 16.sp,
                       //           color: Colors.white),
                       //     )),
                       TitleTile(

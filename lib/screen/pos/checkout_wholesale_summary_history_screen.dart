@@ -20,6 +20,7 @@ import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:sizer/sizer.dart';
 
 class CheckOutWholesaleSummaryHistoryScreen extends StatefulWidget {
   const CheckOutWholesaleSummaryHistoryScreen({super.key});
@@ -165,7 +166,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                               ],
@@ -178,7 +179,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors.black,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -189,7 +190,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors.black,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -199,7 +200,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                               "${customer!.address}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -209,7 +210,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                               "${getIdTitleCustomer(customer)}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -219,7 +220,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                                               "${customer?.customerType == 'company' ? customer?.taxNumber : customer?.idCard}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                           ],
@@ -606,7 +607,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
               child: Text('${index + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -615,7 +616,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
               child: Text(payment.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -626,7 +627,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                 child: Text(Global.formatDateNT(payment.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -638,7 +639,7 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                 child: Text(Global.format(payment.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -785,13 +786,13 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                     padding: const EdgeInsets.all(20),
                     child: Text('น้ำหนัก',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('ราคา',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                 ],
               ),
@@ -800,10 +801,10 @@ class _CheckOutWholesaleSummaryHistoryScreenState
                   decoration: const BoxDecoration(),
                   children: [
                     paddedTextBigL('${j + 1}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                         align: TextAlign.center),
                     paddedTextBigL(order.details![j].productName,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(Global.format(order.details![j].weight!),
                         align: TextAlign.right,
                         style: TextStyle(fontSize: size?.getWidthPx(8))),

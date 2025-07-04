@@ -20,7 +20,7 @@ import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
-
+import 'package:sizer/sizer.dart';
 class TransferGoldCheckOutScreen extends StatefulWidget {
   const TransferGoldCheckOutScreen({super.key});
 
@@ -196,7 +196,7 @@ class _TransferGoldCheckOutScreenState
                                         child: Text(
                                           'เลือกรูปภาพ',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
+                                              fontSize: 16.sp),
                                         ),
                                       ),
                                       Center(
@@ -205,7 +205,7 @@ class _TransferGoldCheckOutScreenState
                                                 'ไม่ได้เลือกรูปภาพ',
                                                 style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(6)),
+                                                        16.sp),
                                               )
                                             : SizedBox(
                                                 width: MediaQuery.of(context)
@@ -390,7 +390,7 @@ class _TransferGoldCheckOutScreenState
                   Text(
                     "บันทึก".tr(),
                     style: TextStyle(
-                        color: Colors.white, fontSize: size.getWidthPx(8)),
+                        color: Colors.white, fontSize: 16.sp),
                   ),
                 ],
               ),

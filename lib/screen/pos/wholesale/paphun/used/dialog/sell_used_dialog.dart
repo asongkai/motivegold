@@ -23,6 +23,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class SellUsedDialog extends StatefulWidget {
   const SellUsedDialog({super.key});
@@ -321,7 +322,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                               'ขายทองเก่าร้านขายส่ง',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: size?.getWidthPx(15),
+                                  fontSize: 16.sp,
                                   color: Colors.white),
                             ),
                           ),
@@ -376,7 +377,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                         //                   firstSpace:
                         //                       10,
                         //                   fontSize:
-                        //                       size!.getWidthPx(10),
+                        //                       18.sp,
                         //                 );
                         //               },
                         //               onChanged:
@@ -398,7 +399,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                         //                 key:
                         //                     GlobalKey(),
                         //                 fontSize:
-                        //                     size!.getWidthPx(10),
+                        //                     18.sp,
                         //                 projectValueNotifier:
                         //                     productNotifier!,
                         //               ),
@@ -462,7 +463,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size!.getWidthPx(10),
+                                        fontSize: 18.sp,
                                       );
                                     },
                                     onChanged: (WarehouseModel value) {
@@ -479,7 +480,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size!.getWidthPx(10),
+                                      fontSize: 18.sp,
                                       projectValueNotifier:
                                           fromWarehouseNotifier!,
                                     ),
@@ -826,7 +827,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size!.getWidthPx(10),
+                                        fontSize: 18.sp,
                                       );
                                     },
                                     onChanged: (WarehouseModel value) {
@@ -837,7 +838,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size!.getWidthPx(10),
+                                      fontSize: 18.sp,
                                       projectValueNotifier:
                                           toWarehouseNotifier!,
                                     ),

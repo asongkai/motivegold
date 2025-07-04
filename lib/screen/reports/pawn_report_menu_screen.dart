@@ -1,4 +1,5 @@
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/refill/refill_gold_history_screen.dart';
 import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart';
@@ -15,6 +16,8 @@ import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_repor
 import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
+import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
@@ -49,13 +52,63 @@ class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) =>
+                      //         const StockReportListScreen()));
+                      Alert.info(context, 'Warning'.tr(),
+                          'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.green,
+                    ),
+                    title: 'รายงานสต็อก',
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
+                if (Global.company?.stock == 1)
+                  SettingsItem(
+                    onTap: () {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) =>
+                      //         const StockMovementReportListScreen()));
+                      Alert.info(context, 'Warning'.tr(),
+                          'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    },
+                    icons: Icons.pie_chart,
+                    iconStyle: IconStyle(
+                      backgroundColor: Colors.orange,
+                    ),
+                    title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const RedeemSingleReportScreen()));
+                                const RedeemSingleReportScreen()));
                   },
                   icons: Icons.checklist_rtl_outlined,
                   iconStyle: IconStyle(

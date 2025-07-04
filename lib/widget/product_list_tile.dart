@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class ProductListTileData extends StatelessWidget {
   final String? orderId;
@@ -46,7 +47,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         "เลขที่",
                         style: TextStyle(
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           color: const Color(0xFF636564),
                         ),
                       ),
@@ -54,7 +55,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         orderId!,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(10),
+                            fontSize: 16.sp,
                             color: Colors.blue[700],
                             fontWeight: FontWeight.w500),
                       ),
@@ -72,7 +73,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         "ประเภท",
                         style: TextStyle(
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           color: const Color(0xFF636564),
                         ),
                       ),
@@ -80,7 +81,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         type!,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(10),
+                            fontSize: 16.sp,
                             color: Colors.blue[700],
                             fontWeight: FontWeight.w500),
                       ),
@@ -98,7 +99,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         'น้ำหนัก',
                         style: TextStyle(
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           color: const Color(0xFF636564),
                         ),
                       ),
@@ -106,7 +107,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         weight!,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(10),
+                            fontSize: 16.sp,
                             color: Colors.blue[700],
                             fontWeight: FontWeight.w500),
                       ),
@@ -124,7 +125,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         "ยอดรวม",
                         style: TextStyle(
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           color: const Color(0xFF636564),
                         ),
                       ),
@@ -132,7 +133,7 @@ class ProductListTileData extends StatelessWidget {
                       Text(
                         totalPrice!,
                         style: TextStyle(
-                            fontSize: size.getWidthPx(10),
+                            fontSize: 16.sp,
                             color: Colors.blue[700],
                             fontWeight: FontWeight.w500),
                       ),

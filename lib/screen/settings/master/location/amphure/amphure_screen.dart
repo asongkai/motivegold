@@ -151,7 +151,7 @@ class _AmphureScreenState extends State<AmphureScreen> {
                                   Text(
                                     'เพิ่มอำเภอ',
                                     style: TextStyle(
-                                        fontSize: 14.sp, //size.getWidthPx(8),
+                                        fontSize: 14.sp, //16.sp,
                                         color: Colors.white),
                                   )
                                 ],
@@ -221,6 +221,7 @@ class _AmphureScreenState extends State<AmphureScreen> {
               ),
             ),
           ),
+          if (Global.user!.userType == 'ADMIN')
           Expanded(
             flex: 2,
             child: Row(

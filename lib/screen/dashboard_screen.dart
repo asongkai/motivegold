@@ -18,7 +18,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-
+import 'package:sizer/sizer.dart';
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     color: Colors.white,
                     size: (MediaQuery.of(context).orientation ==
                             Orientation.landscape)
-                        ? size!.getWidthPx(30)
+                        ? 18.sp
                         : size!.getWidthPx(50),
                   )),
               const SizedBox(height: 8),
@@ -173,8 +173,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     fontSize: (MediaQuery.of(context).orientation ==
                             Orientation.landscape)
-                        ? size!.getWidthPx(6)
-                        : size!.getWidthPx(8),
+                        ? 16.sp
+                        : 18.sp,
                     color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
@@ -220,7 +220,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // Icon(
                   //   iconData,
                   //   color: Colors.white,
-                  //   size: size!.getWidthPx(30),
+                  //   size: 18.sp,
                   // )
                   ),
               const SizedBox(height: 8),
@@ -230,8 +230,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     fontSize: (MediaQuery.of(context).orientation ==
                             Orientation.landscape)
-                        ? size!.getWidthPx(6)
-                        : size!.getWidthPx(8),
+                        ? 16.sp
+                        : 18.sp,
                     color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
@@ -281,7 +281,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium!
-                    .copyWith(fontSize: size!.getWidthPx(12)),
+                    .copyWith(fontSize: 18.sp),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -380,7 +380,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       'assets/icons/gold/gold-dealer.png',
                       width: (MediaQuery.of(context).orientation ==
                               Orientation.landscape)
-                          ? size!.getWidthPx(30)
+                          ? 18.sp
                           : size!.getWidthPx(50),
                     ),
                     primer,
@@ -392,7 +392,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       'assets/icons/gold/gold-dealer.png',
                       width: (MediaQuery.of(context).orientation ==
                               Orientation.landscape)
-                          ? size!.getWidthPx(30)
+                          ? 18.sp
                           : size!.getWidthPx(50),
                     ),
                     Colors.teal,

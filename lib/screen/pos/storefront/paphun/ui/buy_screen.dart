@@ -20,6 +20,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class PaphunBuyScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -109,7 +110,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
       }
 
       var warehouse =
-          await ApiServices.post('/binlocation/all', Global.requestObj(null));
+          await ApiServices.post('/binlocation/all', Global.requestObj({"branchId": Global.branch?.id}));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -161,7 +162,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                 ),
                 Text(
                   'ราคาทองคำ',
-                  style: TextStyle(fontSize: size.getWidthPx(6)),
+                  style: TextStyle(fontSize: 16.sp),
                 )
               ],
             ),
@@ -271,7 +272,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('ลำดับ',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                   color: textColor,
                                                 )),
                                           ),
@@ -280,7 +281,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('รายการ',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                   color: textColor,
                                                 )),
                                           ),
@@ -289,7 +290,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             child: Text('น้ำหนัก (กรัม)',
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                   color: textColor,
                                                 )),
                                           ),
@@ -301,8 +302,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               child: Text('จำนวนเงิน',
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        size.getWidthPx(8),
+                                                    fontSize: 16.sp,
                                                     color: textColor,
                                                   )),
                                             ),
@@ -311,7 +311,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             flex: 4,
                                             child: Text('',
                                                 style: TextStyle(
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                   color: textColor,
                                                 )),
                                           ),
@@ -367,14 +367,14 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                     Text(
                                       'ยอดรวม',
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue[900]),
                                     ),
                                     Text(
                                       "${formatter.format(Global.buySubTotal)} บาท",
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.blue[900]),
                                     ),
@@ -394,106 +394,6 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          backgroundColor: Colors.blue[700],
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        onPressed: () async {
-                                          if (Global.buyOrderDetail!.isEmpty) {
-                                            return;
-                                          }
-
-                                          // final ProgressDialog pr =
-                                          // ProgressDialog(context,
-                                          //     type:
-                                          //     ProgressDialogType.normal,
-                                          //     isDismissible: true,
-                                          //     showLogs: true);
-                                          // await pr.show();
-                                          // pr.update(message: 'processing'.tr());
-                                          try {
-                                            // var result = await ApiServices.post(
-                                            //     '/order/gen/2',
-                                            //     Global.requestObj(null));
-                                            // await pr.hide();
-                                            // if (result!.status == "success") {
-                                            OrderModel order = OrderModel(
-                                                orderId: "",
-                                                orderDate: DateTime.now(),
-                                                details: Global.buyOrderDetail!,
-                                                orderTypeId: 2);
-                                            final data = order.toJson();
-                                            Global.ordersPapun?.add(
-                                                OrderModel.fromJson(data));
-                                            widget.refreshCart(Global
-                                                .ordersPapun?.length
-                                                .toString());
-                                            writeCart();
-                                            Global.buyOrderDetail!.clear();
-                                            setState(() {
-                                              Global.buySubTotal = 0;
-                                              Global.buyTax = 0;
-                                              Global.buyTotal = 0;
-                                            });
-                                            if (mounted) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                                  style:
-                                                      TextStyle(fontSize: 22),
-                                                ),
-                                                backgroundColor: Colors.teal,
-                                              ));
-                                            }
-                                            // } else {
-                                            //   if (mounted) {
-                                            //     Alert.warning(
-                                            //         context,
-                                            //         'Warning'.tr(),
-                                            //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                            //         'OK'.tr(),
-                                            //         action: () {});
-                                            //   }
-                                            // }
-                                          } catch (e) {
-                                            // await pr.hide();
-                                            if (mounted) {
-                                              Alert.warning(
-                                                  context,
-                                                  'Warning'.tr(),
-                                                  e.toString(),
-                                                  'OK'.tr(),
-                                                  action: () {});
-                                            }
-                                          }
-                                        },
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.add, size: 16),
-                                            const SizedBox(width: 6),
-                                            Text(
-                                              'เพิ่มลงในรถเข็น',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(8)),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
                                     Expanded(
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
@@ -556,8 +456,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             const SizedBox(width: 6),
                                             Text(
                                               'ระงับการสั่งซื้อ',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(8)),
+                                              style: TextStyle(fontSize: 16.sp),
                                             )
                                           ],
                                         ),
@@ -582,27 +481,35 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                           if (Global.buyOrderDetail!.isEmpty) {
                                             return;
                                           }
-                                          // Alert.info(
-                                          //     context,
-                                          //     'ต้องการบันทึกข้อมูลหรือไม่?',
-                                          //     '',
-                                          //     'ตกลง', action: () async {
-                                          // final ProgressDialog pr =
-                                          // ProgressDialog(context,
-                                          //     type: ProgressDialogType
-                                          //         .normal,
-                                          //     isDismissible: true,
-                                          //     showLogs: true);
-                                          // await pr.show();
-                                          // pr.update(
-                                          //     message: 'processing'.tr());
+
                                           try {
-                                            // var result =
-                                            // await ApiServices.post(
-                                            //     '/order/gen/2',
-                                            //     Global.requestObj(null));
-                                            // await pr.hide();
-                                            // if (result!.status == "success") {
+                                            // Sell new gold
+                                            if (Global
+                                                .sellOrderDetail!.isNotEmpty) {
+                                              OrderModel newGold = OrderModel(
+                                                  orderId: '',
+                                                  orderDate: DateTime.now(),
+                                                  details:
+                                                  Global.sellOrderDetail!,
+                                                  orderTypeId: 1);
+                                              final newGoldData =
+                                              newGold.toJson();
+                                              Global.ordersPapun?.add(
+                                                  OrderModel.fromJson(
+                                                      newGoldData));
+                                              widget.refreshCart(Global
+                                                  .ordersPapun?.length
+                                                  .toString());
+                                              writeCart();
+                                              Global.sellOrderDetail!.clear();
+                                              setState(() {
+                                                Global.sellSubTotal = 0;
+                                                Global.sellTax = 0;
+                                                Global.sellTotal = 0;
+                                              });
+                                            }
+
+                                            // Buy used gold
                                             OrderModel order = OrderModel(
                                                 orderId: "",
                                                 orderDate: DateTime.now(),
@@ -621,6 +528,8 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                               Global.buyTax = 0;
                                               Global.buyTotal = 0;
                                             });
+
+
                                             if (mounted) {
                                               Navigator.push(
                                                       context,
@@ -645,18 +554,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                                 });
                                               });
                                             }
-                                            // } else {
-                                            //   if (mounted) {
-                                            //     Alert.warning(
-                                            //         context,
-                                            //         'Warning'.tr(),
-                                            //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                                            //         'OK'.tr(),
-                                            //         action: () {});
-                                            //   }
-                                            // }
                                           } catch (e) {
-                                            // await pr.hide();
                                             if (mounted) {
                                               Alert.warning(
                                                   context,
@@ -675,9 +573,8 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
                                             const Icon(Icons.check, size: 16),
                                             const SizedBox(width: 6),
                                             Text(
-                                              'เช็คเอาท์',
-                                              style: TextStyle(
-                                                  fontSize: size.getWidthPx(8)),
+                                              'เพิ่มลงรถเข็น/ชำระเงิน',
+                                              style: TextStyle(fontSize: 16.sp),
                                             )
                                           ],
                                         ),
@@ -739,7 +636,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
             child: Text('${index + 1}',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: size.getWidthPx(8),
+                  fontSize: 16.sp,
                   color: textColor,
                 )),
           ),
@@ -748,7 +645,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
             child: Text(order.productName,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: size.getWidthPx(8),
+                  fontSize: 16.sp,
                   color: textColor,
                 )),
           ),
@@ -759,7 +656,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
               child: Text(order.weight!.toString(),
                   textAlign: TextAlign.right,
                   style: TextStyle(
-                    fontSize: size.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: textColor,
                   )),
             ),
@@ -771,7 +668,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen> {
               child: Text(Global.format(order.priceIncludeTax!),
                   textAlign: TextAlign.right,
                   style: TextStyle(
-                    fontSize: size.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: textColor,
                   )),
             ),

@@ -25,6 +25,7 @@ import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class BuyThengMatchingScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -213,7 +214,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                 ),
                 Text(
                   'ราคาทองคำ',
-                  style: TextStyle(fontSize: size.getWidthPx(6)),
+                  style: TextStyle(fontSize: 16.sp),
                 )
               ],
             ),
@@ -319,14 +320,14 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                       Text(
                                         'ยอดรวม',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.bold,
                                             color: const Color(0xFF636564)),
                                       ),
                                       Text(
                                         "${Global.format(Global.buyThengSubTotal)} บาท",
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.bold,
                                             color: textColor2),
                                       ),
@@ -446,7 +447,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                 'เพิ่มลงในรถเข็น',
                                                 style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8)),
+                                                        16.sp),
                                               )
                                             ],
                                           ),
@@ -522,7 +523,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                 'ระงับการสั่งซื้อ',
                                                 style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8)),
+                                                        16.sp),
                                               )
                                             ],
                                           ),
@@ -650,7 +651,7 @@ class _BuyThengMatchingScreenState extends State<BuyThengMatchingScreen> {
                                                 'เช็คเอาท์',
                                                 style: TextStyle(
                                                     fontSize:
-                                                        size.getWidthPx(8)),
+                                                        16.sp),
                                               )
                                             ],
                                           ),

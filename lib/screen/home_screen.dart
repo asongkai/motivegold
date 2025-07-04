@@ -6,8 +6,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/pawn_menu.dart';
-import 'package:motivegold/screen/dashboard/theng_menu.dart';
-import 'package:motivegold/screen/pos/product_history_screen.dart';
+import 'package:motivegold/screen/pos/history_screen.dart';
 import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
@@ -21,7 +20,6 @@ import 'package:motivegold/screen/reports/theng_report_menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:sizer/sizer.dart';
@@ -96,13 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'ซื้อขายทองรูป\nพรรณหน้าร้าน',
                 color: Colors.teal[400]!,
                 pageBuilder: (_) =>
-                    const PosMenuScreen(title: 'ซื้อขายทองรูปพรรณหน้าร้าน'),
+                const PosMenuScreen(title: 'ซื้อขายทองรูปพรรณหน้าร้าน'),
               ),
               MenuItemData(
                 icon: Icons.shopping_basket,
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองรูปพรรณ)',
                 color: Colors.orange[400]!,
-                pageBuilder: (_) => const WholeSalePaphunMenuScreen(
+                pageBuilder: (_) =>
+                const WholeSalePaphunMenuScreen(
                     title: 'ซื้อขายทองกับร้านขายส่ง(ทองรูปพรรณ)'),
               ),
               MenuItemData(
@@ -121,9 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.list_alt_outlined,
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.deepOrange,
-                pageBuilder: (_) => ProductOrderHistoryScreen(
-                  productType: orderTypes()[0],
-                ),
+                pageBuilder: (_) =>
+                    HistoryScreen(
+                      productType: orderTypes()[0],
+                    ),
               ),
             ]),
 
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองแท่ง)',
                 color: Colors.teal[600]!,
                 pageBuilder: (_) =>
-                    const WholeSaleThengMenuScreen(title: 'POS'),
+                const WholeSaleThengMenuScreen(title: 'POS'),
               ),
               MenuItemData(
                 icon: Icons.swap_horiz,
@@ -194,9 +194,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.list_alt_outlined,
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.orange[600]!,
-                pageBuilder: (_) => ProductOrderHistoryScreen(
-                  productType: orderTypes()[4],
-                ),
+                pageBuilder: (_) =>
+                    HistoryScreen(
+                      productType: orderTypes()[4],
+                    ),
               ),
             ]),
 
@@ -211,14 +212,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'ซื้อขายทองแท่ง\n(จับคู่)',
                 color: Colors.red[500]!,
                 pageBuilder: (_) =>
-                    const ThengSaleMatchingMenuScreen(title: 'Matching'),
+                const ThengSaleMatchingMenuScreen(title: 'Matching'),
               ),
               MenuItemData(
                 icon: Icons.shopping_cart,
                 label: 'ซื้อขายทองแต่ง\nกับโบรกเกอร์',
                 color: Colors.brown[600]!,
                 pageBuilder: (_) =>
-                    const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
+                const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
               ),
               MenuItemData(
                 icon: Icons.analytics_outlined,
@@ -230,9 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.list_alt_outlined,
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.orange[600]!,
-                pageBuilder: (_) => ProductOrderHistoryScreen(
-                  productType: orderTypes()[2],
-                ),
+                pageBuilder: (_) =>
+                    HistoryScreen(
+                      productType: orderTypes()[2],
+                    ),
               ),
             ]),
           ],
@@ -260,7 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.only(bottom: i + 4 < items.length ? 12 : 0),
             child: IntrinsicHeight( // This is the key change!
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch children to fill vertical space
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                // Stretch children to fill vertical space
                 children: [
                   for (int j = i; j < i + 4 && j < items.length; j++)
                     Expanded(

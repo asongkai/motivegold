@@ -27,6 +27,7 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class SellDialog extends StatefulWidget {
   const SellDialog({super.key});
@@ -349,7 +350,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -359,7 +360,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '(กรัม)',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -422,7 +423,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -432,7 +433,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '(บาททอง)',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -496,7 +497,7 @@ class _SellDialogState extends State<SellDialog> {
                                   'ราคาขายทอง\nคำแท่ง',
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -506,7 +507,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -567,7 +568,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ค่าบล็อกทอง',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -577,7 +578,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -637,7 +638,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'ค่าแพ็คเกจ',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -670,7 +671,7 @@ class _SellDialogState extends State<SellDialog> {
                                         project: project,
                                         isItemSelected: isItemSelected,
                                         firstSpace: 10,
-                                        fontSize: size.getWidthPx(10),
+                                        fontSize: 16.sp,
                                       );
                                     },
                                     onChanged: (ProductModel value) {
@@ -680,7 +681,7 @@ class _SellDialogState extends State<SellDialog> {
                                     },
                                     child: DropDownObjectChildWidget(
                                       key: GlobalKey(),
-                                      fontSize: size.getWidthPx(10),
+                                      fontSize: 16.sp,
                                       projectValueNotifier: packageNotifier!,
                                     ),
                                   ),
@@ -749,7 +750,7 @@ class _SellDialogState extends State<SellDialog> {
                                 controller: packageQtyCtrl,
                                 focusNode: packageQtyFocus,
                                 readOnly: packageQtyReadOnly,
-                                fontSize: size.getWidthPx(15),
+                                fontSize: 16.sp,
                                 inputFormat: [
                                   ThousandsFormatter(allowFraction: true)
                                 ],
@@ -782,7 +783,7 @@ class _SellDialogState extends State<SellDialog> {
                                 controller: packagePriceCtrl,
                                 focusNode: packagePriceFocus,
                                 readOnly: packagePriceReadOnly,
-                                fontSize: size.getWidthPx(15),
+                                fontSize: 16.sp,
                                 inputFormat: [
                                   ThousandsFormatter(allowFraction: true)
                                 ],
@@ -825,7 +826,7 @@ class _SellDialogState extends State<SellDialog> {
                                   Text(
                                     'ภาษีมูลค่าเพิ่ม 7%',
                                     style: TextStyle(
-                                        fontSize: size.getWidthPx(15),
+                                        fontSize: 16.sp,
                                         color: textColor),
                                   ),
                                   const SizedBox(
@@ -841,7 +842,7 @@ class _SellDialogState extends State<SellDialog> {
                                 controller: taxAmountCtrl,
                                 focusNode: taxAmountFocus,
                                 readOnly: taxAmountReadOnly,
-                                fontSize: size.getWidthPx(12),
+                                fontSize: 18.sp,
                                 inputFormat: [
                                   ThousandsFormatter(allowFraction: true)
                                 ],
@@ -884,7 +885,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Text(
                                   'รวมราคาขาย',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -894,7 +895,7 @@ class _SellDialogState extends State<SellDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -1034,7 +1035,7 @@ class _SellDialogState extends State<SellDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.getWidthPx(15)),
+                                fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -1069,7 +1070,7 @@ class _SellDialogState extends State<SellDialog> {
                           "บันทึก",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: size.getWidthPx(15)),
+                              fontSize: 16.sp),
                         ),
                       ],
                     ),

@@ -24,6 +24,7 @@ import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
+import 'package:sizer/sizer.dart';
 
 import '../model/order.dart';
 import 'global.dart';
@@ -602,13 +603,16 @@ Widget buildTextField(
       obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
-      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
+      style: TextStyle(
+        fontSize: 14.sp, //fontSize,
+        color: labelColor ?? textColor,
+      ),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.all(18),
         labelText: labelText,
         labelStyle: TextStyle(
-            fontSize: fontSize,
+            fontSize: 14.sp, //fontSize,
             color: labelColor ?? textColor,
             fontWeight: FontWeight.w900),
         suffixText: suffixText,
@@ -666,13 +670,16 @@ Widget buildTextFieldX(
       obscureText: obscureText,
       enabled: enabled,
       maxLines: line ?? 1,
-      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
+      style: TextStyle(
+        fontSize: 16.sp, //fontSize,
+        color: labelColor ?? textColor,
+      ),
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.all(8),
         labelText: labelText,
         labelStyle: TextStyle(
-            fontSize: fontSize,
+            fontSize: 16.sp, //fontSize,
             color: labelColor ?? textColor,
             fontWeight: FontWeight.w900),
         suffixText: suffixText,
@@ -728,7 +735,10 @@ Widget buildTextFieldBig(
       inputFormatters: inputFormat ?? [],
       enabled: enabled,
       maxLines: line ?? 1,
-      style: TextStyle(fontSize: fontSize, color: labelColor ?? textColor),
+      style: TextStyle(
+        fontSize: 18.sp, //fontSize,
+        color: labelColor ?? textColor,
+      ),
       textAlign: align ?? TextAlign.left,
       obscureText: isPassword,
       decoration: InputDecoration(
@@ -737,9 +747,10 @@ Widget buildTextFieldBig(
             const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
         labelText: labelText,
         labelStyle: TextStyle(
-            color: labelColor ?? textColor,
-            fontWeight: FontWeight.w900,
-            fontSize: fontSize),
+          color: labelColor ?? textColor,
+          fontWeight: FontWeight.w900,
+          fontSize: 18.sp, //fontSize,
+        ),
         suffixText: suffixText,
         filled: true,
         suffixIcon: option ? const Icon(Icons.arrow_drop_down_outlined) : null,
@@ -799,7 +810,7 @@ Widget numberTextField(
         maxLines: line ?? 1,
         textAlign: TextAlign.right,
         style: TextStyle(
-          fontSize: fontSize,
+          fontSize: 16.sp, //fontSize,
           color: labelColor ?? textColor,
         ),
         obscureText: isPassword,
@@ -813,9 +824,10 @@ Widget numberTextField(
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
           labelText: labelText,
           labelStyle: TextStyle(
-              color: labelColor ?? textColor,
-              fontWeight: FontWeight.w900,
-              fontSize: fontSize),
+            color: labelColor ?? textColor,
+            fontWeight: FontWeight.w900,
+            fontSize: 16.sp, //fontSize,
+          ),
           prefixIconConstraints:
               const BoxConstraints(minHeight: 50, minWidth: 50),
           prefixIcon: Padding(
@@ -892,7 +904,7 @@ Widget numberTextFieldBig(
     bool isPassword = false,
     bool readOnly = false,
     double fontSize = 50.00,
-      Color? bgColor,
+    Color? bgColor,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 0.0),
@@ -905,7 +917,7 @@ Widget numberTextFieldBig(
         maxLines: line ?? 1,
         textAlign: TextAlign.right,
         style: TextStyle(
-          fontSize: fontSize,
+          fontSize: 18.sp, //fontSize,
           color: labelColor ?? textColor,
         ),
         obscureText: isPassword,
@@ -919,9 +931,10 @@ Widget numberTextFieldBig(
               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
           labelText: labelText,
           labelStyle: TextStyle(
-              color: labelColor ?? textColor,
-              fontWeight: FontWeight.w900,
-              fontSize: fontSize),
+            color: labelColor ?? textColor,
+            fontWeight: FontWeight.w900,
+            fontSize: 18.sp, //fontSize,
+          ),
           prefixIconConstraints:
               const BoxConstraints(minHeight: 50, minWidth: 50),
           prefixIcon: Padding(
@@ -935,7 +948,7 @@ Widget numberTextFieldBig(
                 icon: Image.asset(
                   'assets/icons/icons8-plus-slash-minus-50.png',
                   color: readOnly ? Colors.teal : Colors.red.shade500,
-                  width: 50,
+                  width: 16.sp, //50,
                 ),
                 onPressed: openCalc,
               ),
@@ -1040,29 +1053,29 @@ String dataType(OrderModel list) {
 Color colorType(OrderModel list) {
   switch (list.orderTypeId) {
     case 1:
-      return Colors.teal;
+      return snBgColor; // sell new gold
     case 2:
-      return Colors.orange;
+      return buBgColor; // buy used gold
     case 3:
-      return Colors.brown;
+      return stmBgColor; // sell theng gold matching
     case 4:
-      return Colors.deepPurple;
+      return stBgColor; // sell theng gold real
     case 33:
-      return Colors.brown;
+      return Colors.teal; // buy theng gold matching
     case 44:
-      return Colors.deepPurple;
+      return btBgColor; // buy theng gold real
     case 5:
-      return Colors.green;
+      return rfBgColor; // refill new gold to wholesale
     case 6:
-      return Colors.blueGrey;
+      return suBgColor; // sell used gold to wholesale
     case 8:
-      return Colors.green;
+      return Colors.teal[900]!; // sell theng gold to broker
     case 9:
-      return Colors.blueGrey;
+      return Colors.orange[900]!; // buy theng gold from broker
     case 10:
-      return Colors.green;
+      return snBgColor; // refill theng gold from wholesale
     case 11:
-      return Colors.blueGrey;
+      return buBgColor; // sell old theng gold to wholesale
     default:
       return Colors.transparent;
   }
@@ -1333,4 +1346,76 @@ getCustomerName(CustomerModel customer) {
     return '${customer.companyName}';
   }
   return '${customer.firstName} ${customer.lastName}';
+}
+
+getRefillAttachment() {
+  if (!kIsWeb && Global.refillAttach != null) {
+    return Global.imageToBase64(Global.refillAttach!);
+  }
+
+  if (kIsWeb && Global.refillAttachWeb != null) {
+    return Global.refillAttachWeb;
+  }
+}
+
+getSellUsedAttachment() {
+  if (!kIsWeb && Global.sellUsedAttach != null) {
+    return Global.imageToBase64(Global.sellUsedAttach!);
+  }
+
+  if (kIsWeb && Global.sellUsedAttachWeb != null) {
+    return Global.sellUsedAttachWeb;
+  }
+}
+
+getRefillThengAttachment() {
+  if (!kIsWeb && Global.refillThengAttach != null) {
+    return Global.imageToBase64(Global.refillThengAttach!);
+  }
+
+  if (kIsWeb && Global.refillThengAttachWeb != null) {
+    return Global.refillThengAttachWeb;
+  }
+}
+
+getSellUsedThengAttachment() {
+  if (!kIsWeb && Global.sellUsedThengAttach != null) {
+    return Global.imageToBase64(Global.sellUsedThengAttach!);
+  }
+
+  if (kIsWeb && Global.sellUsedThengAttachWeb != null) {
+    return Global.sellUsedThengAttachWeb;
+  }
+}
+
+double addDisValue(double discount, double addPrice) {
+  return addPrice - discount;
+}
+
+Widget buildMiniButton(String text) {
+  return Container(
+    width: 8,
+    height: 8,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(2),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 1,
+          offset: Offset(0, 0.5),
+        ),
+      ],
+    ),
+    child: Center(
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 6,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF667eea),
+        ),
+      ),
+    ),
+  );
 }

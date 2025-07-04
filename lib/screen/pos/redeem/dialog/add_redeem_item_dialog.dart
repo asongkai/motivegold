@@ -37,6 +37,7 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class AddRedeemItemDialog extends StatefulWidget {
   const AddRedeemItemDialog({super.key});
@@ -204,7 +205,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                           'เลขที่ขายฝาก',
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -215,7 +216,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                         inputType: TextInputType.text,
                                         enabled: true,
                                         controller: referenceNumberCtrl,
-                                        fontSize: size.getWidthPx(12)),
+                                        fontSize: 18.sp),
                                   ),
                                 ],
                               ),
@@ -234,7 +235,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                           'น้ำหนักรวม (กรัม)',
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -246,7 +247,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                         controller: weightGramCtrl,
                                         focusNode: gramFocus,
                                         readOnly: gramReadOnly,
-                                        // fontSize: size.getWidthPx(12),
+                                        // fontSize: 18.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -290,7 +291,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                           'มูลค่าขายฝาก',
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -302,7 +303,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                         controller: depositAmountCtrl,
                                         focusNode: depositAmountFocus,
                                         readOnly: depositAmountReadOnly,
-                                        // fontSize: size.getWidthPx(12),
+                                        // fontSize: 18.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -347,7 +348,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                           'มูลค่าสินไถ่',
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -404,7 +405,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                           'ผลประโยชน์ที่รับวันนี้',
                                           textAlign: TextAlign.right,
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(15),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -479,7 +480,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                                             Text(
                                               'จำนวนเงินรวมที่ลูกค้าต้องชำระ (บาท)',
                                               style: TextStyle(
-                                                fontSize: size.getWidthPx(15),
+                                                fontSize: 16.sp,
                                                 fontWeight: FontWeight.w500,
                                                 color: const Color(
                                                     0xFF1A237E), // Dark blue color for text
@@ -618,7 +619,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.getWidthPx(15)),
+                                fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -655,7 +656,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                             "บันทึก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.getWidthPx(15)),
+                                fontSize: 16.sp),
                           ),
                         ],
                       ),

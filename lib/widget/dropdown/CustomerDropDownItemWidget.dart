@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
+import 'package:sizer/sizer.dart';
 
 class CustomerDropDownItemWidget extends StatelessWidget {
   const CustomerDropDownItemWidget({
@@ -39,7 +40,7 @@ class CustomerDropDownItemWidget extends StatelessWidget {
                   '${project != null ? getCustomerName(project) : ''}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: textColor,
-                        fontSize: fontSize,
+                    fontSize: 14.sp,
                       ),
                 ),
                 if (project != null && project.toJson().containsKey("idCard"))

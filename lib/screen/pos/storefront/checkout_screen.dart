@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
@@ -11,11 +14,16 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/payment.dart';
 import 'package:motivegold/screen/customer/add_customer_screen.dart';
 import 'package:motivegold/screen/customer/customer_screen.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/dialog/add_buy_item_dialog.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/dialog/add_sell_item_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_buy_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.dart';
 import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
 import 'package:motivegold/utils/alert.dart';
+import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/cart/cart.dart';
+import 'package:motivegold/utils/classes/painter.dart';
+import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -24,6 +32,8 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
+import 'package:motivegold/widget/calculate/calculate_button.dart';
+import 'package:motivegold/widget/calculate/calculator_button.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/payment/payment_method.dart';
@@ -50,6 +60,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   bool loading = false;
 
   DefaultPaymentModel? defaultPayment;
+
+  bool showCal = false;
 
   @override
   void initState() {
@@ -79,7 +91,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   loadDefaultPayment() async {
     int orderTypeId = 0;
     if (Global.currentOrderType == 1) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 2;
       } else {
         orderTypeId = 1;
@@ -87,7 +103,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 2) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 33;
       } else {
         orderTypeId = 3;
@@ -95,7 +115,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 3) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 44;
       } else {
         orderTypeId = 4;
@@ -103,7 +127,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 4) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 9;
       } else {
         orderTypeId = 8;
@@ -111,7 +139,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 5) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 5;
       } else {
         orderTypeId = 6;
@@ -119,7 +151,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
 
     if (Global.currentOrderType == 6) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 10;
       } else {
         orderTypeId = 11;
@@ -142,6 +178,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     // TODO: implement dispose
     super.dispose();
     // Global.discount = 0;
+  }
+
+  openCal() {
+    setState(() {
+      showCal = true;
+    });
+  }
+
+  closeCal() {
+    setState(() {
+      showCal = false;
+    });
   }
 
   @override
@@ -168,258 +216,120 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               ? const Center(
                   child: NoDataFoundWidget(),
                 )
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(8.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'ลูกค้า',
-                          style: Theme.of(context).textTheme.headlineMedium,
+              : Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(8.0),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        SizedBox(
-                          height: 50,
-                          width: MediaQuery.of(context).size.width,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedOption = 1;
-                                      loadCustomer();
-                                    });
-                                  },
-                                  child: ListTile(
-                                    title: const Text(
-                                      'ไม่สำแดงตน',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    leading: Radio<int>(
-                                      value: 1,
-                                      groupValue: selectedOption,
-                                      activeColor: Colors.blue[700],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedOption = value!;
-                                          loadCustomer();
-                                          // print("Button value: $value");
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedOption = 0;
-                                      Global.customer = null;
-                                    });
-                                  },
-                                  child: ListTile(
-                                    title: const Text('สำแดงตน',
-                                        style: TextStyle(fontSize: 20)),
-                                    leading: Radio<int>(
-                                      value: 0,
-                                      groupValue: selectedOption,
-                                      activeColor: Colors.blue[700],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedOption = value!;
-                                          Global.customer = null;
-                                          // print("Button value: $value");
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Spacer()
-                            ],
-                          ),
-                        ),
-                        if (loading)
-                          const SizedBox(
-                            height: 100,
-                            child: Center(
-                              child: LoadingProgress(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'ลูกค้า',
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
-                          ),
-                        if (selectedOption == 0)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 25),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withValues(alpha: 0.1),
-                                    blurRadius: 1,
-                                    spreadRadius: 1,
-                                    offset: const Offset(2, 2),
-                                  ),
-                                ]),
-                            child: Global.customer == null
-                                ? Row(
-                                    children: [
-                                      Expanded(flex: 5, child: Container()),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          children: [
-                                            KclButton(
-                                              onTap: () {
-                                                Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const AddCustomerScreen(),
-                                                            fullscreenDialog:
-                                                                true))
-                                                    .whenComplete(() {
-                                                  setState(() {});
-                                                });
-                                              },
-                                              text: 'เพิ่ม',
-                                              fullWidth: true,
-                                              icon: Icons.add,
-                                            ),
-                                            KclButton(
-                                              onTap: () {
-                                                Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const CustomerScreen(
-                                                                  selected:
-                                                                      true,
-                                                                  type: "C",
-                                                                ),
-                                                            fullscreenDialog:
-                                                                true))
-                                                    .whenComplete(() {
-                                                  setState(() {});
-                                                });
-                                              },
-                                              text: 'ค้นหา',
-                                              icon: Icons.search,
-                                              fullWidth: true,
-                                              color: Colors.teal,
-                                            ),
-                                          ],
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              height: 50,
+                              width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 1,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedOption = 1;
+                                          loadCustomer();
+                                        });
+                                      },
+                                      child: ListTile(
+                                        title: const Text(
+                                          'ไม่สำแดงตน',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                        leading: Radio<int>(
+                                          value: 1,
+                                          groupValue: selectedOption,
+                                          activeColor: Colors.blue[700],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedOption = value!;
+                                              loadCustomer();
+                                              // print("Button value: $value");
+                                            });
+                                          },
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedOption = 0;
+                                          Global.customer = null;
+                                        });
+                                      },
+                                      child: ListTile(
+                                        title: const Text('สำแดงตน',
+                                            style: TextStyle(fontSize: 20)),
+                                        leading: Radio<int>(
+                                          value: 0,
+                                          groupValue: selectedOption,
+                                          activeColor: Colors.blue[700],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              selectedOption = value!;
+                                              Global.customer = null;
+                                              // print("Button value: $value");
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer()
+                                ],
+                              ),
+                            ),
+                            if (loading)
+                              const SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: LoadingProgress(),
+                                ),
+                              ),
+                            if (selectedOption == 0)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 25),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.1),
+                                        blurRadius: 1,
+                                        spreadRadius: 1,
+                                        offset: const Offset(2, 2),
+                                      ),
+                                    ]),
+                                child: Global.customer == null
+                                    ? Row(
                                         children: [
-                                          Expanded(
-                                            flex: 5,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Text(
-                                                  "${Global.customer!.phoneNumber}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.black,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 8,
-                                                ),
-                                                Text(
-                                                  "${Global.customer!.email}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.black,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 3,
-                                                ),
-                                                Text(
-                                                  "${Global.customer!.address}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 3,
-                                                ),
-                                                Text(
-                                                  "${getWorkId(Global.customer!)}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize:
-                                                        size!.getWidthPx(6),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  height: 3,
-                                                ),
-                                                // Text(
-                                                //   "${getIdTitleCustomer(Global.customer)}",
-                                                //   style: TextStyle(
-                                                //     fontWeight: FontWeight.w500,
-                                                //     fontSize:
-                                                //         size!.getWidthPx(6),
-                                                //   ),
-                                                // ),
-                                                // const SizedBox(
-                                                //   height: 3,
-                                                // ),
-                                                // Text(
-                                                //   "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
-                                                //   style: TextStyle(
-                                                //     fontWeight: FontWeight.w500,
-                                                //     fontSize:
-                                                //         size!.getWidthPx(6),
-                                                //   ),
-                                                // ),
-                                              ],
-                                            ),
-                                          ),
+                                          Expanded(flex: 5, child: Container()),
                                           Expanded(
                                             flex: 1,
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
                                               children: [
                                                 KclButton(
                                                   onTap: () {
@@ -465,316 +375,579 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 ),
                                               ],
                                             ),
-                                          )
+                                          ),
+                                        ],
+                                      )
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                flex: 5,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 16.sp,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Text(
+                                                      "${Global.customer!.phoneNumber}",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black,
+                                                        fontSize: 16.sp,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Text(
+                                                      "${Global.customer!.email}",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black,
+                                                        fontSize: 16.sp,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 3,
+                                                    ),
+                                                    Text(
+                                                      "${Global.customer!.address}",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 16.sp,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 3,
+                                                    ),
+                                                    Text(
+                                                      "${getWorkId(Global.customer!)}",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 16.sp,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 3,
+                                                    ),
+                                                    // Text(
+                                                    //   "${getIdTitleCustomer(Global.customer)}",
+                                                    //   style: TextStyle(
+                                                    //     fontWeight: FontWeight.w500,
+                                                    //     fontSize:
+                                                    //         16.sp,
+                                                    //   ),
+                                                    // ),
+                                                    // const SizedBox(
+                                                    //   height: 3,
+                                                    // ),
+                                                    // Text(
+                                                    //   "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
+                                                    //   style: TextStyle(
+                                                    //     fontWeight: FontWeight.w500,
+                                                    //     fontSize:
+                                                    //         16.sp,
+                                                    //   ),
+                                                    // ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    KclButton(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const AddCustomerScreen(),
+                                                                    fullscreenDialog:
+                                                                        true))
+                                                            .whenComplete(() {
+                                                          setState(() {});
+                                                        });
+                                                      },
+                                                      text: 'เพิ่ม',
+                                                      fullWidth: true,
+                                                      icon: Icons.add,
+                                                    ),
+                                                    KclButton(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const CustomerScreen(
+                                                                              selected: true,
+                                                                              type: "C",
+                                                                            ),
+                                                                    fullscreenDialog:
+                                                                        true))
+                                                            .whenComplete(() {
+                                                          setState(() {});
+                                                        });
+                                                      },
+                                                      text: 'ค้นหา',
+                                                      icon: Icons.search,
+                                                      fullWidth: true,
+                                                      color: Colors.teal,
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                          ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'รายการสั่งซื้อ',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(0),
-                            color: bgColor,
-                          ),
-                          child: Column(
-                            children: [
-                              for (int i = 0; i < Global.orders.length; i++)
-                                _itemOrderList(
-                                    order: Global.orders[i], index: i)
-                              // ...Global.orders!.map((e) {
-                              //   return _itemOrderList(order: e, index: 0);
-                              // })
-                            ],
-                          ),
-                        ),
-                        Text(
-                          'ราคา',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        buildTextFieldBig(
-                            labelText: "ร้านทองเพิ่มให้ (บาท)",
-                            labelColor: Colors.orange,
-                            controller: addPriceCtrl,
-                            inputType: TextInputType.phone,
-                            inputFormat: [
-                              ThousandsFormatter(allowFraction: true)
-                            ],
-                            onChanged: (value) {
-                              Global.addPrice =
-                              value.isNotEmpty ? Global.toNumber(value) : 0;
-                              setState(() {});
-                            }),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        buildTextFieldBig(
-                            labelText: "ร้านทองลดให้ (บาท)",
-                            labelColor: Colors.orange,
-                            controller: discountCtrl,
-                            inputType: TextInputType.phone,
-                            inputFormat: [
-                              ThousandsFormatter(allowFraction: true)
-                            ],
-                            onChanged: (value) {
-                              Global.discount =
-                                  value.isNotEmpty ? Global.toNumber(value) : 0;
-                              setState(() {});
-                            }),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(0),
-                            color: bgColor,
-                          ),
-                          child: Column(
-                            children: [
-                              PriceBreakdown(
-                                title: 'จำนวนเงินที่ต้องชำระ'.tr(),
-                                price:
-                                    '${Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                               ),
-                              PriceBreakdown(
-                                title: '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
-                                price:
-                                    '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Divider(
-                            // height: getProportionateScreenHeight(5),
+                            const SizedBox(
+                              height: 10,
                             ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'วิธีการชำระเงิน'.tr(),
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 150,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: snBgColor,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                            Text(
+                              'รายการสั่งซื้อ',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(0),
+                                color: bgColor,
+                              ),
+                              child: Column(
+                                children: [
+                                  for (int i = 0; i < Global.orders.length; i++)
+                                    _itemOrderList(
+                                        order: Global.orders[i], index: i)
+                                  // ...Global.orders!.map((e) {
+                                  //   return _itemOrderList(order: e, index: 0);
+                                  // })
+                                ],
                               ),
                             ),
-                            onPressed: () async {
-                              setState(() {
-                                resetPaymentData();
-                              });
-                              paymentDialog();
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.add, size: 32),
-                                SizedBox(width: 6),
-                                Text(
-                                  'เพิ่ม',
-                                  style: TextStyle(fontSize: 32),
-                                )
-                              ],
+                            Text(
+                              'ราคา',
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        if (Global.paymentList!.isNotEmpty)
-                          SizedBox(
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      left: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      right: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      top: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            buildTextFieldBig(
+                                labelText: "ร้านทองเพิ่มให้ (บาท)",
+                                labelColor: Colors.orange,
+                                controller: addPriceCtrl,
+                                inputType: TextInputType.phone,
+                                inputFormat: [
+                                  ThousandsFormatter(allowFraction: true)
+                                ],
+                                onChanged: (value) {
+                                  Global.addPrice = value.isNotEmpty
+                                      ? Global.toNumber(value)
+                                      : 0;
+                                  setState(() {});
+                                }),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            buildTextFieldBig(
+                                labelText: "ร้านทองลดให้ (บาท)",
+                                labelColor: Colors.orange,
+                                controller: discountCtrl,
+                                inputType: TextInputType.phone,
+                                inputFormat: [
+                                  ThousandsFormatter(allowFraction: true)
+                                ],
+                                onChanged: (value) {
+                                  Global.discount = value.isNotEmpty
+                                      ? Global.toNumber(value)
+                                      : 0;
+                                  setState(() {});
+                                }),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(0),
+                                color: bgColor,
+                              ),
+                              child: Column(
+                                children: [
+                                  PriceBreakdown(
+                                    title: 'จำนวนเงินที่ต้องชำระ'.tr(),
+                                    price:
+                                        '${Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('ลำดับ',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
-                                              color: kPrimaryGreen,
-                                            )),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Text('วิธีการชำระเงิน',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
-                                              color: kPrimaryGreen,
-                                            )),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Text('วันที่ชำระเงิน',
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
-                                              color: kPrimaryGreen,
-                                            )),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text('จำนวนเงิน',
-                                              textAlign: TextAlign.right,
-                                              style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
-                                                color: kPrimaryGreen,
-                                              )),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Text('',
-                                            style: TextStyle(
-                                              fontSize: size?.getWidthPx(8),
-                                              color: kPrimaryGreen,
-                                            )),
-                                      ),
-                                    ],
+                                  PriceBreakdown(
+                                    title:
+                                        '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
+                                    price:
+                                        '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                   ),
+                                ],
+                              ),
+                            ),
+                            const Divider(
+                                // height: getProportionateScreenHeight(5),
                                 ),
-                                ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: Global.paymentList!.length,
-                                    itemBuilder: (context, index) {
-                                      return _paymentItemList(
-                                          order: Global.paymentList![index],
-                                          index: index);
-                                    }),
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    color: bgColor,
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      left: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      right: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                      top: BorderSide(
-                                        color: Colors.white,
-                                        width: 2,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'วิธีการชำระเงิน'.tr(),
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 150,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: snBgColor,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
+                                    onPressed: () async {
+                                      setState(() {
+                                        resetPaymentData();
+                                      });
+                                      paymentDialog();
+                                    },
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: Text('',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
-                                                color: kPrimaryGreen,
-                                              )),
-                                        ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Text('',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
-                                                color: kPrimaryGreen,
-                                              )),
-                                        ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Text('ทั้งหมด',
-                                              textAlign: TextAlign.right,
-                                              style: TextStyle(
-                                                fontSize: size?.getWidthPx(12),
-                                                color: kPrimaryGreen,
-                                              )),
-                                        ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                                '${Global.format(getPaymentTotal())}',
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      size?.getWidthPx(12),
-                                                  color: kPrimaryGreen,
-                                                )),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Text('',
-                                              style: TextStyle(
-                                                fontSize: size?.getWidthPx(8),
-                                                color: kPrimaryGreen,
-                                              )),
-                                        ),
+                                        Icon(Icons.add, size: 32),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'เพิ่ม',
+                                          style: TextStyle(fontSize: 32),
+                                        )
                                       ],
                                     ),
                                   ),
                                 ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                  // width: 150,
+                                  child: CalculatorButton(onTap: openCal),
+                                ),
                               ],
                             ),
-                          ),
-                        SizedBox(
-                          height: Global.paymentAttachment == null ? 100 : 0,
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            if (Global.paymentList!.isNotEmpty)
+                              SizedBox(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          left: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          right: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          top: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text('ลำดับ',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  color: kPrimaryGreen,
+                                                )),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Text('วิธีการชำระเงิน',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  color: kPrimaryGreen,
+                                                )),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Text('วันที่ชำระเงิน',
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  color: kPrimaryGreen,
+                                                )),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text('จำนวนเงิน',
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    color: kPrimaryGreen,
+                                                  )),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Text('',
+                                                style: TextStyle(
+                                                  fontSize: 16.sp,
+                                                  color: kPrimaryGreen,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: Global.paymentList!.length,
+                                        itemBuilder: (context, index) {
+                                          return _paymentItemList(
+                                              order: Global.paymentList![index],
+                                              index: index);
+                                        }),
+                                    Container(
+                                      decoration: const BoxDecoration(
+                                        color: bgColor,
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          left: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          right: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                          top: BorderSide(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Text('',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    color: kPrimaryGreen,
+                                                  )),
+                                            ),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Text('',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    color: kPrimaryGreen,
+                                                  )),
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Text('ทั้งหมด',
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                    fontSize: 18.sp,
+                                                    color: kPrimaryGreen,
+                                                  )),
+                                            ),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                    '${Global.format(getPaymentTotal())}',
+                                                    textAlign: TextAlign.right,
+                                                    style: TextStyle(
+                                                      fontSize: 18.sp,
+                                                      color: kPrimaryGreen,
+                                                    )),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Text('',
+                                                  style: TextStyle(
+                                                    fontSize: 16.sp,
+                                                    color: kPrimaryGreen,
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            SizedBox(
+                              height:
+                                  Global.paymentAttachment == null ? 100 : 0,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    if (showCal)
+                      DragArea(
+                          closeCal: closeCal,
+                          child: Container(
+                              width: 350,
+                              height: 500,
+                              padding: const EdgeInsets.all(5),
+                              decoration:
+                              const BoxDecoration(color: Color(0xffcccccc)),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xffcccccc),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(0),
+                                        topRight: Radius.circular(0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Center(
+                                            child: Text(
+                                              'เครื่องคิดเลข',
+                                              style: TextStyle(
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            closeCal();
+                                          },
+                                          child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: const BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(0),
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Focus(
+                                      autofocus: true,
+                                      onKeyEvent: (node, event) {
+                                        // Handle keyboard events specifically for calculator
+                                        if (event is KeyDownEvent) {
+                                          // Allow number keys including "0" to pass through
+                                          if (event.logicalKey ==
+                                              LogicalKeyboardKey.digit0 ||
+                                              event.logicalKey ==
+                                                  LogicalKeyboardKey.numpad0) {
+                                            return KeyEventResult
+                                                .ignored; // Let calculator handle it
+                                          }
+                                          // Handle other calculator keys
+                                          if (event.logicalKey ==
+                                              LogicalKeyboardKey.enter ||
+                                              event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .numpadEnter) {
+                                            return KeyEventResult
+                                                .ignored; // Let calculator handle enter
+                                          }
+                                        }
+                                        return KeyEventResult.ignored;
+                                      },
+                                      child: Calc(
+                                        closeCal: closeCal,
+                                        onChanged: (key, value, expression) {
+                                          if (key == 'ENT') {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+                                            closeCal();
+                                          }
+                                          if (kDebugMode) {
+                                            print('$key\t$value\t$expression');
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )))
+                  ],
                 ),
         ),
       ),
@@ -828,7 +1001,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   }
                 }
                 var amount = Global.payToCustomerOrShopValue(
-                    Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
+                    Global.orders,
+                    Global.toNumber(discountCtrl.text),
+                    Global.toNumber(addPriceCtrl.text));
                 // motivePrint(selectedOption);
                 if (amount > getMaxKycValue()) {
                   if (selectedOption == 0 && Global.customer == null) {
@@ -856,8 +1031,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 // return;
 
                 if (getPaymentTotal() >
-                    Global.toNumber(
-                        Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
+                    Global.toNumber(Global.format(Global.getPaymentTotal(
+                        Global.orders,
+                        Global.toNumber(discountCtrl.text),
+                        Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -872,8 +1049,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 }
 
                 if (getPaymentTotal() <
-                    Global.toNumber(
-                        Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
+                    Global.toNumber(Global.format(Global.getPaymentTotal(
+                        Global.orders,
+                        Global.toNumber(discountCtrl.text),
+                        Global.toNumber(addPriceCtrl.text))))) {
                   if (mounted) {
                     Alert.warning(
                         context,
@@ -893,8 +1072,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   Global.orders[i].updatedDate = DateTime.now();
                   Global.orders[i].customerId = Global.customer!.id!;
                   Global.orders[i].status = "0";
-                  Global.orders[i].discount = Global.toNumber(discountCtrl.text);
-                  Global.orders[i].addPrice = Global.toNumber(addPriceCtrl.text);
+                  Global.orders[i].discount =
+                      Global.toNumber(discountCtrl.text);
+                  Global.orders[i].addPrice =
+                      Global.toNumber(addPriceCtrl.text);
                   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
                   Global.orders[i].attachment = null;
                   if (Global.orders[i].orderTypeId != 5 &&
@@ -1050,8 +1231,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 children: [
                   Text(
                     "บันทึก".tr(),
-                    style: TextStyle(
-                        color: Colors.white, fontSize: size!.getWidthPx(8)),
+                    style: TextStyle(color: Colors.white, fontSize: 18.sp),
                   ),
                   const SizedBox(
                     width: 2,
@@ -1098,7 +1278,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               child: Text('${index + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -1107,7 +1287,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               child: Text(order.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -1118,7 +1298,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 child: Text(Global.formatDateNT(order.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -1130,7 +1310,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 child: Text(Global.format(order.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -1283,17 +1463,55 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   child: Row(
                     children: [
                       Expanded(
+                          flex: 4,
                           child: Text(
-                        '${getOrderListTitle(order)}',
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                      )),
+                            '${getOrderListTitle(order)}',
+                            style: const TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
+                          )),
                       Expanded(
+                          flex: 4,
                           child: Text(
-                        '${Global.format(Global.getOrderTotalAmount(order.details!))} บาท',
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
-                      ))
+                            '${Global.format(Global.getOrderTotalAmount(order.details!))} บาท',
+                            style: const TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
+                          )),
+                      if (order.orderTypeId == 1 || order.orderTypeId == 2)
+                        Expanded(
+                            flex: 2,
+                            child: KclButton(
+                              onTap: () {
+                                if (order.orderTypeId == 1) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddSellItemDialog(
+                                                    index: index,
+                                                  ),
+                                              fullscreenDialog: true))
+                                      .whenComplete(() {
+                                    setState(() {});
+                                  });
+                                }
+
+                                if (order.orderTypeId == 2) {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddBuyItemDialog(
+                                                    index: index,
+                                                  ),
+                                              fullscreenDialog: true))
+                                      .whenComplete(() {
+                                    setState(() {});
+                                  });
+                                }
+                              },
+                              text: 'เพิ่มรายการ',
+                              icon: Icons.add,
+                            ))
                     ],
                   )),
             ],
@@ -1329,19 +1547,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Text('น้ำหนัก',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('ราคา',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                 ],
               ),
@@ -1350,19 +1568,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   decoration: const BoxDecoration(),
                   children: [
                     paddedTextBigL('${j + 1}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                         align: TextAlign.center),
                     paddedTextBigL(order.details![j].productName,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(Global.format(order.details![j].weight!),
                         align: TextAlign.right,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(
                         Global.format(order.details![j].priceIncludeTax!) +
                             '  บาท',
                         align: TextAlign.right,
                         style: TextStyle(
-                          fontSize: size?.getWidthPx(8),
+                          fontSize: 16.sp,
                         )),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -1541,8 +1759,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
-                                      color: Colors.white),
+                                      fontSize: 16.sp, color: Colors.white),
                                 ),
                                 Text(
                                     '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
@@ -1604,11 +1821,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       amount: Global.toNumber(
                                           Global.amountCtrl.text),
                                       referenceNumber: Global.refNoCtrl.text,
-                                      attachement: Global.paymentAttachment !=
-                                              null
-                                          ? Global.imageToBase64(
-                                              Global.paymentAttachment!)
-                                          : null);
+                                      attachement: getPaymentAttachment());
 
                                   Global.paymentList?[i] = payment;
 
@@ -1683,7 +1896,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 16.sp,
-                                      // size?.getWidthPx(15),
+                                      // 16.sp,
                                       color: Colors.white),
                                 ),
                                 Text(
@@ -1724,33 +1937,29 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     '',
                                     'ตกลง', action: () async {
                                   var payment = PaymentModel(
-                                      paymentMethod:
-                                          Global.currentPaymentMethod,
-                                      pairId: Global.pairId,
-                                      paymentDate: DateTime.parse(
-                                          Global.paymentDateCtrl.text),
-                                      paymentDetail:
-                                          Global.paymentDetailCtrl.text,
-                                      bankId: Global.selectedBank?.id,
-                                      bankName: Global.selectedBank?.name,
-                                      accountNo:
-                                          Global.selectedAccount?.accountNo,
-                                      accountName: Global.selectedAccount?.name,
-                                      cardName: Global.cardNameCtrl.text,
-                                      cardNo: Global.cardNumberCtrl.text,
-                                      cardExpiryDate: Global.cardExpireDateCtrl
-                                              .text.isNotEmpty
-                                          ? DateTime.parse(
-                                              Global.cardExpireDateCtrl.text)
-                                          : null,
-                                      amount: Global.toNumber(
-                                          Global.amountCtrl.text),
-                                      referenceNumber: Global.refNoCtrl.text,
-                                      attachement: Global.paymentAttachment !=
-                                              null
-                                          ? Global.imageToBase64(
-                                              Global.paymentAttachment!)
-                                          : null);
+                                    paymentMethod: Global.currentPaymentMethod,
+                                    pairId: Global.pairId,
+                                    paymentDate: DateTime.parse(
+                                        Global.paymentDateCtrl.text),
+                                    paymentDetail:
+                                        Global.paymentDetailCtrl.text,
+                                    bankId: Global.selectedBank?.id,
+                                    bankName: Global.selectedBank?.name,
+                                    accountNo:
+                                        Global.selectedAccount?.accountNo,
+                                    accountName: Global.selectedAccount?.name,
+                                    cardName: Global.cardNameCtrl.text,
+                                    cardNo: Global.cardNumberCtrl.text,
+                                    cardExpiryDate: Global
+                                            .cardExpireDateCtrl.text.isNotEmpty
+                                        ? DateTime.parse(
+                                            Global.cardExpireDateCtrl.text)
+                                        : null,
+                                    amount:
+                                        Global.toNumber(Global.amountCtrl.text),
+                                    referenceNumber: Global.refNoCtrl.text,
+                                    attachement: getPaymentAttachment(),
+                                  );
 
                                   Global.paymentList?.add(payment);
 
@@ -1786,6 +1995,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         });
   }
 
+  getPaymentAttachment() {
+    if (!kIsWeb && Global.paymentAttachment != null) {
+      return Global.imageToBase64(Global.paymentAttachment!);
+    }
+
+    if (kIsWeb && Global.paymentAttachmentWeb != null) {
+      return Global.paymentAttachmentWeb;
+    }
+  }
+
   getPaymentTotal() {
     if (Global.paymentList!.isEmpty) {
       return 0;
@@ -1805,6 +2024,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
     try {
       var result = await ApiServices.get('/customer/walkin');
+      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         setState(() {

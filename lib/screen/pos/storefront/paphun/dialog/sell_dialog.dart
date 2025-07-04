@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -250,17 +251,11 @@ class _SaleDialogState extends State<SaleDialog> {
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(
           Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
-      // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-      //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-      //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
-      // productCommissionCtrl.text = Global.format(
-      //     Global.getSellPrice(Global.toNumber(productWeightCtrl.text)) - (Global.getSellPrice(1) * Global.toNumber(productWeightCtrl.text)));
     } else {
       productWeightGramCtrl.text = "";
       productWeightBahtCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
-      // productPriceTotalCtrl.text = "";
     }
     productCommissionCtrl.text = "";
     productPriceTotalCtrl.text = "";
@@ -271,7 +266,7 @@ class _SaleDialogState extends State<SaleDialog> {
     if (productPriceCtrl.text.isNotEmpty &&
         productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-          "${Global.format(Global.toNumber(productCommissionCtrl.text) + (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)))}";
+          "${Global.formatInt(Global.toNumber(productCommissionCtrl.text) + (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)))}";
       setState(() {});
     } else {
       productPriceTotalCtrl.text = "";
@@ -283,7 +278,10 @@ class _SaleDialogState extends State<SaleDialog> {
   void priceChanged() {
     if (productPriceCtrl.text.isNotEmpty &&
         productPriceTotalCtrl.text.isNotEmpty) {
-      productCommissionCtrl.text = Global.format(Global.toNumber(productPriceTotalCtrl.text) - (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)));
+      productCommissionCtrl.text = Global.format(
+          Global.toNumber(productPriceTotalCtrl.text) -
+              (Global.getSellPrice(1) *
+                  Global.toNumber(productWeightGramCtrl.text)));
       setState(() {});
     } else {
       productCommissionCtrl.text = "";
@@ -299,14 +297,10 @@ class _SaleDialogState extends State<SaleDialog> {
           Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
       productPriceCtrl.text = Global.format(
           Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
-      // productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
-      //     ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
-      //     : Global.format(Global.toNumber(productPriceCtrl.text)).toString();
     } else {
       productWeightGramCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
-      // productPriceTotalCtrl.text = "";
     }
     productCommissionCtrl.text = "";
     productPriceTotalCtrl.text = "";
@@ -350,441 +344,517 @@ class _SaleDialogState extends State<SaleDialog> {
       ),
       body: loading
           ? const Center(
-              child: LoadingProgress(),
-            )
+        child: LoadingProgress(),
+      )
           : Stack(
-              clipBehavior: Clip.none,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    closeCal();
-                  },
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        posHeaderText(context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10, right: 10),
-                          child: GoldMiniWidget(screen: 1,),
-                        ),
-                        SizedBox(
-                          height: 90,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                const Expanded(
-                                    flex: 6,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          '',
-                                          style: TextStyle(
-                                              fontSize: 50, color: textColor),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          '',
-                                          style: TextStyle(
-                                              color: textColor, fontSize: 30),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                      ],
-                                    )),
-                                Expanded(
-                                  flex: 6,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: SizedBox(
-                                      height: 80,
-                                      child: MiraiDropDownMenu<ProductModel>(
-                                        key: UniqueKey(),
-                                        children: productList,
-                                        space: 4,
-                                        maxHeight: 360,
-                                        showSearchTextField: true,
-                                        selectedItemBackgroundColor:
-                                            Colors.transparent,
-                                        emptyListMessage: 'ไม่มีข้อมูล',
-                                        showSelectedItemBackgroundColor: true,
-                                        otherDecoration: const InputDecoration(
-                                            labelStyle:
-                                                TextStyle(color: textColor)),
-                                        itemWidgetBuilder: (
-                                          int index,
-                                          ProductModel? project, {
-                                          bool isItemSelected = false,
-                                        }) {
-                                          return DropDownItemWidget(
-                                            project: project,
-                                            isItemSelected: isItemSelected,
-                                            firstSpace: 10,
-                                            fontSize: 14.sp, //size.getWidthPx(10),
-                                          );
-                                        },
-                                        onChanged: (ProductModel value) {
-                                          productCodeCtrl.text =
-                                              value.productCode!.toString();
-                                          productNameCtrl.text = value.name;
-                                          selectedProduct = value;
-                                          productNotifier!.value = value;
-                                          if (selectedWarehouse != null) {
-                                            loadQtyByLocation(
-                                                selectedWarehouse!.id!);
-                                            setState(() {});
-                                          }
-                                        },
-                                        child: DropDownObjectChildWidget(
-                                          key: GlobalKey(),
-                                          fontSize: 14.sp, //size.getWidthPx(10),
-                                          projectValueNotifier:
-                                              productNotifier!,
-                                        ),
-                                      ),
-                                    ),
+        clipBehavior: Clip.none,
+        children: [
+          GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              closeCal();
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  posHeaderText(
+                      context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: GoldMiniWidget(
+                      screen: 1,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 90,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                              flex: 6,
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                        fontSize: 50, color: textColor),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                        color: textColor, fontSize: 30),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              )),
+                          Expanded(
+                            flex: 6,
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.only(right: 8.0),
+                              child: SizedBox(
+                                height: 80,
+                                child: MiraiDropDownMenu<ProductModel>(
+                                  key: UniqueKey(),
+                                  children: productList,
+                                  space: 4,
+                                  maxHeight: 360,
+                                  showSearchTextField: true,
+                                  selectedItemBackgroundColor:
+                                  Colors.transparent,
+                                  emptyListMessage: 'ไม่มีข้อมูล',
+                                  showSelectedItemBackgroundColor: true,
+                                  otherDecoration:
+                                  const InputDecoration(
+                                      labelStyle: TextStyle(
+                                          color: textColor)),
+                                  itemWidgetBuilder: (
+                                      int index,
+                                      ProductModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                    return DropDownItemWidget(
+                                      project: project,
+                                      isItemSelected: isItemSelected,
+                                      firstSpace: 10,
+                                      fontSize: 14.sp, //16.sp,
+                                    );
+                                  },
+                                  onChanged: (ProductModel value) {
+                                    productCodeCtrl.text =
+                                        value.productCode!.toString();
+                                    productNameCtrl.text = value.name;
+                                    selectedProduct = value;
+                                    productNotifier!.value = value;
+                                    if (selectedWarehouse != null) {
+                                      loadQtyByLocation(
+                                          selectedWarehouse!.id!);
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: DropDownObjectChildWidget(
+                                    key: GlobalKey(),
+                                    fontSize: 14.sp, //16.sp,
+                                    projectValueNotifier:
+                                    productNotifier!,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'น้ำหนัก',
-                                        style: TextStyle(
-                                            fontSize: size.getWidthPx(15), color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(กรัม)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: size.getWidthPx(10)),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextFieldBig(
-                                    labelText: "",
-                                    inputType: TextInputType.number,
-                                    controller: productWeightGramCtrl,
-                                    focusNode: gramFocus,
-                                    readOnly: gramReadOnly,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    clear: () {
-                                      setState(() {
-                                        productWeightGramCtrl.text = "";
-                                      });
-                                      gramChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'gram';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'gram';
-                                        gramFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    onChanged: (value) {
-                                      gramChanged();
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'น้ำหนัก',
-                                        style: TextStyle(
-                                            fontSize: size.getWidthPx(15),
-                                            color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(บาททอง)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: size.getWidthPx(10)),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextFieldBig(
-                                    labelText: "",
-                                    inputType: TextInputType.number,
-                                    controller: productWeightBahtCtrl,
-                                    focusNode: bahtFocus,
-                                    readOnly: bahtReadOnly,
-                                    inputFormat: [
-                                      ThousandsFormatter(
-                                          formatter: formatter,
-                                          allowFraction: true)
-                                    ],
-                                    clear: () {
-                                      setState(() {
-                                        productWeightBahtCtrl.text = "";
-                                      });
-                                      bahtChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'baht';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'baht';
-                                        bahtFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    onChanged: (value) {
-                                      bahtChanged();
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'ราคาขายรวม',
-                                        style: TextStyle(
-                                            fontSize: size.getWidthPx(15), color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(บาท)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: size.getWidthPx(10)),
-                                      ),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextFieldBig(
-                                    labelText: "",
-                                    inputType: TextInputType.number,
-                                    controller: productPriceTotalCtrl,
-                                    focusNode: priceFocus,
-                                    readOnly: priceReadOnly,
-                                    clear: () {
-                                      setState(() {
-                                        productPriceTotalCtrl.text = "";
-                                      });
-                                      priceChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'price';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'price';
-                                        priceFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    onFocusChange: (value) {
-                                      if (!value) {
-                                        priceChanged();
-                                      }
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
-                            onTap: () {},
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Expanded(
-                                    flex: 6,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          'ค่ากำเหน็จ',
-                                          style: TextStyle(
-                                              fontSize: size.getWidthPx(15), color: textColor),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          '(บาท)',
-                                          style: TextStyle(
-                                              color: textColor, fontSize: size.getWidthPx(10)),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                      ],
-                                    )),
-                                Expanded(
-                                  flex: 6,
-                                  child: numberTextFieldBig(
-                                      labelText: "",
-                                      inputType: TextInputType.phone,
-                                      controller: productCommissionCtrl,
-                                      focusNode: comFocus,
-                                      readOnly: comReadOnly,
-                                      inputFormat: [
-                                        ThousandsFormatter(allowFraction: true)
-                                      ],
-                                      clear: () {
-                                        setState(() {
-                                          productCommissionCtrl.text = "";
-                                        });
-                                        comChanged();
-                                      },
-                                      onTap: () {
-                                        txt = 'com';
-                                        closeCal();
-                                      },
-                                      openCalc: () {
-                                        if (!showCal) {
-                                          txt = 'com';
-                                          comFocus.requestFocus();
-                                          openCal();
-                                        }
-                                      },
-                                      onFocusChange: (value) {
-                                        if (!value) {
-                                          comChanged();
-                                        }
-                                      }),
+                                Text(
+                                  'น้ำหนัก',
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(กรัม)',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16.sp),
+                                ),
+                                const SizedBox(
+                                  width: 10,
                                 ),
                               ],
-                            ),
-                          ),
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextFieldBig(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productWeightGramCtrl,
+                              focusNode: gramFocus,
+                              readOnly: gramReadOnly,
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  productWeightGramCtrl.text = "";
+                                });
+                                gramChanged();
+                              },
+                              onTap: () {
+                                txt = 'gram';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'gram';
+                                  gramFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              onChanged: (value) {
+                                gramChanged();
+                              }),
                         ),
                       ],
                     ),
                   ),
-                ),
-                if (showCal)
-                  DragArea(
-                      closeCal: closeCal,
-                      child: Container(
-                          width: 350,
-                          height: 500,
-                          padding: const EdgeInsets.all(5),
-                          decoration:
-                              const BoxDecoration(color: Color(0xffcccccc)),
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Calc(
-                                closeCal: closeCal,
-                                onChanged: (key, value, expression) {
-                                  if (key == 'ENT') {
-                                    if (txt == 'com') {
-                                      productCommissionCtrl.text = value != null
-                                          ? "${Global.format(value)}"
-                                          : "";
-                                      comChanged();
-                                    }
-                                    if (txt == 'gram') {
-                                      productWeightGramCtrl.text = value != null
-                                          ? "${Global.format(value)}"
-                                          : "";
-                                      gramChanged();
-                                    }
-                                    if (txt == 'baht') {
-                                      productWeightBahtCtrl.text = value != null
-                                          ? "${Global.format(value)}"
-                                          : "";
-                                      bahtChanged();
-                                    }
-                                    if (txt == 'price') {
-                                      productPriceTotalCtrl.text = value != null
-                                          ? "${Global.format(value)}"
-                                          : "";
-                                      priceChanged();
-                                    }
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    closeCal();
-                                  }
-                                  if (kDebugMode) {
-                                    print('$key\t$value\t$expression');
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'น้ำหนัก',
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาททอง)',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16.sp),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextFieldBig(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productWeightBahtCtrl,
+                              focusNode: bahtFocus,
+                              readOnly: bahtReadOnly,
+                              inputFormat: [
+                                ThousandsFormatter(
+                                    formatter: formatter,
+                                    allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  productWeightBahtCtrl.text = "";
+                                });
+                                bahtChanged();
+                              },
+                              onTap: () {
+                                txt = 'baht';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'baht';
+                                  bahtFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              onChanged: (value) {
+                                bahtChanged();
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ราคาขายรวม',
+                                  style: TextStyle(
+                                      fontSize: size.getWidthPx(15),
+                                      color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาท)',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 16.sp),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextFieldBig(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productPriceTotalCtrl,
+                              focusNode: priceFocus,
+                              readOnly: priceReadOnly,
+                              clear: () {
+                                setState(() {
+                                  productPriceTotalCtrl.text = "";
+                                });
+                                priceChanged();
+                              },
+                              onTap: () {
+                                txt = 'price';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'price';
+                                  priceFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              onFocusChange: (value) {
+                                if (!value) {
+                                  priceChanged();
+                                }
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Row(
+                        children: [
+                          Expanded(
+                              flex: 6,
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'ค่ากำเหน็จ',
+                                    style: TextStyle(
+                                        fontSize: size.getWidthPx(15),
+                                        color: textColor),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    '(บาท)',
+                                    style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 16.sp),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                ],
+                              )),
+                          Expanded(
+                            flex: 6,
+                            child: numberTextFieldBig(
+                                labelText: "",
+                                inputType: TextInputType.phone,
+                                controller: productCommissionCtrl,
+                                focusNode: comFocus,
+                                readOnly: comReadOnly,
+                                inputFormat: [
+                                  ThousandsFormatter(
+                                      allowFraction: true)
+                                ],
+                                clear: () {
+                                  setState(() {
+                                    productCommissionCtrl.text = "";
+                                  });
+                                  comChanged();
+                                },
+                                onTap: () {
+                                  txt = 'com';
+                                  closeCal();
+                                },
+                                openCalc: () {
+                                  if (!showCal) {
+                                    txt = 'com';
+                                    comFocus.requestFocus();
+                                    openCal();
                                   }
                                 },
-                              ),
-                              Positioned(
-                                right: -35.0,
-                                top: -35.0,
-                                child: InkWell(
-                                  onTap: closeCal,
-                                  child: const CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 40,
-                                      color: Colors.white,
+                                onFocusChange: (value) {
+                                  if (!value) {
+                                    comChanged();
+                                  }
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (showCal)
+            DragArea(
+                closeCal: closeCal,
+                child: Container(
+                    width: 350,
+                    height: 500,
+                    padding: const EdgeInsets.all(5),
+                    decoration:
+                    const BoxDecoration(color: Color(0xffcccccc)),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            color: Color(0xffcccccc),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(0),
+                              topRight: Radius.circular(0),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    'เครื่องคิดเลข',
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
                                     ),
                                   ),
                                 ),
                               ),
+                              GestureDetector(
+                                onTap: () {
+                                  closeCal();
+                                },
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(0),
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
                             ],
-                          )))
-              ],
-            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Focus(
+                            autofocus: true,
+                            onKeyEvent: (node, event) {
+                              // Handle keyboard events specifically for calculator
+                              if (event is KeyDownEvent) {
+                                // Allow number keys including "0" to pass through
+                                if (event.logicalKey ==
+                                    LogicalKeyboardKey.digit0 ||
+                                    event.logicalKey ==
+                                        LogicalKeyboardKey.numpad0) {
+                                  return KeyEventResult
+                                      .ignored; // Let calculator handle it
+                                }
+                                // Handle other calculator keys
+                                if (event.logicalKey ==
+                                    LogicalKeyboardKey.enter ||
+                                    event.logicalKey ==
+                                        LogicalKeyboardKey
+                                            .numpadEnter) {
+                                  return KeyEventResult
+                                      .ignored; // Let calculator handle enter
+                                }
+                              }
+                              return KeyEventResult.ignored;
+                            },
+                            child: Calc(
+                              closeCal: closeCal,
+                              onChanged: (key, value, expression) {
+                                if (key == 'ENT') {
+                                  if (txt == 'com') {
+                                    productCommissionCtrl.text =
+                                    value != null
+                                        ? "${Global.format(value)}"
+                                        : "";
+                                    comChanged();
+                                  }
+                                  if (txt == 'gram') {
+                                    productWeightGramCtrl.text =
+                                    value != null
+                                        ? "${Global.format(value)}"
+                                        : "";
+                                    gramChanged();
+                                  }
+                                  if (txt == 'baht') {
+                                    productWeightBahtCtrl.text =
+                                    value != null
+                                        ? "${Global.format(value)}"
+                                        : "";
+                                    bahtChanged();
+                                  }
+                                  if (txt == 'price') {
+                                    productPriceTotalCtrl.text =
+                                    value != null
+                                        ? "${Global.formatInt(value)}"
+                                        : "";
+                                    priceChanged();
+                                  }
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  closeCal();
+                                }
+                                if (kDebugMode) {
+                                  print('$key\t$value\t$expression');
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    )))
+        ],
+      ),
       persistentFooterButtons: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -794,7 +864,8 @@ class _SaleDialogState extends State<SaleDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity,),
+                    minWidth: double.infinity,
+                  ),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -812,7 +883,13 @@ class _SaleDialogState extends State<SaleDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                (MediaQuery.of(context).orientation ==
+                                    Orientation.portrait)
+                                    ? size.getWidthPx(15)
+                                    : 16.sp),
                           ),
                         ],
                       ),
@@ -829,7 +906,8 @@ class _SaleDialogState extends State<SaleDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity,),
+                    minWidth: double.infinity,
+                  ),
                   child: MaterialButton(
                     color: snBgColor,
                     child: Padding(
@@ -847,49 +925,68 @@ class _SaleDialogState extends State<SaleDialog> {
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(color: Colors.white, fontSize: (MediaQuery.of(context).orientation == Orientation.portrait) ? size.getWidthPx(15) : size.getWidthPx(10)),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                (MediaQuery.of(context).orientation ==
+                                    Orientation.portrait)
+                                    ? size.getWidthPx(15)
+                                    : 16.sp),
                           ),
                         ],
                       ),
                     ),
                     onPressed: () async {
-                      if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            '${productNameCtrl.text} สินค้าไม่มีสต๊อก', 'OK',
-                            action: () {});
-                        return;
+                      if (Global.company?.stock == 1) {
+                        if (Global.toNumber(productWeightRemainCtrl.text) <=
+                            0) {
+                          Alert.warning(
+                              context,
+                              'Warning'.tr(),
+                              '${productNameCtrl.text} สินค้าไม่มีสต๊อก',
+                              'OK',
+                              action: () {});
+                          return;
+                        }
                       }
 
                       if (selectedProduct == null) {
                         Alert.warning(context, 'คำเตือน',
-                            getDefaultProductMessage(), 'OK');
+                            getDefaultProductMessage(), 'OK',
+                            action: () {});
                         return;
                       }
 
-                      if (selectedWarehouse == null) {
-                        Alert.warning(context, 'คำเตือน',
-                            getDefaultWarehouseMessage(), 'OK');
-                        return;
+                      if (Global.company?.stock == 1) {
+                        if (selectedWarehouse == null) {
+                          Alert.warning(context, 'คำเตือน',
+                              getDefaultWarehouseMessage(), 'OK',
+                              action: () {});
+                          return;
+                        }
                       }
 
                       if (productWeightBahtCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK');
+                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (productPriceTotalCtrl.text.isEmpty) {
                         Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK');
+                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK',
+                            action: () {});
                         return;
                       }
 
                       if (Global.company?.stock == 1) {
                         if (Global.toNumber(productWeightGramCtrl.text) >
                             Global.toNumber(productWeightRemainCtrl.text)) {
-                          Alert.warning(context, 'Warning'.tr(),
-                              'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl
-                                  .text}\nขาย: ${productWeightGramCtrl.text}',
+                          Alert.warning(
+                              context,
+                              'Warning'.tr(),
+                              'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightGramCtrl.text}',
                               'OK',
                               action: () {});
                           return;
@@ -929,56 +1026,56 @@ class _SaleDialogState extends State<SaleDialog> {
                             context,
                             'คำเตือน',
                             'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK');
-
+                            'OK',
+                            action: () {});
                         return;
                       }
 
                       // Alert.info(
                       //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                       //     action: () async {
-                        Global.sellOrderDetail!.add(
-                          OrderDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                OrderDetailModel(
-                                  productName: productNameCtrl.text,
-                                  productId: selectedProduct!.id,
-                                  binLocationId: selectedWarehouse!.id,
-                                  weight: Global.toNumber(
-                                      productWeightGramCtrl.text),
-                                  weightBath: Global.toNumber(
-                                      productWeightBahtCtrl.text),
-                                  commission: productCommissionCtrl.text.isEmpty
-                                      ? 0
-                                      : Global.toNumber(
-                                          productCommissionCtrl.text),
-                                  taxBase: productWeightGramCtrl.text.isEmpty
-                                      ? 0
-                                      : Global.taxBase(
-                                          Global.toNumber(
-                                              productPriceTotalCtrl.text),
-                                          Global.toNumber(
-                                              productWeightGramCtrl.text)),
-                                  priceIncludeTax: Global.toNumber(
-                                      productPriceTotalCtrl.text),
-                                  sellPrice: Global.toNumber(
-                                      Global.goldDataModel?.paphun?.sell),
-                                  buyPrice: Global.toNumber(
-                                      Global.goldDataModel?.paphun?.buy),
-                                  sellTPrice: Global.toNumber(
-                                      Global.goldDataModel?.theng?.sell),
-                                  buyTPrice: Global.toNumber(
-                                      Global.goldDataModel?.theng?.buy),
-                                  goldDataModel: Global.goldDataModel,
-                                ),
+                      Global.sellOrderDetail!.add(
+                        OrderDetailModel.fromJson(
+                          jsonDecode(
+                            jsonEncode(
+                              OrderDetailModel(
+                                productName: productNameCtrl.text,
+                                productId: selectedProduct!.id,
+                                binLocationId: selectedWarehouse!.id,
+                                weight: Global.toNumber(
+                                    productWeightGramCtrl.text),
+                                weightBath: Global.toNumber(
+                                    productWeightBahtCtrl.text),
+                                commission: productCommissionCtrl.text.isEmpty
+                                    ? 0
+                                    : Global.toNumber(
+                                    productCommissionCtrl.text),
+                                taxBase: productWeightGramCtrl.text.isEmpty
+                                    ? 0
+                                    : Global.taxBase(
+                                    Global.toNumber(
+                                        productPriceTotalCtrl.text),
+                                    Global.toNumber(
+                                        productWeightGramCtrl.text)),
+                                priceIncludeTax: Global.toNumber(
+                                    productPriceTotalCtrl.text),
+                                sellPrice: Global.toNumber(
+                                    Global.goldDataModel?.paphun?.sell),
+                                buyPrice: Global.toNumber(
+                                    Global.goldDataModel?.paphun?.buy),
+                                sellTPrice: Global.toNumber(
+                                    Global.goldDataModel?.theng?.sell),
+                                buyTPrice: Global.toNumber(
+                                    Global.goldDataModel?.theng?.buy),
+                                goldDataModel: Global.goldDataModel,
                               ),
                             ),
                           ),
-                        );
-                        sumSellTotal();
-                        setState(() {});
-                        Navigator.of(context).pop();
+                        ),
+                      );
+                      sumSellTotal();
+                      setState(() {});
+                      Navigator.of(context).pop();
                       // });
                     },
                   ),

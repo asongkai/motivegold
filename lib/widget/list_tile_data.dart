@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class ListTileData extends StatelessWidget {
   final String? leftTitle;
@@ -40,13 +41,13 @@ class ListTileData extends StatelessWidget {
                       Text(
                         leftTitle!,
                         style: TextStyle(
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           color: const Color(0xFF636564),
                         ),
                       ),
                       Text(
                         leftValue!,
-                        style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.blue[700], fontWeight: FontWeight.w500),
+                        style: TextStyle(fontSize: 16.sp, color: Colors.blue[700], fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -61,13 +62,13 @@ class ListTileData extends StatelessWidget {
                         Text(
                           rightTitle!,
                           style: TextStyle(
-                            fontSize: size.getWidthPx(8),
+                            fontSize: 16.sp,
                             color: const Color(0xFF636564),
                           ),
                         ),
                         Text(
                           rightValue!,
-                          style: TextStyle(fontSize: size.getWidthPx(8), color: Colors.blue[700], fontWeight: FontWeight.w500),
+                          style: TextStyle(fontSize: 16.sp, color: Colors.blue[700], fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),

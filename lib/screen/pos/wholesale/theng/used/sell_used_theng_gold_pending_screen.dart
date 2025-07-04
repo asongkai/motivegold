@@ -20,6 +20,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 import 'preview.dart';
 
 class SellUsedThengGoldPendingScreen extends StatefulWidget {
@@ -172,12 +173,12 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                       children: [
                         Text(
                           '#${sell.orderId.toString()}',
-                          style: TextStyle(fontSize: size?.getWidthPx(8)),
+                          style: TextStyle(fontSize: 16.sp),
                         ),
                         Text(
                           Global.formatDate(sell.orderDate.toString()),
                           style: TextStyle(
-                              color: Colors.green, fontSize: size?.getWidthPx(6)),
+                              color: Colors.green, fontSize: 16.sp),
                         )
                       ],
                     ),
@@ -191,7 +192,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                 child: Text('สินค้า',
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -201,7 +202,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                 child: Text('น้ำหนัก',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -211,7 +212,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                 child: Text('คลังสินค้า',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -283,7 +284,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                                 Text('ยืนยัน',
                                                     style: TextStyle(
                                                         fontSize:
-                                                            size!.getWidthPx(8),
+                                                            18.sp,
                                                         color: Colors.white))
                                               ],
                                             ),

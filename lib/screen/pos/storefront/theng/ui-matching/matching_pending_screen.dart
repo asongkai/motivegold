@@ -20,6 +20,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class MatchingPendingScreen extends StatefulWidget {
   const MatchingPendingScreen({super.key});
@@ -151,7 +152,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
                       Text(
                         Global.formatDate(list.orderDate.toString()),
                         style: TextStyle(
-                            color: Colors.green, fontSize: size!.getWidthPx(8)),
+                            color: Colors.green, fontSize: 18.sp),
                       ),
                     ],
                   ),
@@ -243,7 +244,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
                                     'ขายคืนร้าน',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: size!.getWidthPx(8)),
+                                        fontSize: 18.sp),
                                   )
                                 ],
                               ),
@@ -274,7 +275,7 @@ class _MatchingPendingScreenState extends State<MatchingPendingScreen> {
                                     'รับทอง',
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: size!.getWidthPx(8)),
+                                        fontSize: 18.sp),
                                   )
                                 ],
                               ),

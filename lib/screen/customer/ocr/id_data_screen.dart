@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +10,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
@@ -153,7 +155,7 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen> {
     });
 
     final apiUrl =
-    Uri.parse('https://api.iapp.co.th/thai-national-id-card/v3.5/front');
+        Uri.parse('https://api.iapp.co.th/thai-national-id-card/v3.5/front');
     const apiKey =
         '4dJUaFqHvazYFqgRu0VL0eEQyakcR29i'; // Replace with your actual API key
     final request = http.MultipartRequest('POST', apiUrl)
@@ -455,8 +457,25 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen> {
       persistentFooterButtons: [
         ElevatedButton.icon(
           onPressed: () {
-            // Global.printLongString(ocrResult.toString());
-            Navigator.of(context).pop(ocrResult);
+            if (ocrResult == null || ocrResult!.isEmpty) {
+              Alert.warning(context, 'Warning'.tr(),
+                  'กรุณาแนบบัตรประจำตัวประชาชนก่อน', 'OK'.tr(),
+                  action: () {});
+              return;
+            }
+            if (ocrResult!['id_number'].toString().length < 13) {
+              Alert.info(
+                context,
+                'Warning'.tr(),
+                'หมายเลขบัตรประจำตัวน้อยกว่า 13 หลัก: ${ocrResult!['id_number']} \nคุณแน่ใจว่าจะดำเนินการต่อ?',
+                'OK'.tr(),
+                action: () {
+                  Navigator.of(context).pop(ocrResult);
+                },
+              );
+            } else {
+              Navigator.of(context).pop(ocrResult);
+            }
           },
           icon: const Icon(
             Icons.check_box,

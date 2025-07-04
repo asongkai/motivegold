@@ -45,36 +45,39 @@ class CustomerModel {
   String? remark;
   String? workPermit;
   String? passportId;
+  String? branchCode;
 
-  CustomerModel(
-      {this.id,
-      this.companyName,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.doB,
-      this.phoneNumber,
-      this.username,
-      this.password,
-      this.address,
-      this.village,
-      this.tambonId,
-      this.amphureId,
-      this.provinceId,
-      this.nationality,
-      this.postalCode,
-      this.photoUrl,
-      this.idCard,
-      this.taxNumber,
-      this.createdDate,
-      this.updatedDate,
-      this.isSeller,
-      this.isCustomer,
-      this.isBuyer,
-      this.customerType,
-      this.remark,
-      this.workPermit,
-      this.passportId});
+  CustomerModel({
+    this.id,
+    this.companyName,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.doB,
+    this.phoneNumber,
+    this.username,
+    this.password,
+    this.address,
+    this.village,
+    this.tambonId,
+    this.amphureId,
+    this.provinceId,
+    this.nationality,
+    this.postalCode,
+    this.photoUrl,
+    this.idCard,
+    this.taxNumber,
+    this.createdDate,
+    this.updatedDate,
+    this.isSeller,
+    this.isCustomer,
+    this.isBuyer,
+    this.customerType,
+    this.remark,
+    this.workPermit,
+    this.passportId,
+    this.branchCode,
+  });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
         id: json["id"],
@@ -109,6 +112,7 @@ class CustomerModel {
         updatedDate: json["updatedDate"] == null
             ? null
             : DateTime.parse(json["updatedDate"]).toLocal(),
+        branchCode: json["branchCode"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -140,6 +144,7 @@ class CustomerModel {
         "passportId": passportId,
         "createdDate": createdDate?.toIso8601String(),
         "updatedDate": updatedDate?.toIso8601String(),
+        "branchCode": branchCode,
       };
 
   @override

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -16,6 +18,8 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/util.dart';
+// Platform-specific imports
+import 'package:motivegold/widget/payment/web_file_picker.dart' if (dart.library.io) 'package:motivegold/widget/payment/mobile_file_picker.dart';
 
 class EditCompanyScreen extends StatefulWidget {
   final bool showBackButton;
@@ -107,20 +111,17 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                 ),
                                 const Center(
                                     child: Text(
-                                  'โลโก้บริษัท',
-                                  style:
-                                      TextStyle(fontSize: 30, color: textColor),
-                                )),
+                                      'โลโก้บริษัท',
+                                      style: TextStyle(fontSize: 30, color: textColor),
+                                    )),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 20.0),
                                   child: Stack(
                                       fit: StackFit.loose,
                                       children: <Widget>[
                                         Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {},
@@ -128,7 +129,17 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                                 totalWidth: 140,
                                                 cornerRadius: 80,
                                                 color: Colors.blue,
-                                                image: FileImage(file!),
+                                                image: (!kIsWeb && file != null)
+                                                    ? FileImage(file!) as ImageProvider
+                                                    : (kIsWeb && logo != null)
+                                                    ? MemoryImage(
+                                                    base64Decode(
+                                                        logo!.contains(',')
+                                                            ? logo!.split(',').last
+                                                            : logo!
+                                                    )
+                                                ) as ImageProvider
+                                                    : const AssetImage('assets/images/placeholder.png'), // Replace with your placeholder
                                               ),
                                             ),
                                           ],
@@ -142,7 +153,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                                   top: 90.0, right: 100.0),
                                               child: Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                                 children: <Widget>[
                                                   CircleAvatar(
                                                     backgroundColor: Colors.red,
@@ -155,7 +166,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                                                 ],
                                               )),
                                         ),
-                                      ]),
+                                      ]
+                                  ),
                                 )
                               ],
                             ),
@@ -574,14 +586,42 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
         });
   }
 
+  // Your modified function
   void pickProfileImage(BuildContext context, ImageSource imageSource) async {
-    final XFile? image = await picker.pickImage(source: imageSource);
-    setState(() {
-      if (image != null) {
-        file = File(image.path);
-        logo = Global.imageToBase64(file!);
+    if (!kIsWeb) {
+      // Mobile platform - existing logic
+      final XFile? image = await picker.pickImage(source: imageSource);
+      setState(() {
+        if (image != null) {
+          file = File(image.path);
+          logo = Global.imageToBase64(file!);
+        }
+      });
+    } else {
+      // Web platform - new logic
+      if (imageSource == ImageSource.camera) {
+        // Show warning for camera on web
+        Alert.warning(context, "ไม่รองรับ", "การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน", "OK",
+            action: () {});
+        return;
       }
-    });
-    Navigator.of(context).pop();
+
+      try {
+        final result = await WebFilePicker.pickImage();
+        setState(() {
+          if (result != null) {
+            file = null; // No File object on web
+            logo = result; // Already base64 from WebFilePicker
+          }
+        });
+      } catch (e) {
+        // Handle error if needed
+        debugPrint('Error picking image on web: $e');
+      }
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
   }
 }

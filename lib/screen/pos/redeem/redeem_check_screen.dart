@@ -28,6 +28,7 @@ import 'package:motivegold/widget/payment/payment_method.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class RedeemCheckOutScreen extends StatefulWidget {
   const RedeemCheckOutScreen({super.key});
@@ -270,7 +271,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -282,7 +283,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                     fontWeight: FontWeight.w400,
                                                     color: Colors.black,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -294,7 +295,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                     fontWeight: FontWeight.w400,
                                                     color: Colors.black,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -305,7 +306,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -316,7 +317,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                                 const SizedBox(
@@ -327,7 +328,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                 //   style: TextStyle(
                                                 //     fontWeight: FontWeight.w500,
                                                 //     fontSize:
-                                                //         size!.getWidthPx(6),
+                                                //         16.sp,
                                                 //   ),
                                                 // ),
                                                 // const SizedBox(
@@ -338,7 +339,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                 //   style: TextStyle(
                                                 //     fontWeight: FontWeight.w500,
                                                 //     fontSize:
-                                                //         size!.getWidthPx(6),
+                                                //         16.sp,
                                                 //   ),
                                                 // ),
                                               ],
@@ -467,7 +468,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                     Text(
                                       'จำนวนเงินรวมที่ลูกค้าต้องชำระ (บาท)',
                                       style: TextStyle(
-                                        fontSize: size?.getWidthPx(15),
+                                        fontSize: 16.sp,
                                         fontWeight: FontWeight.w500,
                                         color: const Color(
                                             0xFF1A237E), // Dark blue color for text
@@ -676,7 +677,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                           child: Text('ทั้งหมด',
                                               textAlign: TextAlign.right,
                                               style: TextStyle(
-                                                fontSize: size?.getWidthPx(12),
+                                                fontSize: 18.sp,
                                                 color: kPrimaryGreen,
                                               )),
                                         ),
@@ -689,7 +690,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
                                                   fontSize:
-                                                      size?.getWidthPx(12),
+                                                      18.sp,
                                                   color: kPrimaryGreen,
                                                 )),
                                           ),
@@ -841,7 +842,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                   Text(
                     "บันทึก".tr(),
                     style: TextStyle(
-                        color: Colors.white, fontSize: size!.getWidthPx(10)),
+                        color: Colors.white, fontSize: 18.sp),
                   ),
                   const SizedBox(
                     width: 2,
@@ -1304,13 +1305,13 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                                 Text(
                                     '${Global.format(Global.getRedeemPaymentTotal(Global.redeems, discount: Global.toNumber(discountCtrl.text)))}',
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(10),
+                                        fontSize: 16.sp,
                                         color: Colors.white)),
                               ],
                             ),
@@ -1442,7 +1443,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen> {
                                   'เลือกวิธีการชำระเงิน',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                                 Text(

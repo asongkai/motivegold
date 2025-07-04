@@ -148,7 +148,7 @@ class _ProvinceScreenState extends State<ProvinceScreen> {
                                   Text(
                                     'เพิ่มจังหวัด',
                                     style: TextStyle(
-                                        fontSize: 14.sp, //size.getWidthPx(8),
+                                        fontSize: 14.sp, //16.sp,
                                         color: Colors.white),
                                   )
                                 ],
@@ -218,57 +218,58 @@ class _ProvinceScreenState extends State<ProvinceScreen> {
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditProvinceScreen(
-                                    province: list[index], index: index),
-                                fullscreenDialog: true))
-                        .whenComplete(() {
-                      loadData();
-                    });
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
+          if (Global.user!.userType == 'ADMIN')
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditProvinceScreen(
+                                      province: list[index], index: index),
+                                  fullscreenDialog: true))
+                          .whenComplete(() {
+                        loadData();
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    remove(list[index].id!, index);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      remove(list[index].id!, index);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )
+                ],
+              ),
+            )
         ],
       ),
     );

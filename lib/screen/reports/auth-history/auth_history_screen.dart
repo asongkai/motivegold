@@ -17,6 +17,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/text/expend_text.dart';
+import 'package:sizer/sizer.dart';
 
 class AuthHistoryScreen extends StatefulWidget {
   const AuthHistoryScreen({super.key});
@@ -80,7 +81,7 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.white),
                               )
                             ],

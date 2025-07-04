@@ -37,24 +37,28 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 import 'checkout_summary_history_screen.dart';
 import 'storefront/paphun/bill/preview_pdf.dart';
 
-class PosOrderHistoryScreen extends StatefulWidget {
-  const PosOrderHistoryScreen({super.key});
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key, this.productType});
+
+  final ProductTypeModel? productType;
 
   @override
-  State<PosOrderHistoryScreen> createState() => _PosOrderHistoryScreenState();
+  State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
+class _HistoryScreenState extends State<HistoryScreen> {
   bool loading = false;
   List<OrderModel>? list = [];
   List<OrderModel?>? filterList = [];
   Screen? size;
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
+  final TextEditingController customerFilterCtrl = TextEditingController();
 
   ProductTypeModel? selectedOrderType;
   static ValueNotifier<dynamic>? orderTypeNotifier;
@@ -68,43 +72,19 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    selectedOrderType = null; //orderTypes()[0];
-    orderTypeNotifier = ValueNotifier<ProductTypeModel?>(null);
+    selectedOrderType = widget.productType; //orderTypes()[0];
+    orderTypeNotifier = ValueNotifier<ProductTypeModel>(selectedOrderType ??
+        ProductTypeModel(id: 0, code: '', name: 'เลือกประเภทธุรกรรม'));
     customerNotifier = ValueNotifier<CustomerModel?>(null);
-    loadData();
-  }
-
-  void loadData() async {
-    setState(() {
-      loadingCustomer = true;
-    });
-
-    try {
-      var result =
-          await ApiServices.post('/customer/all', Global.requestObj({}));
-      if (result?.status == "success") {
-        var data = jsonEncode(result?.data);
-        List<CustomerModel> products = customerListModelFromJson(data);
-        if (products.isNotEmpty) {
-          customers = products;
-        } else {
-          customers = [];
-        }
-        setState(() {});
-      } else {
-        customers = [];
-      }
-    } catch (e) {
-      motivePrint(e.toString());
-    }
-    setState(() {
-      loadingCustomer = false;
-    });
   }
 
   void search() async {
-    if (selectedOrderType == null && selectedCustomer == null && toDateCtrl.text.isEmpty && toDateCtrl.text.isEmpty) {
-      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกตัวกรองข้อมูลก่อน', 'OK', action: () {});
+    if (selectedOrderType == null &&
+        customerFilterCtrl.text.isEmpty &&
+        toDateCtrl.text.isEmpty &&
+        toDateCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกตัวกรองข้อมูลก่อน', 'OK',
+          action: () {});
       return;
     }
 
@@ -124,7 +104,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
     //       ? DateTime.parse(toDateCtrl.text).toString()
     //       : null,
     //   "orderTypeId": selectedOrderType?.id,
-    //   "customer_id": selectedCustomer?.id,
+    //   "customerId": selectedCustomer?.id,
+    //   "customerFilter": customerFilterCtrl.text,
     // }));
     try {
       var result = await ApiServices.post(
@@ -140,6 +121,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                 : null,
             "orderTypeId": selectedOrderType?.id,
             "customerId": selectedCustomer?.id,
+            "customerFilter": customerFilterCtrl.text,
           }));
       // Global.printLongString(result!.toJson().toString());
       if (result?.status == "success") {
@@ -149,7 +131,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
         // motivePrint(products.first);
         setState(() {
           list = products;
-          filterList!.addAll(products);
+          filterList = products;
         });
       } else {
         list = [];
@@ -168,10 +150,10 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
-          backButton: false,
+          backButton: widget.productType != null ? true : false,
           title: Text("รายการประวัติการซื้อขายทองคำ",
               style: TextStyle(
                   fontSize: 30,
@@ -254,7 +236,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size?.getWidthPx(10),
+                                              fontSize: 14.sp,
                                             );
                                           },
                                           onChanged:
@@ -265,7 +247,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(10),
+                                            fontSize: 14.sp,
                                             projectValueNotifier:
                                                 orderTypeNotifier!,
                                           ),
@@ -282,51 +264,33 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'เลือกลูกค้า',
-                                        style: TextStyle(
-                                            fontSize: 30, color: textColor),
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            'ค้นหาลูกค้า',
+                                            style: TextStyle(
+                                                fontSize: 30, color: textColor),
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          const Text(
+                                            '(Name, ID, Email, Phone)',
+                                            style: TextStyle(
+                                                fontSize: 16, color: textColor),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: 5,
                                       ),
                                       SizedBox(
                                         height: 60,
-                                        child: MiraiDropDownMenu<CustomerModel>(
-                                          key: UniqueKey(),
-                                          children: customers ?? [],
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                              Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                            int index,
-                                            CustomerModel? project, {
-                                            bool isItemSelected = false,
-                                          }) {
-                                            return CustomerDropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: size?.getWidthPx(10),
-                                            );
-                                          },
-                                          onChanged:
-                                              (CustomerModel value) async {
-                                            selectedCustomer = value;
-                                            customerNotifier!.value = value;
-                                            search();
-                                          },
-                                          child:
-                                              CustomerDropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(10),
-                                            projectValueNotifier:
-                                                customerNotifier!,
-                                          ),
+                                        child: buildTextField(
+                                          labelText: '',
+                                          validator: null,
+                                          inputType: TextInputType.text,
+                                          controller: customerFilterCtrl,
                                         ),
                                       ),
                                     ],
@@ -496,24 +460,27 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                               Flexible(
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: getProportionateScreenWidth(3.0),
+                                    horizontal:
+                                        getProportionateScreenWidth(3.0),
                                     vertical: getProportionateScreenHeight(5.0),
                                   ),
                                   child: ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                        WidgetStateProperty.all<Color>(Colors.red)),
+                                            WidgetStateProperty.all<Color>(
+                                                Colors.red)),
                                     onPressed: () {
                                       selectedOrderType = null;
                                       selectedCustomer = null;
                                       fromDateCtrl.text = "";
                                       toDateCtrl.text = "";
-                                      orderTypeNotifier = ValueNotifier<ProductTypeModel?>(null);
-                                      customerNotifier = ValueNotifier<CustomerModel?>(null);
+                                      orderTypeNotifier =
+                                          ValueNotifier<ProductTypeModel?>(
+                                              null);
+                                      customerNotifier =
+                                          ValueNotifier<CustomerModel?>(null);
                                       filterList?.clear();
-                                      setState(() {
-
-                                      });
+                                      setState(() {});
                                     },
                                     child: Text(
                                       'Reset'.tr(),
@@ -522,17 +489,21 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 20,),
+                              const SizedBox(
+                                width: 20,
+                              ),
                               Flexible(
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: getProportionateScreenWidth(3.0),
+                                    horizontal:
+                                        getProportionateScreenWidth(3.0),
                                     vertical: getProportionateScreenHeight(5.0),
                                   ),
                                   child: ElevatedButton(
                                     style: ButtonStyle(
                                         backgroundColor:
-                                            WidgetStateProperty.all<Color>(bgColor3)),
+                                            WidgetStateProperty.all<Color>(
+                                                bgColor3)),
                                     onPressed: search,
                                     child: Text(
                                       'ค้นหา'.tr(),
@@ -547,6 +518,56 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       ),
                     ),
                   ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       const Text(
+                  //         'เลือกลูกค้า',
+                  //         style: TextStyle(fontSize: 30, color: textColor),
+                  //       ),
+                  //       const SizedBox(
+                  //         height: 5,
+                  //       ),
+                  //       SizedBox(
+                  //         height: 60,
+                  //         child: MiraiDropDownMenu<CustomerModel>(
+                  //           key: UniqueKey(),
+                  //           children: customers ?? [],
+                  //           space: 4,
+                  //           maxHeight: 360,
+                  //           showSearchTextField: true,
+                  //           selectedItemBackgroundColor: Colors.transparent,
+                  //           emptyListMessage: 'ไม่มีข้อมูล',
+                  //           showSelectedItemBackgroundColor: true,
+                  //           itemWidgetBuilder: (
+                  //             int index,
+                  //             CustomerModel? project, {
+                  //             bool isItemSelected = false,
+                  //           }) {
+                  //             return CustomerDropDownItemWidget(
+                  //               project: project,
+                  //               isItemSelected: isItemSelected,
+                  //               firstSpace: 10,
+                  //               fontSize: 16.sp,
+                  //             );
+                  //           },
+                  //           onChanged: (CustomerModel value) async {
+                  //             selectedCustomer = value;
+                  //             customerNotifier!.value = value;
+                  //             search();
+                  //           },
+                  //           child: CustomerDropDownObjectChildWidget(
+                  //             key: GlobalKey(),
+                  //             fontSize: 16.sp,
+                  //             projectValueNotifier: customerNotifier!,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -586,20 +607,20 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '#${order.orderId.toString()} ลูกค้า: ${order.customer?.firstName} ${order.customer?.lastName}',
-                          style: TextStyle(fontSize: size?.getWidthPx(8)),
+                          '#${order.orderId.toString()} \nลูกค้า: ${getCustomerName(order.customer!)}',
+                          style: TextStyle(fontSize: 16.sp),
                         ),
                         Text(
                           'วันที่เอกสาร: ${Global.formatDate(order.orderDate.toString())}',
                           style: TextStyle(
                               color: Colors.green,
-                              fontSize: size!.getWidthPx(6)),
+                              fontSize: 14.sp),
                         ),
                         Text(
                           'วันที่บันทึกรายการ: ${Global.formatDate(order.createdDate.toString())}',
                           style: TextStyle(
                               color: Colors.green,
-                              fontSize: size!.getWidthPx(6)),
+                              fontSize: 14.sp),
                         ),
                       ],
                     ),
@@ -613,7 +634,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 child: Text('สินค้า',
                                     textAlign: TextAlign.left,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -623,7 +644,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 child: Text('น้ำหนัก',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -633,7 +654,7 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                                 child: Text('คลังสินค้า',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
+                                        fontSize: 16.sp,
                                         color: Colors.orange)),
                               ),
                             ),
@@ -662,8 +683,8 @@ class _PosOrderHistoryScreenState extends State<PosOrderHistoryScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 190,
+                Expanded(
+                  flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(

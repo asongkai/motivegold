@@ -38,6 +38,10 @@ import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:sizer/sizer.dart';
 
+// Platform-specific imports
+import 'package:motivegold/widget/payment/web_file_picker.dart'
+    if (dart.library.io) 'package:motivegold/widget/payment/mobile_file_picker.dart';
+
 class EditRefillGoldStockScreen extends StatefulWidget {
   final int index;
   final int? j;
@@ -172,11 +176,16 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     });
     try {
       // motivePrint(Global.ordersWholesale![widget.index].attachement);
-      Global.refillAttach =
-          Global.ordersWholesale![widget.index].attachment != null
-              ? await Global.createFileFromString(
-                  Global.ordersWholesale![widget.index].attachment ?? '')
-              : null;
+      if (!kIsWeb) {
+        Global.refillAttach =
+            Global.ordersWholesale![widget.index].attachment != null
+                ? await Global.createFileFromString(
+                    Global.ordersWholesale![widget.index].attachment ?? '')
+                : null;
+      } else {
+        Global.refillAttachWeb =
+            Global.ordersWholesale![widget.index].attachment;
+      }
       // var result = await ApiServices.post('/product/type/NEW/5', Global.requestObj(null));
       var result =
           await ApiServices.post('/product/refill', Global.requestObj(null));
@@ -315,7 +324,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
         title: Text(
           'เติมทอง – ซื้อทองรูปพรรณใหม่ 96.5%',
           style: TextStyle(
-            fontSize: 16.sp, //size.getWidthPx(10),
+            fontSize: 16.sp, //16.sp,
             color: textColor,
           ),
         ),
@@ -341,7 +350,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                 Text(
                   'ราคาทองคำ',
                   style:
-                      TextStyle(fontSize: size.getWidthPx(6), color: textColor),
+                      TextStyle(fontSize: 16.sp, color: textColor),
                 )
               ],
             ),
@@ -376,7 +385,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(
-                              height: 10,
+                              height: 20,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -406,7 +415,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size.getWidthPx(10),
+                                          fontSize: 16.sp,
                                         );
                                       },
                                       onChanged: (ProductModel value) {
@@ -418,7 +427,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size.getWidthPx(10),
+                                        fontSize: 16.sp,
                                         projectValueNotifier: productNotifier!,
                                       ),
                                     ),
@@ -435,13 +444,14 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                       keyboardType: TextInputType.number,
                                       //editing controller of this TextField
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(12)),
+                                          fontSize: 16.sp, //16.sp,
+                                      ),
                                       decoration: InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white70,
                                         hintText: 'dd-mm-yyyy',
                                         labelStyle: TextStyle(
-                                            fontSize: size.getWidthPx(12),
+                                            fontSize: 16.sp, //16.sp,
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon: GestureDetector(
@@ -452,14 +462,14 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                                     SfDatePickerDialog(
                                                   initialDate: DateTime.now(),
                                                   onDateSelected: (date) {
-                                                    motivePrint(
-                                                        'You picked: $date');
+                                                    // motivePrint(
+                                                    //     'You picked: $date');
                                                     // Your logic here
                                                     String formattedDate =
                                                         DateFormat('dd-MM-yyyy')
                                                             .format(date);
-                                                    motivePrint(
-                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    // motivePrint(
+                                                    //     formattedDate); //formatted date output using intl package =>  2021-03-16
                                                     //you can implement different kind of Date Format here according to your requirement
                                                     setState(() {
                                                       orderDateCtrl.text =
@@ -514,7 +524,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                   inputType: TextInputType.text,
                                   enabled: true,
                                   controller: referenceNumberCtrl,
-                                  fontSize: size.getWidthPx(12)),
+                                  fontSize: 16.sp),
                             ),
                             const SizedBox(
                               height: 10,
@@ -531,7 +541,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         labelText: "ทองคำแท่งขายออกบาทละ",
                                         inputType: TextInputType.number,
                                         controller: productSellThengPriceCtrl,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -550,7 +560,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         labelText: "ทองรูปพรรณรับซื้อกรัมละ",
                                         inputType: TextInputType.number,
                                         controller: productBuyPricePerGramCtrl,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -581,7 +591,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         controller: productWeightCtrl,
                                         focusNode: gramFocus,
                                         readOnly: gramReadOnly,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -618,7 +628,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         controller: priceIncludeTaxCtrl,
                                         focusNode: priceIncludeTaxFocus,
                                         readOnly: priceIncludeTaxReadOnly,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -659,7 +669,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         child: Text(
                                           'ราคารวมค่ากำเหน็จก่อนภาษี',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -716,7 +726,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         child: Text(
                                           'หักราคารับซื้อทองประจำวัน',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -767,7 +777,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         child: Text(
                                           'จำนวนส่วนต่างฐานภาษี',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -818,7 +828,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         child: Text(
                                           'ภาษีมูลค่าเพิ่ม 7%',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -869,7 +879,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                         labelText: "หมายเหตุ",
                                         inputType: TextInputType.text,
                                         controller: remarkCtrl,
-                                        fontSize: size.getWidthPx(12),
+                                        fontSize: 16.sp,
                                       ),
                                     ),
                                   ),
@@ -883,7 +893,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                               child: Text(
                                 'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
                                 style: TextStyle(
-                                    fontSize: size.getWidthPx(12),
+                                    fontSize: 16.sp,
                                     color: textColor),
                               ),
                             ),
@@ -899,7 +909,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                                   label: Text(
                                     'เลือกรูปภาพ',
                                     style:
-                                        TextStyle(fontSize: size.getWidthPx(8)),
+                                        TextStyle(fontSize: 16.sp),
                                   ),
                                 ),
                               ),
@@ -907,41 +917,54 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Center(
-                                child: Global.refillAttach == null
+                                child: Global.refillAttach == null &&
+                                        Global.refillAttachWeb == null
                                     ? Text(
                                         'ไม่ได้เลือกรูปภาพ',
                                         style: TextStyle(
-                                            fontSize: size.getWidthPx(10)),
+                                            fontSize: 16.sp),
                                       )
-                                    : SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                4,
-                                        child: Stack(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Image.file(
-                                                  Global.refillAttach!),
-                                            ),
-                                            Positioned(
-                                              right: 0.0,
-                                              top: 0.0,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  setState(() {
-                                                    Global.refillAttach = null;
-                                                  });
-                                                },
-                                                child: const CircleAvatar(
-                                                  backgroundColor: Colors.red,
-                                                  child: Icon(Icons.close),
+                                    : Center(
+                                        child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              4,
+                                          child: Stack(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: kIsWeb
+                                                    ? Image.memory(base64Decode(
+                                                        Global.refillAttachWeb!
+                                                            .split(",")
+                                                            .last))
+                                                    : Image.file(
+                                                        Global.refillAttach!),
+                                              ),
+                                              Positioned(
+                                                right: 0.0,
+                                                top: 0.0,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      Global.refillAttach =
+                                                          null;
+                                                      Global.refillAttachWeb =
+                                                          null;
+                                                    });
+                                                  },
+                                                  child: const CircleAvatar(
+                                                    backgroundColor: Colors.red,
+                                                    child: Icon(Icons.close),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        )),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -1062,7 +1085,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เคลียร์',
-                            style: TextStyle(fontSize: size.getWidthPx(10)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -1164,7 +1187,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
                           Text(
                             'บันทึก',
                             style: TextStyle(
-                                fontSize: size.getWidthPx(10),
+                                fontSize: 16.sp,
                                 color: textColor),
                           )
                         ],
@@ -1219,7 +1242,8 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     if (priceDiff <= 0) {
       taxAmountCtrl.text = '0';
     } else {
-      taxAmountCtrl.text = Global.format(Global.toNumber(priceDiffCtrl.text) * 7 / 107);
+      taxAmountCtrl.text =
+          Global.format(Global.toNumber(priceDiffCtrl.text) * 7 / 107);
     }
 
     priceExcludeTaxCtrl.text = Global.format(
@@ -1263,31 +1287,76 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
     taxBaseTotalCtrl.text = "";
     taxBaseCtrl.text = "";
     Global.refillAttach = null;
+    Global.refillAttachWeb = null;
     setState(() {});
   }
 
   final picker = ImagePicker();
 
   //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//   Future getImageFromGallery() async {
+//     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//
+//     setState(() {
+//       if (pickedFile != null) {
+//         Global.refillAttach = File(pickedFile.path);
+//       }
+//     });
+//   }
+//
+// //Image Picker function to get image from camera
+//   Future getImageFromCamera() async {
+//     final pickedFile = await picker.pickImage(source: ImageSource.camera);
+//
+//     setState(() {
+//       if (pickedFile != null) {
+//         Global.refillAttach = File(pickedFile.path);
+//       }
+//     });
+//   }
 
-    setState(() {
+  Future getImageFromGallery() async {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
+        setState(() {
+          Global.refillAttach = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // Web platform - use platform-specific implementation
+      try {
+        final result = await WebFilePicker.pickImage();
+        if (result != null) {
+          setState(() {
+            Global.refillAttachWeb = result;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          Alert.warning(context, "Error", "Failed to select image: $e", "OK",
+              action: () {});
+        }
+      }
+    }
   }
 
-//Image Picker function to get image from camera
   Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
+        setState(() {
+          Global.refillAttach = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // On web, camera isn't directly accessible via InputElement easily.
+      Alert.warning(context, "ไม่รองรับ",
+          "การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน", "OK",
+          action: () {});
+    }
   }
 
   Future showOptions() async {
@@ -1358,9 +1427,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
         priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-        attachment: Global.refillAttach != null
-            ? Global.imageToBase64(Global.refillAttach!)
-            : null,
+        attachment: getRefillAttachment(),
         orderTypeId: 5);
     final data = order.toJson();
     Global.ordersWholesale?[widget.index] = OrderModel.fromJson(data);

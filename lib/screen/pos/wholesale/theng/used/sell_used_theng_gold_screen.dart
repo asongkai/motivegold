@@ -35,6 +35,8 @@ import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:sizer/sizer.dart';
+// Platform-specific imports
+import 'package:motivegold/widget/payment/web_file_picker.dart' if (dart.library.io) 'package:motivegold/widget/payment/mobile_file_picker.dart';
 
 class SellUsedThengGoldScreen extends StatefulWidget {
   final Function(dynamic value) refreshCart;
@@ -365,7 +367,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
         title: Text(
           'ขายทองคำแท่งเก่าให้ร้านค้าส่ง',
           style: TextStyle(
-            fontSize: 16.sp, //size.getWidthPx(10),
+            fontSize: 16.sp, //16.sp,
           ),
         ),
         actions: [
@@ -387,7 +389,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                 ),
                 Text(
                   'ราคาทองคำ',
-                  style: TextStyle(fontSize: size!.getWidthPx(6)),
+                  style: TextStyle(fontSize: 16.sp),
                 )
               ],
             ),
@@ -451,7 +453,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                           project: project,
                                           isItemSelected: isItemSelected,
                                           firstSpace: 10,
-                                          fontSize: size?.getWidthPx(10),
+                                          fontSize: 16.sp,
                                         );
                                       },
                                       onChanged: (ProductModel value) {
@@ -463,7 +465,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                       },
                                       child: DropDownObjectChildWidget(
                                         key: GlobalKey(),
-                                        fontSize: size?.getWidthPx(10),
+                                        fontSize: 16.sp,
                                         projectValueNotifier: productNotifier!,
                                       ),
                                     ),
@@ -480,13 +482,13 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                       keyboardType: TextInputType.number,
                                       //editing controller of this TextField
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(12)),
+                                          fontSize: 16.sp),
                                       decoration: InputDecoration(
                                         filled: true,
                                         fillColor: Colors.white70,
                                         hintText: 'dd-mm-yyyy',
                                         labelStyle: TextStyle(
-                                            fontSize: size?.getWidthPx(12),
+                                            fontSize: 16.sp,
                                             color: Colors.blue[900],
                                             fontWeight: FontWeight.w900),
                                         prefixIcon: GestureDetector(
@@ -559,7 +561,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                   inputType: TextInputType.text,
                                   enabled: true,
                                   controller: referenceNumberCtrl,
-                                  fontSize: size!.getWidthPx(12)),
+                                  fontSize: 16.sp),
                             ),
                             const SizedBox(
                               height: 0,
@@ -575,7 +577,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                       labelText: "ทองคำแท่งขายออกบาทละ",
                                       inputType: TextInputType.phone,
                                       controller: productSellThengPriceCtrl,
-                                      fontSize: size!.getWidthPx(12),
+                                      fontSize: 16.sp,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
                                       ],
@@ -593,7 +595,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         labelText: "ทองคำแท่งรับซื้อบาทละ",
                                         inputType: TextInputType.number,
                                         controller: productBuyThengPriceCtrl,
-                                        fontSize: size!.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -615,7 +617,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         inputType: TextInputType.number,
                                         controller: productWeightCtrl,
                                         enabled: false,
-                                        fontSize: size!.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         labelColor: Colors.black87,
                                         inputFormat: [
                                           ThousandsFormatter(
@@ -638,7 +640,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         controller: productEntryWeightCtrl,
                                         focusNode: gramFocus,
                                         readOnly: gramReadOnly,
-                                        fontSize: size!.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -675,7 +677,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         controller: productEntryWeightBahtCtrl,
                                         focusNode: bahtFocus,
                                         readOnly: bahtReadOnly,
-                                        fontSize: size!.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -717,7 +719,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                       child: Text(
                                         'จำนวนเงินสุทธิ',
                                         style: TextStyle(
-                                            fontSize: size!.getWidthPx(10),
+                                            fontSize: 16.sp,
                                             color: textColor),
                                       ),
                                     )),
@@ -731,7 +733,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                       controller: priceIncludeTaxCtrl,
                                       focusNode: priceIncludeTaxFocus,
                                       readOnly: priceIncludeTaxReadOnly,
-                                      fontSize: size!.getWidthPx(12),
+                                      fontSize: 16.sp,
                                       inputFormat: [
                                         ThousandsFormatter(allowFraction: true)
                                       ],
@@ -775,7 +777,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         child: Text(
                                           'น้ำหนักสูญเสีย (กรัม) ',
                                           style: TextStyle(
-                                              fontSize: size!.getWidthPx(10),
+                                              fontSize: 16.sp,
                                               color: textColor),
                                         ),
                                       )),
@@ -789,7 +791,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         controller: priceAdjCtrl,
                                         focusNode: priceAdjFocus,
                                         readOnly: priceAdjReadOnly,
-                                        fontSize: size!.getWidthPx(12),
+                                        fontSize: 16.sp,
                                         inputFormat: [
                                           ThousandsFormatter(
                                               allowFraction: true)
@@ -825,7 +827,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                         labelText: "หมายเหตุ",
                                         inputType: TextInputType.text,
                                         controller: remarkCtrl,
-                                        fontSize: size!.getWidthPx(12)),
+                                        fontSize: 16.sp),
                                   ),
                                 ),
                               ],
@@ -836,7 +838,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                               child: Text(
                                 'แนบไฟล์ใบส่งสินค้า/ใบกำกับภาษี',
                                 style: TextStyle(
-                                    fontSize: size!.getWidthPx(10),
+                                    fontSize: 16.sp,
                                     color: textColor),
                               ),
                             ),
@@ -852,7 +854,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                                   label: Text(
                                     'เลือกรูปภาพ',
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8)),
+                                        fontSize: 16.sp),
                                   ),
                                 ),
                               ),
@@ -860,42 +862,42 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Center(
-                                child: Global.sellUsedThengAttach == null
+                                child: Global.sellUsedThengAttach == null && Global.sellUsedThengAttachWeb == null
                                     ? Text(
-                                        'ไม่ได้เลือกรูปภาพ',
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(8)),
-                                      )
-                                    : SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                4,
-                                        child: Stack(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Image.file(
-                                                  Global.sellUsedThengAttach!),
+                                  'ไม่ได้เลือกรูปภาพ',
+                                  style: TextStyle(fontSize: 16.sp),
+                                )
+                                    : Center(
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width / 4,
+                                    child: Stack(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: kIsWeb
+                                              ? Image.memory(base64Decode(Global.sellUsedThengAttachWeb!.split(",").last))
+                                              : Image.file(Global.sellUsedThengAttach!),
+                                        ),
+                                        Positioned(
+                                          right: 0.0,
+                                          top: 0.0,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                Global.sellUsedThengAttach = null;
+                                                Global.sellUsedThengAttachWeb = null;
+                                              });
+                                            },
+                                            child: const CircleAvatar(
+                                              backgroundColor: Colors.red,
+                                              child: Icon(Icons.close),
                                             ),
-                                            Positioned(
-                                              right: 0.0,
-                                              top: 0.0,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  setState(() {
-                                                    Global.sellUsedThengAttach =
-                                                        null;
-                                                  });
-                                                },
-                                                child: const CircleAvatar(
-                                                  backgroundColor: Colors.red,
-                                                  child: Icon(Icons.close),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        )),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -1057,7 +1059,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: size?.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -1089,7 +1091,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'เคลียร์',
-                            style: TextStyle(fontSize: size!.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -1176,7 +1178,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                           const SizedBox(width: 6),
                           Text(
                             'บันทึก',
-                            style: TextStyle(fontSize: size!.getWidthPx(8)),
+                            style: TextStyle(fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -1252,25 +1254,68 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
   final picker = ImagePicker();
 
   //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//   Future getImageFromGallery() async {
+//     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//
+//     setState(() {
+//       if (pickedFile != null) {
+//         Global.sellUsedThengAttach = File(pickedFile.path);
+//       }
+//     });
+//   }
+//
+// //Image Picker function to get image from camera
+//   Future getImageFromCamera() async {
+//     final pickedFile = await picker.pickImage(source: ImageSource.camera);
+//
+//     setState(() {
+//       if (pickedFile != null) {
+//         Global.sellUsedThengAttach = File(pickedFile.path);
+//       }
+//     });
+//   }
 
-    setState(() {
+  Future getImageFromGallery() async {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        Global.sellUsedThengAttach = File(pickedFile.path);
+        setState(() {
+          Global.sellUsedThengAttach = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // Web platform - use platform-specific implementation
+      try {
+        final result = await WebFilePicker.pickImage();
+        if (result != null) {
+          setState(() {
+            Global.sellUsedThengAttachWeb = result;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          Alert.warning(context, "Error", "Failed to select image: $e", "OK",
+              action: () {});
+        }
+      }
+    }
   }
 
-//Image Picker function to get image from camera
   Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
+    if (!kIsWeb) {
+      // Mobile platform
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
-        Global.sellUsedThengAttach = File(pickedFile.path);
+        setState(() {
+          Global.sellUsedThengAttach = File(pickedFile.path);
+        });
       }
-    });
+    } else {
+      // On web, camera isn't directly accessible via InputElement easily.
+      Alert.warning(context, "ไม่รองรับ", "การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน", "OK",
+          action: () {});
+    }
   }
 
   Future showOptions() async {
@@ -1350,9 +1395,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
         taxBase: Global.toNumber(taxBaseTotalCtrl.text),
         taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
         orderTypeId: 11,
-        attachment: Global.sellUsedThengAttach != null
-            ? Global.imageToBase64(Global.sellUsedThengAttach!)
-            : null,
+        attachment: getSellUsedThengAttachment(),
         orderStatus: 'COMPLETED');
     final data = order.toJson();
     // motivePrint(data);

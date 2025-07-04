@@ -15,6 +15,7 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownObjectChildWidget.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:sizer/sizer.dart';
 
 class LocationEntryWidget extends StatefulWidget {
   const LocationEntryWidget({super.key});
@@ -84,7 +85,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('เลือกจังหวัด', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    Text('เลือกจังหวัด', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
                       height: 70,
@@ -106,7 +107,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                             project: project,
                             isItemSelected: isItemSelected,
                             firstSpace: 10,
-                            fontSize: size.getWidthPx(8),
+                            fontSize: 16.sp,
                           );
                         },
                         onChanged: (ProvinceModel value) {
@@ -116,7 +117,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                         },
                         child: LocationDropDownObjectChildWidget(
                           key: GlobalKey(),
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           projectValueNotifier:
                           Global.provinceNotifier!,
                         ),
@@ -132,7 +133,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('เลือกอำเภอ', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    Text('เลือกอำเภอ', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
                       height: 70,
@@ -154,7 +155,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                             project: project,
                             isItemSelected: isItemSelected,
                             firstSpace: 10,
-                            fontSize: size.getWidthPx(8),
+                            fontSize: 16.sp,
                           );
                         },
                         onChanged: (AmphureModel value) {
@@ -164,7 +165,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                         },
                         child: LocationDropDownObjectChildWidget(
                           key: GlobalKey(),
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           projectValueNotifier: Global.amphureNotifier!,
                         ),
                       ),
@@ -185,7 +186,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('เลือกตำบล', style: TextStyle(fontSize: size.getWidthPx(10), color: textColor),),
+                    Text('เลือกตำบล', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
                       height: 70,
@@ -207,7 +208,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                             project: project,
                             isItemSelected: isItemSelected,
                             firstSpace: 10,
-                            fontSize: size.getWidthPx(8),
+                            fontSize: 16.sp,
                           );
                         },
                         onChanged: (TambonModel value) {
@@ -216,7 +217,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                         },
                         child: LocationDropDownObjectChildWidget(
                           key: GlobalKey(),
-                          fontSize: size.getWidthPx(8),
+                          fontSize: 16.sp,
                           projectValueNotifier:
                           Global.tambonNotifier!,
                         ),

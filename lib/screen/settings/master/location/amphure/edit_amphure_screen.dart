@@ -17,7 +17,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class EditAmphureScreen extends StatefulWidget {
   final AmphureModel amphure;
   final int index;
@@ -102,7 +102,7 @@ class _EditAmphureScreenState extends State<EditAmphureScreen> {
                                     Text(
                                       'เลือกจังหวัด',
                                       style: TextStyle(
-                                          fontSize: size.getWidthPx(10),
+                                          fontSize: 16.sp,
                                           color: textColor),
                                     ),
                                     const SizedBox(
@@ -129,7 +129,7 @@ class _EditAmphureScreenState extends State<EditAmphureScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size.getWidthPx(8),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (ProvinceModel value) {
@@ -140,7 +140,7 @@ class _EditAmphureScreenState extends State<EditAmphureScreen> {
                                         child:
                                         LocationDropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size.getWidthPx(8),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                           provinceNotifier!,
                                         ),

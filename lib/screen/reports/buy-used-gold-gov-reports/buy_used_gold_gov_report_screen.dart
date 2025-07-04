@@ -24,7 +24,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-
+import 'package:sizer/sizer.dart';
 class BuyUsedGoldGovReportScreen extends StatefulWidget {
   const BuyUsedGoldGovReportScreen({super.key});
 
@@ -82,7 +82,7 @@ class _BuyUsedGoldGovReportScreenState
       }
 
       var warehouse = await ApiServices.post(
-          '/binlocation/all/branch', Global.requestObj(null));
+          '/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -100,19 +100,8 @@ class _BuyUsedGoldGovReportScreenState
   }
 
   void search() async {
-    // if (yearCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
-    //   return;
-    // }
-    //
-    // if (monthCtrl.text.isEmpty) {
-    //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกเดือน', 'OK');
-    //   return;
-    // }
 
     makeSearchDate();
-
-    // return;
 
     setState(() {
       loading = true;
@@ -121,7 +110,7 @@ class _BuyUsedGoldGovReportScreenState
     try {
       var result = await ApiServices.post(
           '/order/all/type/2',
-          Global.requestObj({
+          Global.reportRequestObj({
             "year": yearCtrl.text == "" ? null : yearCtrl.text,
             "month": monthCtrl.text == "" ? null : monthCtrl.text,
             "productId": selectedProduct?.id,
@@ -172,7 +161,7 @@ class _BuyUsedGoldGovReportScreenState
                   flex: 5,
                   child: Text("รายงานบัญชีสำหรับผู้ทำการค้าของเก่า",
                       style: TextStyle(
-                          fontSize: size.getWidthPx(10),
+                          fontSize: 16.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w900)),
                 ),
@@ -210,7 +199,7 @@ class _BuyUsedGoldGovReportScreenState
                               Text(
                                 'พิมพ์',
                                 style: TextStyle(
-                                  fontSize: size.getWidthPx(8),
+                                  fontSize: 16.sp,
                                   color: Colors.white,
                                 ),
                               )
@@ -281,7 +270,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                 Text(
                         //                   'สินค้า',
                         //                   style: TextStyle(
-                        //                       fontSize: size.getWidthPx(8)),
+                        //                       fontSize: 16.sp),
                         //                 ),
                         //                 SizedBox(
                         //                   height: 80,
@@ -306,7 +295,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                         project: project,
                         //                         isItemSelected: isItemSelected,
                         //                         firstSpace: 10,
-                        //                         fontSize: size.getWidthPx(8),
+                        //                         fontSize: 16.sp,
                         //                       );
                         //                     },
                         //                     onChanged: (ProductModel value) {
@@ -316,7 +305,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                     },
                         //                     child: DropDownObjectChildWidget(
                         //                       key: GlobalKey(),
-                        //                       fontSize: size.getWidthPx(8),
+                        //                       fontSize: 16.sp,
                         //                       projectValueNotifier:
                         //                           productNotifier!,
                         //                     ),
@@ -346,7 +335,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                 Text(
                         //                   'คลังสินค้า',
                         //                   style: TextStyle(
-                        //                       fontSize: size.getWidthPx(8)),
+                        //                       fontSize: 16.sp),
                         //                 ),
                         //                 SizedBox(
                         //                   height: 80,
@@ -371,7 +360,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                         project: project,
                         //                         isItemSelected: isItemSelected,
                         //                         firstSpace: 10,
-                        //                         fontSize: size.getWidthPx(8),
+                        //                         fontSize: 16.sp,
                         //                       );
                         //                     },
                         //                     onChanged: (WarehouseModel value) {
@@ -381,7 +370,7 @@ class _BuyUsedGoldGovReportScreenState
                         //                     },
                         //                     child: DropDownObjectChildWidget(
                         //                       key: GlobalKey(),
-                        //                       fontSize: size.getWidthPx(8),
+                        //                       fontSize: 16.sp,
                         //                       projectValueNotifier:
                         //                           warehouseNotifier!,
                         //                     ),
@@ -417,7 +406,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'จากวันที่',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 70,
@@ -441,7 +430,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (dynamic value) {
@@ -452,7 +441,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   fromDateNotifier!,
                                             ),
@@ -482,7 +471,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'ถึงวันที่',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 70,
@@ -506,7 +495,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (dynamic value) {
@@ -517,7 +506,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   toDateNotifier!,
                                             ),
@@ -553,7 +542,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'เดือน',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 70,
@@ -577,7 +566,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (dynamic value) {
@@ -587,7 +576,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   monthNotifier!,
                                             ),
@@ -617,7 +606,7 @@ class _BuyUsedGoldGovReportScreenState
                                         Text(
                                           'ปี',
                                           style: TextStyle(
-                                              fontSize: size.getWidthPx(8)),
+                                              fontSize: 16.sp),
                                         ),
                                         SizedBox(
                                           height: 70,
@@ -641,7 +630,7 @@ class _BuyUsedGoldGovReportScreenState
                                                 project: project,
                                                 isItemSelected: isItemSelected,
                                                 firstSpace: 10,
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                               );
                                             },
                                             onChanged: (dynamic value) {
@@ -651,7 +640,7 @@ class _BuyUsedGoldGovReportScreenState
                                             },
                                             child: DropDownObjectChildWidget(
                                               key: GlobalKey(),
-                                              fontSize: size.getWidthPx(8),
+                                              fontSize: 16.sp,
                                               projectValueNotifier:
                                                   yearNotifier!,
                                             ),

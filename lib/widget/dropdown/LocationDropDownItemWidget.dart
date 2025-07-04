@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 
 class LocationDropDownItemWidget extends StatelessWidget {
@@ -38,14 +39,14 @@ class LocationDropDownItemWidget extends StatelessWidget {
                   '${project!.nameTh}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: Colors.black,
-                    fontSize: fontSize,
+                    fontSize: 14.sp,
                   ),
                 ),
                 Text(
                   '${project!.nameEn}',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: Colors.black,
-                    fontSize: fontSize,
+                    fontSize: 14.sp,
                   ),
                 ),
               ],

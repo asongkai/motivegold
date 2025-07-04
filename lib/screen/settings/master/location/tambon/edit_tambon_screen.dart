@@ -20,7 +20,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class EditTambonScreen extends StatefulWidget {
   final TambonModel tambon;
   final int index;
@@ -155,7 +155,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                           Text(
                                             'เลือกจังหวัด',
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                           const SizedBox(
@@ -185,7 +185,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                                   isItemSelected:
                                                       isItemSelected,
                                                   firstSpace: 10,
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                 );
                                               },
                                               onChanged: (ProvinceModel value) {
@@ -200,7 +200,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                               child:
                                                   LocationDropDownObjectChildWidget(
                                                 key: GlobalKey(),
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 projectValueNotifier:
                                                     provinceNotifier!,
                                               ),
@@ -230,7 +230,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                           Text(
                                             'เลือกอำเภอ',
                                             style: TextStyle(
-                                                fontSize: size.getWidthPx(10),
+                                                fontSize: 16.sp,
                                                 color: textColor),
                                           ),
                                           const SizedBox(
@@ -260,7 +260,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                                   isItemSelected:
                                                       isItemSelected,
                                                   firstSpace: 10,
-                                                  fontSize: size.getWidthPx(8),
+                                                  fontSize: 16.sp,
                                                 );
                                               },
                                               onChanged: (AmphureModel value) {
@@ -270,7 +270,7 @@ class _EditTambonScreenState extends State<EditTambonScreen> {
                                               child:
                                                   LocationDropDownObjectChildWidget(
                                                 key: GlobalKey(),
-                                                fontSize: size.getWidthPx(8),
+                                                fontSize: 16.sp,
                                                 projectValueNotifier:
                                                     amphureNotifier!,
                                               ),

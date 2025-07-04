@@ -25,6 +25,7 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 import 'preview.dart';
 
 class SellUsedGoldHistoryScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
     });
     try {
       var result = await ApiServices.post('/order/all/type/6',
-          Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
+          Global.reportRequestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
       // print(result!.data);
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -177,7 +178,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                       Text(
                                         'ปี',
                                         style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
+                                            fontSize: 16.sp),
                                       ),
                                       SizedBox(
                                         height: 70,
@@ -200,7 +201,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (int value) {
@@ -210,7 +211,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier: yearNotifier!,
                                           ),
                                         ),
@@ -239,7 +240,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                       Text(
                                         'เดือน',
                                         style: TextStyle(
-                                            fontSize: size?.getWidthPx(6)),
+                                            fontSize: 16.sp),
                                       ),
                                       SizedBox(
                                         height: 70,
@@ -262,7 +263,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                               project: project,
                                               isItemSelected: isItemSelected,
                                               firstSpace: 10,
-                                              fontSize: size?.getWidthPx(6),
+                                              fontSize: 16.sp,
                                             );
                                           },
                                           onChanged: (int value) {
@@ -272,7 +273,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                           },
                                           child: DropDownObjectChildWidget(
                                             key: GlobalKey(),
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                             projectValueNotifier:
                                                 monthNotifier!,
                                           ),
@@ -396,7 +397,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                             Global.formatDate(sell.orderDate.toString()),
                             style: TextStyle(
                                 color: Colors.green,
-                                fontSize: size?.getWidthPx(6)),
+                                fontSize: 16.sp),
                           )
                         ],
                       ),
@@ -467,7 +468,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                             align: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize:
-                                                    size?.getWidthPx(10))),
+                                                    16.sp)),
                                       ],
                                     ),
                                     Column(
@@ -483,7 +484,7 @@ class _SellUsedGoldHistoryScreenState extends State<SellUsedGoldHistoryScreen> {
                                             align: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize:
-                                                    size?.getWidthPx(10))),
+                                                    16.sp)),
                                       ],
                                     ),
                                   ],

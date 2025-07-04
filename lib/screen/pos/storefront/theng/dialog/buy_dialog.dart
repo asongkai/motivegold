@@ -21,6 +21,7 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
+import 'package:sizer/sizer.dart';
 
 class BuyDialog extends StatefulWidget {
   const BuyDialog({super.key});
@@ -265,7 +266,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -275,7 +276,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                   '(กรัม)',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -338,7 +339,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                 Text(
                                   'จำนวนน้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -348,7 +349,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                   '(บาททอง)',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -405,7 +406,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                 Text(
                                   'รวมราคารับซื้อ',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: textColor),
                                 ),
                                 const SizedBox(
@@ -415,7 +416,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                   '',
                                   style: TextStyle(
                                       color: textColor,
-                                      fontSize: size.getWidthPx(10)),
+                                      fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -548,7 +549,7 @@ class _BuyDialogState extends State<BuyDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.getWidthPx(15)),
+                                fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -583,7 +584,7 @@ class _BuyDialogState extends State<BuyDialog> {
                           "บันทึก",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: size.getWidthPx(15)),
+                              fontSize: 16.sp),
                         ),
                       ],
                     ),

@@ -23,7 +23,7 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-
+import 'package:sizer/sizer.dart';
 class DefaultProductScreen extends StatefulWidget {
   const DefaultProductScreen({super.key});
 
@@ -230,7 +230,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                         }
                         warehouseModel = null;
                         var warehouse = await ApiServices.post(
-                            '/binlocation/all/branch', Global.requestObj(null));
+                            '/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
                         if (warehouse?.status == "success") {
                           var data = jsonEncode(warehouse?.data);
                           List<WarehouseModel> warehouses =
@@ -346,7 +346,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                                   'หน้าจอ ${model.name}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: size?.getWidthPx(15),
+                                      fontSize: 16.sp,
                                       color: Colors.white),
                                 ),
                               ),
@@ -360,7 +360,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                                 'สินค้าเริ่มต้น',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(10),
+                                    fontSize: 16.sp,
                                     color: textColor),
                               ),
                             ),
@@ -387,7 +387,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                                       project: project,
                                       isItemSelected: isItemSelected,
                                       firstSpace: 10,
-                                      fontSize: size?.getWidthPx(10),
+                                      fontSize: 16.sp,
                                     );
                                   },
                                   onChanged: (ProductModel value) async {
@@ -399,7 +399,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                                   },
                                   child: DropDownObjectChildWidget(
                                     key: GlobalKey(),
-                                    fontSize: size?.getWidthPx(10),
+                                    fontSize: 16.sp,
                                     projectValueNotifier: productNotifier!,
                                   ),
                                 ),
@@ -414,7 +414,7 @@ class _DefaultProductScreenState extends State<DefaultProductScreen> {
                                 'คลังสินค้าเริ่มต้น',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(10),
+                                    fontSize: 16.sp,
                                     color: textColor),
                               ),
                             ),

@@ -55,7 +55,6 @@ class Alert {
   static info(
       BuildContext context, String title, String message, String buttonText,
       {Function()? action}) {
-    // kclPrint(MediaQuery.of(context).size.width);
     return AwesomeDialog(
         context: context,
         dialogType: DialogType.info,

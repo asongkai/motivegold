@@ -19,6 +19,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class RefillThengGoldHistoryScreen extends StatefulWidget {
   const RefillThengGoldHistoryScreen({super.key});
@@ -159,7 +160,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                     Text(
                                       'ปี',
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(6)),
+                                          fontSize: 16.sp),
                                     ),
                                     SizedBox(
                                       height: 70,
@@ -182,7 +183,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (int value) {
@@ -192,7 +193,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size?.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier: yearNotifier!,
                                         ),
                                       ),
@@ -221,7 +222,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                     Text(
                                       'เดือน',
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(6)),
+                                          fontSize: 16.sp),
                                     ),
                                     SizedBox(
                                       height: 70,
@@ -244,7 +245,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (int value) {
@@ -254,7 +255,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size?.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                           monthNotifier!,
                                         ),
@@ -333,7 +334,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                   children: [
                     Text(
                       '#${list.orderId.toString()}',
-                      style: TextStyle(fontSize: size?.getWidthPx(8)),
+                      style: TextStyle(fontSize: 16.sp),
                     ),
                     Text(
                       Global.formatDate(list.orderDate.toString()),
@@ -352,7 +353,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                             child: Text('สินค้า',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                         ),
@@ -362,7 +363,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                             child: Text('น้ำหนัก',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                         ),
@@ -372,7 +373,7 @@ class _RefillThengGoldHistoryScreenState extends State<RefillThengGoldHistoryScr
                             child: Text('คลังสินค้า',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: size?.getWidthPx(8),
+                                    fontSize: 16.sp,
                                     color: Colors.orange)),
                           ),
                         ),

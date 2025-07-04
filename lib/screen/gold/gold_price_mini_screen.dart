@@ -11,6 +11,7 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/title_tile.dart';
 
 import 'package:motivegold/widget/gold_price_data.dart';
+import 'package:sizer/sizer.dart';
 
 class GoldPriceMiniScreen extends StatefulWidget {
 
@@ -88,7 +89,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
                         Expanded(
                           flex: 6,
                           child:  Text('${Global.goldDataModel?.date}', style: TextStyle(
-                              fontSize: size.getWidthPx(10),
+                              fontSize: 16.sp,
                               color: textColor,
                               fontWeight: FontWeight.w900),),
                         ),

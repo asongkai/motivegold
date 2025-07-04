@@ -123,7 +123,7 @@ class _CompanyListScreenState extends State<CompanyListScreen> {
                                     ),
                                     Text(
                                       'เพิ่มบริษัทใหม่',
-                                      style: TextStyle(fontSize: 14.sp, //size.getWidthPx(8),
+                                      style: TextStyle(fontSize: 14.sp, //16.sp,
                                           color: Colors.white),
                                     )
                                   ],

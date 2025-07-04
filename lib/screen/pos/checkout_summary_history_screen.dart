@@ -19,6 +19,7 @@ import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/price_breakdown.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
+import 'package:sizer/sizer.dart';
 
 class CheckOutSummaryHistoryScreen extends StatefulWidget {
   const CheckOutSummaryHistoryScreen({super.key});
@@ -164,7 +165,7 @@ class _CheckOutSummaryHistoryScreenState
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize:
-                                                        size!.getWidthPx(6),
+                                                        16.sp,
                                                   ),
                                                 ),
                                               ],
@@ -177,7 +178,7 @@ class _CheckOutSummaryHistoryScreenState
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors.black,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -188,7 +189,7 @@ class _CheckOutSummaryHistoryScreenState
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 color: Colors.black,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -198,7 +199,7 @@ class _CheckOutSummaryHistoryScreenState
                                               "${customer!.address}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -208,7 +209,7 @@ class _CheckOutSummaryHistoryScreenState
                                               "${getIdTitleCustomer(customer)}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                             const SizedBox(
@@ -218,7 +219,7 @@ class _CheckOutSummaryHistoryScreenState
                                               "${customer?.customerType == 'company' ? customer?.taxNumber : customer?.idCard}",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: size!.getWidthPx(6),
+                                                fontSize: 16.sp,
                                               ),
                                             ),
                                           ],
@@ -576,7 +577,7 @@ class _CheckOutSummaryHistoryScreenState
               child: Text('${index + 1}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -585,7 +586,7 @@ class _CheckOutSummaryHistoryScreenState
               child: Text(payment.paymentMethod ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: size?.getWidthPx(8),
+                    fontSize: 16.sp,
                     color: kPrimaryGreen,
                   )),
             ),
@@ -596,7 +597,7 @@ class _CheckOutSummaryHistoryScreenState
                 child: Text(Global.formatDateNT(payment.paymentDate.toString()),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -608,7 +609,7 @@ class _CheckOutSummaryHistoryScreenState
                 child: Text(Global.format(payment.amount ?? 0),
                     textAlign: TextAlign.right,
                     style: TextStyle(
-                      fontSize: size?.getWidthPx(8),
+                      fontSize: 16.sp,
                       color: kPrimaryGreen,
                     )),
               ),
@@ -724,13 +725,13 @@ class _CheckOutSummaryHistoryScreenState
                     padding: const EdgeInsets.all(20),
                     child: Text('น้ำหนัก',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Text('ราคา',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                   ),
                 ],
               ),
@@ -739,19 +740,19 @@ class _CheckOutSummaryHistoryScreenState
                   decoration: const BoxDecoration(),
                   children: [
                     paddedTextBigL('${j + 1}',
-                        style: TextStyle(fontSize: size?.getWidthPx(8)),
+                        style: TextStyle(fontSize: 16.sp),
                         align: TextAlign.center),
                     paddedTextBigL(order.details![j].productName,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(Global.format(order.details![j].weight!),
                         align: TextAlign.right,
-                        style: TextStyle(fontSize: size?.getWidthPx(8))),
+                        style: TextStyle(fontSize: 16.sp)),
                     paddedTextBigL(
                         Global.format(order.details![j].priceIncludeTax!) +
                             '  บาท',
                         align: TextAlign.right,
                         style: TextStyle(
-                          fontSize: size?.getWidthPx(8),
+                          fontSize: 16.sp,
                         )),
                   ],
                 ),

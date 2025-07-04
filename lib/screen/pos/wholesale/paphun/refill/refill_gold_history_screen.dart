@@ -19,6 +19,7 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:sizer/sizer.dart';
 
 class RefillGoldHistoryScreen extends StatefulWidget {
   const RefillGoldHistoryScreen({super.key});
@@ -54,7 +55,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/order/all/type/5', Global.requestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
+          await ApiServices.post('/order/all/type/5', Global.reportRequestObj({"year": yearCtrl.text, "month": monthCtrl.text}));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
@@ -159,7 +160,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                     Text(
                                       'ปี',
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(6)),
+                                          fontSize: 16.sp),
                                     ),
                                     SizedBox(
                                       height: 70,
@@ -182,7 +183,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (int value) {
@@ -192,7 +193,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size?.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier: yearNotifier!,
                                         ),
                                       ),
@@ -221,7 +222,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                     Text(
                                       'เดือน',
                                       style: TextStyle(
-                                          fontSize: size?.getWidthPx(6)),
+                                          fontSize: 16.sp),
                                     ),
                                     SizedBox(
                                       height: 70,
@@ -244,7 +245,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                             project: project,
                                             isItemSelected: isItemSelected,
                                             firstSpace: 10,
-                                            fontSize: size?.getWidthPx(6),
+                                            fontSize: 16.sp,
                                           );
                                         },
                                         onChanged: (int value) {
@@ -254,7 +255,7 @@ class _RefillGoldHistoryScreenState extends State<RefillGoldHistoryScreen> {
                                         },
                                         child: DropDownObjectChildWidget(
                                           key: GlobalKey(),
-                                          fontSize: size?.getWidthPx(6),
+                                          fontSize: 16.sp,
                                           projectValueNotifier:
                                           monthNotifier!,
                                         ),
