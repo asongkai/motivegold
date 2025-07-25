@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/products/product_list_screen.dart';
 import 'package:motivegold/screen/settings/master/bank/bank_screen.dart';
@@ -11,143 +10,300 @@ import 'package:motivegold/screen/settings/master/productType/product_type_list_
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
-
 class MasterDataScreen extends StatelessWidget {
-  const MasterDataScreen({ super.key });
+  const MasterDataScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: const CustomAppBar(
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Text("จัดการข้อมูลหลัก",
               style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 28,
                   color: Colors.white,
-                  fontWeight: FontWeight.w900)),
+                  fontWeight: FontWeight.w600)),
         ),
       ),
       body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16),
-                      Text("สินค้า", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
-                      const SizedBox(height: 8),
-                      _buildListTile('ประเภทสินค้า', Icons.list, '', Colors.orange, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const ProductTypeListScreen()));
-                      }),
-                      const SizedBox(height: 8),
-                      _buildListTile('หมวดหมู่สินค้า', Icons.line_style_outlined, '', Colors.blue, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const ProductCategoryListScreen()));
-                      }),
-                      const SizedBox(height: 8),
-                      _buildListTile('สินค้า', Icons.line_style_outlined, '', Colors.teal, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const ProductListScreen()));
-                      }),
-                      const SizedBox(height: 32),
-                      Text("ธนาคาร", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
-                      const SizedBox(height: 8),
-                      _buildListTile('ธนาคาร', Icons.supervised_user_circle_sharp, '', Colors.blue, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const BankListScreen()));
-                      }),
-                      const SizedBox(height: 8),
-                      _buildListTile('บัญชีธนาคาร', Icons.line_style_outlined, '', Colors.teal, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const BankAccountListScreen()));
-                      }),
-                      const SizedBox(height: 32),
-                      Text("ที่อยู่", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w400)),
-                      const SizedBox(height: 8),
-                      _buildListTile('จังหวัด', Icons.line_style_outlined, '', Colors.blue, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const ProvinceScreen()));
-                      }),
-                      const SizedBox(height: 8),
-                      _buildListTile('อำเภอ', Icons.line_style_outlined, '', Colors.teal, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const AmphureScreen()));
-                      }),
-                      const SizedBox(height: 8),
-                      _buildListTile('ตำบล', Icons.line_style_outlined, '', Colors.purple, theme, onTab: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const TambonScreen()));
-                      }),
-                    ],
-                  ),
-                  // Text("Version 1.0.0", style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500)),
-                ],
-              ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+
+                    // Products Section
+                    _buildSectionHeader(
+                      icon: Icons.inventory_2_rounded,
+                      title: "สินค้า",
+                      color: Colors.blue,
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildModernCard([
+                      _buildModernListTile(
+                        'ประเภทสินค้า',
+                        Icons.category_rounded,
+                        Colors.orange,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ProductTypeListScreen()));
+                        },
+                      ),
+                      _buildModernListTile(
+                        'หมวดหมู่สินค้า',
+                        Icons.view_module_rounded,
+                        Colors.purple,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ProductCategoryListScreen()));
+                        },
+                      ),
+                      _buildModernListTile(
+                        'สินค้า',
+                        Icons.shopping_bag_rounded,
+                        Colors.teal,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ProductListScreen()));
+                        },
+                      ),
+                    ]),
+
+                    const SizedBox(height: 32),
+
+                    // Banking Section
+                    _buildSectionHeader(
+                      icon: Icons.account_balance_rounded,
+                      title: "ธนาคาร",
+                      color: Colors.green,
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildModernCard([
+                      _buildModernListTile(
+                        'ธนาคาร',
+                        Icons.account_balance_rounded,
+                        Colors.green,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const BankListScreen()));
+                        },
+                      ),
+                      _buildModernListTile(
+                        'บัญชีธนาคาร',
+                        Icons.credit_card_rounded,
+                        Colors.blue,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const BankAccountListScreen()));
+                        },
+                      ),
+                    ]),
+
+                    const SizedBox(height: 32),
+
+                    // Location Section
+                    _buildSectionHeader(
+                      icon: Icons.location_on_rounded,
+                      title: "ที่อยู่",
+                      color: Colors.red,
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildModernCard([
+                      _buildModernListTile(
+                        'จังหวัด',
+                        Icons.map_rounded,
+                        Colors.red,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const ProvinceScreen()));
+                        },
+                      ),
+                      _buildModernListTile(
+                        'อำเภอ',
+                        Icons.location_city_rounded,
+                        Colors.orange,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const AmphureScreen()));
+                        },
+                      ),
+                      _buildModernListTile(
+                        'ตำบล',
+                        Icons.place_rounded,
+                        Colors.purple,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const TambonScreen()));
+                        },
+                      ),
+                    ]),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ],
             ),
-          )
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildListTile(String title, IconData icon, String trailing, Color color, ThemeData theme, {onTab}) {
-    return ListTile(
-        contentPadding: const EdgeInsets.all(0),
-        leading: Container(
-          width: 46,
-          height: 46,
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required Color color,
+    required ThemeData theme,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withAlpha(30)
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Center(
-            child: Icon(icon, color: color,),
+          child: Icon(
+            icon,
+            color: color,
+            size: 20,
           ),
         ),
-        title: Text(title, style: theme.textTheme.titleLarge),
-        trailing: SizedBox(
-          width: 90,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF2D3748),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernCard(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: children.asMap().entries.map((entry) {
+          int index = entry.key;
+          Widget child = entry.value;
+
+          return Column(
             children: [
-              Text(trailing, style: theme.textTheme.titleLarge?.copyWith(color: Colors.grey.shade600)),
-              const Icon(Icons.arrow_forward_ios, size: 16,),
+              child,
+              if (index < children.length - 1)
+                Divider(
+                  height: 1,
+                  color: Colors.grey[200],
+                  indent: 70,
+                ),
             ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildModernListTile(
+      String title,
+      IconData icon,
+      Color color,
+      ThemeData theme, {
+        VoidCallback? onTab,
+      }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      leading: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withOpacity(0.1),
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
           ),
         ),
-        onTap: onTab
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFF2D3748),
+        ),
+      ),
+      trailing: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 16,
+          color: Colors.grey[600],
+        ),
+      ),
+      onTap: onTab,
     );
   }
 }

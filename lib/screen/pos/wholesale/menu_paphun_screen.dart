@@ -38,6 +38,7 @@ class WholeSalePaphunMenuScreenState extends State<WholeSalePaphunMenuScreen> {
     });
     super.initState();
     Global.currentOrderType = 5;
+    Global.currentRedeemType = 0;
     init();
   }
 

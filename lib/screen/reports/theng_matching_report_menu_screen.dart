@@ -29,7 +29,6 @@ class ThengMatchingReportMenuScreen extends StatefulWidget {
 class _ThengMatchingReportMenuScreenState extends State<ThengMatchingReportMenuScreen> {
   @override
   Widget build(BuildContext context) {
-    // return Container();
     return Scaffold(
       backgroundColor: Colors.white.withValues(alpha: 0.94),
       appBar: const CustomAppBar(
@@ -59,9 +58,9 @@ class _ThengMatchingReportMenuScreenState extends State<ThengMatchingReportMenuS
                               builder: (context) =>
                               const StockReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     titleStyle: Theme.of(context)
@@ -82,9 +81,9 @@ class _ThengMatchingReportMenuScreenState extends State<ThengMatchingReportMenuS
                               builder: (context) =>
                               const StockMovementReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
                     titleStyle: Theme.of(context)
@@ -98,7 +97,6 @@ class _ThengMatchingReportMenuScreenState extends State<ThengMatchingReportMenuS
                   ),
               ],
             ),
-            // You can add a settings title
           ],
         ),
       ),

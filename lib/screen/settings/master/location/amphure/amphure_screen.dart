@@ -60,7 +60,7 @@ class _AmphureScreenState extends State<AmphureScreen> {
         setState(() {
           dataList = products;
           filteredList = products;
-          // Global.amphureList = products;
+          Global.amphureList = products;
         });
       } else {
         dataList = [];

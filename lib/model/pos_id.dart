@@ -16,7 +16,7 @@ class PosIdModel {
   int? branchId;
   int? companyId;
   DateTime? createdDate;
-  DateTime? updateddDate;
+  DateTime? updatedDate;
 
   PosIdModel({
     this.id,
@@ -26,7 +26,7 @@ class PosIdModel {
     this.branchId,
     this.companyId,
     this.createdDate,
-    this.updateddDate,
+    this.updatedDate,
   });
 
   factory PosIdModel.fromJson(Map<String, dynamic> json) => PosIdModel(
@@ -37,7 +37,7 @@ class PosIdModel {
     branchId: json["branchId"],
     companyId: json["companyId"],
     createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
-    updateddDate: json["updateddDate"] == null ? null : DateTime.parse(json["updateddDate"]).toLocal(),
+    updatedDate: json["updateddDate"] == null ? null : DateTime.parse(json["updateddDate"]).toLocal(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -48,6 +48,6 @@ class PosIdModel {
     "branchId": branchId,
     "companyId": companyId,
     "createdDate": "${createdDate!.year.toString().padLeft(4, '0')}-${createdDate!.month.toString().padLeft(2, '0')}-${createdDate!.day.toString().padLeft(2, '0')}",
-    "updateddDate": "${updateddDate!.year.toString().padLeft(4, '0')}-${updateddDate!.month.toString().padLeft(2, '0')}-${updateddDate!.day.toString().padLeft(2, '0')}",
+    "updateddDate": "${updatedDate!.year.toString().padLeft(4, '0')}-${updatedDate!.month.toString().padLeft(2, '0')}-${updatedDate!.day.toString().padLeft(2, '0')}",
   };
 }

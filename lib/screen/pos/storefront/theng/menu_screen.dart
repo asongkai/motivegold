@@ -38,6 +38,7 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
     });
     super.initState();
     Global.currentOrderType = 3;
+    Global.currentRedeemType = 0;
     init();
   }
 

@@ -77,6 +77,10 @@ class RedeemDetailModel {
 
   DateTime? redeemDate;
 
+  /// ฐานภาษี (บาท)
+  double? taxBaseAmount;
+  String? vatOption;
+
   RedeemDetailModel({
     this.id,
     this.redeemId,
@@ -102,6 +106,8 @@ class RedeemDetailModel {
     this.customerName,
     this.taxNumber,
     this.redeemDate,
+    this.taxBaseAmount,
+    this.vatOption,
   });
 
   // From JSON method
@@ -137,6 +143,8 @@ class RedeemDetailModel {
       redeemDate: json['redeemDate'] != null
           ? DateTime.parse(json['redeemDate']).toLocal()
           : null,
+      taxBaseAmount: json["taxBaseAmount"],
+      vatOption: json["vatOption"],
     );
   }
 
@@ -167,6 +175,8 @@ class RedeemDetailModel {
       'customerName': customerName,
       'taxNumber': taxNumber,
       'redeemDate': redeemDate?.toIso8601String(),
+      'taxBaseAmount': taxBaseAmount,
+      'vatOption': vatOption,
     };
   }
 

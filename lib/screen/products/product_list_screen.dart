@@ -34,7 +34,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   void initState() {
     super.initState();
-
     loadProducts();
   }
 
@@ -42,6 +41,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
@@ -53,45 +53,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
               children: [
                 const Text("สินค้า",
                     style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 28,
                         color: Colors.white,
-                        fontWeight: FontWeight.w900)),
+                        fontWeight: FontWeight.w600)),
                 if (Global.user!.userRole == 'Administrator')
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const NewProductScreen(
-                                        showBackButton: true,
-                                      ),
-                                  fullscreenDialog: true))
-                          .whenComplete(() {
-                        loadProducts();
-                      });
-                    },
-                    child: Container(
-                      color: Colors.teal[900],
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              size: 50,
-                              color: Colors.white,
-                            ),
-                            Text(
-                              'เพิ่มสินค้าใหม่',
-                              style: TextStyle(
-                                  fontSize: 14.sp, //16.sp,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildAddButton(context),
               ],
             ),
           ),
@@ -101,18 +67,223 @@ class _ProductListScreenState extends State<ProductListScreen> {
         child: loading
             ? const LoadingProgress()
             : productList!.isEmpty
-                ? const NoDataFoundWidget()
-                : SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView.builder(
-                          itemCount: productList!.length,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (BuildContext context, int index) {
-                            return productCard(productList, index);
-                          }),
+            ? const NoDataFoundWidget()
+            : Container(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.separated(
+            itemCount: productList!.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (BuildContext context, int index) {
+              return modernProductCard(productList, index);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const NewProductScreen(
+                  showBackButton: true,
+                ),
+                fullscreenDialog: true))
+            .whenComplete(() {
+          loadProducts();
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.add_rounded,
+              size: 20,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'เพิ่มสินค้าใหม่',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget modernProductCard(List<ProductModel>? productList, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Product Image
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/icons/gold/gold.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+
+            // Product Info - Expanded to take remaining space
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product Name
+                  Text(
+                    productList![index].name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D3748),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Product Category
+                  if (productList[index].productCategory != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        productList[index].productCategory!.name ?? '',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+
+                  // Product Type
+                  if (productList[index].productType != null)
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          productList[index].productType!.name ?? '',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+
+            // Action Buttons - Only show for Administrator
+            if (Global.user!.userRole == 'Administrator')
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Edit Button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProductScreen(
+                                  showBackButton: true,
+                                  product: productList[index],
+                                  index: index),
+                              fullscreenDialog: true))
+                          .whenComplete(() {
+                        loadProducts();
+                      });
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.teal.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.edit_rounded,
+                        color: Colors.teal,
+                        size: 20,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
+
+                  // Delete Button
+                  GestureDetector(
+                    onTap: () {
+                      removeProduct(productList[index].id!, index);
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.delete_rounded,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -123,7 +294,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/product/all', Global.requestObj(null));
+      await ApiServices.post('/product/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -143,118 +314,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
-  Widget productCard(List<ProductModel>? productList, int index) {
-    return Card(
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              leading: SizedBox(
-                width: 100,
-                child: Image.asset(
-                  'assets/icons/gold/gold.png',
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-              trailing: Text(
-                "${productList![index].productType != null ? productList[index].productType!.name : ''}",
-                style: const TextStyle(color: Colors.green, fontSize: 15),
-              ),
-              title: Text(
-                productList[index].name,
-                style: const TextStyle(fontSize: 20),
-              ),
-              subtitle: Text(
-                  '${productList[index].productCategory != null ? productList[index].productCategory!.name : ''}'),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (Global.user!.userRole == 'Administrator')
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditProductScreen(
-                                    showBackButton: true,
-                                    product: productList[index],
-                                    index: index),
-                                fullscreenDialog: true))
-                        .whenComplete(() {
-                      loadProducts();
-                    });
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                if (Global.user!.userRole == 'Administrator')
-                GestureDetector(
-                  onTap: () {
-                    removeProduct(productList[index].id!, index);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   void removeProduct(int id, int i) async {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      try {
-        var result = await ApiServices.delete('/product', id);
-        await pr.hide();
-        if (result?.status == "success") {
-          productList!.removeAt(i);
-          setState(() {});
-        } else {
-          if (mounted) {
-            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-                action: () {});
+          final ProgressDialog pr = ProgressDialog(context,
+              type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+          await pr.show();
+          pr.update(message: 'processing'.tr());
+          try {
+            var result = await ApiServices.delete('/product', id);
+            await pr.hide();
+            if (result?.status == "success") {
+              productList!.removeAt(i);
+              setState(() {});
+            } else {
+              if (mounted) {
+                Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                    action: () {});
+              }
+            }
+          } catch (e) {
+            await pr.hide();
+            if (mounted) {
+              Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                  action: () {});
+            }
           }
-        }
-      } catch (e) {
-        await pr.hide();
-        if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-              action: () {});
-        }
-      }
-    });
+        });
   }
 }

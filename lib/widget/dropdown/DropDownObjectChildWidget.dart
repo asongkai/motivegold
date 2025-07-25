@@ -56,9 +56,8 @@ class DropDownObjectChildWidget extends StatelessWidget {
                       key: ValueKey<String>('${project is int || project is String ? project : project?.name ?? ''}'.trim()),
                       maxLines: 1,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.w600,
                         color: textColor,
-                        fontSize: 14.sp,
+                        fontSize: 13.sp,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

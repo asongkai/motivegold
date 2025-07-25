@@ -19,16 +19,34 @@ class GoldPriceScreen extends StatefulWidget {
   State<GoldPriceScreen> createState() => _GoldPriceScreenState();
 }
 
-class _GoldPriceScreenState extends State<GoldPriceScreen> {
+class _GoldPriceScreenState extends State<GoldPriceScreen>
+    with TickerProviderStateMixin {
   ApiServices api = ApiServices();
   bool loading = false;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
-    // implement initState
     super.initState();
-
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
     init();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   void init() async {
@@ -38,135 +56,246 @@ class _GoldPriceScreenState extends State<GoldPriceScreen> {
     try {
       Global.goldDataModel =
           Global.goldDataModel ?? await api.getGoldPrice(context);
+      if (mounted) {
+        _animationController.forward();
+      }
     } catch (e) {
       motivePrint(e.toString());
     }
-
-    setState(() {
-      loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return loading || Global.goldDataModel == null
-        ? const Center(
-            child: SizedBox(
-              width: 100,
-              height: 100,
+        ? Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.amber[50]!,
+            Colors.orange[50]!,
+          ],
+        ),
+      ),
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 80,
+              height: 80,
               child: LoadingIndicator(
                 indicatorType: Indicator.ballRotate,
-
-                /// Required, The loading type of the widget
-                // colors: [Colors.white],
-
-                /// Optional, The color collections
-                // strokeWidth: 2,
-
-                /// Optional, The stroke of the line, only applicable to widget which contains line
-                // backgroundColor: Colors.white,
-
-                /// Optional, Background of the widget
-                // pathBackgroundColor: Colors.white
-
-                /// Optional, the stroke backgroundColor
+                colors: [Colors.amber, Colors.orange],
               ),
             ),
-          )
+            SizedBox(height: 16),
+            Text(
+              'กำลังโหลดราคาทอง...',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    )
         : Scaffold(
-            appBar: CustomAppBar(
-              height: 300,
-              child: TitleContent(
-                backButton: widget.showBackButton,
-                title: const Text("ราคาทองตามประกาศของสมาคมค้าทองคำ",
-                    style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900)),
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppBar(
+        height: 300,
+        child: TitleContent(
+          backButton: widget.showBackButton,
+          title: const Text("ราคาทองตามประกาศของสมาคมค้าทองคำ",
+              style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
+        ),
+      ),
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.grey[50]!,
+                  Colors.grey[100]!,
+                ],
               ),
             ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // Container(
-                      //     width: MediaQuery.of(context).size.width,
-                      //     padding: const EdgeInsets.all(15.0),
-                      //     decoration: const BoxDecoration(
-                      //         color: Colors.teal,
-                      //         borderRadius: BorderRadius.only(
-                      //             topLeft: Radius.circular(10),
-                      //             topRight: Radius.circular(10))),
-                      //     child: Text(
-                      //       'ราคาทองตามประกาศของสมาคมค้าทองคำ',
-                      //       style: TextStyle(
-                      //           fontSize: 16.sp,
-                      //           color: Colors.white),
-                      //     )),
-                      TitleTile(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Modern TitleTile with enhanced styling
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blue[100]!, Colors.indigo[100]!],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: TitleTile(
                         title: '${Global.goldDataModel?.date}',
                       ),
-                      ListTileData(
-                        leftTitle: '96.5%',
-                        leftValue: "",
+                    ),
+
+                    // Modern ListTileData with enhanced styling
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.amber[50]!, Colors.orange[50]!],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTileData(
+                        leftTitle: 'ทองคำแท่ง',
+                        leftValue: "96.5%",
                         rightTitle: "ขายออก",
                         rightValue:
-                            "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))}",
+                        "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))}",
                       ),
-                      ListTileData(
-                        leftTitle: 'ทองคำแท่ง',
+                    ),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.amber[50]!, Colors.orange[50]!],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTileData(
+                        leftTitle: '',
                         leftValue: "",
                         rightTitle: "รับซื้อ",
                         rightValue:
-                            "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))}",
+                        "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))}",
                       ),
-                      ListTileData(
+                    ),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTileData(
                         leftTitle: 'ทองรูปพรรณ',
                         leftValue: "96.5%",
                         rightTitle: "ขายออก",
                         rightValue:
-                            "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.sell))}",
+                        "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.sell))}",
                       ),
-                      ListTileData(
+                    ),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.orange[50]!, Colors.deepOrange[50]!],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTileData(
                         leftTitle: '',
                         leftValue: "",
                         rightTitle: "รับซื้อ (ฐานภาษี)",
                         rightValue:
-                            "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))}",
+                        "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))}",
                       ),
-                      // const GoldPriceListTileData(
-                      //   title: '96.5%',
-                      //   buy: "รับซื้อ",
-                      //   sell: "ขายออก",
-                      // ),
-                      // GoldPriceListTileData(
-                      //   title: 'ทองคำแท่ง',
-                      //   buy: "${Global.goldDataModel?.theng?.buy}",
-                      //   sell: "${Global.goldDataModel?.theng?.sell}",
-                      // ),
-                      // GoldPriceListTileData(
-                      //   title: 'ทองรูปพรรณ',
-                      //   buy: "${Global.goldDataModel?.paphun?.buy}",
-                      //   sell: "${Global.goldDataModel?.paphun?.sell}",
-                      // ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  Global.goldDataModel = null;
-                });
-                init();
-              },
-              backgroundColor: bgColor3,
-              child: const Icon(Icons.refresh),
+          ),
+        ),
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [bgColor3, Colors.amber[600]!],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: bgColor3.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
-          );
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              Global.goldDataModel = null;
+            });
+            _animationController.reset();
+            init();
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: const Icon(
+            Icons.refresh,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+      ),
+    );
   }
 }

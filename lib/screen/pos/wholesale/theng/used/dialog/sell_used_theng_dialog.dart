@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -265,24 +266,49 @@ class _SellUsedThengDialogState extends State<SellUsedThengDialog> {
     if (txt == 'price') {
       priceReadOnly = true;
     }
+    AppCalculatorManager.showCalculator(
+      onClose: closeCal,
+      onChanged: (key, value, expression) {
+        if (key == 'ENT') {
+          if (txt == 'gram') {
+            productEntryWeightCtrl.text =
+            value != null
+                ? "${Global.format(value)}"
+                : "";
+            gramChanged();
+          }
+          if (txt == 'baht') {
+            productEntryWeightBahtCtrl.text =
+            value != null
+                ? "${Global.format(value)}"
+                : "";
+            bahtChanged();
+          }
+          if (txt == 'price') {
+            priceIncludeTaxCtrl.text = value != null
+                ? "${Global.format(value)}"
+                : "";
+          }
+          FocusScope.of(context)
+              .requestFocus(FocusNode());
+          closeCal();
+        }
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+    );
     setState(() {
       showCal = true;
     });
   }
 
   void closeCal() {
-    // if (txt == 'com') {
     comReadOnly = false;
-    // }
-    // if (txt == 'gram') {
     gramReadOnly = false;
-    // }
-    // if (txt == 'baht') {
     bahtReadOnly = false;
-    // }
-    // if (txt == 'price') {
     priceReadOnly = false;
-    // }
+    AppCalculatorManager.hideCalculator();
     setState(() {
       showCal = false;
     });
@@ -302,623 +328,370 @@ class _SellUsedThengDialogState extends State<SellUsedThengDialog> {
           ? const Center(
               child: LoadingProgress(),
             )
-          : Stack(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    closeCal();
-                  },
-                  child: SingleChildScrollView(
-                    child: Column(
+          : GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              closeCal();
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    decoration: const BoxDecoration(color: suBgColor),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'ขายทองเก่าร้านขายส่ง',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 100,
+                    child: Row(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: const BoxDecoration(color: suBgColor),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'ขายทองเก่าร้านขายส่ง',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.white),
+                        const Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'คลังสินค้าต้นทาง',
+                                  style: TextStyle(
+                                      fontSize: 50, color: textColor),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: SizedBox(
+                            height: 80,
+                            child: MiraiDropDownMenu<WarehouseModel>(
+                              key: UniqueKey(),
+                              children: fromWarehouseList,
+                              space: 4,
+                              maxHeight: 360,
+                              showSearchTextField: true,
+                              selectedItemBackgroundColor:
+                                  Colors.transparent,
+                              emptyListMessage: 'ไม่มีข้อมูล',
+                              showSelectedItemBackgroundColor: true,
+                              itemWidgetBuilder: (
+                                int index,
+                                WarehouseModel? project, {
+                                bool isItemSelected = false,
+                              }) {
+                                return DropDownItemWidget(
+                                  project: project,
+                                  isItemSelected: isItemSelected,
+                                  firstSpace: 10,
+                                  fontSize: 18.sp,
+                                );
+                              },
+                              onChanged: (WarehouseModel value) {
+                                warehouseCtrl.text = value.id!.toString();
+                                selectedFromLocation = value;
+                                fromWarehouseNotifier!.value = value;
+                                if (productCodeCtrl.text != "") {
+                                  loadQtyByLocation(value.id!);
+                                }
+                                if (selectedFromLocation != null) {
+                                  loadToWarehouseNoId(
+                                      selectedFromLocation!.id!);
+                                }
+                              },
+                              child: DropDownObjectChildWidget(
+                                key: GlobalKey(),
+                                fontSize: 18.sp,
+                                projectValueNotifier:
+                                    fromWarehouseNotifier!,
+                              ),
                             ),
                           ),
-                        ),
-                        // SizedBox(
-                        //   height: 100,
-                        //   child: Row(
-                        //     children: [
-                        //       Expanded(
-                        //         flex: 5,
-                        //         child:
-                        //             Padding(
-                        //           padding:
-                        //               const EdgeInsets
-                        //                   .all(
-                        //                   8.0),
-                        //           child:
-                        //               SizedBox(
-                        //             height:
-                        //                 80,
-                        //             child: MiraiDropDownMenu<
-                        //                 ProductModel>(
-                        //               key:
-                        //                   UniqueKey(),
-                        //               children:
-                        //                   productList,
-                        //               space:
-                        //                   4,
-                        //               maxHeight:
-                        //                   360,
-                        //               showSearchTextField:
-                        //                   true,
-                        //               selectedItemBackgroundColor:
-                        //                   Colors.transparent,
-                        //               emptyListMessage:
-                        //                   'ไม่มีข้อมูล',
-                        //               showSelectedItemBackgroundColor:
-                        //                   true,
-                        //               itemWidgetBuilder:
-                        //                   (
-                        //                 int index,
-                        //                 ProductModel?
-                        //                     project, {
-                        //                 bool isItemSelected =
-                        //                     false,
-                        //               }) {
-                        //                 return DropDownItemWidget(
-                        //                   project:
-                        //                       project,
-                        //                   isItemSelected:
-                        //                       isItemSelected,
-                        //                   firstSpace:
-                        //                       10,
-                        //                   fontSize:
-                        //                       18.sp,
-                        //                 );
-                        //               },
-                        //               onChanged:
-                        //                   (ProductModel
-                        //                       value) {
-                        //                 productCodeCtrl.text =
-                        //                     value.productCode!;
-                        //                 productNameCtrl.text =
-                        //                     value.name;
-                        //                 productNotifier!.value =
-                        //                     value;
-                        //                 if (warehouseCtrl.text !=
-                        //                     "") {
-                        //                   loadQtyByLocation(selectedFromLocation!.id!);
-                        //                 }
-                        //               },
-                        //               child:
-                        //                   DropDownObjectChildWidget(
-                        //                 key:
-                        //                     GlobalKey(),
-                        //                 fontSize:
-                        //                     18.sp,
-                        //                 projectValueNotifier:
-                        //                     productNotifier!,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        SizedBox(
-                          height: 100,
-                          child: Row(
-                            children: [
-                              const Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'คลังสินค้าต้นทาง',
-                                        style: TextStyle(
-                                            fontSize: 50, color: textColor),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 30),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: SizedBox(
-                                  height: 80,
-                                  child: MiraiDropDownMenu<WarehouseModel>(
-                                    key: UniqueKey(),
-                                    children: fromWarehouseList,
-                                    space: 4,
-                                    maxHeight: 360,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                        Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (
-                                      int index,
-                                      WarehouseModel? project, {
-                                      bool isItemSelected = false,
-                                    }) {
-                                      return DropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 18.sp,
-                                      );
-                                    },
-                                    onChanged: (WarehouseModel value) {
-                                      warehouseCtrl.text = value.id!.toString();
-                                      selectedFromLocation = value;
-                                      fromWarehouseNotifier!.value = value;
-                                      if (productCodeCtrl.text != "") {
-                                        loadQtyByLocation(value.id!);
-                                      }
-                                      if (selectedFromLocation != null) {
-                                        loadToWarehouseNoId(
-                                            selectedFromLocation!.id!);
-                                      }
-                                    },
-                                    child: DropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 18.sp,
-                                      projectValueNotifier:
-                                          fromWarehouseNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(8.0),
-                        //   child: Row(
-                        //     children: [
-                        //       const Expanded(
-                        //           flex: 6,
-                        //           child: Row(
-                        //             mainAxisAlignment: MainAxisAlignment.end,
-                        //             children: [
-                        //               Text(
-                        //                 'น้ำหนักทั้งหมด',
-                        //                 style: TextStyle(
-                        //                     fontSize: 50, color: textColor),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //               Text(
-                        //                 '(บาททอง)',
-                        //                 style: TextStyle(
-                        //                     color: textColor, fontSize: 30),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //             ],
-                        //           )),
-                        //       Expanded(
-                        //         flex: 6,
-                        //         child: buildTextFieldBig(
-                        //             labelText: "",
-                        //             inputType: TextInputType.phone,
-                        //             enabled: false,
-                        //             controller: productWeightBahtCtrl,
-                        //             inputFormat: [
-                        //               ThousandsFormatter(allowFraction: true)
-                        //             ],
-                        //             onChanged: (String value) {
-                        //               if (productWeightBahtCtrl
-                        //                   .text.isNotEmpty) {
-                        //                 productWeightCtrl.text = Global.format(
-                        //                     (Global.toNumber(
-                        //                             productWeightBahtCtrl
-                        //                                 .text) *
-                        //                         getUnitWeightValue()));
-                        //               } else {
-                        //                 productWeightCtrl.text = "";
-                        //               }
-                        //             }),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // Padding(
-                        //     padding: const EdgeInsets.all(8.0),
-                        //     child: Row(children: [
-                        //       const Expanded(
-                        //           flex: 6,
-                        //           child: Row(
-                        //             mainAxisAlignment: MainAxisAlignment.end,
-                        //             children: [
-                        //               Text(
-                        //                 'น้ำหนักทั้งหมด',
-                        //                 style: TextStyle(
-                        //                     fontSize: 50, color: textColor),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //               Text(
-                        //                 '(กรัม)',
-                        //                 style: TextStyle(
-                        //                     color: textColor, fontSize: 30),
-                        //               ),
-                        //               SizedBox(
-                        //                 width: 10,
-                        //               ),
-                        //             ],
-                        //           )),
-                        //       Expanded(
-                        //         flex: 6,
-                        //         child: buildTextFieldBig(
-                        //             labelText: "",
-                        //             inputType: TextInputType.number,
-                        //             enabled: false,
-                        //             controller: productWeightCtrl,
-                        //             inputFormat: [
-                        //               ThousandsFormatter(allowFraction: true)
-                        //             ],
-                        //             onChanged: (String value) {
-                        //               if (productWeightCtrl.text.isNotEmpty) {
-                        //                 productWeightBahtCtrl.text =
-                        //                     Global.format((Global.toNumber(
-                        //                             productWeightCtrl.text) /
-                        //                         getUnitWeightValue()));
-                        //               } else {
-                        //                 productWeightBahtCtrl.text = "";
-                        //               }
-                        //             }),
-                        //       ),
-                        //     ])),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'ป้อนน้ำหนัก',
-                                        style: TextStyle(
-                                            fontSize: 50, color: textColor),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(บาททอง)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 30),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextField(
-                                    labelText: "",
-                                    inputType: TextInputType.phone,
-                                    controller: productEntryWeightBahtCtrl,
-                                    focusNode: bahtFocus,
-                                    readOnly: bahtReadOnly,
-                                    inputFormat: [
-                                      ThousandsFormatter(
-                                          formatter: formatter,
-                                          allowFraction: true)
-                                    ],
-                                    clear: () {
-                                      setState(() {
-                                        productEntryWeightBahtCtrl.text = "";
-                                      });
-                                      bahtChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'baht';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'baht';
-                                        bahtFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    onChanged: (String value) {
-                                      bahtChanged();
-                                    }),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(children: [
-                              const Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'ป้อนน้ำหนัก',
-                                        style: TextStyle(
-                                            fontSize: 50, color: textColor),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(กรัม)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 30),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextField(
-                                    labelText: "",
-                                    inputType: TextInputType.number,
-                                    controller: productEntryWeightCtrl,
-                                    focusNode: gramFocus,
-                                    readOnly: gramReadOnly,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    clear: () {
-                                      setState(() {
-                                        productEntryWeightCtrl.text = "";
-                                      });
-                                      gramChanged();
-                                    },
-                                    onTap: () {
-                                      txt = 'gram';
-                                      closeCal();
-                                    },
-                                    openCalc: () {
-                                      if (!showCal) {
-                                        txt = 'gram';
-                                        gramFocus.requestFocus();
-                                        openCal();
-                                      }
-                                    },
-                                    onChanged: (String value) {
-                                      gramChanged();
-                                    }),
-                              ),
-                            ])),
-                        const SizedBox(
-                          width: 10,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'ราคาสินค้า',
-                                        style: TextStyle(
-                                            fontSize: 50, color: textColor),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '(บาท)',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 30),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: numberTextField(
-                                  labelText: "",
-                                  inputType: TextInputType.phone,
-                                  focusNode: priceFocus,
-                                  readOnly: priceReadOnly,
-                                  clear: () {
-                                    setState(() {
-                                      priceIncludeTaxCtrl.text = "";
-                                    });
-                                  },
-                                  onTap: () {
-                                    txt = 'price';
-                                    closeCal();
-                                  },
-                                  openCalc: () {
-                                    if (!showCal) {
-                                      txt = 'price';
-                                      priceFocus.requestFocus();
-                                      openCal();
-                                    }
-                                  },
-                                  controller: priceIncludeTaxCtrl,
-                                  inputFormat: [
-                                    ThousandsFormatter(allowFraction: true)
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Expanded(
-                                  flex: 6,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'คลังสินค้าปลายทาง',
-                                        style: TextStyle(
-                                            fontSize: 50, color: textColor),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        '',
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 30),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  )),
-                              Expanded(
-                                flex: 6,
-                                child: SizedBox(
-                                  height: 80,
-                                  child: MiraiDropDownMenu<WarehouseModel>(
-                                    key: UniqueKey(),
-                                    children: toWarehouseList,
-                                    space: 4,
-                                    maxHeight: 360,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                        Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (
-                                      int index,
-                                      WarehouseModel? project, {
-                                      bool isItemSelected = false,
-                                    }) {
-                                      return DropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 18.sp,
-                                      );
-                                    },
-                                    onChanged: (WarehouseModel value) {
-                                      toWarehouseCtrl.text =
-                                          value.id!.toString();
-                                      selectedToLocation = value;
-                                      toWarehouseNotifier!.value = value;
-                                    },
-                                    child: DropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 18.sp,
-                                      projectValueNotifier:
-                                          toWarehouseNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
                         ),
                       ],
                     ),
                   ),
-                ),
-                if (showCal)
-                  DragArea(
-                      closeCal: closeCal,
-                      child: Container(
-                          width: 350,
-                          height: 500,
-                          padding: const EdgeInsets.all(5),
-                          decoration:
-                              const BoxDecoration(color: Color(0xffcccccc)),
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Calc(
-                                closeCal: closeCal,
-                                onChanged: (key, value, expression) {
-                                  if (key == 'ENT') {
-                                    if (txt == 'gram') {
-                                      productEntryWeightCtrl.text =
-                                          value != null
-                                              ? "${Global.format(value)}"
-                                              : "";
-                                      gramChanged();
-                                    }
-                                    if (txt == 'baht') {
-                                      productEntryWeightBahtCtrl.text =
-                                          value != null
-                                              ? "${Global.format(value)}"
-                                              : "";
-                                      bahtChanged();
-                                    }
-                                    if (txt == 'price') {
-                                      priceIncludeTaxCtrl.text = value != null
-                                          ? "${Global.format(value)}"
-                                          : "";
-                                    }
-                                    FocusScope.of(context)
-                                        .requestFocus(FocusNode());
-                                    closeCal();
-                                  }
-                                  if (kDebugMode) {
-                                    print('$key\t$value\t$expression');
-                                  }
-                                },
-                              ),
-                              Positioned(
-                                right: -35.0,
-                                top: -35.0,
-                                child: InkWell(
-                                  onTap: closeCal,
-                                  child: const CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ป้อนน้ำหนัก',
+                                  style: TextStyle(
+                                      fontSize: 50, color: textColor),
                                 ),
-                              ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาททอง)',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextField(
+                              labelText: "",
+                              inputType: TextInputType.phone,
+                              controller: productEntryWeightBahtCtrl,
+                              focusNode: bahtFocus,
+                              readOnly: bahtReadOnly,
+                              inputFormat: [
+                                ThousandsFormatter(
+                                    formatter: formatter,
+                                    allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  productEntryWeightBahtCtrl.text = "";
+                                });
+                                bahtChanged();
+                              },
+                              onTap: () {
+                                txt = 'baht';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'baht';
+                                  bahtFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              onChanged: (String value) {
+                                bahtChanged();
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(children: [
+                        const Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ป้อนน้ำหนัก',
+                                  style: TextStyle(
+                                      fontSize: 50, color: textColor),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(กรัม)',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextField(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productEntryWeightCtrl,
+                              focusNode: gramFocus,
+                              readOnly: gramReadOnly,
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  productEntryWeightCtrl.text = "";
+                                });
+                                gramChanged();
+                              },
+                              onTap: () {
+                                txt = 'gram';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'gram';
+                                  gramFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              onChanged: (String value) {
+                                gramChanged();
+                              }),
+                        ),
+                      ])),
+                  const SizedBox(
+                    width: 10,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ราคาสินค้า',
+                                  style: TextStyle(
+                                      fontSize: 50, color: textColor),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาท)',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextField(
+                            labelText: "",
+                            inputType: TextInputType.phone,
+                            focusNode: priceFocus,
+                            readOnly: priceReadOnly,
+                            clear: () {
+                              setState(() {
+                                priceIncludeTaxCtrl.text = "";
+                              });
+                            },
+                            onTap: () {
+                              txt = 'price';
+                              closeCal();
+                            },
+                            openCalc: () {
+                              if (!showCal) {
+                                txt = 'price';
+                                priceFocus.requestFocus();
+                                openCal();
+                              }
+                            },
+                            controller: priceIncludeTaxCtrl,
+                            inputFormat: [
+                              ThousandsFormatter(allowFraction: true)
                             ],
-                          )))
-              ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'คลังสินค้าปลายทาง',
+                                  style: TextStyle(
+                                      fontSize: 50, color: textColor),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 30),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: SizedBox(
+                            height: 80,
+                            child: MiraiDropDownMenu<WarehouseModel>(
+                              key: UniqueKey(),
+                              children: toWarehouseList,
+                              space: 4,
+                              maxHeight: 360,
+                              showSearchTextField: true,
+                              selectedItemBackgroundColor:
+                                  Colors.transparent,
+                              emptyListMessage: 'ไม่มีข้อมูล',
+                              showSelectedItemBackgroundColor: true,
+                              itemWidgetBuilder: (
+                                int index,
+                                WarehouseModel? project, {
+                                bool isItemSelected = false,
+                              }) {
+                                return DropDownItemWidget(
+                                  project: project,
+                                  isItemSelected: isItemSelected,
+                                  firstSpace: 10,
+                                  fontSize: 18.sp,
+                                );
+                              },
+                              onChanged: (WarehouseModel value) {
+                                toWarehouseCtrl.text =
+                                    value.id!.toString();
+                                selectedToLocation = value;
+                                toWarehouseNotifier!.value = value;
+                              },
+                              child: DropDownObjectChildWidget(
+                                key: GlobalKey(),
+                                fontSize: 18.sp,
+                                projectValueNotifier:
+                                    toWarehouseNotifier!,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
+              ),
             ),
+          ),
       persistentFooterButtons: [
         Row(
           children: [

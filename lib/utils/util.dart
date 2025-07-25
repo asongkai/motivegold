@@ -19,6 +19,7 @@ import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
+import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/constants.dart';
@@ -744,7 +745,7 @@ Widget buildTextFieldBig(
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         labelText: labelText,
         labelStyle: TextStyle(
           color: labelColor ?? textColor,
@@ -796,7 +797,7 @@ Widget numberTextField(
     FocusNode? focusNode,
     bool isPassword = false,
     bool readOnly = false,
-    double fontSize = 40,
+    double? fontSize,
     Color? bgColor,
     enabled = true}) {
   return Padding(
@@ -810,7 +811,7 @@ Widget numberTextField(
         maxLines: line ?? 1,
         textAlign: TextAlign.right,
         style: TextStyle(
-          fontSize: 16.sp, //fontSize,
+          fontSize: fontSize ?? 16.sp, //fontSize,
           color: labelColor ?? textColor,
         ),
         obscureText: isPassword,
@@ -826,7 +827,7 @@ Widget numberTextField(
           labelStyle: TextStyle(
             color: labelColor ?? textColor,
             fontWeight: FontWeight.w900,
-            fontSize: 16.sp, //fontSize,
+            fontSize: fontSize ?? 16.sp, //fontSize,
           ),
           prefixIconConstraints:
               const BoxConstraints(minHeight: 50, minWidth: 50),
@@ -1081,6 +1082,24 @@ Color colorType(OrderModel list) {
   }
 }
 
+String dataTypeRedeem(RedeemModel list) {
+  switch (list.redeemTypeId) {
+    case 1:
+      return "ไถ่ถอน - ขายฝาก";
+    default:
+      return "";
+  }
+}
+
+Color colorTypeRedeem(RedeemModel list) {
+  switch (list.redeemTypeId) {
+    case 1:
+      return stmBgColor;
+    default:
+      return Colors.transparent;
+  }
+}
+
 sumSellTotal() {
   Global.sellSubTotal = 0;
   Global.sellTax = 0;
@@ -1231,7 +1250,14 @@ sumBuyTotal() {
 }
 
 getIdTitle(ProductTypeModel? selectedType) {
+  motivePrint(selectedType?.toJson());
   return selectedType?.code == 'company'
+      ? 'เลขบัตรประจำตัวภาษี'
+      : 'เลขบัตรประจำตัวประชาชน';
+}
+
+getIdTitleName(String? selectedType) {
+  return selectedType == 'company'
       ? 'เลขบัตรประจำตัวภาษี'
       : 'เลขบัตรประจำตัวประชาชน';
 }

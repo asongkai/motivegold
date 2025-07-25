@@ -143,14 +143,14 @@ class _TransferGoldMenuScreenState extends State<TransferGoldMenuScreen> {
                   child: Icon(
                     iconData,
                     color: Colors.white,
-                    size: 18.sp,
+                    size: 30.sp,
                   )),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    fontSize: 18.sp, color: Colors.teal),
+                    fontSize: 14.sp, color: Colors.teal),
                 overflow: TextOverflow.visible,
               ),
             ],

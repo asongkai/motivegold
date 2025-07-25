@@ -1,3 +1,4 @@
+// ReportScreen.dart
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/refill/refill_gold_history_screen.dart';
@@ -29,7 +30,6 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
-    // return Container();
     return Scaffold(
       backgroundColor: Colors.white.withValues(alpha: 0.94),
       appBar: const CustomAppBar(
@@ -47,12 +47,6 @@ class _ReportScreenState extends State<ReportScreen> {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            // user card
-            // SimpleUserCard(
-            //   imageRadius: 10,
-            //   userName: Global.user!.username!,
-            //   userProfilePic: const AssetImage("assets/images/sample_profile.jpg"),
-            // ),
             SettingsGroup(
               settingsGroupTitle: "ประวัติการทำรายการ",
               items: [
@@ -62,11 +56,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const RefillGoldHistoryScreen()));
+                            const RefillGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.add_circle, // Better for adding/refilling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.amber[600]!, // Gold color for gold refill
                   ),
                   title: 'เติมทอง',
                   subtitle: "ประวัติการเติมทอง",
@@ -85,11 +79,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const SellUsedGoldHistoryScreen()));
+                            const SellUsedGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Colors.orange[600]!, // Orange for selling used gold
                   ),
                   title: 'ขายทองเก่า',
                   subtitle: "ประวัติการขายทองเก่า",
@@ -108,11 +102,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const TransferGoldHistoryScreen()));
+                            const TransferGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.transfer_within_a_station, // Better for transfers
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.blue[600]!, // Blue for transfers
                   ),
                   title: 'โอนทอง',
                   subtitle: "ประวัติการโอนทอง",
@@ -131,28 +125,6 @@ class _ReportScreenState extends State<ReportScreen> {
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AuthHistoryScreen()));
-                  },
-                  icons: Icons.featured_play_list_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.blue[500],
-                  ),
-                  title: 'บันทึกการเข้าถึงระบบ',
-                  subtitle: "ประวัติการเข้าใช้ระบบ",
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
                 if (Global.company?.stock == 1)
                   SettingsItem(
                     onTap: () {
@@ -160,11 +132,11 @@ class _ReportScreenState extends State<ReportScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const StockReportListScreen()));
+                              const StockReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     subtitle: "รายงานสต็อคคลังสินค้า",
@@ -184,11 +156,11 @@ class _ReportScreenState extends State<ReportScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const StockMovementReportListScreen()));
+                              const StockMovementReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหว',
                     subtitle: "รายงานความเคลื่อนไหวสต๊อกสินค้า",
@@ -207,11 +179,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const MoneyMovementReportScreen()));
+                            const MoneyMovementReportScreen()));
                   },
-                  icons: Icons.pie_chart,
+                  icons: Icons.account_balance_wallet, // Better for financial flow
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.purple[600]!, // Purple for financial reports
                   ),
                   title: 'รายงานเส้นทางการเงิน',
                   subtitle: "รายงานเส้นทางการเงินทองรูปพรรณ",
@@ -230,11 +202,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyNewGoldReportScreen()));
+                            const BuyNewGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.shopping_cart, // Better for buying
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.red[600]!, // Red for buying
                   ),
                   title: 'ซื้อทองใหม่',
                   subtitle: "รายงานการซื้อทองคำใหม่",
@@ -253,11 +225,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const SellNewGoldReportScreen()));
+                            const SellNewGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.teal[600]!, // Teal for selling new
                   ),
                   title: 'ขายทองใหม่',
                   subtitle: "รายงานการขายทองคำใหม่",
@@ -276,11 +248,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const SellUsedGoldReportScreen()));
+                            const SellUsedGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Selling icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepOrangeAccent,
+                    backgroundColor: Colors.deepOrange[600]!, // Deep orange for used items
                   ),
                   title: 'ขายทองเก่า',
                   subtitle: "รายงานการขายทองคำเก่า",
@@ -299,11 +271,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyUsedGoldReportScreen()));
+                            const BuyUsedGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.shopping_cart, // Buying icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.brown,
+                    backgroundColor: Colors.brown[600]!, // Brown for used items
                   ),
                   title: 'ซื้อทองเก่า',
                   subtitle: "รายงานการซื้อทองคำเก่า",
@@ -323,9 +295,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         MaterialPageRoute(
                             builder: (context) => const SellVatReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.receipt_long, // Better for tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.indigo[600]!, // Indigo for tax reports
                   ),
                   title: 'รายงานภาษีขาย',
                   subtitle: "ขายทองคำรูปพรรณใหม่ 96.5%",
@@ -345,9 +317,9 @@ class _ReportScreenState extends State<ReportScreen> {
                         MaterialPageRoute(
                             builder: (context) => const BuyVatReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.receipt_long, // Tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.indigo[600]!, // Same color for tax consistency
                   ),
                   title: 'รายงานภาษีซื้อ',
                   subtitle: "ซื้อทองคำรูปพรรณใหม่ 96.5%",
@@ -366,11 +338,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyUsedGoldGovReportScreen()));
+                            const BuyUsedGoldGovReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.account_balance, // Government/official reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.cyan[600]!, // Cyan for government reports
                   ),
                   title: 'บัญชีสำหรับผู้ทำการค้าของเก่า',
                   subtitle: "รายงานบัญชีสำหรับผู้ทำการค้าของเก่า",
@@ -389,11 +361,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const RedeemSingleReportScreen()));
+                            const RedeemSingleReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.redeem, // Perfect for redeem/pawn reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: Colors.deepPurple[600]!, // Deep purple for pawn/redeem
                   ),
                   title: 'รายงานภาษีขายตามสัญญาขายฝาก ',
                   subtitle: "รายงานภาษีขายตามสัญญาขายฝากทองคำรูปพรรณใหม่ 96.5%",
@@ -406,48 +378,8 @@ class _ReportScreenState extends State<ReportScreen> {
                       .titleMedium
                       ?.copyWith(color: Colors.grey.shade600),
                 ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: Icons.checklist_rtl_outlined,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green,
-                //   ),
-                //   title: 'รายงาน 003',
-                //   subtitle: "รายงาน 003",
-                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                // ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: Icons.checklist_rtl_outlined,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green,
-                //   ),
-                //   title: 'รายงาน 004',
-                //   subtitle: "รายงาน 004",
-                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                // ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: Icons.checklist_rtl_outlined,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green,
-                //   ),
-                //   title: 'รายงาน 005',
-                //   subtitle: "รายงาน 005",
-                //   titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                //   subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                // ),
               ],
             ),
-            // You can add a settings title
           ],
         ),
       ),

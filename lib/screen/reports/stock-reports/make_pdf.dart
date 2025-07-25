@@ -19,15 +19,13 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
 
   List<Widget> widgets = [];
 
+  // Original header (unchanged)
   widgets.add(Center(
       child: Column(children: [
         Text('${Global.company?.name}'),
         Text('(${Global.branch!.name})'),
-        //   Text('(สํานักงานใหญ่)'),
-        //   Text('${Global.company?.name}'),
         Text(
             '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-        //   Text('${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
         Text('เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
         Text('TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
         Text('POS Reg. No : '),
@@ -56,60 +54,154 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
     ],
   ));
   widgets.add(height());
-  widgets.add(Table(
-    border: TableBorder.all(color: PdfColors.grey500),
-    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-    columnWidths: {
-      0: const FlexColumnWidth(2),
-      1: const FlexColumnWidth(3),
-      2: const FlexColumnWidth(2),
-      3: const FlexColumnWidth(2),
-      4: const FlexColumnWidth(3)
-    },
-    children: [
-      TableRow(children: [
-        paddedTextBigXL('สินค้า'),
-        paddedTextBigXL('คลังสินค้า'),
-        paddedTextBigXL('น้ำหนักรวม', align: TextAlign.right),
-        paddedTextBigXL('ราคาต่อ\nหน่วย', align: TextAlign.right),
-        paddedTextBigXL('ราคารวม', align: TextAlign.right),
-      ]),
-      ...list.map((e) => TableRow(
-        decoration: const BoxDecoration(),
-        children: [
-          paddedTextBigXL(
-              e.product == null ? "" : e.product!.name),
-          paddedTextBigXL(e.binLocation == null
-              ? ""
-              : e.binLocation!.name),
-          paddedTextBigXL(Global.format(e.weight ?? 0),
-              style: const TextStyle(fontSize: 12),
-              align: TextAlign.right),
-          paddedTextBigXL(
-              Global.format6(e.unitCost ?? 0),
-              style: const TextStyle(fontSize: 12),
-              align: TextAlign.right),
-          paddedTextBigXL(
-              Global.format6(e.price ?? 0),
-              style: const TextStyle(fontSize: 12),
-              align: TextAlign.right),
-        ],
-      )),
-      // TableRow(children: [
-      //   paddedTextBigXL('', style: const TextStyle(fontSize: 14)),
-      //   paddedTextBigXL(''),
-      //   paddedTextBigXL(''),
-      //   paddedTextBigXL('รวมท้ังหมด'),
-      //   paddedTextBigXL(Global.format(getWeightTotal(ods))),
-      //   paddedTextBigXL(''),
-      //   paddedTextBigXL(Global.format(priceIncludeTaxTotal(ods))),
-      //   paddedTextBigXL(Global.format(purchasePriceTotal(ods))),
-      //   paddedTextBigXL(Global.format(priceDiffTotal(ods))),
-      //   paddedTextBigXL(Global.format(taxBaseTotal(ods))),
-      //   paddedTextBigXL(Global.format(taxAmountTotal(ods))),
-      //   paddedTextBigXL(Global.format(priceExcludeTaxTotal(ods))),
-      // ])
-    ],
+
+  // Mobile-inspired clean table design
+  widgets.add(Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: PdfColors.grey300, width: 1),
+    ),
+    child: Table(
+      border: TableBorder(
+        top: BorderSide.none,
+        bottom: BorderSide.none,
+        left: BorderSide.none,
+        right: BorderSide.none,
+        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        verticalInside: BorderSide.none,
+      ),
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      columnWidths: {
+        0: const FlexColumnWidth(2),
+        1: const FlexColumnWidth(3),
+        2: const FlexColumnWidth(2),
+        3: const FlexColumnWidth(2),
+        4: const FlexColumnWidth(3)
+      },
+      children: [
+        // Clean header row with rounded top corners
+        TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue600,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
+              ),
+            ),
+            children: [
+              paddedTextBigXL('สินค้า',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextBigXL('คลังสินค้า',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextBigXL('น้ำหนักรวม',
+                  align: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextBigXL('ราคาต่อ\nหน่วย',
+                  align: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextBigXL('ราคารวม',
+                  align: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+            ]
+        ),
+        // Clean white data rows
+        ...list.map((e) => TableRow(
+          decoration: const BoxDecoration(),
+          children: [
+            paddedTextBigXL(
+                e.product == null ? "" : e.product!.name),
+            paddedTextBigXL(e.binLocation == null
+                ? ""
+                : e.binLocation!.name),
+            paddedTextBigXL(Global.format(e.weight ?? 0),
+                style: const TextStyle(fontSize: 12),
+                align: TextAlign.right),
+            paddedTextBigXL(
+                Global.format6(e.unitCost ?? 0),
+                style: const TextStyle(fontSize: 12),
+                align: TextAlign.right),
+            paddedTextBigXL(
+                Global.format6(e.price ?? 0),
+                style: const TextStyle(fontSize: 12),
+                align: TextAlign.right),
+          ],
+        )),
+        // Clean summary row
+        TableRow(
+          decoration: BoxDecoration(
+            color: PdfColors.blue50,
+            border: Border(
+              top: BorderSide(color: PdfColors.blue200, width: 1),
+            ),
+          ),
+          children: [
+            paddedTextBigXL('',
+                style: const TextStyle(fontSize: 14)
+            ),
+            paddedTextBigXL('รวมทั้งหมด',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: PdfColors.blue800
+                ),
+                align: TextAlign.center
+            ),
+            paddedTextBigXL(
+                Global.format(list.fold(0.0, (sum, item) => sum + (item.weight ?? 0))),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: PdfColors.blue700
+                ),
+                align: TextAlign.right
+            ),
+            paddedTextBigXL(
+                Global.format6(list.fold(0.0, (sum, item) => sum + (item.unitCost ?? 0))),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: PdfColors.orange700
+                ),
+                align: TextAlign.right
+            ),
+            paddedTextBigXL(
+                Global.format6(list.fold(0.0, (sum, item) => sum + (item.price ?? 0))),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: PdfColors.green700
+                ),
+                align: TextAlign.right
+            ),
+          ],
+        ),
+      ],
+    ),
   ));
 
   pdf.addPage(
@@ -127,8 +219,8 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
 }
 
 Widget paddedText(final String text,
-        {final TextAlign align = TextAlign.left,
-        final TextStyle style = const TextStyle(fontSize: 12)}) =>
+    {final TextAlign align = TextAlign.left,
+      final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(10),
       child: Text(

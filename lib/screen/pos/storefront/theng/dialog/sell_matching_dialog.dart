@@ -8,6 +8,7 @@ import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -198,24 +199,46 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
     if (txt == 'price') {
       priceReadOnly = true;
     }
+    AppCalculatorManager.showCalculator(
+      onClose: closeCal,
+      onChanged: (key, value, expression) {
+        if (key == 'ENT') {
+          if (txt == 'unit') {
+            unitPriceCtrl.text = value != null
+                ? "${Global.format(value)}"
+                : "";
+            unitChanged();
+          }
+          if (txt == 'baht') {
+            productWeightBahtCtrl.text = value != null
+                ? "${Global.format(value)}"
+                : "";
+            bahtChanged();
+          }
+          if (txt == 'price') {
+            productPriceCtrl.text = value != null
+                ? "${Global.format(value)}"
+                : "";
+          }
+          FocusScope.of(context).requestFocus(FocusNode());
+          closeCal();
+        }
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+    );
     setState(() {
       showCal = true;
     });
   }
 
   void closeCal() {
-    // if (txt == 'unit') {
       unitReadOnly = false;
-    // }
-    // if (txt == 'gram') {
       gramReadOnly = false;
-    // }
-    // if (txt == 'baht') {
       bahtReadOnly = false;
-    // }
-    // if (txt == 'price') {
       priceReadOnly = false;
-    // }
+      AppCalculatorManager.hideCalculator();
     setState(() {
       showCal = false;
     });
@@ -232,496 +255,262 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
           backButton: true,
         ),
       ),
-      body: Stack(
-        children: [
-          GestureDetector(
-            onTap: () {
-              FocusScope.of(context).requestFocus(FocusNode());
-              closeCal();
-            },
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          closeCal();
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
+                decoration: const BoxDecoration(color: stmBgColor),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'ขายทองแท่ง (จับคู่)',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: (MediaQuery.of(context).orientation == Orientation.landscape) ? 80 : 70,
-                    decoration: const BoxDecoration(color: stmBgColor),
+                  Expanded(
+                      flex: 6,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            'วันจองราคา',
+                            style:
+                                TextStyle(fontSize: 16.sp, color: textColor),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            '',
+                            style:
+                                TextStyle(color: textColor, fontSize: 16.sp),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      )),
+                  Expanded(
+                    flex: 6,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'ขายทองแท่ง (จับคู่)',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: (MediaQuery.of(context).orientation == Orientation.landscape) ? 16.sp : 16.sp, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(
-                  //   height: 100,
-                  //   child: Row(
-                  //     children: [
-                  //       Expanded(
-                  //         flex: 5,
-                  //         child:
-                  //             Padding(
-                  //           padding:
-                  //               const EdgeInsets
-                  //                   .all(
-                  //                   8.0),
-                  //           child:
-                  //               SizedBox(
-                  //             height:
-                  //                 80,
-                  //             child: MiraiDropDownMenu<
-                  //                 ProductModel>(
-                  //               key:
-                  //                   UniqueKey(),
-                  //               children:
-                  //                   productList,
-                  //               space:
-                  //                   4,
-                  //               maxHeight:
-                  //                   360,
-                  //               showSearchTextField:
-                  //                   true,
-                  //               selectedItemBackgroundColor:
-                  //                   Colors.transparent,
-                  //               emptyListMessage:
-                  //                   'ไม่มีข้อมูล',
-                  //               showSelectedItemBackgroundColor:
-                  //                   true,
-                  //               itemWidgetBuilder:
-                  //                   (
-                  //                 int index,
-                  //                 ProductModel?
-                  //                     project, {
-                  //                 bool isItemSelected =
-                  //                     false,
-                  //               }) {
-                  //                 return DropDownItemWidget(
-                  //                   project:
-                  //                       project,
-                  //                   isItemSelected:
-                  //                       isItemSelected,
-                  //                   firstSpace:
-                  //                       10,
-                  //                   fontSize:
-                  //                       16.sp,
-                  //                 );
-                  //               },
-                  //               onChanged:
-                  //                   (ProductModel
-                  //                       value) {
-                  //                 productCodeCtrl.text = value
-                  //                     .productCode!
-                  //                     .toString();
-                  //                 productNameCtrl.text =
-                  //                     value.name;
-                  //                 selectedProduct =
-                  //                     value;
-                  //                 productNotifier!.value =
-                  //                     value;
-                  //                 if (selectedWarehouse !=
-                  //                     null) {
-                  //                   loadQtyByLocation(selectedWarehouse!.id!);
-                  //                   setState(() {});
-                  //                 }
-                  //               },
-                  //               child:
-                  //                   DropDownObjectChildWidget(
-                  //                 key:
-                  //                     GlobalKey(),
-                  //                 fontSize:
-                  //                     16.sp,
-                  //                 projectValueNotifier:
-                  //                     productNotifier!,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // const SizedBox(
-                  //   height: 10,
-                  // ),
-                  // const Padding(
-                  //   padding: EdgeInsets.only(left: 8.0),
-                  //   child: Text('Warehouse', textAlign: TextAlign.left,),
-                  // ),
-                  // Row(
-                  //   children: [
-                  //     Expanded(
-                  //       child: Padding(
-                  //         padding:
-                  //             const EdgeInsets
-                  //                 .all(
-                  //                 8.0),
-                  //         child:
-                  //             SizedBox(
-                  //           height: 80,
-                  //           child: MiraiDropDownMenu<
-                  //               WarehouseModel>(
-                  //             key:
-                  //                 UniqueKey(),
-                  //             children:
-                  //                 warehouseList,
-                  //             space: 4,
-                  //             maxHeight:
-                  //                 360,
-                  //             showSearchTextField:
-                  //                 true,
-                  //             selectedItemBackgroundColor:
-                  //                 Colors
-                  //                     .transparent,
-                  //             emptyListMessage:
-                  //                 'ไม่มีข้อมูล',
-                  //             showSelectedItemBackgroundColor:
-                  //                 true,
-                  //             itemWidgetBuilder:
-                  //                 (
-                  //               int index,
-                  //               WarehouseModel?
-                  //                   project, {
-                  //               bool isItemSelected =
-                  //                   false,
-                  //             }) {
-                  //               return DropDownItemWidget(
-                  //                 project:
-                  //                     project,
-                  //                 isItemSelected:
-                  //                     isItemSelected,
-                  //                 firstSpace:
-                  //                     10,
-                  //                 fontSize:
-                  //                     16.sp,
-                  //               );
-                  //             },
-                  //             onChanged:
-                  //                 (WarehouseModel
-                  //                     value) {
-                  //               warehouseCtrl.text = value
-                  //                   .id!
-                  //                   .toString();
-                  //               selectedWarehouse =
-                  //                   value;
-                  //               warehouseNotifier!.value =
-                  //                   value;
-                  //               loadQtyByLocation(
-                  //                   value.id!);
-                  //               setState(
-                  //                   () {});
-                  //             },
-                  //             child:
-                  //                 DropDownObjectChildWidget(
-                  //               key:
-                  //                   GlobalKey(),
-                  //               fontSize:
-                  //                   16.sp,
-                  //               projectValueNotifier:
-                  //                   warehouseNotifier!,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                          flex: 6,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                'วันจองราคา',
-                                style:
-                                    TextStyle(fontSize: 16.sp, color: textColor),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                '',
-                                style:
-                                    TextStyle(color: textColor, fontSize: 16.sp),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                            ],
-                          )),
-                      Expanded(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: DateWidget(dateCtrl: bookDateCtrl, label: ''),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'จำนวนน้ำหนัก',
-                                  style:
-                                      TextStyle(fontSize: 16.sp, color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '(บาททอง)',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 16.sp),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.phone,
-                              controller: productWeightBahtCtrl,
-                              readOnly: bahtReadOnly,
-                              focusNode: bahtFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productWeightBahtCtrl.text = "";
-                                });
-                                bahtChanged();
-                              },
-                              onTap: () {
-                                txt = 'baht';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'baht';
-                                  bahtFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (String value) {
-                                bahtChanged();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'บาททองละ',
-                                  style:
-                                      TextStyle(fontSize: 16.sp, color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 16.sp),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.number,
-                              controller: unitPriceCtrl,
-                              readOnly: unitReadOnly,
-                              focusNode: unitFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  unitPriceCtrl.text = "";
-                                });
-                                unitChanged();
-                              },
-                              onTap: () {
-                                txt = 'unit';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'unit';
-                                  unitFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (value) {
-                                unitChanged();
-                              }),
-                        ),
-                      ])),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'จำนวนเงิน',
-                                  style:
-                                      TextStyle(fontSize: 16.sp, color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '',
-                                  style:
-                                      TextStyle(color: textColor, fontSize: 16.sp),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextField(
-                              labelText: "",
-                              inputType: TextInputType.phone,
-                              enabled: true,
-                              controller: productPriceCtrl,
-                              readOnly: priceReadOnly,
-                              focusNode: priceFocus,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productPriceCtrl.text = "";
-                                });
-                              },
-                              onTap: () {
-                                txt = 'price';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'price';
-                                  priceFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (String value) {
-                                if (productPriceCtrl.text.isNotEmpty) {
-                                  setState(() {});
-                                }
-                              }),
-                        ),
-                      ],
+                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      child: DateWidget(dateCtrl: bookDateCtrl, label: ''),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          if (showCal)
-            DragArea(
-                closeCal: closeCal,
-                child: Container(
-                    width: 350,
-                    height: 500,
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(color: Color(0xffcccccc)),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Calc(
-                          closeCal: closeCal,
-                          onChanged: (key, value, expression) {
-                            if (key == 'ENT') {
-                              if (txt == 'unit') {
-                                unitPriceCtrl.text = value != null
-                                    ? "${Global.format(value)}"
-                                    : "";
-                                unitChanged();
-                              }
-                              if (txt == 'baht') {
-                                productWeightBahtCtrl.text = value != null
-                                    ? "${Global.format(value)}"
-                                    : "";
-                                bahtChanged();
-                              }
-                              if (txt == 'price') {
-                                productPriceCtrl.text = value != null
-                                    ? "${Global.format(value)}"
-                                    : "";
-                              }
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              closeCal();
-                            }
-                            if (kDebugMode) {
-                              print('$key\t$value\t$expression');
+              const SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'จำนวนน้ำหนัก',
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '(บาททอง)',
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                      flex: 6,
+                      child: numberTextField(
+                          labelText: "",
+                          inputType: TextInputType.phone,
+                          controller: productWeightBahtCtrl,
+                          readOnly: bahtReadOnly,
+                          focusNode: bahtFocus,
+                          inputFormat: [
+                            ThousandsFormatter(allowFraction: true)
+                          ],
+                          clear: () {
+                            setState(() {
+                              productWeightBahtCtrl.text = "";
+                            });
+                            bahtChanged();
+                          },
+                          onTap: () {
+                            txt = 'baht';
+                            closeCal();
+                          },
+                          openCalc: () {
+                            if (!showCal) {
+                              txt = 'baht';
+                              bahtFocus.requestFocus();
+                              openCal();
                             }
                           },
-                        ),
-                        Positioned(
-                          right: -35.0,
-                          top: -35.0,
-                          child: InkWell(
-                            onTap: closeCal,
-                            child: const CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.red,
-                              child: Icon(
-                                Icons.close,
-                                size: 40,
-                                color: Colors.white,
-                              ),
+                          onChanged: (String value) {
+                            bahtChanged();
+                          }),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(children: [
+                    Expanded(
+                        flex: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'บาททองละ',
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
-                          ),
-                        ),
-                      ],
-                    )))
-        ],
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '',
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                      flex: 6,
+                      child: numberTextField(
+                          labelText: "",
+                          inputType: TextInputType.number,
+                          controller: unitPriceCtrl,
+                          readOnly: unitReadOnly,
+                          focusNode: unitFocus,
+                          inputFormat: [
+                            ThousandsFormatter(allowFraction: true)
+                          ],
+                          clear: () {
+                            setState(() {
+                              unitPriceCtrl.text = "";
+                            });
+                            unitChanged();
+                          },
+                          onTap: () {
+                            txt = 'unit';
+                            closeCal();
+                          },
+                          openCalc: () {
+                            if (!showCal) {
+                              txt = 'unit';
+                              unitFocus.requestFocus();
+                              openCal();
+                            }
+                          },
+                          onChanged: (value) {
+                            unitChanged();
+                          }),
+                    ),
+                  ])),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'จำนวนเงิน',
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '',
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                      flex: 6,
+                      child: numberTextField(
+                          labelText: "",
+                          inputType: TextInputType.phone,
+                          enabled: true,
+                          controller: productPriceCtrl,
+                          readOnly: priceReadOnly,
+                          focusNode: priceFocus,
+                          inputFormat: [
+                            ThousandsFormatter(allowFraction: true)
+                          ],
+                          clear: () {
+                            setState(() {
+                              productPriceCtrl.text = "";
+                            });
+                          },
+                          onTap: () {
+                            txt = 'price';
+                            closeCal();
+                          },
+                          openCalc: () {
+                            if (!showCal) {
+                              txt = 'price';
+                              priceFocus.requestFocus();
+                              openCal();
+                            }
+                          },
+                          onChanged: (String value) {
+                            if (productPriceCtrl.text.isNotEmpty) {
+                              setState(() {});
+                            }
+                          }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       persistentFooterButtons: [
         Row(

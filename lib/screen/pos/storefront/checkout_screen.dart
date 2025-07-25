@@ -21,9 +21,11 @@ import 'package:motivegold/screen/pos/storefront/paphun/dialog/edit_sell_dialog.
 import 'package:motivegold/screen/pos/storefront/print_bill_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/classes/painter.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
+import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
@@ -50,11 +52,14 @@ class CheckOutScreen extends StatefulWidget {
   State<CheckOutScreen> createState() => _CheckOutScreenState();
 }
 
-class _CheckOutScreenState extends State<CheckOutScreen> {
+class _CheckOutScreenState extends State<CheckOutScreen>
+    with SingleTickerProviderStateMixin {
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
   TextEditingController addPriceCtrl = TextEditingController();
   Screen? size;
+  AnimationController? _animationController;
+  Animation<double>? _fadeAnimation;
 
   int? selectedOption = 0;
   bool loading = false;
@@ -65,9 +70,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   @override
   void initState() {
-    // implement initState
     super.initState();
-    // Global.discount = 0;
+    _initializeAnimations();
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -86,6 +90,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       loadCustomer();
     }
     loadDefaultPayment();
+  }
+
+  void _initializeAnimations() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController!, curve: Curves.easeInOut),
+    );
+    _animationController?.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    discountCtrl.dispose();
+    addPriceCtrl.dispose();
+    super.dispose();
   }
 
   loadDefaultPayment() async {
@@ -173,20 +196,26 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    // Global.discount = 0;
-  }
-
   openCal() {
+    AppCalculatorManager.showCalculator(
+      onClose: closeCal,
+      onChanged: (key, value, expression) {
+        if (key == 'ENT') {
+          FocusScope.of(context).requestFocus(FocusNode());
+          closeCal();
+        }
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+    );
     setState(() {
       showCal = true;
     });
   }
 
   closeCal() {
+    AppCalculatorManager.hideCalculator();
     setState(() {
       showCal = false;
     });
@@ -207,1189 +236,1391 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   fontWeight: FontWeight.w900)),
         ),
       ),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           child: Global.orders.isEmpty
-              ? const Center(
-                  child: NoDataFoundWidget(),
-                )
-              : Stack(
-                  children: [
-                    SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(8.0),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'ลูกค้า',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 1,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedOption = 1;
-                                          loadCustomer();
-                                        });
-                                      },
-                                      child: ListTile(
-                                        title: const Text(
-                                          'ไม่สำแดงตน',
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        leading: Radio<int>(
-                                          value: 1,
-                                          groupValue: selectedOption,
-                                          activeColor: Colors.blue[700],
-                                          onChanged: (value) {
-                                            setState(() {
-                                              selectedOption = value!;
-                                              loadCustomer();
-                                              // print("Button value: $value");
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedOption = 0;
-                                          Global.customer = null;
-                                        });
-                                      },
-                                      child: ListTile(
-                                        title: const Text('สำแดงตน',
-                                            style: TextStyle(fontSize: 20)),
-                                        leading: Radio<int>(
-                                          value: 0,
-                                          groupValue: selectedOption,
-                                          activeColor: Colors.blue[700],
-                                          onChanged: (value) {
-                                            setState(() {
-                                              selectedOption = value!;
-                                              Global.customer = null;
-                                              // print("Button value: $value");
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Spacer()
-                                ],
-                              ),
-                            ),
-                            if (loading)
-                              const SizedBox(
-                                height: 100,
-                                child: Center(
-                                  child: LoadingProgress(),
-                                ),
-                              ),
-                            if (selectedOption == 0)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 25),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:
-                                            Colors.grey.withValues(alpha: 0.1),
-                                        blurRadius: 1,
-                                        spreadRadius: 1,
-                                        offset: const Offset(2, 2),
-                                      ),
-                                    ]),
-                                child: Global.customer == null
-                                    ? Row(
-                                        children: [
-                                          Expanded(flex: 5, child: Container()),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Column(
-                                              children: [
-                                                KclButton(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        const AddCustomerScreen(),
-                                                                fullscreenDialog:
-                                                                    true))
-                                                        .whenComplete(() {
-                                                      setState(() {});
-                                                    });
-                                                  },
-                                                  text: 'เพิ่ม',
-                                                  fullWidth: true,
-                                                  icon: Icons.add,
-                                                ),
-                                                KclButton(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        const CustomerScreen(
-                                                                          selected:
-                                                                              true,
-                                                                          type:
-                                                                              "C",
-                                                                        ),
-                                                                fullscreenDialog:
-                                                                    true))
-                                                        .whenComplete(() {
-                                                      setState(() {});
-                                                    });
-                                                  },
-                                                  text: 'ค้นหา',
-                                                  icon: Icons.search,
-                                                  fullWidth: true,
-                                                  color: Colors.teal,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 5,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 16.sp,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 8,
-                                                    ),
-                                                    Text(
-                                                      "${Global.customer!.phoneNumber}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: Colors.black,
-                                                        fontSize: 16.sp,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 8,
-                                                    ),
-                                                    Text(
-                                                      "${Global.customer!.email}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: Colors.black,
-                                                        fontSize: 16.sp,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 3,
-                                                    ),
-                                                    Text(
-                                                      "${Global.customer!.address}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 16.sp,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 3,
-                                                    ),
-                                                    Text(
-                                                      "${getWorkId(Global.customer!)}",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 16.sp,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 3,
-                                                    ),
-                                                    // Text(
-                                                    //   "${getIdTitleCustomer(Global.customer)}",
-                                                    //   style: TextStyle(
-                                                    //     fontWeight: FontWeight.w500,
-                                                    //     fontSize:
-                                                    //         16.sp,
-                                                    //   ),
-                                                    // ),
-                                                    // const SizedBox(
-                                                    //   height: 3,
-                                                    // ),
-                                                    // Text(
-                                                    //   "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
-                                                    //   style: TextStyle(
-                                                    //     fontWeight: FontWeight.w500,
-                                                    //     fontSize:
-                                                    //         16.sp,
-                                                    //   ),
-                                                    // ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    KclButton(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            const AddCustomerScreen(),
-                                                                    fullscreenDialog:
-                                                                        true))
-                                                            .whenComplete(() {
-                                                          setState(() {});
-                                                        });
-                                                      },
-                                                      text: 'เพิ่ม',
-                                                      fullWidth: true,
-                                                      icon: Icons.add,
-                                                    ),
-                                                    KclButton(
-                                                      onTap: () {
-                                                        Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            const CustomerScreen(
-                                                                              selected: true,
-                                                                              type: "C",
-                                                                            ),
-                                                                    fullscreenDialog:
-                                                                        true))
-                                                            .whenComplete(() {
-                                                          setState(() {});
-                                                        });
-                                                      },
-                                                      text: 'ค้นหา',
-                                                      icon: Icons.search,
-                                                      fullWidth: true,
-                                                      color: Colors.teal,
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                              ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'รายการสั่งซื้อ',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(0),
-                                color: bgColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  for (int i = 0; i < Global.orders.length; i++)
-                                    _itemOrderList(
-                                        order: Global.orders[i], index: i)
-                                  // ...Global.orders!.map((e) {
-                                  //   return _itemOrderList(order: e, index: 0);
-                                  // })
-                                ],
-                              ),
-                            ),
-                            Text(
-                              'ราคา',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            buildTextFieldBig(
-                                labelText: "ร้านทองเพิ่มให้ (บาท)",
-                                labelColor: Colors.orange,
-                                controller: addPriceCtrl,
-                                inputType: TextInputType.phone,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                                onChanged: (value) {
-                                  Global.addPrice = value.isNotEmpty
-                                      ? Global.toNumber(value)
-                                      : 0;
-                                  setState(() {});
-                                }),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            buildTextFieldBig(
-                                labelText: "ร้านทองลดให้ (บาท)",
-                                labelColor: Colors.orange,
-                                controller: discountCtrl,
-                                inputType: TextInputType.phone,
-                                inputFormat: [
-                                  ThousandsFormatter(allowFraction: true)
-                                ],
-                                onChanged: (value) {
-                                  Global.discount = value.isNotEmpty
-                                      ? Global.toNumber(value)
-                                      : 0;
-                                  setState(() {});
-                                }),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(0),
-                                color: bgColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  PriceBreakdown(
-                                    title: 'จำนวนเงินที่ต้องชำระ'.tr(),
-                                    price:
-                                        '${Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
-                                  ),
-                                  PriceBreakdown(
-                                    title:
-                                        '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
-                                    price:
-                                        '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Divider(
-                                // height: getProportionateScreenHeight(5),
-                                ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'วิธีการชำระเงิน'.tr(),
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 150,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: snBgColor,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    onPressed: () async {
-                                      setState(() {
-                                        resetPaymentData();
-                                      });
-                                      paymentDialog();
-                                    },
-                                    child: const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.add, size: 32),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          'เพิ่ม',
-                                          style: TextStyle(fontSize: 32),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                SizedBox(
-                                  // width: 150,
-                                  child: CalculatorButton(onTap: openCal),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            if (Global.paymentList!.isNotEmpty)
-                              SizedBox(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          left: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          right: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          top: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            flex: 1,
-                                            child: Text('ลำดับ',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: kPrimaryGreen,
-                                                )),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
-                                            child: Text('วิธีการชำระเงิน',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: kPrimaryGreen,
-                                                )),
-                                          ),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text('วันที่ชำระเงิน',
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: kPrimaryGreen,
-                                                )),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text('จำนวนเงิน',
-                                                  textAlign: TextAlign.right,
-                                                  style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: kPrimaryGreen,
-                                                  )),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            flex: 3,
-                                            child: Text('',
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: kPrimaryGreen,
-                                                )),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: Global.paymentList!.length,
-                                        itemBuilder: (context, index) {
-                                          return _paymentItemList(
-                                              order: Global.paymentList![index],
-                                              index: index);
-                                        }),
-                                    Container(
-                                      decoration: const BoxDecoration(
-                                        color: bgColor,
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          left: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          right: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                          top: BorderSide(
-                                            color: Colors.white,
-                                            width: 2,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 1,
-                                              child: Text('',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: kPrimaryGreen,
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Text('',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: kPrimaryGreen,
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Text('ทั้งหมด',
-                                                  textAlign: TextAlign.right,
-                                                  style: TextStyle(
-                                                    fontSize: 18.sp,
-                                                    color: kPrimaryGreen,
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                    '${Global.format(getPaymentTotal())}',
-                                                    textAlign: TextAlign.right,
-                                                    style: TextStyle(
-                                                      fontSize: 18.sp,
-                                                      color: kPrimaryGreen,
-                                                    )),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              flex: 3,
-                                              child: Text('',
-                                                  style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: kPrimaryGreen,
-                                                  )),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            SizedBox(
-                              height:
-                                  Global.paymentAttachment == null ? 100 : 0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (showCal)
-                      DragArea(
-                          closeCal: closeCal,
-                          child: Container(
-                              width: 350,
-                              height: 500,
-                              padding: const EdgeInsets.all(5),
-                              decoration:
-                              const BoxDecoration(color: Color(0xffcccccc)),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xffcccccc),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(0),
-                                        topRight: Radius.circular(0),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Center(
-                                            child: Text(
-                                              'เครื่องคิดเลข',
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            closeCal();
-                                          },
-                                          child: Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(0),
-                                              ),
-                                            ),
-                                            child: const Icon(
-                                              Icons.close,
-                                              color: Colors.white,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Focus(
-                                      autofocus: true,
-                                      onKeyEvent: (node, event) {
-                                        // Handle keyboard events specifically for calculator
-                                        if (event is KeyDownEvent) {
-                                          // Allow number keys including "0" to pass through
-                                          if (event.logicalKey ==
-                                              LogicalKeyboardKey.digit0 ||
-                                              event.logicalKey ==
-                                                  LogicalKeyboardKey.numpad0) {
-                                            return KeyEventResult
-                                                .ignored; // Let calculator handle it
-                                          }
-                                          // Handle other calculator keys
-                                          if (event.logicalKey ==
-                                              LogicalKeyboardKey.enter ||
-                                              event.logicalKey ==
-                                                  LogicalKeyboardKey
-                                                      .numpadEnter) {
-                                            return KeyEventResult
-                                                .ignored; // Let calculator handle enter
-                                          }
-                                        }
-                                        return KeyEventResult.ignored;
-                                      },
-                                      child: Calc(
-                                        closeCal: closeCal,
-                                        onChanged: (key, value, expression) {
-                                          if (key == 'ENT') {
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            closeCal();
-                                          }
-                                          if (kDebugMode) {
-                                            print('$key\t$value\t$expression');
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )))
-                  ],
-                ),
+              ? const ModernEmptyState()
+              : _fadeAnimation != null
+                  ? FadeTransition(
+                      opacity: _fadeAnimation!,
+                      child: _buildContent(),
+                    )
+                  : _buildContent(),
         ),
       ),
       persistentFooterButtons: [
-        SizedBox(
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
             height: 70,
-            width: 250,
+            width: double.infinity,
             child: ElevatedButton(
-              style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  backgroundColor:
-                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                          side: BorderSide(color: Colors.teal[700]!)))),
-              onPressed: () async {
-                if (Global.customer == null) {
-                  if (mounted) {
-                    Alert.warning(
-                        context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-
-                var checkSellUsedGold =
-                    Global.orders.where((e) => e.orderTypeId == 2);
-                motivePrint(Global.orders.first.toJson());
-                if (checkSellUsedGold.isNotEmpty) {
-                  if (selectedOption == 1) {
-                    Alert.warning(context, 'Warning'.tr(),
-                        'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                  if (selectedOption == 0 && Global.customer == null) {
-                    Alert.warning(context, 'Warning'.tr(),
-                        'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-
-                if (Global.paymentList!.isEmpty) {
-                  if (mounted) {
-                    Alert.warning(context, 'Warning'.tr(),
-                        'กรุณาเพิ่มการชำระเงินก่อน', 'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-                var amount = Global.payToCustomerOrShopValue(
-                    Global.orders,
-                    Global.toNumber(discountCtrl.text),
-                    Global.toNumber(addPriceCtrl.text));
-                // motivePrint(selectedOption);
-                if (amount > getMaxKycValue()) {
-                  if (selectedOption == 0 && Global.customer == null) {
-                    Alert.warning(
-                        context,
-                        'Warning'.tr(),
-                        'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
-                        'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                  if (selectedOption == 1) {
-                    Alert.warning(
-                        context,
-                        'Warning'.tr(),
-                        'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
-                        'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-
-                // motivePrint(Global.toNumber(Global.format(Global.getPaymentTotal(Global.orders))));
-                // motivePrint(getPaymentTotal());
-                // return;
-
-                if (getPaymentTotal() >
-                    Global.toNumber(Global.format(Global.getPaymentTotal(
-                        Global.orders,
-                        Global.toNumber(discountCtrl.text),
-                        Global.toNumber(addPriceCtrl.text))))) {
-                  if (mounted) {
-                    Alert.warning(
-                        context,
-                        'Warning'.tr(),
-                        amount >= 0
-                            ? 'ยอดชำระมากกว่าจำนวนเงินรวม'
-                            : 'ยอดจ่ายมากกว่าจำนวนเงินรวม',
-                        'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-
-                if (getPaymentTotal() <
-                    Global.toNumber(Global.format(Global.getPaymentTotal(
-                        Global.orders,
-                        Global.toNumber(discountCtrl.text),
-                        Global.toNumber(addPriceCtrl.text))))) {
-                  if (mounted) {
-                    Alert.warning(
-                        context,
-                        'Warning'.tr(),
-                        amount >= 0
-                            ? 'ยอดชำระน้อยกว่าจำนวนเงินรวม'
-                            : 'ยอดจ่ายน้อยกว่าจำนวนเงินรวม',
-                        'OK'.tr(),
-                        action: () {});
-                    return;
-                  }
-                }
-
-                for (var i = 0; i < Global.orders.length; i++) {
-                  Global.orders[i].id = 0;
-                  Global.orders[i].createdDate = DateTime.now();
-                  Global.orders[i].updatedDate = DateTime.now();
-                  Global.orders[i].customerId = Global.customer!.id!;
-                  Global.orders[i].status = "0";
-                  Global.orders[i].discount =
-                      Global.toNumber(discountCtrl.text);
-                  Global.orders[i].addPrice =
-                      Global.toNumber(addPriceCtrl.text);
-                  Global.orders[i].paymentMethod = Global.currentPaymentMethod;
-                  Global.orders[i].attachment = null;
-                  if (Global.orders[i].orderTypeId != 5 &&
-                      Global.orders[i].orderTypeId != 6) {
-                    Global.orders[i].priceIncludeTax =
-                        Global.getOrderTotal(Global.orders[i]);
-
-                    Global.orders[i].purchasePrice =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : Global.getPapunTotal(Global.orders[i]);
-
-                    Global.orders[i].priceDiff =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : Global.getOrderTotal(Global.orders[i]) -
-                                Global.getPapunTotal(Global.orders[i]);
-                    Global.orders[i].taxBase = Global.orders[i].orderTypeId == 2
-                        ? 0
-                        : (Global.getOrderTotal(Global.orders[i]) -
-                                Global.getPapunTotal(Global.orders[i])) *
-                            100 /
-                            107;
-                    Global.orders[i].taxAmount = Global.orders[i].orderTypeId ==
-                            2
-                        ? 0
-                        : ((Global.getOrderTotal(Global.orders[i]) -
-                                    Global.getPapunTotal(Global.orders[i])) *
-                                100 /
-                                107) *
-                            getVatValue();
-                    Global.orders[i].priceExcludeTax =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : Global.getOrderTotal(Global.orders[i]) -
-                                (((Global.getOrderTotal(Global.orders[i]) -
-                                            Global.getPapunTotal(
-                                                Global.orders[i])) *
-                                        100 /
-                                        107) *
-                                    getVatValue());
-                  }
-                  for (var j = 0; j < Global.orders[i].details!.length; j++) {
-                    Global.orders[i].details![j].id = 0;
-                    Global.orders[i].details![j].orderId = Global.orders[i].id;
-                    Global.orders[i].details![j].unitCost =
-                        Global.orders[i].details![j].priceIncludeTax! /
-                            Global.orders[i].details![j].weight!;
-                    Global.orders[i].details![j].purchasePrice =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : Global.getBuyPrice(
-                                Global.orders[i].details![j].weight!);
-                    Global.orders[i].details![j].priceDiff =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : Global.orders[i].details![j].priceIncludeTax! -
-                                Global.getBuyPrice(
-                                    Global.orders[i].details![j].weight!);
-                    Global.orders[i].details![j].taxBase =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : (Global.orders[i].details![j].priceIncludeTax! -
-                                    Global.getBuyPrice(
-                                        Global.orders[i].details![j].weight!)) *
-                                100 /
-                                107;
-                    Global.orders[i].details![j].taxAmount = Global
-                                .orders[i].orderTypeId ==
-                            2
-                        ? 0
-                        : ((Global.orders[i].details![j].priceIncludeTax! -
-                                    Global.getBuyPrice(
-                                        Global.orders[i].details![j].weight!)) *
-                                100 /
-                                107) *
-                            getVatValue();
-                    Global.orders[i].details![j].priceExcludeTax =
-                        Global.orders[i].orderTypeId == 2
-                            ? 0
-                            : (Global.orders[i].details![j].priceIncludeTax! -
-                                ((((Global.orders[i].details![j]
-                                                .priceIncludeTax! -
-                                            Global.getBuyPrice(Global.orders[i]
-                                                .details![j].weight!)) *
-                                        100 /
-                                        107) *
-                                    getVatValue())));
-                    Global.orders[i].details![j].createdDate = DateTime.now();
-                    Global.orders[i].details![j].updatedDate = DateTime.now();
-                  }
-                }
-
-                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                    action: () async {
-                  final ProgressDialog pr = ProgressDialog(context,
-                      type: ProgressDialogType.normal,
-                      isDismissible: true,
-                      showLogs: true);
-                  await pr.show();
-                  pr.update(message: 'processing'.tr());
-                  try {
-                    if (Global.posOrder != null) {
-                      await reserveOrder(Global.posOrder!);
-                    }
-                    // Gen pair ID before submit
-                    var pair = await ApiServices.post(
-                        '/order/gen-pair/${Global.orders.first.orderTypeId}',
-                        Global.requestObj(null));
-
-                    // print(pair?.toJson());
-                    // return;
-                    if (pair?.status == "success") {
-                      await postPayment(pair?.data);
-                      await postOrder(pair?.data);
-                      Global.orderIds =
-                          Global.orders.map((e) => e.orderId).toList();
-                      Global.pairId = pair?.data;
-                      await pr.hide();
-                      if (mounted) {
-                        Global.orders.clear();
-                        // Global.discount = 0;
-                        Global.customer = null;
-                        Global.posOrder = null;
-                        Global.paymentList?.clear();
-                        writeCart();
-                        setState(() {});
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const PrintBillScreen()));
-                      }
-                    } else {
-                      if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            'Unable to generate pairing ID', 'OK'.tr(),
-                            action: () {});
-                      }
-                    }
-                  } catch (e) {
-                    await pr.hide();
-                    if (mounted) {
-                      Alert.warning(
-                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                          action: () {});
-                    }
-                    return;
-                  }
-                });
-              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFF0F766E),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                shadowColor: const Color(0xFF0F766E).withValues(alpha: 0.3),
+              ),
+              onPressed: _handleSaveOrder,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "บันทึก".tr(),
-                    style: TextStyle(color: Colors.white, fontSize: 18.sp),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  const SizedBox(
-                    width: 2,
-                  ),
+                  const SizedBox(width: 8),
                   const Icon(
                     Icons.save_alt_outlined,
                     color: Colors.white,
-                    size: 30,
+                    size: 26,
                   ),
                 ],
               ),
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _paymentItemList({required PaymentModel order, required index}) {
-    // motivePrint(Global.formatDateNT(order.paymentDate.toString()));
-    // motivePrint(order.paymentDate.toString());
-    return Container(
-      decoration: const BoxDecoration(
-        color: snBgColorLight,
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          left: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          right: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-        ),
-      ),
+  Widget _buildContent() {
+    return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
+        padding: EdgeInsets.symmetric(
+          horizontal: getProportionateScreenWidth(8.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 1,
-              child: Text('${index + 1}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: kPrimaryGreen,
-                  )),
+            const SizedBox(height: 16),
+            _buildCustomerSection(),
+            const SizedBox(height: 16),
+            _buildOrderSection(),
+            const SizedBox(height: 16),
+            _buildPricingSection(),
+            const SizedBox(height: 16),
+            _buildPaymentSection(),
+            SizedBox(
+              height: Global.paymentAttachment == null ? 100 : 0,
             ),
-            Expanded(
-              flex: 3,
-              child: Text(order.paymentMethod ?? '',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: kPrimaryGreen,
-                  )),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(Global.formatDateNT(order.paymentDate.toString()),
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: kPrimaryGreen,
-                    )),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(Global.format(order.amount ?? 0),
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: kPrimaryGreen,
-                    )),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          editPayment(index);
-                        },
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                              color: Colors.blue[700],
-                              borderRadius: BorderRadius.circular(8)),
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'แก้ไข',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          removePayment(index);
-                        },
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(8)),
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.close,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                'ลบ',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
   }
 
+  Widget _buildCustomerSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F766E).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.person,
+                  color: Color(0xFF0F766E),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'ลูกค้า',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Row(
+              children: [
+                Flexible(child: _buildRadioOption(1, 'ไม่สำแดงตน')),
+                const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                Flexible(child: _buildRadioOption(0, 'สำแดงตน')),
+              ],
+            ),
+          ),
+          if (loading) ...[
+            const SizedBox(height: 16),
+            const Center(child: ModernLoadingWidget()),
+          ],
+          if (selectedOption == 0) ...[
+            const SizedBox(height: 16),
+            _buildCustomerInfo(),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadioOption(int value, String title) {
+    bool isSelected = selectedOption == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedOption = value;
+          if (value == 1) {
+            loadCustomer();
+          } else {
+            Global.customer = null;
+          }
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF0F766E).withValues(alpha: 0.05)
+              : Colors.transparent,
+          borderRadius: value == 1
+              ? const BorderRadius.only(
+                  topLeft: Radius.circular(12), topRight: Radius.circular(12))
+              : const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFF0F766E)
+                      : const Color(0xFFD1D5DB),
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? Center(
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF0F766E),
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? const Color(0xFF0F766E)
+                    : const Color(0xFF374151),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomerInfo() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Global.customer == null
+          ? Row(
+              children: [
+                Expanded(flex: 5, child: Container()),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddCustomerScreen(),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'เพิ่ม',
+                        fullWidth: true,
+                        icon: Icons.add,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                        width: 8,
+                      ),
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CustomerScreen(
+                                            selected: true,
+                                            type: "C",
+                                          ),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'ค้นหา',
+                        icon: Icons.search,
+                        fullWidth: true,
+                        color: Colors.deepOrange,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                              color: const Color(0xFF1F2937),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "${Global.customer!.phoneNumber}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer!.email}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer!.address}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${getWorkId(Global.customer!)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddCustomerScreen(),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'เพิ่ม',
+                            fullWidth: true,
+                            icon: Icons.add,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                            width: 8,
+                          ),
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CustomerScreen(
+                                                selected: true,
+                                                type: "C",
+                                              ),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'ค้นหา',
+                            icon: Icons.search,
+                            fullWidth: true,
+                            color: Colors.deepOrange,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildOrderSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F766E).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.shopping_cart,
+                  color: Color(0xFF0F766E),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'รายการสั่งซื้อ',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          for (int i = 0; i < Global.orders.length; i++)
+            _itemOrderList(order: Global.orders[i], index: i),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPricingSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F766E).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.calculate,
+                  color: Color(0xFF0F766E),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'ราคา',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          buildTextFieldBig(
+              labelText: "ร้านทองเพิ่มให้ (บาท)",
+              labelColor: Colors.orange,
+              controller: addPriceCtrl,
+              inputType: TextInputType.phone,
+              inputFormat: [ThousandsFormatter(allowFraction: true)],
+              onChanged: (value) {
+                Global.addPrice = value.isNotEmpty ? Global.toNumber(value) : 0;
+                setState(() {});
+              }),
+          const SizedBox(height: 20),
+          buildTextFieldBig(
+              labelText: "ร้านทองลดให้ (บาท)",
+              labelColor: Colors.orange,
+              controller: discountCtrl,
+              inputType: TextInputType.phone,
+              inputFormat: [ThousandsFormatter(allowFraction: true)],
+              onChanged: (value) {
+                Global.discount = value.isNotEmpty ? Global.toNumber(value) : 0;
+                setState(() {});
+              }),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Column(
+              children: [
+                PriceBreakdown(
+                  title: 'จำนวนเงินที่ต้องชำระ'.tr(),
+                  price:
+                      '${Global.format(Global.getPaymentTotal(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
+                ),
+                PriceBreakdown(
+                  title:
+                      '${Global.getPayTittle(Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
+                  price:
+                      '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F766E).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.credit_card,
+                  color: Color(0xFF0F766E),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'วิธีการชำระเงิน'.tr(),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              SizedBox(
+                width: 160,
+                height: 80,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0xFF0F766E),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      resetPaymentData();
+                    });
+                    paymentDialog();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'เพิ่ม',
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              CalculatorButton(onTap: openCal),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (Global.paymentList!.isNotEmpty) _buildPaymentList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentList() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F766E),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    'ลำดับ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'วิธีการชำระเงิน',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'วันที่ชำระเงิน',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'จำนวนเงิน',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'การดำเนินการ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: Global.paymentList!.length,
+            itemBuilder: (context, index) {
+              return _paymentItemList(
+                  order: Global.paymentList![index], index: index);
+            },
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F766E).withValues(alpha: 0.1),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Expanded(flex: 1, child: SizedBox()),
+                const Expanded(flex: 3, child: SizedBox()),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'ทั้งหมด',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color(0xFF0F766E),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '${Global.format(getPaymentTotal())}',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: const Color(0xFF0F766E),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const Expanded(flex: 3, child: SizedBox()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _paymentItemList({required PaymentModel order, required index}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: index % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
+        border: const Border(
+          bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text(
+              '${index + 1}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFF374151),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              order.paymentMethod ?? '',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFF374151),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              Global.formatDateNT(order.paymentDate.toString()),
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFF374151),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              Global.format(order.amount ?? 0),
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: const Color(0xFF374151),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: KclButton(
+                    onTap: () {
+                      editPayment(index);
+                    },
+                    text: '',
+                    icon: Icons.edit,
+                    color: const Color(0xFF059669),
+                    fullWidth: true,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: KclButton(
+                    onTap: () {
+                      removePayment(index);
+                    },
+                    text: '',
+                    icon: Icons.delete_outline,
+                    color: const Color(0xFFDC2626),
+                    fullWidth: true,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _itemOrderList({required OrderModel order, required index}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 4,
+                child: Text(
+                  '${getOrderListTitle(order)}',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1F2937),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  '${Global.format(Global.getOrderTotalAmount(order.details!))} บาท',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0F766E),
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              if (order.orderTypeId == 1 || order.orderTypeId == 2)
+                Expanded(
+                  flex: 3,
+                  child: KclButton(
+                    onTap: () {
+                      if (order.orderTypeId == 1) {
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddSellItemDialog(
+                                          index: index,
+                                        ),
+                                    fullscreenDialog: true))
+                            .whenComplete(() {
+                          setState(() {});
+                        });
+                      }
+
+                      if (order.orderTypeId == 2) {
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddBuyItemDialog(
+                                          index: index,
+                                        ),
+                                    fullscreenDialog: true))
+                            .whenComplete(() {
+                          setState(() {});
+                        });
+                      }
+                    },
+                    text: 'เพิ่มรายการ',
+                    icon: Icons.add,
+                  ),
+                )
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Table(
+              border: TableBorder.all(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: const {
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(3),
+                2: FlexColumnWidth(2),
+                3: FlexColumnWidth(3),
+                4: FlexColumnWidth(4),
+              },
+              children: [
+                TableRow(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0F766E),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        '',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        '',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'น้ำหนัก',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'ราคา',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'การดำเนินการ',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                for (int j = 0; j < order.details!.length; j++)
+                  TableRow(
+                    decoration: BoxDecoration(
+                      color:
+                          j % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
+                    ),
+                    children: [
+                      paddedTextBigL('${j + 1}',
+                          style: TextStyle(fontSize: 14.sp),
+                          align: TextAlign.center),
+                      paddedTextBigL(order.details![j].productName,
+                          style: TextStyle(fontSize: 14.sp)),
+                      paddedTextBigL(Global.format(order.details![j].weight!),
+                          align: TextAlign.right,
+                          style: TextStyle(fontSize: 14.sp)),
+                      paddedTextBigL(
+                          Global.format(order.details![j].priceIncludeTax!) +
+                              '  บาท',
+                          align: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (order.orderTypeId == 1 ||
+                                order.orderTypeId == 2)
+                              Expanded(
+                                child: KclButton(
+                                  onTap: () {
+                                    if (order.orderTypeId == 1) {
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditSaleDialog(
+                                                        index: index,
+                                                        j: j,
+                                                      ),
+                                                  fullscreenDialog: true))
+                                          .whenComplete(() {
+                                        setState(() {});
+                                      });
+                                    } else {
+                                      Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditBuyDialog(
+                                                        index: index,
+                                                        j: j,
+                                                      ),
+                                                  fullscreenDialog: true))
+                                          .whenComplete(() {
+                                        setState(() {});
+                                      });
+                                    }
+                                  },
+                                  text: '',
+                                  icon: Icons.edit,
+                                  color: const Color(0xFF059669),
+                                  fullWidth: true,
+                                ),
+                              ),
+                            if (order.orderTypeId == 1 ||
+                                order.orderTypeId == 2)
+                              const SizedBox(width: 8),
+                            Expanded(
+                              child: KclButton(
+                                onTap: () {
+                                  removeItem(index, j);
+                                },
+                                text: '',
+                                icon: Icons.delete_outline,
+                                color: const Color(0xFFDC2626),
+                                fullWidth: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          if (index < Global.orders.length - 1)
+            Container(
+              height: 10,
+              color: Colors.white,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _handleSaveOrder() async {
+    if (Global.customer == null) {
+      if (mounted) {
+        Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+
+    var checkSellUsedGold = Global.orders.where((e) => e.orderTypeId == 2);
+    motivePrint(Global.orders.first.toJson());
+    if (checkSellUsedGold.isNotEmpty) {
+      if (selectedOption == 1) {
+        Alert.warning(
+            context, 'Warning'.tr(), 'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
+            action: () {});
+        return;
+      }
+      if (selectedOption == 0 && Global.customer == null) {
+        Alert.warning(
+            context, 'Warning'.tr(), 'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+
+    if (Global.paymentList!.isEmpty) {
+      if (mounted) {
+        Alert.warning(
+            context, 'Warning'.tr(), 'กรุณาเพิ่มการชำระเงินก่อน', 'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+    var amount = Global.payToCustomerOrShopValue(Global.orders,
+        Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
+    if (amount > getMaxKycValue()) {
+      if (selectedOption == 0 && Global.customer == null) {
+        Alert.warning(
+            context,
+            'Warning'.tr(),
+            'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
+            'OK'.tr(),
+            action: () {});
+        return;
+      }
+      if (selectedOption == 1) {
+        Alert.warning(
+            context,
+            'Warning'.tr(),
+            'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
+            'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+
+    if (getPaymentTotal() >
+        Global.toNumber(Global.format(Global.getPaymentTotal(
+            Global.orders,
+            Global.toNumber(discountCtrl.text),
+            Global.toNumber(addPriceCtrl.text))))) {
+      if (mounted) {
+        Alert.warning(
+            context,
+            'Warning'.tr(),
+            amount >= 0
+                ? 'ยอดชำระมากกว่าจำนวนเงินรวม'
+                : 'ยอดจ่ายมากกว่าจำนวนเงินรวม',
+            'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+
+    if (getPaymentTotal() <
+        Global.toNumber(Global.format(Global.getPaymentTotal(
+            Global.orders,
+            Global.toNumber(discountCtrl.text),
+            Global.toNumber(addPriceCtrl.text))))) {
+      if (mounted) {
+        Alert.warning(
+            context,
+            'Warning'.tr(),
+            amount >= 0
+                ? 'ยอดชำระน้อยกว่าจำนวนเงินรวม'
+                : 'ยอดจ่ายน้อยกว่าจำนวนเงินรวม',
+            'OK'.tr(),
+            action: () {});
+        return;
+      }
+    }
+
+    // Replace your entire original loop with just:
+    OrderProcessingService.processAllOrders(
+      discount: discountCtrl.text,
+      addPrice: addPriceCtrl.text,
+    );
+
+    // for (var i = 0; i < Global.orders.length; i++) {
+    //   Global.orders[i].id = 0;
+    //   Global.orders[i].createdDate = DateTime.now();
+    //   Global.orders[i].updatedDate = DateTime.now();
+    //   Global.orders[i].customerId = Global.customer!.id!;
+    //   Global.orders[i].status = "0";
+    //   Global.orders[i].discount = Global.toNumber(discountCtrl.text);
+    //   Global.orders[i].addPrice = Global.toNumber(addPriceCtrl.text);
+    //   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
+    //   Global.orders[i].attachment = null;
+    //   final orderDetails = Global.orders[i].details;
+    //   if (Global.orders[i].orderTypeId != 5 &&
+    //       Global.orders[i].orderTypeId != 6 &&
+    //       Global.orders[i].orderTypeId != 1) {
+    //     Global.orders[i].priceIncludeTax =
+    //         Global.getOrderTotal(Global.orders[i]);
+    //     // Global.orders[i].priceIncludeTax = orderDetails?.totalPriceIncludeTax;
+    //
+    //     Global.orders[i].purchasePrice = Global.orders[i].orderTypeId == 2
+    //         ? 0
+    //         : Global.getPapunTotal(Global.orders[i]);
+    //     // Global.orders[i].purchasePrice = orderDetails?.totalPurchasePrice;
+    //
+    //     Global.orders[i].priceDiff = Global.orders[i].orderTypeId == 2
+    //         ? 0
+    //         : Global.getOrderTotal(Global.orders[i]) -
+    //             Global.getPapunTotal(Global.orders[i]);
+    //     // Global.orders[i].priceDiff = orderDetails?.totalPriceDiff;
+    //
+    //     Global.orders[i].taxBase = Global.orders[i].orderTypeId == 2
+    //         ? 0
+    //         : (Global.getOrderTotal(Global.orders[i]) -
+    //                 Global.getPapunTotal(Global.orders[i])) *
+    //             100 /
+    //             107;
+    //     // Global.orders[i].taxBase = orderDetails?.totalTaxBase;
+    //
+    //     Global.orders[i].taxAmount = Global.orders[i].orderTypeId == 2
+    //         ? 0
+    //         : ((Global.getOrderTotal(Global.orders[i]) -
+    //                     Global.getPapunTotal(Global.orders[i])) *
+    //                 100 /
+    //                 107) *
+    //             getVatValue();
+    //     // Global.orders[i].taxAmount = orderDetails?.totalTaxAmount;
+    //
+    //     Global.orders[i].priceExcludeTax = Global.orders[i].orderTypeId == 2
+    //         ? 0
+    //         : Global.getOrderTotal(Global.orders[i]) -
+    //             (((Global.getOrderTotal(Global.orders[i]) -
+    //                         Global.getPapunTotal(Global.orders[i])) *
+    //                     100 /
+    //                     107) *
+    //                 getVatValue());
+    //     // Global.orders[i].priceExcludeTax = orderDetails?.totalPriceExcludeTax;
+    //   }
+    //   for (var j = 0; j < Global.orders[i].details!.length; j++) {
+    //     Global.orders[i].details![j].id = 0;
+    //     Global.orders[i].details![j].orderId = Global.orders[i].id;
+    //     Global.orders[i].details![j].unitCost =
+    //         Global.orders[i].details![j].priceIncludeTax! /
+    //             Global.orders[i].details![j].weight!;
+    //     if (Global.orders[i].orderTypeId != 4 &&
+    //         Global.orders[i].orderTypeId != 1) {
+    //       Global.orders[i].details![j].purchasePrice =
+    //           Global.orders[i].orderTypeId == 2
+    //               ? 0
+    //               : Global.getBuyPrice(Global.orders[i].details![j].weight!,
+    //                   Global.goldDataModel);
+    //       Global.orders[i].details![j].priceDiff =
+    //           Global.orders[i].orderTypeId == 2
+    //               ? 0
+    //               : Global.orders[i].details![j].priceIncludeTax! -
+    //                   Global.getBuyPrice(Global.orders[i].details![j].weight!,
+    //                       Global.goldDataModel);
+    //       Global.orders[i].details![j].taxBase =
+    //           Global.orders[i].orderTypeId == 2
+    //               ? 0
+    //               : (Global.orders[i].details![j].priceIncludeTax! -
+    //                       Global.getBuyPrice(
+    //                           Global.orders[i].details![j].weight!,
+    //                           Global.goldDataModel)) *
+    //                   100 /
+    //                   107;
+    //       Global.orders[i].details![j].taxAmount =
+    //           Global.orders[i].orderTypeId == 2
+    //               ? 0
+    //               : ((Global.orders[i].details![j].priceIncludeTax! -
+    //                           Global.getBuyPrice(
+    //                               Global.orders[i].details![j].weight!,
+    //                               Global.goldDataModel)) *
+    //                       100 /
+    //                       107) *
+    //                   getVatValue();
+    //       Global.orders[i].details![j].priceExcludeTax =
+    //           Global.orders[i].orderTypeId == 2
+    //               ? 0
+    //               : (Global.orders[i].details![j].priceIncludeTax! -
+    //                   ((((Global.orders[i].details![j].priceIncludeTax! -
+    //                               Global.getBuyPrice(
+    //                                   Global.orders[i].details![j].weight!,
+    //                                   Global.goldDataModel)) *
+    //                           100 /
+    //                           107) *
+    //                       getVatValue())));
+    //     }
+    //     Global.orders[i].details![j].createdDate = DateTime.now();
+    //     Global.orders[i].details![j].updatedDate = DateTime.now();
+    //   }
+    // }
+
+    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        if (Global.posOrder != null) {
+          await reserveOrder(Global.posOrder!);
+        }
+        var pair = await ApiServices.post(
+            '/order/gen-pair/${Global.orders.first.orderTypeId}',
+            Global.requestObj(null));
+
+        if (pair?.status == "success") {
+          await postPayment(pair?.data);
+          await postOrder(pair?.data);
+          Global.orderIds = Global.orders.map((e) => e.orderId).toList();
+          Global.pairId = pair?.data;
+          await pr.hide();
+          if (mounted) {
+            Global.orders.clear();
+            Global.customer = null;
+            Global.posOrder = null;
+            Global.paymentList?.clear();
+            writeCart();
+            setState(() {});
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PrintBillScreen()));
+          }
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(),
+                'Unable to generate pairing ID', 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+              action: () {});
+        }
+        return;
+      }
+    });
+  }
+
+  // Keep all your original methods unchanged
   Future postPayment(int pairId) async {
     if (Global.paymentList!.isNotEmpty) {
       var payment = await ApiServices.post(
@@ -1421,7 +1652,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     createdDate: DateTime.now(),
                     updatedDate: DateTime.now()),
               ));
-          // motivePrint(result?.toJson());
           if (result?.status == "success") {
             motivePrint("Payment completed");
           }
@@ -1450,257 +1680,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
   }
 
-  Widget _itemOrderList({required OrderModel order, required index}) {
-    // motivePrint(index);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                  flex: 8,
-                  child: Row(
-                    children: [
-                      Expanded(
-                          flex: 4,
-                          child: Text(
-                            '${getOrderListTitle(order)}',
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )),
-                      Expanded(
-                          flex: 4,
-                          child: Text(
-                            '${Global.format(Global.getOrderTotalAmount(order.details!))} บาท',
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )),
-                      if (order.orderTypeId == 1 || order.orderTypeId == 2)
-                        Expanded(
-                            flex: 2,
-                            child: KclButton(
-                              onTap: () {
-                                if (order.orderTypeId == 1) {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddSellItemDialog(
-                                                    index: index,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                }
-
-                                if (order.orderTypeId == 2) {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AddBuyItemDialog(
-                                                    index: index,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                }
-                              },
-                              text: 'เพิ่มรายการ',
-                              icon: Icons.add,
-                            ))
-                    ],
-                  )),
-            ],
-          ),
-          Table(
-            border: TableBorder.all(color: Colors.grey.shade300),
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            columnWidths: const {
-              0: FlexColumnWidth(1),
-              1: FlexColumnWidth(4),
-              2: FlexColumnWidth(2),
-              3: FlexColumnWidth(3),
-              4: FlexColumnWidth(4),
-            },
-            children: [
-              TableRow(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text(
-                      '',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text(
-                      '',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text('น้ำหนัก',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16.sp)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text('ราคา',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16.sp)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text('',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16.sp)),
-                  ),
-                ],
-              ),
-              for (int j = 0; j < order.details!.length; j++)
-                TableRow(
-                  decoration: const BoxDecoration(),
-                  children: [
-                    paddedTextBigL('${j + 1}',
-                        style: TextStyle(fontSize: 16.sp),
-                        align: TextAlign.center),
-                    paddedTextBigL(order.details![j].productName,
-                        style: TextStyle(fontSize: 16.sp)),
-                    paddedTextBigL(Global.format(order.details![j].weight!),
-                        align: TextAlign.right,
-                        style: TextStyle(fontSize: 16.sp)),
-                    paddedTextBigL(
-                        Global.format(order.details![j].priceIncludeTax!) +
-                            '  บาท',
-                        align: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (order.orderTypeId == 1 || order.orderTypeId == 2)
-                            GestureDetector(
-                              onTap: () {
-                                if (order.orderTypeId == 1) {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditSaleDialog(
-                                                    index: index,
-                                                    j: j,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                } else {
-                                  // motivePrint('${index} ${j}');
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditBuyDialog(
-                                                    index: index,
-                                                    j: j,
-                                                  ),
-                                              fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                }
-                              },
-                              child: Container(
-                                height: 60,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                    color: Colors.blue[700],
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      'แก้ไข',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              removeItem(index, j);
-                            },
-                            child: Container(
-                              height: 60,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                  color: Colors.red[700],
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    'ลบ',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          ),
-          if (index < Global.orders.length - 1)
-            Container(
-              height: 10,
-              color: Colors.white,
-            ),
-          // ProductListTileData(
-          //     orderId: order.orderId,
-          //     weight:
-          //         Global.format(Global.getOrderTotalWeight(order.details!)),
-          //     showTotal: true,
-          //     totalPrice:
-          //         Global.format(Global.getOrderTotalAmount(order.details!)),
-          //     type: null //order.orderTypeId.toString(),
-          //     ),
-        ],
-      ),
-    );
-  }
-
   void removeProduct(int i) async {
     Global.orders.removeAt(i);
     if (Global.orders.isEmpty) {
       Global.customer = null;
-      // Global.discount = 0;
       Global.paymentList?.clear();
     }
     loadDefaultPayment();
@@ -1733,132 +1716,248 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   void editPayment(int i) async {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            content: Stack(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            child: Stack(
               clipBehavior: Clip.none,
               children: [
-                SizedBox(
-                    width: MediaQuery.of(context).size.width * 3 / 4,
-                    child: SingleChildScrollView(
-                        child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: Device.orientation == Orientation.portrait
-                              ? 8.h
-                              : 12.h,
-                          decoration: const BoxDecoration(color: snBgColor),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text(
-                                  'เลือกวิธีการชำระเงิน',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16.sp, color: Colors.white),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Modern Header with auto height
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF059669), Color(0xFF10B981)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                Text(
+                                child: const Icon(
+                                  Icons.edit_note,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'แก้ไขวิธีการชำระเงิน',
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.monetization_on,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
                                     '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
-                                        fontSize: size?.getWidthPx(8),
-                                        color: Colors.white)),
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                    // Content Area
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(20),
+                        child: PaymentMethodWidget(
+                          index: i,
+                          payment: defaultPayment,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: PaymentMethodWidget(
-                            index: i,
-                            payment: defaultPayment,
+                      ),
+                    ),
+
+                    // Modern Update Button
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xFF059669),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          elevation: 2,
+                          shadowColor:
+                              const Color(0xFF059669).withValues(alpha: 0.3),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minWidth: double.infinity, minHeight: 100),
-                            child: MaterialButton(
-                              color: snBgColor,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "บันทึก",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 30),
-                                ),
-                              ),
-                              onPressed: () async {
-                                Alert.info(
-                                    context,
-                                    'ต้องการบันทึกข้อมูลหรือไม่?',
-                                    '',
-                                    'ตกลง', action: () async {
-                                  var payment = PaymentModel(
-                                      paymentMethod:
-                                          Global.currentPaymentMethod,
-                                      pairId: Global.pairId,
-                                      paymentDate: DateTime.parse(
-                                          Global.paymentDateCtrl.text),
-                                      paymentDetail:
-                                          Global.paymentDetailCtrl.text,
-                                      bankId: Global.selectedBank?.id,
-                                      bankName: Global.selectedBank?.name,
-                                      accountNo:
-                                          Global.selectedAccount?.accountNo,
-                                      accountName: Global.selectedAccount?.name,
-                                      cardName: Global.cardNameCtrl.text,
-                                      cardNo: Global.cardNumberCtrl.text,
-                                      cardExpiryDate: Global.cardExpireDateCtrl
-                                              .text.isNotEmpty
-                                          ? DateTime.parse(
-                                              Global.cardExpireDateCtrl.text)
-                                          : null,
-                                      amount: Global.toNumber(
-                                          Global.amountCtrl.text),
-                                      referenceNumber: Global.refNoCtrl.text,
-                                      attachement: getPaymentAttachment());
+                        onPressed: () async {
+                          Alert.info(
+                            context,
+                            'ต้องการบันทึกข้อมูลหรือไม่?',
+                            '',
+                            'ตกลง',
+                            action: () async {
+                              var payment = PaymentModel(
+                                paymentMethod: Global.currentPaymentMethod,
+                                pairId: Global.pairId,
+                                paymentDate:
+                                    DateTime.parse(Global.paymentDateCtrl.text),
+                                paymentDetail: Global.paymentDetailCtrl.text,
+                                bankId: Global.selectedBank?.id,
+                                bankName: Global.selectedBank?.name,
+                                accountNo: Global.selectedAccount?.accountNo,
+                                accountName: Global.selectedAccount?.name,
+                                cardName: Global.cardNameCtrl.text,
+                                cardNo: Global.cardNumberCtrl.text,
+                                cardExpiryDate:
+                                    Global.cardExpireDateCtrl.text.isNotEmpty
+                                        ? DateTime.parse(
+                                            Global.cardExpireDateCtrl.text)
+                                        : null,
+                                amount: Global.toNumber(Global.amountCtrl.text),
+                                referenceNumber: Global.refNoCtrl.text,
+                                attachement: getPaymentAttachment(),
+                              );
 
-                                  Global.paymentList?[i] = payment;
+                              Global.paymentList?[i] = payment;
 
-                                  setState(() {});
-                                  Navigator.of(context).pop();
-                                });
-                              },
+                              setState(() {});
+                              Navigator.of(context).pop();
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_outline,
+                              size: 20,
                             ),
-                          ),
-                        )
-                      ],
-                    ))),
+                            const SizedBox(width: 8),
+                            Text(
+                              "อัปเดต",
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Modern Close Button
                 Positioned(
-                  right: -40.0,
-                  top: -40.0,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 30,
-                        child: Icon(Icons.close),
+                  right: -12,
+                  top: -12,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEF4444),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Future<void> reserveOrder(OrderModel order) async {
-    // motivePrint(order.toJson());
     var result =
         await ApiServices.post('/order/reserve', Global.requestObj(order));
     motivePrint(result?.toJson());
@@ -1869,130 +1968,244 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   void paymentDialog() {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            content: Stack(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Container(
+            width: MediaQuery.of(context).size.width * 0.9,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            child: Stack(
               clipBehavior: Clip.none,
               children: [
-                SizedBox(
-                    width: MediaQuery.of(context).size.width * 3 / 4,
-                    child: SingleChildScrollView(
-                        child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: Device.orientation == Orientation.portrait
-                              ? 8.h
-                              : 12.h,
-                          decoration: const BoxDecoration(color: snBgColor),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text(
-                                  'เลือกวิธีการชำระเงิน',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      // 16.sp,
-                                      color: Colors.white),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Modern Header with auto height
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                Text(
+                                child: const Icon(
+                                  Icons.payment,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'เลือกวิธีการชำระเงิน',
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.monetization_on,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
                                     '${Global.payToCustomerOrShop(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                                     style: TextStyle(
-                                        fontSize: 14.sp,
-                                        // size?.getWidthPx(8),
-                                        color: Colors.white)),
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                    // Content Area
+                    Flexible(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(20),
+                        child: PaymentMethodWidget(
+                          payment: defaultPayment,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: PaymentMethodWidget(
-                            payment: defaultPayment,
+                      ),
+                    ),
+
+                    // Modern Save Button
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: const Color(0xFF0F766E),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          elevation: 2,
+                          shadowColor:
+                              const Color(0xFF0F766E).withValues(alpha: 0.3),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                                minWidth: double.infinity, minHeight: 100),
-                            child: MaterialButton(
-                              color: snBgColor,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "บันทึก",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 30),
-                                ),
-                              ),
-                              onPressed: () async {
-                                Alert.info(
-                                    context,
-                                    'ต้องการบันทึกข้อมูลหรือไม่?',
-                                    '',
-                                    'ตกลง', action: () async {
-                                  var payment = PaymentModel(
-                                    paymentMethod: Global.currentPaymentMethod,
-                                    pairId: Global.pairId,
-                                    paymentDate: DateTime.parse(
-                                        Global.paymentDateCtrl.text),
-                                    paymentDetail:
-                                        Global.paymentDetailCtrl.text,
-                                    bankId: Global.selectedBank?.id,
-                                    bankName: Global.selectedBank?.name,
-                                    accountNo:
-                                        Global.selectedAccount?.accountNo,
-                                    accountName: Global.selectedAccount?.name,
-                                    cardName: Global.cardNameCtrl.text,
-                                    cardNo: Global.cardNumberCtrl.text,
-                                    cardExpiryDate: Global
-                                            .cardExpireDateCtrl.text.isNotEmpty
+                        onPressed: () async {
+                          Alert.info(
+                            context,
+                            'ต้องการบันทึกข้อมูลหรือไม่?',
+                            '',
+                            'ตกลง',
+                            action: () async {
+                              var payment = PaymentModel(
+                                paymentMethod: Global.currentPaymentMethod,
+                                pairId: Global.pairId,
+                                paymentDate:
+                                    DateTime.parse(Global.paymentDateCtrl.text),
+                                paymentDetail: Global.paymentDetailCtrl.text,
+                                bankId: Global.selectedBank?.id,
+                                bankName: Global.selectedBank?.name,
+                                accountNo: Global.selectedAccount?.accountNo,
+                                accountName: Global.selectedAccount?.name,
+                                cardName: Global.cardNameCtrl.text,
+                                cardNo: Global.cardNumberCtrl.text,
+                                cardExpiryDate:
+                                    Global.cardExpireDateCtrl.text.isNotEmpty
                                         ? DateTime.parse(
                                             Global.cardExpireDateCtrl.text)
                                         : null,
-                                    amount:
-                                        Global.toNumber(Global.amountCtrl.text),
-                                    referenceNumber: Global.refNoCtrl.text,
-                                    attachement: getPaymentAttachment(),
-                                  );
+                                amount: Global.toNumber(Global.amountCtrl.text),
+                                referenceNumber: Global.refNoCtrl.text,
+                                attachement: getPaymentAttachment(),
+                              );
 
-                                  Global.paymentList?.add(payment);
+                              Global.paymentList?.add(payment);
 
-                                  setState(() {});
-                                  Navigator.of(context).pop();
-                                });
-                              },
+                              setState(() {});
+                              Navigator.of(context).pop();
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.save_alt_outlined,
+                              size: 20,
                             ),
-                          ),
-                        )
-                      ],
-                    ))),
+                            const SizedBox(width: 8),
+                            Text(
+                              "บันทึก",
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Modern Close Button
                 Positioned(
-                  right: -40.0,
-                  top: -40.0,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 30,
-                        child: Icon(Icons.close),
+                  right: -12,
+                  top: -12,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEF4444),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   getPaymentAttachment() {
@@ -2024,7 +2237,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     });
     try {
       var result = await ApiServices.get('/customer/walkin');
-      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         setState(() {
@@ -2042,108 +2254,57 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 }
 
-class PaymentCard extends StatelessWidget {
-  const PaymentCard(
-      {Key? key, this.isSelected = false, this.title, this.image, this.action})
-      : super(key: key);
-
-  final bool? isSelected;
-  final String? title;
-  final String? image;
-  final Function()? action;
+class ModernLoadingWidget extends StatelessWidget {
+  const ModernLoadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: action,
-      child: Stack(
+    return const CircularProgressIndicator(
+      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0F766E)),
+      strokeWidth: 3,
+    );
+  }
+}
+
+class ModernEmptyState extends StatelessWidget {
+  const ModernEmptyState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: getProportionateScreenWidth(30),
-            padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(8.0),
-                vertical: getProportionateScreenHeight(8.0)),
-            margin: EdgeInsets.only(
-              bottom: getProportionateScreenHeight(8.0),
-            ),
+            width: 120,
+            height: 120,
             decoration: BoxDecoration(
-              color: isSelected!
-                  ? Colors.white
-                  : Colors.white.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(
-                getProportionateScreenWidth(
-                  4,
-                ),
-              ),
-              boxShadow: [
-                isSelected!
-                    ? BoxShadow(
-                        color: kShadowColor,
-                        offset: Offset(
-                          getProportionateScreenWidth(2),
-                          getProportionateScreenWidth(4),
-                        ),
-                        blurRadius: 80,
-                      )
-                    : const BoxShadow(color: Colors.transparent),
-              ],
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(60),
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: getProportionateScreenWidth(30),
-                  height: getProportionateScreenWidth(30),
-                  decoration: ShapeDecoration(
-                    color: kGreyShade5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        getProportionateScreenWidth(8.0),
-                      ),
-                    ),
-                  ),
-                  child: image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(image!,
-                              fit: BoxFit.cover, width: 1000.0),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            "assets/images/no_image.png",
-                            fit: BoxFit.cover,
-                            width: 1000.0,
-                          )),
-                ),
-                SizedBox(
-                  width: getProportionateScreenWidth(8),
-                ),
-                Expanded(
-                  child: Text(
-                    title!,
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(8),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )
-              ],
+            child: const Icon(
+              Icons.shopping_cart_outlined,
+              size: 60,
+              color: Color(0xFF94A3B8),
             ),
           ),
-          if (isSelected!)
-            Positioned(
-              top: 0,
-              right: 0,
-              child: GestureDetector(
-                child: const IconButton(
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.teal,
-                  ),
-                  onPressed: null,
-                ),
-              ),
+          const SizedBox(height: 24),
+          const Text(
+            'ไม่มีรายการในตะกร้า',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF334155),
             ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'เพิ่มสินค้าเพื่อดำเนินการชำระเงิน',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF64748B),
+            ),
+          ),
         ],
       ),
     );

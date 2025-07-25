@@ -63,14 +63,14 @@ List<ProductTypeModel> bankAccountTypes() {
 List<ProductTypeModel> orderTypes() {
   List<ProductTypeModel> data = [];
   // data.add(ProductTypeModel(id: null, code: null, name: "ทั้งหมด"));
-  data.add(ProductTypeModel(id: 1, code: 'SN', name: "ขายทองใหม่"));
-  data.add(ProductTypeModel(id: 2, code: 'BU', name: "ซื้อทองเก่า"));
+  data.add(ProductTypeModel(id: 1, code: 'SN', name: "ขายทองรูปพรรณใหม่"));
+  data.add(ProductTypeModel(id: 2, code: 'BU', name: "รับซื้อทองรูปพรรณเก่า"));
   data.add(ProductTypeModel(id: 3, code: 'SMB', name: "ขายทองแท่ง (จับคู่)"));
   data.add(ProductTypeModel(id: 33, code: 'SB', name: "ซื้อทองแท่ง (จับคู่)"));
   data.add(ProductTypeModel(id: 4, code: 'BMB', name: 'ขายทองแท่ง'));
   data.add(ProductTypeModel(id: 44, code: 'BB', name: "ซื้อทองแท่ง"));
-  data.add(ProductTypeModel(id: 5, code: 'RF', name: "เติมทอง"));
-  data.add(ProductTypeModel(id: 6, code: 'SU', name: "ขายทองเก่า"));
+  data.add(ProductTypeModel(id: 5, code: 'RF', name: "เติมทองรูปพรรณกับร้านค้าส่ง"));
+  data.add(ProductTypeModel(id: 6, code: 'SU', name: "ขายทองรูปพรรณเก่าให้ร้านค้าส่ง"));
   data.add(ProductTypeModel(id: 7, code: 'TR', name: "โอนทอง"));
   data.add(
       ProductTypeModel(id: 8, code: 'SBB', name: "ขายทองแท่งกับโบรกเกอร์"));
@@ -80,5 +80,11 @@ List<ProductTypeModel> orderTypes() {
       id: 10, code: 'RFB', name: "เติมทองคำแท่งกับร้านค้าส่ง"));
   data.add(ProductTypeModel(
       id: 11, code: 'SUB', name: "ขายทองคำแท่งเก่าให้ร้านค้าส่ง"));
+  return data;
+}
+
+List<ProductTypeModel> redeemTypes() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'RED', name: "ไถ่ถอน - ขายฝาก"));
   return data;
 }

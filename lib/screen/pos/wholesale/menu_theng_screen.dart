@@ -40,6 +40,7 @@ class WholeSaleThengMenuScreenState extends State<WholeSaleThengMenuScreen> {
     });
     super.initState();
     Global.currentOrderType = 6;
+    Global.currentRedeemType = 0;
     init();
   }
 

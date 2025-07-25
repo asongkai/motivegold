@@ -302,7 +302,7 @@ class SimpleCalculatorState extends State<SimpleCalculator> {
         }
         if (event.logicalKey == LogicalKeyboardKey.digit0 ||
             event.logicalKey == LogicalKeyboardKey.numpad0) {
-          _handleKeyEvent(4, 0);
+          _handleKeyEvent(4, 1);
           return KeyEventResult.handled;
         }
         if (event.logicalKey == LogicalKeyboardKey.digit1 ||

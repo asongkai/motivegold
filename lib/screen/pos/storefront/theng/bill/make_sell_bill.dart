@@ -34,7 +34,8 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
 
   List<Widget> originalWidgets = [];
   originalWidgets.add(
-    await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี', versionText: 'ต้นฉบับ'),
+    await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี',
+        versionText: 'ต้นฉบับ'),
   );
   originalWidgets.add(
     docNo(invoice.order),
@@ -78,7 +79,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                       right: BorderSide(),
                     ),
                   ),
-                  child: paddedText('รายการสินค้า', align: TextAlign.center),
+                  child: paddedText('หลักประกัน', align: TextAlign.center),
                 )),
             Expanded(
                 flex: 2,
@@ -268,12 +269,12 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                           Text('ราคาทองคำแท่งรวม :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('ค่าบล็อกทอง/บรรจุภัณฑ์ รวมภาษีมูลค่าเพิ่ม :',
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(fontSize: 9)),
-                          Text('ราคาสินค้ารวมภาษีมูลค่าเพิ่ม :',
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(fontSize: 9)),
+                          // Text('ค่าบล็อกทอง/บรรจุภัณฑ์ รวมภาษีมูลค่าเพิ่ม :',
+                          //     textAlign: TextAlign.right,
+                          //     style: const TextStyle(fontSize: 9)),
+                          // Text('ราคาสินค้ารวมภาษีมูลค่าเพิ่ม :',
+                          //     textAlign: TextAlign.right,
+                          //     style: const TextStyle(fontSize: 9)),
                         ]),
                   ),
                 )),
@@ -292,20 +293,20 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                            '${Global.format(priceExcludeTaxTotal(invoice.orders!))}',
+                            '${Global.format(getLineTotal(invoice.order))}',
                             textAlign: TextAlign.right,
                             style: const TextStyle(fontSize: 9)),
-                        Text(
-                            '${Global.format(commissionTotal(invoice.orders!))}',
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(fontSize: 9)),
-                        Text(
-                          '${Global.format(priceIncludeTaxTotal(invoice.orders!))}',
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                            fontSize: 9,
-                          ),
-                        ),
+                        // Text(
+                        //     '${Global.format(commissionTotal(invoice.orders!))}',
+                        //     textAlign: TextAlign.right,
+                        //     style: const TextStyle(fontSize: 9)),
+                        // Text(
+                        //   '${Global.format(priceIncludeTaxTotal(invoice.orders!))}',
+                        //   textAlign: TextAlign.right,
+                        //   style: const TextStyle(
+                        //     fontSize: 9,
+                        //   ),
+                        // ),
                       ]),
                 ),
               ),
@@ -313,182 +314,215 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
           ]),
     ),
   );
-  originalWidgets.add(
-    Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Row(children: [
-          Expanded(
-            flex: 8,
-            child: Container(
-              // width: double.infinity,
-              // height: 55,
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('อื่นๆ:', style: const TextStyle(fontSize: 9)),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  originalWidgets.add(Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Row(children: [
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1.0),
+              borderRadius: const BorderRadius.all(Radius.circular(10))),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left section - "อื่นๆ" with checkboxes
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('อื่นๆ :',
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    // First checkbox row
+                    Row(
                       children: [
-                        Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(children: [
-                              Text('['),
-                              if (getCommission(invoice.order) > 0)
-                                Icon(
-                                  const IconData(0xe5ca),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: (getCommission(invoice.order) > 0)
+                              ? Icon(
+                                  const IconData(0xe5ca), // checkmark
                                   color: PdfColors.black,
-                                  size: 18,
-                                ),
-                              if (getCommission(invoice.order) <= 0)
-                                SizedBox(width: 18),
-                              Text(']'),
-                              SizedBox(width: 5),
-                              Text('ค่าบล็อกทอง',
-                                  style: const TextStyle(fontSize: 9)),
-                            ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Text('มูลค่าไม่รวมภาษี: ',
-                                      style: const TextStyle(fontSize: 9)),
-                                  Container(
-                                      child: Text(
-                                          '${Global.format(getCommissionNoVat(invoice.order))}',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9))),
-                                  Text(' บาท',
-                                      textAlign: TextAlign.right,
-                                      style: const TextStyle(fontSize: 9)),
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 3, child: Container(child: Text(''))),
-                      ]),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  size: 20,
+                                )
+                              : Container(),
+                        ),
+                        SizedBox(width: 5),
+                        Text('ค่าบล็อกทอง',
+                            style: const TextStyle(fontSize: 9)),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    // Second checkbox row
+                    Row(
                       children: [
-                        Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(children: [
-                              Text('['),
-                              if (getPackageNoVat(invoice.order) > 0)
-                                Icon(
-                                  const IconData(0xe5ca),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: (getPackageNoVat(invoice.order) > 0)
+                              ? Icon(
+                                  const IconData(0xe5ca), // checkmark
                                   color: PdfColors.black,
-                                  size: 18,
-                                ),
-                              if (getPackageNoVat(invoice.order) <= 0)
-                                SizedBox(width: 18),
-                              Text(']'),
-                              SizedBox(width: 5),
-                              Text('ค่าบรรจุภัณฑ์',
-                                  style: const TextStyle(fontSize: 9))
-                            ]))),
-                        SizedBox(width: 10),
+                                  size: 20,
+                                )
+                              : Container(),
+                        ),
+                        SizedBox(width: 5),
                         Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Text('จำนวน: ',
-                                      style: const TextStyle(fontSize: 9)),
-                                  Container(
-                                      child: Text(
-                                    '${getTotalPackageQty(invoice.order) > 0 ? Global.format(getTotalPackageQty(invoice.order)) : ""}',
-                                    textAlign: TextAlign.right,
-                                    style: const TextStyle(fontSize: 9),
-                                  )),
-                                  Text('ชิ้น',
-                                      style: const TextStyle(fontSize: 9))
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Text('มูลค่าไม่รวมภาษี: ',
-                                      style: const TextStyle(fontSize: 9)),
-                                  Container(
-                                      child: Text(
-                                          '${Global.format(getPackageNoVat(invoice.order))}',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9))),
-                                  Text(' บาท',
-                                      textAlign: TextAlign.right,
-                                      style: const TextStyle(fontSize: 9)),
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 3, child: Container(child: Text(''))),
-                      ]),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Text('ภาษีมูลค่าเพิ่ม 7%: ',
-                                      style: const TextStyle(fontSize: 9)),
-                                  Container(
-                                      child: Text(
-                                          '${Global.format(getVat(invoice.order))}',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9))),
-                                  Text(' บาท',
-                                      textAlign: TextAlign.right,
-                                      style: const TextStyle(fontSize: 9)),
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                  Text('มูลค่ารวมภาษี: ',
-                                      style: const TextStyle(fontSize: 9)),
-                                  Container(
-                                      child: Text(
-                                          '${Global.format(getCommission(invoice.order))}',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9))),
-                                  Text(' บาท',
-                                      textAlign: TextAlign.right,
-                                      style: const TextStyle(fontSize: 9)),
-                                ]))),
-                      ]),
-                ],
+                          child: Text(
+                              'ค่าบรรจุภัณฑ์ จำนวน...${getTotalPackageQty(invoice.order) > 0 ? Global.format(getTotalPackageQty(invoice.order)) : ""}...ชิ้น',
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+              // Empty middle section for spacing
+              Expanded(
+                flex: 1,
+                child: Container(),
+              ),
+
+              // Right section - Financial details
+              Expanded(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Row 1: ค่าบล็อกทองไม่รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ค่าบล็อกทองไม่รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getCommissionNoVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 2: ค่าบรรจุภัณฑ์ไม่รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ค่าบรรจุภัณฑ์ไม่รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getPackageNoVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+                    // Row 3: ภาษีมูลค่าเพิ่ม 7%
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ภาษีมูลค่าเพิ่ม 7%',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 4: รวม/ค่าบรรจุภัณฑ์รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('รวม/ค่าบรรจุภัณฑ์รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                            flex: 3,
+                            child: Text(
+                              '${Global.format(getTotalAmount(invoice.order))}',
+                              style: const TextStyle(fontSize: 9),
+                              textAlign: TextAlign.right,
+                            )),
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 5: ชำระเงินสุทธิ (highlighted)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ชำระเงินสุทธิ',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontSize: 9, fontWeight: FontWeight.bold)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                            flex: 3,
+                            child: Text(
+                              '${Global.format(getTotalPayment(invoice.order))}',
+                              style: TextStyle(
+                                  fontSize: 9, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.right,
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ])),
-  );
+        ),
+      ),
+    ]),
+  ));
   originalWidgets.add(
     Container(
       height: 50,
@@ -541,14 +575,16 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                       ),
                       Expanded(
                         flex: 2,
-                        child: Text('${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
+                        child: Text(
+                            '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
                             textAlign: TextAlign.right,
                             style: TextStyle(
-                                fontSize: 9, color: addDisValue(invoice.order.discount ?? 0,
-                                invoice.order.addPrice ?? 0) <
-                                0
-                                ? PdfColors.red
-                                : PdfColors.blue700)),
+                                fontSize: 9,
+                                color: addDisValue(invoice.order.discount ?? 0,
+                                            invoice.order.addPrice ?? 0) <
+                                        0
+                                    ? PdfColors.red
+                                    : PdfColors.blue700)),
                       ),
                     ],
                   ),
@@ -630,7 +666,8 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
 
   List<Widget> copyWidgets = [];
   copyWidgets.add(
-    await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี', versionText: 'สำเนา'),
+    await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี',
+        versionText: 'สำเนา'),
   );
   copyWidgets.add(
     docNo(invoice.order),
@@ -909,182 +946,215 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
           ]),
     ),
   );
-  copyWidgets.add(
-    Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Row(children: [
-          Expanded(
-            flex: 8,
-            child: Container(
-              // width: double.infinity,
-              // height: 55,
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('อื่นๆ:', style: const TextStyle(fontSize: 9)),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  copyWidgets.add(Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Row(children: [
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1.0),
+              borderRadius: const BorderRadius.all(Radius.circular(10))),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left section - "อื่นๆ" with checkboxes
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('อื่นๆ :',
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    // First checkbox row
+                    Row(
                       children: [
-                        Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(children: [
-                                  Text('['),
-                                  if (getCommission(invoice.order) > 0)
-                                    Icon(
-                                      const IconData(0xe5ca),
-                                      color: PdfColors.black,
-                                      size: 18,
-                                    ),
-                                  if (getCommission(invoice.order) <= 0)
-                                    SizedBox(width: 18),
-                                  Text(']'),
-                                  SizedBox(width: 5),
-                                  Text('ค่าบล็อกทอง',
-                                      style: const TextStyle(fontSize: 9)),
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('มูลค่าไม่รวมภาษี: ',
-                                          style: const TextStyle(fontSize: 9)),
-                                      Container(
-                                          child: Text(
-                                              '${Global.format(getCommissionNoVat(invoice.order))}',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(fontSize: 9))),
-                                      Text(' บาท',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9)),
-                                    ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 3, child: Container(child: Text(''))),
-                      ]),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: (getCommission(invoice.order) > 0)
+                              ? Icon(
+                            const IconData(0xe5ca), // checkmark
+                            color: PdfColors.black,
+                            size: 20,
+                          )
+                              : Container(),
+                        ),
+                        SizedBox(width: 5),
+                        Text('ค่าบล็อกทอง',
+                            style: const TextStyle(fontSize: 9)),
+                      ],
+                    ),
+                    SizedBox(height: 4),
+                    // Second checkbox row
+                    Row(
                       children: [
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: (getPackageNoVat(invoice.order) > 0)
+                              ? Icon(
+                            const IconData(0xe5ca), // checkmark
+                            color: PdfColors.black,
+                            size: 20,
+                          )
+                              : Container(),
+                        ),
+                        SizedBox(width: 5),
                         Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(children: [
-                                  Text('['),
-                                  if (getPackageNoVat(invoice.order) > 0)
-                                    Icon(
-                                      const IconData(0xe5ca),
-                                      color: PdfColors.black,
-                                      size: 18,
-                                    ),
-                                  if (getPackageNoVat(invoice.order) <= 0)
-                                    SizedBox(width: 18),
-                                  Text(']'),
-                                  SizedBox(width: 5),
-                                  Text('ค่าบรรจุภัณฑ์',
-                                      style: const TextStyle(fontSize: 9))
-                                ]))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 2,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('จำนวน: ',
-                                          style: const TextStyle(fontSize: 9)),
-                                      Container(
-                                          child: Text(
-                                            '${getTotalPackageQty(invoice.order) > 0 ? Global.format(getTotalPackageQty(invoice.order)) : ""}',
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(fontSize: 9),
-                                          )),
-                                      Text('ชิ้น',
-                                          style: const TextStyle(fontSize: 9))
-                                    ]))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('มูลค่าไม่รวมภาษี: ',
-                                          style: const TextStyle(fontSize: 9)),
-                                      Container(
-                                          child: Text(
-                                              '${Global.format(getPackageNoVat(invoice.order))}',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(fontSize: 9))),
-                                      Text(' บาท',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9)),
-                                    ]))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 3, child: Container(child: Text(''))),
-                      ]),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(flex: 2, child: Container(child: Text(''))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('ภาษีมูลค่าเพิ่ม 7%: ',
-                                          style: const TextStyle(fontSize: 9)),
-                                      Container(
-                                          child: Text(
-                                              '${Global.format(getVat(invoice.order))}',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(fontSize: 9))),
-                                      Text(' บาท',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9)),
-                                    ]))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            flex: 3,
-                            child: Container(
-                                child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('มูลค่ารวมภาษี: ',
-                                          style: const TextStyle(fontSize: 9)),
-                                      Container(
-                                          child: Text(
-                                              '${Global.format(getCommission(invoice.order))}',
-                                              textAlign: TextAlign.right,
-                                              style: const TextStyle(fontSize: 9))),
-                                      Text(' บาท',
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(fontSize: 9)),
-                                    ]))),
-                      ]),
-                ],
+                          child: Text(
+                              'ค่าบรรจุภัณฑ์ จำนวน...${getTotalPackageQty(invoice.order) > 0 ? Global.format(getTotalPackageQty(invoice.order)) : ""}...ชิ้น',
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+              // Empty middle section for spacing
+              Expanded(
+                flex: 1,
+                child: Container(),
+              ),
+
+              // Right section - Financial details
+              Expanded(
+                flex: 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Row 1: ค่าบล็อกทองไม่รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ค่าบล็อกทองไม่รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getCommissionNoVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 2: ค่าบรรจุภัณฑ์ไม่รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ค่าบรรจุภัณฑ์ไม่รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getPackageNoVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+                    // Row 3: ภาษีมูลค่าเพิ่ม 7%
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ภาษีมูลค่าเพิ่ม 7%',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            '${Global.format(getVat(invoice.order))}',
+                            style: const TextStyle(fontSize: 9),
+                            textAlign: TextAlign.right,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 4: รวม/ค่าบรรจุภัณฑ์รวมภาษีมูลค่าเพิ่ม
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('รวม/ค่าบรรจุภัณฑ์รวมภาษีมูลค่าเพิ่ม',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(fontSize: 9)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                            flex: 3,
+                            child: Text(
+                              '${Global.format(getTotalAmount(invoice.order))}',
+                              style: const TextStyle(fontSize: 9),
+                              textAlign: TextAlign.right,
+                            )),
+                      ],
+                    ),
+                    SizedBox(height: 2),
+
+                    // Row 5: ชำระเงินสุทธิ (highlighted)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text('ชำระเงินสุทธิ',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontSize: 9, fontWeight: FontWeight.bold)),
+                        ),
+                        SizedBox(width: 30),
+                        Expanded(
+                            flex: 3,
+                            child: Text(
+                              '${Global.format(getTotalPayment(invoice.order))}',
+                              style: TextStyle(
+                                  fontSize: 9, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.right,
+                            )),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ])),
-  );
+        ),
+      ),
+    ]),
+  ));
   copyWidgets.add(
     Container(
       height: 50,
@@ -1137,14 +1207,16 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                       ),
                       Expanded(
                         flex: 2,
-                        child: Text('${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
+                        child: Text(
+                            '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
                             textAlign: TextAlign.right,
                             style: TextStyle(
-                                fontSize: 9, color: addDisValue(invoice.order.discount ?? 0,
-                                invoice.order.addPrice ?? 0) <
-                                0
-                                ? PdfColors.red
-                                : PdfColors.blue700)),
+                                fontSize: 9,
+                                color: addDisValue(invoice.order.discount ?? 0,
+                                            invoice.order.addPrice ?? 0) <
+                                        0
+                                    ? PdfColors.red
+                                    : PdfColors.blue700)),
                       ),
                     ],
                   ),
@@ -1175,21 +1247,21 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
                         Expanded(
                             child: Container(
                                 child: Row(children: [
-                                  Expanded(
-                                      flex: invoice.payments!.length > 1 ? 3 : 8,
-                                      child: Text(
-                                          "${getPaymentType(invoice.payments![i].paymentMethod)} :",
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(
-                                              fontSize: 9, color: PdfColors.blue700))),
-                                  Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                          "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(
-                                              fontSize: 9, color: PdfColors.blue700)))
-                                ])))
+                          Expanded(
+                              flex: invoice.payments!.length > 1 ? 3 : 8,
+                              child: Text(
+                                  "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700))),
+                          Expanded(
+                              flex: 2,
+                              child: Text(
+                                  "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(
+                                      fontSize: 9, color: PdfColors.blue700)))
+                        ])))
                     ],
                   ),
                 ],
@@ -1243,28 +1315,19 @@ Future<Uint8List> makeSellThengBill(Invoice invoice) async {
 }
 
 getCommission(OrderModel order) {
-  double total = 0;
   double com = 0;
   for (int i = 0; i < order.details!.length; i++) {
-    total += order.details![i].commission ?? 0;
-    if (order.details![i].vatOption == 'Include') {
-      com += total;
-    }
-
-    if (order.details![i].vatOption == 'Exclude') {
-      com += total + order.details![i].taxAmount!;
-    }
+    com += order.details![i].commission ?? 0;
   }
   return com;
 }
 
 getVat(OrderModel order) {
-  double total = 0;
   double vat = 0;
   for (int i = 0; i < order.details!.length; i++) {
-    total += order.details![i].commission ?? 0;
+
     if (order.details![i].vatOption == 'Include') {
-      vat += total * getVatValue();
+      vat += (order.details![i].commission! + order.details![i].packagePrice!) * 7 / 107;
     }
 
     if (order.details![i].vatOption == 'Exclude') {
@@ -1275,24 +1338,28 @@ getVat(OrderModel order) {
 }
 
 getPackageNoVat(OrderModel order) {
-  double total = 0;
-  for (int i = 0; i < order.details!.length; i++) {
-    total += order.details![i].packagePrice ?? 0;
-  }
-  return total;
-}
-
-getCommissionNoVat(OrderModel order) {
-  double total = 0;
   double vat = 0;
   for (int i = 0; i < order.details!.length; i++) {
-    total += order.details![i].commission ?? 0;
     if (order.details![i].vatOption == 'Include') {
-      vat += total * 100 / 107;
+      vat += order.details![i].packagePrice! * 100 / 107;
     }
 
     if (order.details![i].vatOption == 'Exclude') {
-      vat += total;
+      vat += order.details![i].packagePrice!;
+    }
+  }
+  return vat;
+}
+
+getCommissionNoVat(OrderModel order) {
+  double vat = 0;
+  for (int i = 0; i < order.details!.length; i++) {
+    if (order.details![i].vatOption == 'Include') {
+      vat += order.details![i].commission! * 100 / 107;
+    }
+
+    if (order.details![i].vatOption == 'Exclude') {
+      vat += order.details![i].commission!;
     }
   }
   return vat;
@@ -1302,6 +1369,22 @@ getTotalPackageQty(OrderModel order) {
   double total = 0;
   for (int i = 0; i < order.details!.length; i++) {
     total += order.details![i].packageQty ?? 0;
+  }
+  return total;
+}
+
+getTotalAmount(OrderModel order) {
+  return getCommissionNoVat(order) + getPackageNoVat(order) + getVat(order);
+}
+
+getTotalPayment(OrderModel order) {
+  return getTotalAmount(order) + getLineTotal(order);
+}
+
+getLineTotal(OrderModel order) {
+  double total = 0;
+  for (int i = 0; i < order.details!.length; i++) {
+    total += order.details![i].priceExcludeTax ?? 0;
   }
   return total;
 }

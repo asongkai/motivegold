@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
+import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
@@ -350,27 +351,27 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPriceIncludeTax)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPurchasePrice)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPriceDiff)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
+                              '${Global.format(invoice.order.details?.totalTaxBase)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue())}',
+                              '${Global.format(invoice.order.details?.totalTaxAmount)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - (((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue()))}',
+                              '${Global.format(invoice.order.details?.totalPriceExcludeTax)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -796,27 +797,27 @@ Future<Uint8List> makeBill(Invoice invoice) async {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPriceIncludeTax)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPurchasePrice)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order))}',
+                              '${Global.format(invoice.order.details?.totalPriceDiff)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107)}',
+                              '${Global.format(invoice.order.details?.totalTaxBase)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue())}',
+                              '${Global.format(invoice.order.details?.totalTaxAmount)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           Text(
-                              '${Global.format(Global.getOrderTotal(invoice.order) - (((Global.getOrderTotal(invoice.order) - Global.getPapunTotal(invoice.order)) * 100 / 107) * getVatValue()))}',
+                              '${Global.format(invoice.order.details?.totalPriceExcludeTax)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -938,8 +939,10 @@ Future<Uint8List> makeBill(Invoice invoice) async {
 }
 
 Widget sn(List<OrderModel>? orders) {
+  double total = 0;
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 1) {
+      total += orders[i].details?.totalPriceIncludeTax ?? 0;
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -962,7 +965,7 @@ Widget sn(List<OrderModel>? orders) {
           Expanded(
               flex: 3,
               child: Text(
-                  "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
+                  "มูลค่า :     ${Global.format(total)} บาท",
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 9))),
         ],
@@ -973,8 +976,10 @@ Widget sn(List<OrderModel>? orders) {
 }
 
 Widget bu(List<OrderModel>? orders) {
+  double total = 0;
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 2) {
+      total += orders[i].details?.totalPriceIncludeTax ?? 0;
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -39,8 +39,8 @@ dependencies:
   data_table_2: ^2.5.9
   flutter_slidable: ^3.0.1
   loading_animation_widget: ^1.2.0+4
-  babstrap_settings_screen: ^0.1.7
-#    path: ./plugins/babstrap_settings_screen
+  babstrap_settings_screen: #^0.1.7
+    path: ./plugins/babstrap_settings_screen
   package_info_plus: ^8.0.2
   device_info_plus: ^10.1.2
   url_launcher: ^6.0.20
@@ -59,7 +59,8 @@ dependencies:
 #  pattern_formatter: ^4.0.0
   pdf: ^3.11.3
   printing: ^5.14.0
-  thai_idcard_reader_flutter: ^0.0.7
+  thai_idcard_reader_flutter: #^0.0.7
+    path: ./plugins/thai_idcard_reader_flutter
   mirai_dropdown_menu: ^0.0.8+2
   substring_highlight: ^1.0.33
   board_datetime_picker: ^2.2.1

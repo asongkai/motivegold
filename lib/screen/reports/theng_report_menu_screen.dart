@@ -31,7 +31,6 @@ class ThengReportMenuScreen extends StatefulWidget {
 class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
   @override
   Widget build(BuildContext context) {
-    // return Container();
     return Scaffold(
       backgroundColor: Colors.white.withValues(alpha: 0.94),
       appBar: const CustomAppBar(
@@ -50,34 +49,6 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
         child: ListView(
           children: [
             SettingsGroup(
-              settingsGroupTitle: "ประวัติการทำรายการ",
-              items: [
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const TransferGoldHistoryScreen()));
-                  },
-                  icons: Icons.view_list,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
-                  ),
-                  title: 'ประวัติการโอนทอง',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-
-            SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
                 if (Global.company?.stock == 1)
@@ -89,9 +60,9 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                               builder: (context) =>
                               const StockReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     titleStyle: Theme.of(context)
@@ -112,9 +83,9 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                               builder: (context) =>
                               const StockMovementReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
                     titleStyle: Theme.of(context)
@@ -128,39 +99,11 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                   ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //         const MoneyMovementReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.pie_chart,
+                  icons: Icons.shopping_cart, // Better for buying
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
-                  ),
-                  title: 'รายงานเส้นทางการเงินทองคำแท่ง',
-                  titleStyle: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //         const BuyNewGoldReportScreen()));
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
-                  },
-                  icons: Icons.checklist_rtl_outlined,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.red[600]!, // Red for buying
                   ),
                   title: 'รายงานซื้อทองคำแท่ง (หน้าร้าน)',
                   titleStyle: Theme.of(context)
@@ -174,16 +117,11 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //         const SellNewGoldReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.teal[600]!, // Teal for selling
                   ),
                   title: 'รายงานขายทองคำแท่ง (หน้าร้าน)',
                   titleStyle: Theme.of(context)
@@ -197,16 +135,11 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //         const SellUsedGoldReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Selling icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepOrangeAccent,
+                    backgroundColor: Colors.deepOrange[600]!, // Deep orange for wholesale
                   ),
                   title: 'รายงานขายทองคำแท่ง (ร้านขายส่ง)',
                   titleStyle: Theme.of(context)
@@ -220,16 +153,11 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //         const BuyUsedGoldReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.shopping_cart, // Buying icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.brown,
+                    backgroundColor: Colors.brown[600]!, // Brown for wholesale buying
                   ),
                   title: 'รายงานซื้อทองคำแท่ง (ร้านขายส่ง)',
                   titleStyle: Theme.of(context)
@@ -243,15 +171,29 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const SellVatReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.account_balance_wallet, // Better for financial flow
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.purple[600]!, // Purple for financial reports
+                  ),
+                  title: 'รายงานเส้นทางการเงินทองคำแท่ง',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                  },
+                  icons: Icons.receipt_long, // Better for tax reports
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.indigo[600]!, // Indigo for tax reports
                   ),
                   title: 'รายงานภาษีขายทองคำแท่ง (บรรจุภัณฑ์)',
                   titleStyle: Theme.of(context)
@@ -265,15 +207,11 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const BuyVatReportScreen()));
                     Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.receipt_long, // Tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.indigo[600]!, // Same color for tax consistency
                   ),
                   title: 'รายงานภาษีซื้อทองคำแท่ง (บรรจุภัณฑ์)',
                   titleStyle: Theme.of(context)
@@ -285,9 +223,30 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                       .titleMedium
                       ?.copyWith(color: Colors.grey.shade600),
                 ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const TransferGoldHistoryScreen()));
+                  },
+                  icons: Icons.transfer_within_a_station, // Better for transfers
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.blue[600]!, // Blue for transfers
+                  ),
+                  title: 'ประวัติการโอนทอง',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
               ],
             ),
-            // You can add a settings title
           ],
         ),
       ),

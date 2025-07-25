@@ -44,7 +44,13 @@ class AddCustomerScreen extends StatefulWidget {
   State<AddCustomerScreen> createState() => _AddCustomerScreenState();
 }
 
-class _AddCustomerScreenState extends State<AddCustomerScreen> {
+class _AddCustomerScreenState extends State<AddCustomerScreen>
+    with TickerProviderStateMixin {
+  AnimationController? _fadeController;
+  AnimationController? _slideController;
+  Animation<double>? _fadeAnimation;
+  Animation<Offset>? _slideAnimation;
+
   final TextEditingController idCardCtrl = TextEditingController();
   final TextEditingController branchCodeCtrl = TextEditingController();
   final TextEditingController firstNameCtrl = TextEditingController();
@@ -68,6 +74,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   bool isSeller = false;
   bool isCustomer = false;
   bool isBuyer = false;
+  String? selectedBusinessType;
 
   ProductTypeModel? selectedType;
   ValueNotifier<dynamic>? typeNotifier;
@@ -96,10 +103,39 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
   @override
   void initState() {
-    // implement initState
     super.initState();
+
+    // Initialize animations
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController!,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController!,
+      curve: Curves.easeOutCubic,
+    ));
+
     typeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[1]);
     selectedType = customerTypes()[1];
+
+    nationality = 'Thai';
+
     // birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.addressCtrl.text = "";
     ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
@@ -108,9 +144,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     Global.amphureModel = null;
     Global.tambonModel = null;
     Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-            ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+        ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
     Global.amphureNotifier = ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
     Global.tambonNotifier = ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+
+    // Start animations
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _fadeController?.forward();
+        _slideController?.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _fadeController?.dispose();
+    _slideController?.dispose();
+    subscription?.cancel();
+    super.dispose();
   }
 
   init() async {
@@ -119,7 +171,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/customer/all', Global.requestObj(null));
+      await ApiServices.post('/customer/all', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -221,8 +273,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             setState(() {});
           });
         }
-
-
       }
       setState(() {});
     } catch (e) {
@@ -251,11 +301,262 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     });
   }
 
+  Widget _buildModernCheckboxTile({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required IconData icon,
+    required Color color,
+    required Function(bool?) onChanged,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        gradient: value
+            ? LinearGradient(
+          colors: [
+            color.withValues(alpha:0.1),
+            color.withValues(alpha:0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        )
+            : null,
+        color: value ? null : Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: value ? color : Colors.grey[300]!,
+          width: value ? 2 : 1,
+        ),
+        boxShadow: value ? [
+          BoxShadow(
+            color: color.withValues(alpha:0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ] : [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => onChanged(!value),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: value ? color : Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: value ? color : Colors.grey[400]!,
+                      width: 2,
+                    ),
+                  ),
+                  child: value
+                      ? const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 16,
+                  )
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: value ? color.withValues(alpha:0.2) : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: value ? color : Colors.grey[600],
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: value ? color : Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: value ? color.withValues(alpha:0.8) : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (value)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'เลือกแล้ว',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernCard({
+    required Widget child,
+    EdgeInsets? padding,
+    Color? color,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: padding ?? const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: color ?? Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget buildTextFieldBig({
+    required String labelText,
+    String? validator,
+    required TextInputType inputType,
+    required TextEditingController controller,
+    Widget? prefixIcon,
+    int maxLines = 1,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: inputType,
+        maxLines: maxLines,
+        style: TextStyle(fontSize: 14.sp),
+        decoration: InputDecoration(
+          labelText: labelText,
+          prefixIcon: prefixIcon,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.teal, width: 2),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField({
+    required String labelText,
+    String? validator,
+    required TextInputType inputType,
+    required TextEditingController controller,
+    int line = 1,
+    Widget? prefixIcon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: inputType,
+        maxLines: line,
+        style: TextStyle(fontSize: 14.sp),
+        decoration: InputDecoration(
+          labelText: labelText,
+          prefixIcon: prefixIcon,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.teal, width: 2),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
@@ -265,23 +566,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("เพิ่มลูกค้า",
+                Text("เพิ่มลูกค้า",
                     style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 14.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
                 GestureDetector(
                   onTap: () async {
                     Map<String, dynamic>? ocrResult = await Navigator.of(context)
                         .push(
-                          MaterialPageRoute(
-                            builder: (context) => const IDCardOCRScreen(),
-                          ),
-                        )
+                      MaterialPageRoute(
+                        builder: (context) => const IDCardOCRScreen(),
+                      ),
+                    )
                         .whenComplete(() {
-                          setState(() {
+                      setState(() {
 
-                          });
+                      });
                     });
                     Global.printLongString(ocrResult.toString());
 
@@ -299,8 +600,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       birthDateCtrl.text = Global.formatDateThai(ocrResult["en_dob"]);
                       nationality = "Thai";
                       postalCodeCtrl.text = ocrResult["postal_code"];
-                      addressCtrl.text = ocrResult["address"].toString().split("/")[1].replaceFirst(' ', '');
-                      Global.addressCtrl.text = ocrResult["address"].toString().split("/")[1].replaceFirst(' ', '');
+                      addressCtrl.text = ocrResult["address"].toString().split("ต.")[0];
+                      Global.addressCtrl.text = ocrResult["address"].toString().split("ต.")[0];
                     }
 
                     setState(() {
@@ -308,21 +609,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     });
                   },
                   child: Container(
-                    color: Colors.teal[900],
+                    decoration: BoxDecoration(
+                      color: Colors.teal[900],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.search,
-                            size: 50,
+                            size: 16.sp,
                             color: Colors.white,
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             'แสดงตนลูกค้า',
                             style: TextStyle(
-                                fontSize: 14.sp, //16.sp,
-                                color: Colors.white),
+                                fontSize: 14.sp, //14.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
                           )
                         ],
                       ),
@@ -334,850 +640,998 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
         ),
       ),
-      // AppBar(
-      //   title: const Text("เพิ่มลูกค้า"),
-      // ),
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: SingleChildScrollView(
-            child: SizedBox(
-              // height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: 70,
-                        child: MiraiDropDownMenu<ProductTypeModel>(
-                          key: UniqueKey(),
-                          children: customerTypes(),
-                          space: 4,
-                          maxHeight: 360,
-                          showSearchTextField: true,
-                          selectedItemBackgroundColor: Colors.transparent,
-                          emptyListMessage: 'ไม่มีข้อมูล',
-                          showSelectedItemBackgroundColor: true,
-                          itemWidgetBuilder: (
-                            int index,
-                            ProductTypeModel? project, {
-                            bool isItemSelected = false,
-                          }) {
-                            return DropDownItemWidget(
-                              project: project,
-                              isItemSelected: isItemSelected,
-                              firstSpace: 10,
-                              fontSize: 16.sp,
-                            );
-                          },
-                          onChanged: (ProductTypeModel value) {
-                            selectedType = value;
-                            typeNotifier!.value = value;
-                            setState(() {});
-                          },
-                          child: DropDownObjectChildWidget(
-                            key: GlobalKey(),
-                            fontSize: 16.sp,
-                            projectValueNotifier: typeNotifier!,
+          child: FadeTransition(
+            opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
+            child: SlideTransition(
+              position: _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ประเภทลูกค้า',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: 70,
+                                child: MiraiDropDownMenu<ProductTypeModel>(
+                                  key: UniqueKey(),
+                                  children: customerTypes(),
+                                  space: 4,
+                                  maxHeight: 360,
+                                  showSearchTextField: true,
+                                  selectedItemBackgroundColor: Colors.transparent,
+                                  emptyListMessage: 'ไม่มีข้อมูล',
+                                  showSelectedItemBackgroundColor: true,
+                                  itemWidgetBuilder: (
+                                      int index,
+                                      ProductTypeModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
+                                    return DropDownItemWidget(
+                                      project: project,
+                                      isItemSelected: isItemSelected,
+                                      firstSpace: 10,
+                                      fontSize: 14.sp,
+                                    );
+                                  },
+                                  onChanged: (ProductTypeModel value) {
+                                    selectedType = value;
+                                    typeNotifier!.value = value;
+                                    if (selectedType?.code == 'general') {
+                                      nationality = 'Thai';
+                                    }
+                                    setState(() {});
+                                  },
+                                  child: DropDownObjectChildWidget(
+                                    key: GlobalKey(),
+                                    fontSize: 14.sp,
+                                    projectValueNotifier: typeNotifier!,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (selectedType?.code == 'general')
-                      if (_device != null)
-                        UsbDeviceCard(
-                          device: _device,
-                        ),
-                    if (selectedType?.code == 'general')
-                      if (_card != null) Text(_card.toString()),
-                    if (selectedType?.code == 'general')
-                      if (_device == null || !_device!.isAttached) ...[
-                        const EmptyHeader(
-                          text: 'เสียบเครื่องอ่านบัตรก่อน',
-                        ),
-                      ],
-                    if (selectedType?.code == 'general')
-                      if (_error != null) Text(_error.toString()),
-                    if (selectedType?.code == 'general')
-                      if (_data == null &&
-                          (_device != null && _device!.hasPermission)) ...[
-                        const EmptyHeader(
-                          icon: Icons.credit_card,
-                          text: 'เสียบบัตรประชาชนได้เลย',
-                        ),
-                        SizedBox(
-                          height: 200,
-                          child: Wrap(children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Checkbox(
-                                    value: selectedTypes.isEmpty,
-                                    onChanged: (val) {
-                                      setState(() {
-                                        if (selectedTypes.isNotEmpty) {
-                                          selectedTypes = [];
-                                        }
-                                      });
-                                    }),
-                                const Text('readAll'),
-                              ],
+                        if (selectedType?.code == 'general')
+                          if (_device != null)
+                            _buildModernCard(
+                              child: UsbDeviceCard(
+                                device: _device,
+                              ),
                             ),
-                            for (var ea in _idCardType)
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
+                        if (selectedType?.code == 'general')
+                          if (_card != null)
+                            _buildModernCard(
+                              child: Text(_card.toString(), style: const TextStyle(fontSize: 16)),
+                            ),
+                        if (selectedType?.code == 'general')
+                          if (_device == null || !_device!.isAttached) ...[
+                            _buildModernCard(
+                              color: Colors.orange[50],
+                              child: const EmptyHeader(
+                                text: 'เสียบเครื่องอ่านบัตรก่อน',
+                              ),
+                            ),
+                          ],
+                        if (selectedType?.code == 'general')
+                          if (_error != null)
+                            _buildModernCard(
+                              color: Colors.red[50],
+                              child: Text(_error.toString(), style: TextStyle(color: Colors.red[700], fontSize: 16)),
+                            ),
+                        if (selectedType?.code == 'general')
+                          if (_data == null &&
+                              (_device != null && _device!.hasPermission)) ...[
+                            _buildModernCard(
+                              color: Colors.blue[50],
+                              child: Column(
                                 children: [
-                                  Checkbox(
-                                      value: selectedTypes.contains(ea),
-                                      onChanged: (val) {
-                                        motivePrint(ea);
-                                        setState(() {
-                                          if (selectedTypes.contains(ea)) {
-                                            selectedTypes.remove(ea);
-                                          } else {
-                                            selectedTypes.add(ea);
-                                          }
-                                        });
-                                      }),
-                                  Text('$ea'),
+                                  const EmptyHeader(
+                                    icon: Icons.credit_card,
+                                    text: 'เสียบบัตรประชาชนได้เลย',
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    height: 200,
+                                    child: Wrap(children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Checkbox(
+                                              value: selectedTypes.isEmpty,
+                                              onChanged: (val) {
+                                                setState(() {
+                                                  if (selectedTypes.isNotEmpty) {
+                                                    selectedTypes = [];
+                                                  }
+                                                });
+                                              }),
+                                          const Text('readAll'),
+                                        ],
+                                      ),
+                                      for (var ea in _idCardType)
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Checkbox(
+                                                value: selectedTypes.contains(ea),
+                                                onChanged: (val) {
+                                                  motivePrint(ea);
+                                                  setState(() {
+                                                    if (selectedTypes.contains(ea)) {
+                                                      selectedTypes.remove(ea);
+                                                    } else {
+                                                      selectedTypes.add(ea);
+                                                    }
+                                                  });
+                                                }),
+                                            Text('$ea'),
+                                          ],
+                                        ),
+                                    ]),
+                                  ),
                                 ],
                               ),
-                          ]),
-                        ),
-                      ],
-                    if (selectedType?.code == 'general')
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    if (selectedType?.code == 'general')
-                      if (_data != null)
-                        if (_data!.photo.isNotEmpty)
-                          Center(
-                            child: Image.memory(
-                              Uint8List.fromList(_data!.photo),
                             ),
+                          ],
+                        if (selectedType?.code == 'general')
+                          const SizedBox(
+                            height: 10,
                           ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: RadioListTile<String>(
-                                    title: const Text(
-                                      'สัญชาติไทย',
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                    value: 'Thai',
-                                    groupValue: nationality,
-                                    visualDensity: VisualDensity.standard,
-                                    activeColor: Colors.teal,
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        nationality = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                Expanded(
-                                  child: RadioListTile<String>(
-                                    title: const Text(
-                                      'ต่างชาติ',
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                    value: 'Foreigner',
-                                    groupValue: nationality,
-                                    visualDensity: VisualDensity.standard,
-                                    activeColor: Colors.teal,
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        nationality = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Divider(),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (nationality == 'Thai')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: getIdTitle(selectedType),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: idCardCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (nationality == 'Foreigner')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'Work Permit',
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: workPermitCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (nationality == 'Foreigner')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'Passport ID',
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: passportNoCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (nationality == 'Foreigner')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'Tax ID',
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: taxNumberCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (selectedType?.code == 'company')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'รหัสสาขา'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: branchCodeCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (selectedType?.code == 'general')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'ชื่อ'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: firstNameCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (selectedType?.code == 'general')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'นามสกุล'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: lastNameCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (selectedType?.code == 'company')
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'ชื่อบริษัท'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: companyNameCtrl,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        buildTextFieldBig(
-                                          labelText: 'อีเมล'.tr(),
-                                          validator: null,
-                                          inputType: TextInputType.emailAddress,
-                                          controller: emailAddressCtrl,
-                                        ),
-                                      ],
+                        if (selectedType?.code == 'general')
+                          if (_data != null)
+                            if (_data!.photo.isNotEmpty)
+                              _buildModernCard(
+                                child: Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.memory(
+                                      Uint8List.fromList(_data!.photo),
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        buildTextFieldBig(
-                                          labelText: 'โทรศัพท์'.tr(),
-                                          validator: null,
-                                          inputType: TextInputType.phone,
-                                          controller: phoneCtrl,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (selectedType?.code == 'general')
-                              const SizedBox(
-                                height: 15,
                               ),
-                            if (selectedType?.code == 'general')
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ข้อมูลส่วนตัว',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
+                                children: <Widget>[
                                   Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: TextField(
-                                        controller: birthDateCtrl,
-                                        //editing controller of this TextField
-                                        style: const TextStyle(fontSize: 38),
-                                        decoration: InputDecoration(
-                                          prefixIcon:
-                                              const Icon(Icons.calendar_today),
-                                          //icon of text field
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.always,
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 10.0,
-                                                  horizontal: 10.0),
-                                          labelText: "วันเกิด".tr(),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              getProportionateScreenWidth(8),
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: kGreyShade3,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              getProportionateScreenWidth(2),
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: kGreyShade3,
-                                            ),
-                                          ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: nationality == 'Thai' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: nationality == 'Thai' ? Colors.teal : Colors.grey[300]!,
+                                          width: nationality == 'Thai' ? 2 : 1,
                                         ),
-                                        readOnly: true,
-                                        //set it true, so that user will not able to edit text
-                                        onTap: () async {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => SfDatePickerDialog(
-                                              initialDate: DateTime.now(),
-                                              onDateSelected: (date) {
-                                                motivePrint('You picked: $date');
-                                                // Your logic here
-                                                String formattedDate =
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(date);
-                                                motivePrint(
-                                                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //you can implement different kind of Date Format here according to your requirement
-                                                setState(() {
-                                                  birthDateCtrl.text =
-                                                      formattedDate; //set output date to TextField value.
-                                                });
-                                              },
-                                            ),
-                                          );
+                                      ),
+                                      child: RadioListTile<String>(
+                                        title: Text(
+                                          'สัญชาติไทย',
+                                          style: TextStyle(fontSize: 14.sp,),
+                                        ),
+                                        value: 'Thai',
+                                        groupValue: nationality,
+                                        visualDensity: VisualDensity.standard,
+                                        activeColor: Colors.teal,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            nationality = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: nationality == 'Foreigner' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: nationality == 'Foreigner' ? Colors.teal : Colors.grey[300]!,
+                                          width: nationality == 'Foreigner' ? 2 : 1,
+                                        ),
+                                      ),
+                                      child: RadioListTile<String>(
+                                        title: Text(
+                                          'ต่างชาติ',
+                                          style: TextStyle(fontSize: 14.sp,),
+                                        ),
+                                        value: 'Foreigner',
+                                        groupValue: nationality,
+                                        visualDensity: VisualDensity.standard,
+                                        activeColor: Colors.teal,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            nationality = value;
+                                          });
                                         },
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
+                              const SizedBox(height: 10,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (nationality == 'Thai')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: getIdTitle(selectedType),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: idCardCtrl,
+                                              prefixIcon: Icon(Icons.credit_card, size: 14.sp),
+                                            ),
+                                          ],
                                         ),
-                                        buildTextFieldBig(
-                                          labelText: 'อาชีพ',
-                                          inputType: TextInputType.phone,
-                                          controller: occupationCtrl,
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8.0),
-                                    child: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
+                                  if (nationality == 'Foreigner')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'Work Permit',
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: workPermitCtrl,
+                                              prefixIcon: Icon(Icons.work, size: 14.sp),
+                                            ),
+                                          ],
                                         ),
-                                        buildTextFieldBig(
-                                          labelText:
-                                              'รหัสไปรษณีย์ / Postal Code',
-                                          inputType: TextInputType.phone,
-                                          controller: postalCodeCtrl,
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Card(
-                              child: Row(
+                                  if (nationality == 'Foreigner')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'Passport ID',
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: passportNoCtrl,
+                                              prefixIcon: Icon(Icons.flight, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  if (nationality == 'Foreigner')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'Tax ID',
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: taxNumberCtrl,
+                                              prefixIcon: Icon(Icons.receipt, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  if (selectedType?.code == 'company')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'รหัสสาขา'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: branchCodeCtrl,
+                                              prefixIcon: Icon(Icons.store, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (selectedType?.code == 'general')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'ชื่อ'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: firstNameCtrl,
+                                              prefixIcon: Icon(Icons.person, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  if (selectedType?.code == 'general')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'นามสกุล'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: lastNameCtrl,
+                                              prefixIcon: Icon(Icons.person_outline, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  if (selectedType?.code == 'company')
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'ชื่อบริษัท'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: companyNameCtrl,
+                                              prefixIcon: Icon(Icons.business, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: CheckboxListTile(
-                                      title: const Text(
-                                        "ซื้อขายหน้าร้าน",
-                                        style: TextStyle(fontSize: 30),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'อีเมล'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.emailAddress,
+                                            controller: emailAddressCtrl,
+                                            prefixIcon: Icon(Icons.email, size: 14.sp),
+                                          ),
+                                        ],
                                       ),
-                                      value: isCustomer,
-                                      visualDensity: VisualDensity.standard,
-                                      activeColor: Colors.teal,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          isCustomer = newValue!;
-                                        });
-                                      },
-                                      controlAffinity: ListTileControlAffinity
-                                          .leading,
                                     ),
                                   ),
                                   Expanded(
-                                    child: CheckboxListTile(
-                                      title: const Text(
-                                        "ซื้อขายกับร้านค้าส่ง",
-                                        style: TextStyle(fontSize: 30),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'โทรศัพท์'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.phone,
+                                            controller: phoneCtrl,
+                                            prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                          ),
+                                        ],
                                       ),
-                                      value: isBuyer,
-                                      visualDensity: VisualDensity.standard,
-                                      activeColor: Colors.teal,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          isBuyer = newValue!;
-                                        });
-                                      },
-                                      controlAffinity: ListTileControlAffinity
-                                          .leading, //  <-- leading Checkbox
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: CheckboxListTile(
-                                      title: const Text(
-                                        "ซื้อขายกับร้านทองตู้แดง",
-                                        style: TextStyle(fontSize: 30),
-                                      ),
-                                      value: isSeller,
-                                      visualDensity: VisualDensity.standard,
-                                      activeColor: Colors.teal,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          isSeller = newValue!;
-                                        });
-                                      },
-                                      controlAffinity: ListTileControlAffinity
-                                          .leading, //  <-- leading Checkbox
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    // const LocationEntryWidget(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('เลือกจังหวัด', style: TextStyle(fontSize: 16.sp, color: textColor),),
-                                const SizedBox(height: 4,),
-                                SizedBox(
-                                  height: 70,
-                                  child: MiraiDropDownMenu<ProvinceModel>(
-                                    key: UniqueKey(),
-                                    children: Global.provinceList,
-                                    space: 4,
-                                    maxHeight: 360,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                    Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (
-                                        int index,
-                                        ProvinceModel? project, {
-                                          bool isItemSelected = false,
-                                        }) {
-                                      return LocationDropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 16.sp,
-                                      );
-                                    },
-                                    onChanged: (ProvinceModel value) {
-                                      Global.provinceModel = value;
-                                      Global.provinceNotifier!.value = value;
-                                      loadAmphureByProvince(value.id);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: LocationDropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 16.sp,
-                                      projectValueNotifier:
-                                      Global.provinceNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('เลือกอำเภอ', style: TextStyle(fontSize: 16.sp, color: textColor),),
-                                const SizedBox(height: 4,),
-                                SizedBox(
-                                  height: 70,
-                                  child: MiraiDropDownMenu<AmphureModel>(
-                                    key: UniqueKey(),
-                                    children: Global.amphureList,
-                                    space: 4,
-                                    maxHeight: 360,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                    Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (
-                                        int index,
-                                        AmphureModel? project, {
-                                          bool isItemSelected = false,
-                                        }) {
-                                      return LocationDropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 16.sp,
-                                      );
-                                    },
-                                    onChanged: (AmphureModel value) {
-                                      Global.amphureModel = value;
-                                      Global.amphureNotifier!.value = value;
-                                      loadTambonByAmphure(value.id);
-                                      setState(() {
-
-                                      });
-                                    },
-                                    child: LocationDropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 16.sp,
-                                      projectValueNotifier:
-                                      Global.amphureNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('เลือกตำบล', style: TextStyle(fontSize: 16.sp, color: textColor),),
-                                const SizedBox(height: 4,),
-                                SizedBox(
-                                  height: 70,
-                                  child: MiraiDropDownMenu<TambonModel>(
-                                    key: UniqueKey(),
-                                    children: Global.tambonList,
-                                    space: 4,
-                                    maxHeight: 360,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                    Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (
-                                        int index,
-                                        TambonModel? project, {
-                                          bool isItemSelected = false,
-                                        }) {
-                                      return LocationDropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 16.sp,
-                                      );
-                                    },
-                                    onChanged: (TambonModel value) {
-                                      Global.tambonModel = value;
-                                      Global.tambonNotifier!.value = value;
-                                    },
-                                    child: LocationDropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 16.sp,
-                                      projectValueNotifier:
-                                      Global.tambonNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
+                              if (selectedType?.code == 'general')
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                buildTextField(
-                                  line: 3,
-                                  labelText: 'ที่อยู่'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: Global.addressCtrl,
+                              if (selectedType?.code == 'general')
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(alpha:0.03),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: TextField(
+                                            controller: birthDateCtrl,
+                                            //editing controller of this TextField
+                                            style: TextStyle(fontSize: 14.sp),
+                                            decoration: InputDecoration(
+                                              prefixIcon:
+                                              Icon(Icons.calendar_today, size: 14.sp),
+                                              //icon of text field
+                                              floatingLabelBehavior:
+                                              FloatingLabelBehavior.always,
+                                              contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 20.0,
+                                                  horizontal: 16.0),
+                                              labelText: "วันเกิด".tr(),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                                borderSide: const BorderSide(color: Colors.teal, width: 2),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            //set it true, so that user will not able to edit text
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) => SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    motivePrint('You picked: $date');
+                                                    // Your logic here
+                                                    String formattedDate =
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(date);
+                                                    motivePrint(
+                                                        formattedDate); //formatted date output using intl package =>  2021-03-16
+                                                    //you can implement different kind of Date Format here according to your requirement
+                                                    setState(() {
+                                                      birthDateCtrl.text =
+                                                          formattedDate; //set output date to TextField value.
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText: 'อาชีพ',
+                                            inputType: TextInputType.text,
+                                            controller: occupationCtrl,
+                                            prefixIcon: Icon(Icons.work_outline, size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextFieldBig(
+                                            labelText:
+                                            'รหัสไปรษณีย์ / Postal Code',
+                                            inputType: TextInputType.phone,
+                                            controller: postalCodeCtrl,
+                                            prefixIcon: Icon(Icons.local_post_office, size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ประเภทการใช้งาน',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _buildModernCheckboxTile(
+                                title: "ซื้อขายหน้าร้าน",
+                                subtitle: "การซื้อขายสินค้าผ่านหน้าร้าน",
+                                value: isCustomer,
+                                icon: Icons.store,
+                                color: Colors.blue,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    if (newValue!) {
+                                      selectedBusinessType = 'customer';
+                                      isCustomer = true;
+                                    } else {
+                                      selectedBusinessType = null;
+                                      isCustomer = false;
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              _buildModernCheckboxTile(
+                                title: "ซื้อขายกับร้านค้าส่ง",
+                                subtitle: "การซื้อขายสินค้าขายส่ง",
+                                value: isBuyer,
+                                icon: Icons.business,
+                                color: Colors.green,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    if (newValue!) {
+                                      selectedBusinessType = 'buyer';
+                                      isBuyer = true;
+                                    } else {
+                                      selectedBusinessType = null;
+                                      isBuyer = false;
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              _buildModernCheckboxTile(
+                                title: "ซื้อขายกับร้านทองตู้แดง",
+                                subtitle: "การซื้อขายทองผ่านตู้แดง",
+                                value: isSeller,
+                                icon: Icons.inventory,
+                                color: Colors.orange,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    if (newValue!) {
+                                      selectedBusinessType = 'seller';
+                                      isSeller = true;
+                                    } else {
+                                      selectedBusinessType = null;
+                                      isSeller = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        // const LocationEntryWidget(),
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ข้อมูลที่อยู่',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('เลือกจังหวัด', style: TextStyle(fontSize: 14.sp, color: textColor),),
+                                          const SizedBox(height: 4,),
+                                          Container(
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha:0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: MiraiDropDownMenu<ProvinceModel>(
+                                              key: UniqueKey(),
+                                              children: Global.provinceList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor: true,
+                                              itemWidgetBuilder: (
+                                                  int index,
+                                                  ProvinceModel? project, {
+                                                    bool isItemSelected = false,
+                                                  }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected: isItemSelected,
+                                                  firstSpace: 10,
+                                                  fontSize: 14.sp,
+                                                );
+                                              },
+                                              onChanged: (ProvinceModel value) {
+                                                Global.provinceModel = value;
+                                                Global.provinceNotifier!.value = value;
+                                                loadAmphureByProvince(value.id);
+                                                setState(() {
+
+                                                });
+                                              },
+                                              child: LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                Global.provinceNotifier!,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('เลือกอำเภอ', style: TextStyle(fontSize: 14.sp, color: textColor),),
+                                          const SizedBox(height: 4,),
+                                          Container(
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha:0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: MiraiDropDownMenu<AmphureModel>(
+                                              key: UniqueKey(),
+                                              children: Global.amphureList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor: true,
+                                              itemWidgetBuilder: (
+                                                  int index,
+                                                  AmphureModel? project, {
+                                                    bool isItemSelected = false,
+                                                  }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected: isItemSelected,
+                                                  firstSpace: 10,
+                                                  fontSize: 14.sp,
+                                                );
+                                              },
+                                              onChanged: (AmphureModel value) {
+                                                Global.amphureModel = value;
+                                                Global.amphureNotifier!.value = value;
+                                                loadTambonByAmphure(value.id);
+                                                setState(() {
+
+                                                });
+                                              },
+                                              child: LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                Global.amphureNotifier!,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('เลือกตำบล', style: TextStyle(fontSize: 14.sp, color: textColor),),
+                                          const SizedBox(height: 4,),
+                                          Container(
+                                            height: 70,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha:0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: MiraiDropDownMenu<TambonModel>(
+                                              key: UniqueKey(),
+                                              children: Global.tambonList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor: true,
+                                              itemWidgetBuilder: (
+                                                  int index,
+                                                  TambonModel? project, {
+                                                    bool isItemSelected = false,
+                                                  }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected: isItemSelected,
+                                                  firstSpace: 10,
+                                                  fontSize: 14.sp,
+                                                );
+                                              },
+                                              onChanged: (TambonModel value) {
+                                                Global.tambonModel = value;
+                                                Global.tambonNotifier!.value = value;
+                                              },
+                                              child: LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                Global.tambonNotifier!,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextField(
+                                            line: 3,
+                                            labelText: 'ที่อยู่'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: Global.addressCtrl,
+                                            prefixIcon: Icon(Icons.location_on, size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                      const EdgeInsets.only(left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextField(
+                                            line: 2,
+                                            labelText: 'หมายเหตุ'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: remarkCtrl,
+                                            prefixIcon: Icon(Icons.note, size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 8.0, right: 8.0),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                buildTextField(
-                                  line: 2,
-                                  labelText: 'หมายเหตุ'.tr(),
-                                  validator: null,
-                                  inputType: TextInputType.text,
-                                  controller: remarkCtrl,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -1185,135 +1639,138 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         ),
       ),
       persistentFooterButtons: [
-        SizedBox(
-            height: 70,
-            width: 150,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  backgroundColor:
-                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                          side: BorderSide(color: Colors.teal[700]!)))),
-              onPressed: () async {
-                if (nationality == null || nationality == "") {
-                  Alert.warning(context, 'คำเตือน', 'กรุณาเลือกสัญชาติ', 'OK',
-                      action: () {});
-                  return;
-                }
+        Container(
+          width: double.infinity,
+          height: 70,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          child: ElevatedButton(
+            style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                backgroundColor:
+                WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                elevation: WidgetStateProperty.all<double>(0),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                        side: BorderSide.none))),
+            onPressed: () async {
+              if (nationality == null || nationality == "") {
+                Alert.warning(context, 'คำเตือน', 'กรุณาเลือกสัญชาติ', 'OK',
+                    action: () {});
+                return;
+              }
 
-                if (selectedCustomer == null) {
-                  var customerObject = Global.requestObj({
-                    "customerType": selectedType?.code,
-                    "companyName": companyNameCtrl.text,
-                    "firstName": firstNameCtrl.text,
-                    "lastName": lastNameCtrl.text,
-                    "email": emailAddressCtrl.text,
-                    "doB": birthDateCtrl.text.isEmpty
-                        ? ""
-                        : DateTime.parse(birthDateCtrl.text).toString(),
-                    "phoneNumber": phoneCtrl.text,
-                    "username": generateRandomString(8),
-                    "password": generateRandomString(10),
-                    "address": Global.addressCtrl.text,
-                    "tambonId": Global.tambonModel?.id,
-                    "amphureId": Global.amphureModel?.id,
-                    "provinceId": Global.provinceModel?.id,
-                    "nationality": nationality,
-                    "postalCode": postalCodeCtrl.text,
-                    "photoUrl": '',
-                    "branchCode": branchCodeCtrl.text,
-                    "idCard":
-                        selectedType?.code == "general" ? idCardCtrl.text : "",
-                    "taxNumber": selectedType?.code == "company"
-                        ? nationality == 'Thai'
-                            ? taxNumberCtrl.text
-                            : idCardCtrl.text
-                        : nationality == 'Thai'
-                            ? idCardCtrl.text
-                            : taxNumberCtrl.text,
-                    "isSeller": isSeller ? 1 : 0,
-                    "isBuyer": isBuyer ? 1 : 0,
-                    "isCustomer": isCustomer ? 1 : 0,
-                    "workPermit": workPermitCtrl.text,
-                    "passportId": passportNoCtrl.text,
-                    "remark": remarkCtrl.text,
-                    "occupation": occupationCtrl.text,
-                  });
+              if (selectedCustomer == null) {
+                var customerObject = Global.requestObj({
+                  "customerType": selectedType?.code,
+                  "companyName": companyNameCtrl.text,
+                  "firstName": firstNameCtrl.text,
+                  "lastName": lastNameCtrl.text,
+                  "email": emailAddressCtrl.text,
+                  "doB": birthDateCtrl.text.isEmpty
+                      ? ""
+                      : DateTime.parse(birthDateCtrl.text).toString(),
+                  "phoneNumber": phoneCtrl.text,
+                  "username": generateRandomString(8),
+                  "password": generateRandomString(10),
+                  "address": Global.addressCtrl.text,
+                  "tambonId": Global.tambonModel?.id,
+                  "amphureId": Global.amphureModel?.id,
+                  "provinceId": Global.provinceModel?.id,
+                  "nationality": nationality,
+                  "postalCode": postalCodeCtrl.text,
+                  "photoUrl": '',
+                  "branchCode": branchCodeCtrl.text,
+                  "idCard":
+                  selectedType?.code == "general" ? idCardCtrl.text : "",
+                  "taxNumber": selectedType?.code == "company"
+                      ? nationality == 'Thai'
+                      ? taxNumberCtrl.text
+                      : idCardCtrl.text
+                      : nationality == 'Thai'
+                      ? idCardCtrl.text
+                      : taxNumberCtrl.text,
+                  "isSeller": isSeller ? 1 : 0,
+                  "isBuyer": isBuyer ? 1 : 0,
+                  "isCustomer": isCustomer ? 1 : 0,
+                  "workPermit": workPermitCtrl.text,
+                  "passportId": passportNoCtrl.text,
+                  "remark": remarkCtrl.text,
+                  "occupation": occupationCtrl.text,
+                });
 
-                  // print(customerObject);
-                  // return;
+                // print(customerObject);
+                // return;
 
-                  Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                      action: () async {
-                    final ProgressDialog pr = ProgressDialog(context,
-                        type: ProgressDialogType.normal,
-                        isDismissible: true,
-                        showLogs: true);
-                    await pr.show();
-                    pr.update(message: 'processing'.tr());
-                    // try {
-                    var result = await ApiServices.post(
-                        '/customer/create', customerObject);
-                    // motivePrint(result?.toJson());
-                    await pr.hide();
-                    if (result?.status == "success") {
-                      if (mounted) {
-                        CustomerModel customer =
-                            customerModelFromJson(jsonEncode(result!.data!));
-                        // print(customer.toJson());
-                        setState(() {
-                          Global.customer = customer;
-                        });
-                        Alert.success(context, 'Success'.tr(),
-                            "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
-                          Navigator.of(context).pop();
-                        });
+                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+                    action: () async {
+                      final ProgressDialog pr = ProgressDialog(context,
+                          type: ProgressDialogType.normal,
+                          isDismissible: true,
+                          showLogs: true);
+                      await pr.show();
+                      pr.update(message: 'processing'.tr());
+                      // try {
+                      var result = await ApiServices.post(
+                          '/customer/create', customerObject);
+                      // motivePrint(result?.toJson());
+                      await pr.hide();
+                      if (result?.status == "success") {
+                        if (mounted) {
+                          CustomerModel customer =
+                          customerModelFromJson(jsonEncode(result!.data!));
+                          // print(customer.toJson());
+                          setState(() {
+                            Global.customer = customer;
+                          });
+                          Alert.success(context, 'Success'.tr(),
+                              "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
+                                Navigator.of(context).pop();
+                              });
+                        }
+                      } else {
+                        if (mounted) {
+                          Alert.warning(context, 'Warning'.tr(),
+                              result!.message ?? result.data, 'OK'.tr(),
+                              action: () {});
+                        }
                       }
-                    } else {
-                      if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            result!.message ?? result.data, 'OK'.tr(),
-                            action: () {});
-                      }
-                    }
-                    // } catch (e) {
-                    //   await pr.hide();
-                    //   if (mounted) {
-                    //     Alert.warning(
-                    //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                    //         action: () {});
-                    //   }
-                    // }
-                  });
-                } else {
-                  setState(() {
-                    Global.customer = selectedCustomer;
-                  });
+                      // } catch (e) {
+                      //   await pr.hide();
+                      //   if (mounted) {
+                      //     Alert.warning(
+                      //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                      //         action: () {});
+                      //   }
+                      // }
+                    });
+              } else {
+                setState(() {
+                  Global.customer = selectedCustomer;
+                });
 
-                  Navigator.of(context).pop();
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "บันทึก".tr(),
-                    style: const TextStyle(color: Colors.white, fontSize: 32),
-                  ),
-                  const SizedBox(
-                    width: 2,
-                  ),
-                  const Icon(
-                    Icons.save,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ],
-              ),
-            )),
+                Navigator.of(context).pop();
+              }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "บันทึก".tr(),
+                  style: const TextStyle(color: Colors.white, fontSize: 32),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                const Icon(
+                  Icons.save,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

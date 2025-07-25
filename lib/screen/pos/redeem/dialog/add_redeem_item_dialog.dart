@@ -15,6 +15,7 @@ import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -40,7 +41,9 @@ import 'package:motivegold/widget/ui/text_header.dart';
 import 'package:sizer/sizer.dart';
 
 class AddRedeemItemDialog extends StatefulWidget {
-  const AddRedeemItemDialog({super.key});
+  const AddRedeemItemDialog({super.key, required this.vatOption});
+
+  final String vatOption;
 
   @override
   State<AddRedeemItemDialog> createState() => _AddRedeemItemDialogState();
@@ -65,6 +68,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   TextEditingController redeemValueCtrl = TextEditingController();
   TextEditingController depositAmountCtrl = TextEditingController();
   TextEditingController benefitReceiveCtrl = TextEditingController();
+  TextEditingController benefitTotalCtrl = TextEditingController();
 
   TextEditingController orderDateCtrl = TextEditingController();
   final boardCtrl = BoardDateTimeController();
@@ -73,12 +77,12 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
 
   DateTime date = DateTime.now();
   String? txt;
-  bool showCal = false;
 
   FocusNode depositAmountFocus = FocusNode();
   FocusNode gramFocus = FocusNode();
   FocusNode redemptionValueFocus = FocusNode();
   FocusNode benefitReceiveFocus = FocusNode();
+  FocusNode benefitTotalFocus = FocusNode();
   FocusNode priceDiffFocus = FocusNode();
   FocusNode taxAmountFocus = FocusNode();
 
@@ -86,6 +90,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   bool gramReadOnly = false;
   bool redemptionValueReadOnly = false;
   bool benefitReceiveReadOnly = false;
+  bool benefitTotalReadOnly = false;
   bool priceDiffReadOnly = false;
   bool taxAmountReadOnly = false;
 
@@ -116,11 +121,13 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     redeemValueCtrl.dispose();
     depositAmountCtrl.dispose();
     benefitReceiveCtrl.dispose();
+    benefitTotalCtrl.dispose();
     orderDateCtrl.dispose();
     depositAmountFocus.dispose();
     gramFocus.dispose();
     redemptionValueFocus.dispose();
     benefitReceiveFocus.dispose();
+    benefitTotalFocus.dispose();
     priceDiffFocus.dispose();
     taxAmountFocus.dispose();
   }
@@ -144,9 +151,45 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     if (txt == 'tax_amount') {
       taxAmountReadOnly = true;
     }
-    setState(() {
-      showCal = true;
-    });
+    AppCalculatorManager.showCalculator(
+      inputTarget: txt,
+      onClose: closeCal,
+      onChanged: (key, value, expression) {
+        if (key == 'ENT') {
+          if (txt == 'gram') {
+            weightGramCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
+            gramChanged();
+          }
+          if (txt == 'deposit_amount') {
+            depositAmountCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
+            depositAmountChanged();
+          }
+          if (txt == 'redemption_value') {
+            redeemValueCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
+            redeemValueChanged();
+          }
+          if (txt == 'benefit_receive') {
+            benefitReceiveCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
+            benefitReceiveChanged();
+          }
+          if (txt == 'benefit_total') {
+            benefitTotalCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
+            benefitTotalChanged();
+          }
+          FocusScope.of(context).requestFocus(FocusNode());
+          closeCal();
+        }
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+    );
+    setState(() {});
   }
 
   void closeCal() {
@@ -156,9 +199,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     redemptionValueReadOnly = false;
     priceDiffReadOnly = false;
     taxAmountReadOnly = false;
-    setState(() {
-      showCal = false;
-    });
+    AppCalculatorManager.hideCalculator();
+    setState(() {});
   }
 
   @override
@@ -175,419 +217,387 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
-            : Stack(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      closeCal();
-                    },
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          posHeaderText(context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            child: GoldMiniWidget(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'เลขที่ขายฝาก',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: buildTextFieldBig(
-                                        labelText: "",
-                                        inputType: TextInputType.text,
-                                        enabled: true,
-                                        controller: referenceNumberCtrl,
-                                        fontSize: 18.sp),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'น้ำหนักรวม (กรัม)',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: numberTextField(
-                                        labelText: "",
-                                        inputType: TextInputType.number,
-                                        controller: weightGramCtrl,
-                                        focusNode: gramFocus,
-                                        readOnly: gramReadOnly,
-                                        // fontSize: 18.sp,
-                                        inputFormat: [
-                                          ThousandsFormatter(
-                                              allowFraction: true)
-                                        ],
-                                        clear: () {
-                                          setState(() {
-                                            weightGramCtrl.text = "";
-                                          });
-                                          gramChanged();
-                                        },
-                                        onTap: () {
-                                          txt = 'gram';
-                                          closeCal();
-                                        },
-                                        openCalc: () {
-                                          if (!showCal) {
-                                            txt = 'gram';
-                                            gramFocus.requestFocus();
-                                            openCal();
-                                          }
-                                        },
-                                        onChanged: (String value) {
-                                          gramChanged();
-                                        }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'มูลค่าขายฝาก',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: numberTextField(
-                                        labelText: "",
-                                        inputType: TextInputType.phone,
-                                        controller: depositAmountCtrl,
-                                        focusNode: depositAmountFocus,
-                                        readOnly: depositAmountReadOnly,
-                                        // fontSize: 18.sp,
-                                        inputFormat: [
-                                          ThousandsFormatter(
-                                              allowFraction: true)
-                                        ],
-                                        clear: () {
-                                          setState(() {
-                                            depositAmountCtrl.text = "";
-                                          });
-                                          depositAmountChanged();
-                                        },
-                                        onTap: () {
-                                          txt = 'deposit_amount';
-                                          closeCal();
-                                        },
-                                        openCalc: () {
-                                          if (!showCal) {
-                                            txt = 'deposit_amount';
-                                            depositAmountFocus.requestFocus();
-                                            openCal();
-                                          }
-                                        },
-                                        onFocusChange: (bool value) {
-                                          if (!value) {
-                                            depositAmountChanged();
-                                          }
-                                        }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'มูลค่าสินไถ่',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: numberTextField(
-                                      labelText: "",
-                                      inputType: TextInputType.phone,
-                                      controller: redeemValueCtrl,
-                                      focusNode: redemptionValueFocus,
-                                      readOnly: redemptionValueReadOnly,
-                                      inputFormat: [
-                                        ThousandsFormatter(
-                                            allowFraction: true)
-                                      ],
-                                      clear: () {
-                                        setState(() {
-                                          redeemValueCtrl.text = "";
-                                        });
-                                        redeemValueChanged();
-                                      },
-                                      onTap: () {
-                                        txt = 'redemption_value';
-                                        closeCal();
-                                      },
-                                      openCalc: () {
-                                        if (!showCal) {
-                                          txt = 'redemption_value';
-                                          redemptionValueFocus.requestFocus();
-                                          openCal();
-                                        }
-                                      },
-                                      onFocusChange: (bool value) {
-                                        if (!value) {
-                                          redeemValueChanged();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 4,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'ผลประโยชน์ที่รับวันนี้',
-                                          textAlign: TextAlign.right,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              color: textColor),
-                                        ),
-                                      )),
-                                  Expanded(
-                                    flex: 6,
-                                    child: numberTextField(
-                                      labelText: "",
-                                      inputType: TextInputType.phone,
-                                      controller: benefitReceiveCtrl,
-                                      focusNode: benefitReceiveFocus,
-                                      readOnly: benefitReceiveReadOnly,
-                                      inputFormat: [
-                                        ThousandsFormatter(
-                                            allowFraction: true)
-                                      ],
-                                      clear: () {
-                                        setState(() {
-                                          benefitReceiveCtrl.text = "";
-                                        });
-                                        benefitReceiveChanged();
-                                      },
-                                      onTap: () {
-                                        txt = 'benefit_receive';
-                                        closeCal();
-                                      },
-                                      openCalc: () {
-                                        if (!showCal) {
-                                          txt = 'benefit_receive';
-                                          benefitReceiveFocus.requestFocus();
-                                          openCal();
-                                        }
-                                      },
-                                      onFocusChange: (bool value) {
-                                        if (!value) {
-                                          benefitReceiveChanged();
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                            color: const Color(0xFFB22222),
-                                            // Dark red border like in the image
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'จำนวนเงินรวมที่ลูกค้าต้องชำระ (บาท)',
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: const Color(
-                                                    0xFF1A237E), // Dark blue color for text
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  '${Global.format(totalAmount)}',
-                                                  textAlign: TextAlign.right,
-                                                  style: const TextStyle(
-                                                    fontSize: 32,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color(
-                                                        0xFF1A237E), // Dark blue color for amount
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+            : GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  closeCal();
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      posHeaderText(
+                          context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: GoldMiniWidget(),
                       ),
-                    ),
-                  ),
-                  if (showCal)
-                    DragArea(
-                        closeCal: closeCal,
-                        child: Container(
-                            width: 350,
-                            height: 500,
-                            padding: const EdgeInsets.all(5),
-                            decoration:
-                                const BoxDecoration(color: Color(0xffcccccc)),
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Calc(
-                                  closeCal: closeCal,
-                                  onChanged: (key, value, expression) {
-                                    if (key == 'ENT') {
-                                      if (txt == 'gram') {
-                                        weightGramCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                        gramChanged();
-                                      }
-                                      if (txt == 'deposit_amount') {
-                                        depositAmountCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'เลขที่ขายฝาก',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontSize: 16.sp, color: textColor),
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 4,
+                                child: buildTextFieldBig(
+                                    labelText: "",
+                                    inputType: TextInputType.text,
+                                    enabled: true,
+                                    controller: referenceNumberCtrl,
+                                    fontSize: 18.sp),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'น้ำหนักรวม (กรัม)',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontSize: 16.sp, color: textColor),
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 4,
+                                child: numberTextField(
+                                    labelText: "",
+                                    inputType: TextInputType.number,
+                                    controller: weightGramCtrl,
+                                    focusNode: gramFocus,
+                                    readOnly: gramReadOnly,
+                                    fontSize: 18.sp,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    clear: () {
+                                      setState(() {
+                                        weightGramCtrl.text = "";
+                                      });
+                                      gramChanged();
+                                    },
+                                    onTap: () {
+                                      txt = 'gram';
+                                      closeCal();
+                                    },
+                                    openCalc: () {
+                                      txt = 'gram';
+                                      gramFocus.requestFocus();
+                                      openCal();
+                                    },
+                                    onChanged: (String value) {
+                                      gramChanged();
+                                    }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'มูลค่าขายฝาก',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontSize: 16.sp, color: textColor),
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 4,
+                                child: numberTextField(
+                                    labelText: "",
+                                    inputType: TextInputType.phone,
+                                    controller: depositAmountCtrl,
+                                    focusNode: depositAmountFocus,
+                                    readOnly: depositAmountReadOnly,
+                                    fontSize: 18.sp,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    clear: () {
+                                      setState(() {
+                                        depositAmountCtrl.text = "";
+                                      });
+                                      depositAmountChanged();
+                                    },
+                                    onTap: () {
+                                      txt = 'deposit_amount';
+                                      closeCal();
+                                    },
+                                    openCalc: () {
+                                      txt = 'deposit_amount';
+                                      depositAmountFocus.requestFocus();
+                                      openCal();
+                                    },
+                                    onFocusChange: (bool value) {
+                                      if (!value) {
                                         depositAmountChanged();
                                       }
-                                      if (txt == 'redemption_value') {
-                                        redeemValueCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                        redeemValueChanged();
-                                      }
-                                      if (txt == 'benefit_receive') {
-                                        benefitReceiveCtrl.text = value != null
-                                            ? "${Global.format(value)}"
-                                            : "";
-                                        benefitReceiveChanged();
-                                      }
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-                                      closeCal();
-                                    }
-                                    if (kDebugMode) {
-                                      print('$key\t$value\t$expression');
+                                    }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'มูลค่าสินไถ่',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontSize: 16.sp, color: textColor),
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 4,
+                                child: numberTextField(
+                                  labelText: "",
+                                  inputType: TextInputType.phone,
+                                  controller: redeemValueCtrl,
+                                  focusNode: redemptionValueFocus,
+                                  readOnly: redemptionValueReadOnly,
+                                  fontSize: 18.sp,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                  clear: () {
+                                    setState(() {
+                                      redeemValueCtrl.text = "";
+                                    });
+                                    redeemValueChanged();
+                                  },
+                                  onTap: () {
+                                    txt = 'redemption_value';
+                                    closeCal();
+                                  },
+                                  openCalc: () {
+                                    txt = 'redemption_value';
+                                    redemptionValueFocus.requestFocus();
+                                    openCal();
+                                  },
+                                  onFocusChange: (bool value) {
+                                    if (!value) {
+                                      redeemValueChanged();
                                     }
                                   },
                                 ),
-                                Positioned(
-                                  right: -35.0,
-                                  top: -35.0,
-                                  child: InkWell(
-                                    onTap: closeCal,
-                                    child: const CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: Colors.red,
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 40,
-                                        color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (widget.vatOption == 'Include')
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                          child: SizedBox(
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'ผลประโยชน์รวม',
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                            fontSize: 16.sp, color: textColor),
                                       ),
-                                    ),
+                                    )),
+                                Expanded(
+                                  flex: 4,
+                                  child: numberTextField(
+                                    labelText: "",
+                                    inputType: TextInputType.phone,
+                                    controller: benefitTotalCtrl,
+                                    focusNode: benefitTotalFocus,
+                                    readOnly: benefitTotalReadOnly,
+                                    fontSize: 18.sp,
+                                    inputFormat: [
+                                      ThousandsFormatter(allowFraction: true)
+                                    ],
+                                    clear: () {
+                                      setState(() {
+                                        benefitTotalCtrl.text = "";
+                                      });
+                                      benefitTotalChanged();
+                                    },
+                                    onTap: () {
+                                      txt = 'benefit_total';
+                                      closeCal();
+                                    },
+                                    openCalc: () {
+                                      txt = 'benefit_total';
+                                      benefitTotalFocus.requestFocus();
+                                      openCal();
+                                    },
+                                    onFocusChange: (bool value) {
+                                      if (!value) {
+                                        benefitTotalChanged();
+                                      }
+                                    },
                                   ),
                                 ),
                               ],
-                            )))
-                ],
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 6,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'ผลประโยชน์ที่รับวันนี้',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontSize: 16.sp, color: textColor),
+                                    ),
+                                  )),
+                              Expanded(
+                                flex: 4,
+                                child: numberTextField(
+                                  labelText: "",
+                                  inputType: TextInputType.phone,
+                                  controller: benefitReceiveCtrl,
+                                  focusNode: benefitReceiveFocus,
+                                  readOnly: benefitReceiveReadOnly,
+                                  fontSize: 18.sp,
+                                  inputFormat: [
+                                    ThousandsFormatter(allowFraction: true)
+                                  ],
+                                  clear: () {
+                                    setState(() {
+                                      benefitReceiveCtrl.text = "";
+                                    });
+                                    benefitReceiveChanged();
+                                  },
+                                  onTap: () {
+                                    txt = 'benefit_receive';
+                                    closeCal();
+                                  },
+                                  openCalc: () {
+                                    txt = 'benefit_receive';
+                                    benefitReceiveFocus.requestFocus();
+                                    openCal();
+                                  },
+                                  onFocusChange: (bool value) {
+                                    if (!value) {
+                                      benefitReceiveChanged();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFFB22222),
+                                        // Dark red border like in the image
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'จำนวนเงินรวมที่ลูกค้าต้องชำระ (บาท)',
+                                          style: TextStyle(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: const Color(
+                                                0xFF1A237E), // Dark blue color for text
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              '${Global.format(totalAmount)}',
+                                              textAlign: TextAlign.right,
+                                              style: const TextStyle(
+                                                fontSize: 32,
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(
+                                                    0xFF1A237E), // Dark blue color for amount
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
       ),
       persistentFooterButtons: [
@@ -599,7 +609,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity, minHeight: 60),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -617,9 +627,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.sp),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -636,7 +645,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                 padding: const EdgeInsets.all(18.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity, minHeight: 100),
+                      minWidth: double.infinity, minHeight: 60),
                   child: MaterialButton(
                     color: stmBgColor,
                     child: Padding(
@@ -654,15 +663,13 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.sp),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
                     ),
                     onPressed: () async {
-
                       if (weightGramCtrl.text.isEmpty) {
                         Alert.warning(
                             context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK');
@@ -681,55 +688,65 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         return;
                       }
 
-
-                      // motivePrint(jsonEncode(
-                      //   RedeemDetailModel(
-                      //     productId: selectedProduct?.id,
-                      //     weight: Global.toNumber(
-                      //         weightGramCtrl.text),
-                      //     weightBath: Global.toNumber(
-                      //         weightBahtCtrl.text),
-                      //     taxBase: Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text),
-                      //     taxAmount: (Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text)) * getVatValue(),
-                      //     depositAmount: Global.toNumber(depositAmountCtrl.text),
-                      //     redemptionValue: Global.toNumber(redeemValueCtrl.text),
-                      //     redemptionVat: ((Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text)) * getVatValue()) + Global.toNumber(redeemValueCtrl.text),
-                      //     benefitAmount: Global.toNumber(benefitReceiveCtrl.text),
-                      //     paymentAmount: totalAmount,
-                      //     qty: 1,
-                      //   ),
-                      // ));
-
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
-                            Global.redeemSingleDetail!.add(
-                              RedeemDetailModel.fromJson(
-                                jsonDecode(
-                                  jsonEncode(
-                                    RedeemDetailModel(
-                                      productId: selectedProduct?.id,
-                                      weight: Global.toNumber(
-                                          weightGramCtrl.text),
-                                      weightBath: Global.toNumber(
-                                          weightBahtCtrl.text),
-                                      taxBase: Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text),
-                                      taxAmount: (Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text)) * getVatValue(),
-                                      depositAmount: Global.toNumber(depositAmountCtrl.text),
-                                      redemptionValue: Global.toNumber(redeemValueCtrl.text),
-                                      redemptionVat: ((Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text)) * getVatValue()) + Global.toNumber(redeemValueCtrl.text),
-                                      benefitAmount: Global.toNumber(benefitReceiveCtrl.text) != 0 ? Global.toNumber(benefitReceiveCtrl.text) : Global.toNumber(redeemValueCtrl.text) - Global.toNumber(depositAmountCtrl.text),
-                                      paymentAmount: totalAmount,
-                                      qty: 1,
-                                      referenceNo: referenceNumberCtrl.text,
-                                    ),
-                                  ),
+                        Global.redeemSingleDetail!.add(
+                          RedeemDetailModel.fromJson(
+                            jsonDecode(
+                              jsonEncode(
+                                RedeemDetailModel(
+                                  productId: selectedProduct?.id,
+                                  weight: Global.toNumber(weightGramCtrl.text),
+                                  weightBath:
+                                      Global.toNumber(weightBahtCtrl.text),
+                                  taxBase: Global.toNumber(
+                                          redeemValueCtrl.text) -
+                                      Global.toNumber(depositAmountCtrl.text),
+                                  taxAmount:
+                                      (Global.toNumber(redeemValueCtrl.text) -
+                                              Global.toNumber(
+                                                  depositAmountCtrl.text)) *
+                                          getVatValue(),
+                                  depositAmount:
+                                      Global.toNumber(depositAmountCtrl.text),
+                                  redemptionValue:
+                                      Global.toNumber(redeemValueCtrl.text),
+                                  redemptionVat:
+                                      ((Global.toNumber(redeemValueCtrl.text) -
+                                                  Global.toNumber(
+                                                      depositAmountCtrl.text)) *
+                                              getVatValue()) +
+                                          Global.toNumber(redeemValueCtrl.text),
+                                  benefitAmount: Global.toNumber(
+                                              benefitReceiveCtrl.text) !=
+                                          0
+                                      ? Global.toNumber(benefitReceiveCtrl.text)
+                                      : Global.toNumber(redeemValueCtrl.text) -
+                                          Global.toNumber(
+                                              depositAmountCtrl.text),
+                                  paymentAmount: totalAmount,
+                                  taxBaseAmount: widget.vatOption == 'Include'
+                                      ? Global.toNumber(benefitTotalCtrl.text)
+                                      : (Global.toNumber(redeemValueCtrl.text) -
+                                          Global.toNumber(
+                                              depositAmountCtrl.text) +
+                                          (Global.toNumber(
+                                                      redeemValueCtrl.text) -
+                                                  Global.toNumber(
+                                                      depositAmountCtrl.text)) *
+                                              getVatValue()),
+                                  qty: 1,
+                                  referenceNo: referenceNumberCtrl.text,
+                                  vatOption: widget.vatOption,
                                 ),
                               ),
-                            );
-                            setState(() {});
-                            Navigator.of(context).pop();
-                          });
+                            ),
+                          ),
+                        );
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      });
                     },
                   ),
                 ),
@@ -752,6 +769,11 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   }
 
   void depositAmountChanged() {
+    if (widget.vatOption == 'Include' && benefitTotalCtrl.text.isNotEmpty && depositAmountCtrl.text.isNotEmpty) {
+      redeemValueCtrl.text = Global.format(
+          Global.toNumber(depositAmountCtrl.text) +
+              (Global.toNumber(benefitTotalCtrl.text) * 100 / 107));
+    }
     getOtherAmount();
   }
 
@@ -763,17 +785,31 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     getOtherAmount();
   }
 
+  void benefitTotalChanged() {
+    if (widget.vatOption == 'Include' && benefitTotalCtrl.text.isNotEmpty && depositAmountCtrl.text.isNotEmpty) {
+      redeemValueCtrl.text = Global.format(
+          Global.toNumber(depositAmountCtrl.text) +
+              (Global.toNumber(benefitTotalCtrl.text) * 100 / 107));
+    }
+    getOtherAmount();
+  }
+
   void getOtherAmount() {
     calTotal();
   }
 
   void calTotal() {
-    if (benefitReceiveCtrl.text.isNotEmpty &&
-        Global.toNumber(benefitReceiveCtrl.text) > 0) {
+    if (widget.vatOption == "Exclude") {
+      if (benefitReceiveCtrl.text.isNotEmpty &&
+          Global.toNumber(benefitReceiveCtrl.text) > 0) {
+        totalAmount = Global.toNumber(depositAmountCtrl.text) +
+            Global.toNumber(benefitReceiveCtrl.text);
+      } else {
+        totalAmount = Global.toNumber(redeemValueCtrl.text);
+      }
+    } else {
       totalAmount = Global.toNumber(depositAmountCtrl.text) +
           Global.toNumber(benefitReceiveCtrl.text);
-    } else {
-      totalAmount = Global.toNumber(redeemValueCtrl.text);
     }
     setState(() {});
   }
@@ -788,109 +824,5 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     orderDateCtrl.text = "";
     Global.refillAttach = null;
     setState(() {});
-  }
-
-  final picker = ImagePicker();
-
-  //Image Picker function to get image from gallery
-  Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
-      }
-    });
-  }
-
-//Image Picker function to get image from camera
-  Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        Global.refillAttach = File(pickedFile.path);
-      }
-    });
-  }
-
-  Future showOptions() async {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (context) => CupertinoActionSheet(
-        actions: [
-          CupertinoActionSheetAction(
-            child: const Text('คลังภาพ'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from gallery
-              getImageFromGallery();
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: const Text('ถ่ายรูป'),
-            onPressed: () {
-              // close the options modal
-              Navigator.of(context).pop();
-              // get image from camera
-              getImageFromCamera();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void saveData() {
-    // Global.refillOrderDetail?.clear();
-    // Global.refillOrderDetail!.add(OrderDetailModel(
-    //   productName: selectedProduct!.name,
-    //   productId: selectedProduct!.id,
-    //   binLocationId: selectedWarehouse!.id,
-    //   binLocationName: selectedWarehouse!.name,
-    //   sellTPrice: Global.toNumber(productSellThengPriceCtrl.text),
-    //   buyTPrice: Global.toNumber(productBuyThengPriceCtrl.text),
-    //   sellPrice: Global.toNumber(productSellPriceCtrl.text),
-    //   buyPrice: Global.toNumber(productBuyPriceCtrl.text),
-    //   weight: Global.toNumber(weightGramCtrl.text),
-    //   weightBath: Global.toNumber(weightBahtCtrl.text),
-    //   commission: 0,
-    //   unitCost: Global.toNumber(redemptionValueCtrl.text) /
-    //       Global.toNumber(weightGramCtrl.text),
-    //   priceIncludeTax: Global.toNumber(depositAmountCtrl.text),
-    //   priceExcludeTax: Global.toNumber(redemptionValueCtrl.text),
-    //   purchasePrice: Global.toNumber(benefitReceiveCtrl.text),
-    //   priceDiff: Global.toNumber(priceDiffCtrl.text),
-    //   taxBase: Global.toNumber(taxBaseCtrl.text),
-    //   taxAmount: Global.toNumber(taxAmountCtrl.text),
-    // ));
-    //
-    // OrderModel order = OrderModel(
-    //     orderId: "",
-    //     orderDate: Global.convertDate(orderDateCtrl.text),
-    //     details: Global.refillOrderDetail!,
-    //     referenceNo: referenceNumberCtrl.text,
-    //     remark: remarkCtrl.text,
-    //     sellTPrice: Global.toNumber(productSellThengPriceCtrl.text),
-    //     buyTPrice: Global.toNumber(productBuyThengPriceCtrl.text),
-    //     sellPrice: Global.toNumber(productSellPriceCtrl.text),
-    //     buyPrice: Global.toNumber(productBuyPriceCtrl.text),
-    //     priceIncludeTax: Global.toNumber(priceIncludeTaxTotalCtrl.text),
-    //     priceExcludeTax: Global.toNumber(priceExcludeTaxTotalCtrl.text),
-    //     purchasePrice: Global.toNumber(purchasePriceTotalCtrl.text),
-    //     priceDiff: Global.toNumber(priceDiffTotalCtrl.text),
-    //     taxBase: Global.toNumber(taxBaseTotalCtrl.text),
-    //     taxAmount: Global.toNumber(taxAmountTotalCtrl.text),
-    //     attachment: Global.refillAttach != null
-    //         ? Global.imageToBase64(Global.refillAttach!)
-    //         : null,
-    //     orderTypeId: 5);
-    // final data = order.toJson();
-    // // motivePrint(data);
-    // Global.ordersWholesale?.add(OrderModel.fromJson(data));
-    // widget.refreshCart(Global.ordersWholesale?.length.toString());
-    // writeCart();
-    // Global.refillOrderDetail!.clear();
   }
 }

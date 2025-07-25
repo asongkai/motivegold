@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:motivegold/model/customer.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
 
-List<RedeemModel> redeemListModelFromJson(String str) =>
-    List<RedeemModel>.from(json.decode(str).map((x) => RedeemModel.fromJson(x)));
+List<RedeemModel> redeemListModelFromJson(String str) => List<RedeemModel>.from(
+    json.decode(str).map((x) => RedeemModel.fromJson(x)));
 
 String redeemListModelToJson(List<RedeemModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -106,6 +106,7 @@ class RedeemModel {
 
   double? discount;
 
+  String? vatOption;
 
   RedeemModel({
     this.id,
@@ -139,6 +140,7 @@ class RedeemModel {
     this.updatedDate,
     this.details,
     this.discount,
+    this.vatOption,
   });
 
   // From JSON method
@@ -148,7 +150,9 @@ class RedeemModel {
       redeemId: json['redeemId'],
       companyId: json['companyId'],
       branchId: json['branchId'],
-      redeemDate: json['redeemDate'] != null ? DateTime.parse(json['redeemDate']).toLocal() : null,
+      redeemDate: json['redeemDate'] != null
+          ? DateTime.parse(json['redeemDate']).toLocal()
+          : null,
       customerId: json['customerId'],
       customer: json["customer"] == null
           ? null
@@ -172,14 +176,19 @@ class RedeemModel {
       referenceNo: json['referenceNo'],
       attachment: json['attachment'] ?? '',
       createdBy: json['createdBy'],
-      createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']).toLocal() : null,
+      createdDate: json['createdDate'] != null
+          ? DateTime.parse(json['createdDate']).toLocal()
+          : null,
       updatedBy: json['updatedBy'],
-      updatedDate: json['updatedDate'] != null ? DateTime.parse(json['updatedDate']).toLocal() : null,
+      updatedDate: json['updatedDate'] != null
+          ? DateTime.parse(json['updatedDate']).toLocal()
+          : null,
       details: json["details"] == null
           ? []
           : List<RedeemDetailModel>.from(
-          json["details"]!.map((x) => RedeemDetailModel.fromJson(x))),
+              json["details"]!.map((x) => RedeemDetailModel.fromJson(x))),
       discount: json["discount"] ?? 0,
+      vatOption: json["vatOption"],
     );
   }
 
@@ -218,7 +227,8 @@ class RedeemModel {
       "details": details == null
           ? []
           : List<dynamic>.from(details!.map((x) => x.toJson())),
-      "discount": discount
+      "discount": discount,
+      "vatOption": vatOption,
     };
   }
 
@@ -254,6 +264,7 @@ class RedeemModel {
     DateTime? updatedDate,
     List<RedeemDetailModel>? details,
     double? discount,
+    String? vatOption,
   }) {
     return RedeemModel(
       id: id ?? this.id,
@@ -285,7 +296,8 @@ class RedeemModel {
       updatedBy: updatedBy ?? this.updatedBy,
       updatedDate: updatedDate ?? this.updatedDate,
       details: details ?? this.details,
-      discount: discount ?? this.discount
+      discount: discount ?? this.discount,
+      vatOption: vatOption ?? this.vatOption,
     );
   }
 }

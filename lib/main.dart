@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/landing_screen.dart';
@@ -53,7 +54,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Offset offset = const Offset(50, 100);
-  bool showCal = false;
 
   // This widget is the root of your application.
   @override
@@ -88,23 +88,27 @@ class _MyAppState extends State<MyApp> {
                   // fontFamily: 'NotoSansLao',
                 ),
                 home: const LandingScreen(),
+                // ADD: This builder ensures calculator can overlay everything
+                builder: (context, child) {
+                  // Wrap with overlay to ensure it's always available
+                  return Overlay(
+                    initialEntries: [
+                      OverlayEntry(
+                        builder: (context) => MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: TextScaler.linear(1.0), // Optional: prevent text scaling issues
+                          ),
+                          child: child!,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               );
             },
           );
         },
       ),
     );
-  }
-
-  void openCal() {
-    setState(() {
-      showCal = true;
-    });
-  }
-
-  void closeCal() {
-    setState(() {
-      showCal = false;
-    });
   }
 }

@@ -28,6 +28,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:sizer/sizer.dart';
+
 class DefaultPaymentScreen extends StatefulWidget {
   const DefaultPaymentScreen({super.key});
 
@@ -44,7 +45,6 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Global.selectedPayment = null;
     Global.selectedBank = null;
@@ -58,12 +58,10 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
       loading = true;
     });
     try {
-      // motivePrint(Global.requestObj(null));
       var result = await ApiServices.post(
           '/defaultpayment/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        // Global.printLongString(data);
         List<OrderTypeModel> products = orderTypeModelFromJson(data);
         motivePrint(products.first.toJson());
         setState(() {
@@ -87,251 +85,347 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: const CustomAppBar(
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Text("ตั้งค่าค่าเริ่มต้น การชำระเงิน",
               style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 28,
                   color: Colors.white,
-                  fontWeight: FontWeight.w900)),
+                  fontWeight: FontWeight.w600)),
         ),
       ),
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
             : dataList!.isEmpty
-                ? const NoDataFoundWidget()
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: dataList!.length,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) {
-                          return productCard(dataList, index);
-                        }),
-                  ),
+            ? const NoDataFoundWidget()
+            : Container(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.separated(
+            itemCount: dataList!.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (BuildContext context, int index) {
+              return modernPaymentCard(dataList, index);
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget productCard(List<OrderTypeModel>? list, int index) {
-    return Card(
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              title: Text(
-                'หน้าจอ ${list![index].name!}',
-                style: const TextStyle(fontSize: 30),
-              ),
-              subtitle: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'วิธีการชำระเงินเริ่มต้น: ',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Flexible(
-                          child: Text(
-                        '${getPaymentType(list[index].paymentCode)}',
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w900),
-                      )),
-                    ],
-                  ),
-                  if (list[index].paymentCode == 'TR')
-                    const SizedBox(
-                      width: 20,
-                    ),
-                  if (list[index].paymentCode == 'TR')
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'ธนาคาร: ',
-                          style: TextStyle(fontSize: 20),
-                          overflow: TextOverflow.visible,
-                        ),
-                        Flexible(
-                            child: Text(
-                          '${list[index].payment?.bankName}',
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
-                          overflow: TextOverflow.visible,
-                        )),
-                      ],
-                    ),
-                  if (list[index].paymentCode == 'TR')
-                    const SizedBox(
-                      width: 20,
-                    ),
-                  if (list[index].paymentCode == 'TR')
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'บัญชีธนาคาร: ',
-                          style: TextStyle(fontSize: 20),
-                          overflow: TextOverflow.visible,
-                        ),
-                        Flexible(
-                            child: Text(
-                          '${list[index].payment?.accountName}',
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w900),
-                          overflow: TextOverflow.visible,
-                        )),
-                      ],
-                    )
-                ],
-              ),
-            ),
+  Widget modernPaymentCard(List<OrderTypeModel>? list, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          Expanded(
-            flex: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      productDialog(list[index]);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'ตั้งค่าเริ่มต้น',
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
         ],
       ),
-    );
-  }
-
-  void productDialog(OrderTypeModel model) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Stack(
-              clipBehavior: Clip.none,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Section
+            Row(
               children: [
-                Positioned(
-                  right: -50.0,
-                  top: -50.0,
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.red,
-                        child: Icon(Icons.close),
-                      ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.payment_rounded,
+                    color: Colors.purple[600],
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'หน้าจอ ${list![index].name!}',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D3748),
                     ),
                   ),
                 ),
-                Form(
-                  child: GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    child: SizedBox(
-                      width: (MediaQuery.of(context).orientation ==
-                              Orientation.landscape)
-                          ? MediaQuery.of(context).size.width * 2 / 4
-                          : MediaQuery.of(context).size.width * 3 / 4,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              decoration: const BoxDecoration(color: btBgColor),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'หน้าจอ ${model.name}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'การชำระเงินเริ่มต้น',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: textColor),
-                              ),
-                            ),
-                            PaymentDefaultWidget(
-                              payment: model.payment,
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: KclButton(
-                                  text: 'บันทึก',
-                                  icon: Icons.save_alt_outlined,
-                                  fullWidth: true,
-                                  onTap: () {
-                                    save(context, model);
-                                  },
-                                ))
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                )
               ],
             ),
-          );
-        });
+            const SizedBox(height: 20),
+
+            // Content Section with Button Inside
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Left Content
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _buildPaymentInfoRow(
+                          icon: Icons.credit_card_rounded,
+                          label: 'วิธีการชำระเงินเริ่มต้น',
+                          value: getPaymentType(list[index].paymentCode) ?? 'ยังไม่ได้กำหนด',
+                          color: Colors.blue,
+                        ),
+                        if (list[index].paymentCode == 'TR') ...[
+                          const SizedBox(height: 12),
+                          _buildPaymentInfoRow(
+                            icon: Icons.account_balance_rounded,
+                            label: 'ธนาคาร',
+                            value: list[index].payment?.bankName ?? 'ยังไม่ได้กำหนด',
+                            color: Colors.green,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildPaymentInfoRow(
+                            icon: Icons.account_box_rounded,
+                            label: 'บัญชีธนาคาร',
+                            value: list[index].payment?.accountName ?? 'ยังไม่ได้กำหนด',
+                            color: Colors.orange,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  // Right Button - Inside the grey box
+                  SizedBox(
+                    width: 200,
+                    child: KclButton(
+                      text: 'ตั้งค่าเริ่มต้น',
+                      icon: Icons.tune_rounded,
+                      fullWidth: true,
+                      onTap: () async {
+                        modernPaymentDialog(list[index]);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(
+            icon,
+            size: 16,
+            color: color,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void modernPaymentDialog(OrderTypeModel model) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: (MediaQuery.of(context).orientation == Orientation.landscape)
+                  ? MediaQuery.of(context).size.width * 0.5
+                  : MediaQuery.of(context).size.width * 0.9,
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.payment_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'ตั้งค่าการชำระเงิน ${model.name}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Content
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Payment Selection
+                        _buildSectionHeader(
+                          icon: Icons.payment_rounded,
+                          title: 'การชำระเงินเริ่มต้น',
+                          color: Colors.purple,
+                        ),
+                        const SizedBox(height: 16),
+                        PaymentDefaultWidget(
+                          payment: model.payment,
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Save Button
+                        KclButton(
+                          text: 'บันทึกการตั้งค่า',
+                          icon: Icons.save_rounded,
+                          fullWidth: true,
+                          onTap: () => save(context, model),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF2D3748),
+          ),
+        ),
+      ],
+    );
   }
 
   void save(BuildContext context, OrderTypeModel model) {
@@ -366,45 +460,40 @@ class _DefaultPaymentScreenState extends State<DefaultPaymentScreen> {
       paymentModel = model.payment;
     }
 
-    // motivePrint(warehouseModel?.toJson());
-    // motivePrint(paymentModel?.toJson());
-
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      try {
-        // motivePrint(Global.requestObj(model));
-        var result = await ApiServices.post(
-            '/defaultpayment/create', Global.requestObj(paymentModel));
-        await pr.hide();
-        // motivePrint(result?.toJson());
-        if (result?.status == "success") {
-          if (mounted) {
-            loadData();
-            Global.selectedPayment = null;
-            Global.selectedBank = null;
-            Global.selectedAccount = null;
-            Global.currentPaymentMethod = null;
-            Alert.success(context, 'Success'.tr(), '', 'OK'.tr(), action: () {
-              Navigator.of(context).pop();
-            });
+          final ProgressDialog pr = ProgressDialog(context,
+              type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+          await pr.show();
+          pr.update(message: 'processing'.tr());
+          try {
+            var result = await ApiServices.post(
+                '/defaultpayment/create', Global.requestObj(paymentModel));
+            await pr.hide();
+            if (result?.status == "success") {
+              if (mounted) {
+                loadData();
+                Global.selectedPayment = null;
+                Global.selectedBank = null;
+                Global.selectedAccount = null;
+                Global.currentPaymentMethod = null;
+                Alert.success(context, 'Success'.tr(), '', 'OK'.tr(), action: () {
+                  Navigator.of(context).pop();
+                });
+              }
+            } else {
+              if (mounted) {
+                Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                    action: () {});
+              }
+            }
+          } catch (e) {
+            await pr.hide();
+            if (mounted) {
+              Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                  action: () {});
+            }
           }
-        } else {
-          if (mounted) {
-            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-                action: () {});
-          }
-        }
-      } catch (e) {
-        await pr.hide();
-        if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-              action: () {});
-        }
-      }
-    });
+        });
   }
 }

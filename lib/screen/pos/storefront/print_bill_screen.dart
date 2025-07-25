@@ -38,19 +38,39 @@ class PrintBillScreen extends StatefulWidget {
   State<PrintBillScreen> createState() => _PrintBillScreenState();
 }
 
-class _PrintBillScreenState extends State<PrintBillScreen> {
+class _PrintBillScreenState extends State<PrintBillScreen>
+    with SingleTickerProviderStateMixin {
   int currentIndex = 1;
   Screen? size;
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
   bool loading = false;
   List<OrderModel> orders = [];
+  AnimationController? _animationController;
+  Animation<double>? _fadeAnimation;
 
   @override
   void initState() {
-    // implement initState
     super.initState();
+    _initializeAnimations();
     loadOrder();
+  }
+
+  void _initializeAnimations() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController!, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    discountCtrl.dispose();
+    super.dispose();
   }
 
   void loadOrder() async {
@@ -70,7 +90,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
         payment = await ApiServices.post(
             '/order/payment/${Global.pairId}', Global.requestObj(null));
       }
-      // motivePrint(payment?.toJson());
+
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> dump = orderListModelFromJson(data);
@@ -79,6 +99,7 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
           Global.paymentList =
               paymentListModelFromJson(jsonEncode(payment?.data));
         });
+        _animationController?.forward();
       } else {
         orders = [];
       }
@@ -107,76 +128,56 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                   fontWeight: FontWeight.w900)),
         ),
       ),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: loading
-            ? const LoadingProgress()
-            : GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-                child: orders.isEmpty
-                    ? const Center(
-                        child: NoDataFoundWidget(),
-                      )
-                    : Column(
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          getProportionateScreenWidth(0.0),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        SingleChildScrollView(
-                                          child: Container(
-                                            height: MediaQuery.of(context)
-                                                .size
-                                                .height,
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
-                                              color: bgColor2,
-                                            ),
-                                            child: ListView.builder(
-                                                itemCount: orders.length,
-                                                itemBuilder: (context, index) {
-                                                  return _itemOrderList(
-                                                      order: orders[index],
-                                                      index: index);
-                                                }),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-              ),
+            ? const ModernLoadingWidgetWithText()
+            : orders.isEmpty
+            ? const ModernEmptyState()
+            : _fadeAnimation != null
+            ? FadeTransition(
+          opacity: _fadeAnimation!,
+          child: RefreshIndicator(
+            onRefresh: () async => loadOrder(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                return AnimatedContainer(
+                  duration: Duration(milliseconds: 300 + (index * 100)),
+                  curve: Curves.easeOutBack,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: _modernOrderCard(
+                    order: orders[index],
+                    index: index,
+                  ),
+                );
+              },
+            ),
+          ),
+        )
+            : RefreshIndicator(
+          onRefresh: () async => loadOrder(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              return _modernOrderCard(
+                order: orders[index],
+                index: index,
+              );
+            },
+          ),
+        ),
       ),
     );
   }
 
-  void checkout() async {
-    setState(() {});
-  }
-
-  Widget _itemOrderList({required OrderModel order, required index}) {
+  Widget _modernOrderCard({required OrderModel order, required index}) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Column(
         children: [
           Row(
@@ -185,141 +186,226 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                 flex: 8,
                 child: Column(
                   children: [
-                    ProductListTileData(
-                      orderId: order.orderId,
-                      weight: null,
-                      showTotal: false,
-                      type: order.orderTypeName,
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: ProductListTileData(
+                        orderId: order.orderId,
+                        weight: null,
+                        showTotal: false,
+                        type: order.orderTypeName,
+                      ),
                     ),
-                    Table(
-                      border: TableBorder.all(color: Colors.grey.shade300),
-                      children: [
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Text(
-                                '',
-                                textAlign: TextAlign.center,
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Table(
+                        border: TableBorder.all(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        children: [
+                          TableRow(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('น้ำหนัก',
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('ราคา',
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                          ],
-                        ),
-                        ...order.details!.map(
-                          (e) => TableRow(
-                            decoration: const BoxDecoration(),
                             children: [
-                              paddedTextBigXL(e.productName),
-                              paddedText(Global.format(e.weight!),
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                              paddedText(Global.format(e.priceIncludeTax!),
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
+                              const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  '',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'น้ำหนัก',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ราคา',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ผลรวมย่อย',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
+                          ...order.details!.asMap().entries.map(
+                                (entry) {
+                              int idx = entry.key;
+                              var e = entry.value;
+                              return TableRow(
+                                decoration: BoxDecoration(
+                                  color: idx % 2 == 0 ? Colors.white : const Color(0xFFFAFBFC),
+                                ),
+                                children: [
+                                  paddedTextBigXL(e.productName),
+                                  paddedText(
+                                    Global.format(e.weight!),
+                                    align: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: const Color(0xFF4B5563),
+                                    ),
+                                  ),
+                                  paddedText(
+                                    Global.format(e.priceIncludeTax!),
+                                    align: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: const Color(0xFF4B5563),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                          TableRow(
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF3F4F6),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ผลรวมย่อย',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(
                                       Global.getOrderWeightTotalAmountApi(
                                           order.details)),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(
                                       Global.getOrderSubTotalAmountApi(
                                           order.details)),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ร้านทองเพิ่ม(ลด)ให้',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.sp),
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('',
+                            ],
+                          ),
+                          TableRow(
+                            decoration: const BoxDecoration(color: Colors.white),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ร้านทองเพิ่ม(ลด)ให้',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: const Color(0xFF4B5563),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  '',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16.sp),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   '${addDisValue(order.discount ?? 0, order.addPrice ?? 0) < 0 ? "(${addDisValue(order.discount ?? 0, order.addPrice ?? 0)})" : addDisValue(order.discount ?? 0, order.addPrice ?? 0)}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: addDisValue(order.discount ?? 0,
-                                                  order.addPrice ?? 0) <
-                                              0
-                                          ? Colors.red
-                                          : Colors.black)),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ยอดรวมทั้งหมด',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16.sp),
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: addDisValue(order.discount ?? 0,
+                                        order.addPrice ?? 0) <
+                                        0
+                                        ? const Color(0xFFDC2626)
+                                        : const Color(0xFF059669),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0F766E).withOpacity(0.1),
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ยอดรวมทั้งหมด',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   '${Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: 16.sp)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(
                                       Global.getOrderGrantTotalAmountApi(
                                           Global.getOrderSubTotalAmountApi(
@@ -327,12 +413,17 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                                           order.discount,
                                           order.addPrice ?? 0)),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                          ],
-                        ),
-                      ],
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -342,146 +433,30 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () async {
-                        // loadOrder();
-                        // return;
-                        final ProgressDialog pr = ProgressDialog(context,
-                            type: ProgressDialogType.normal,
-                            isDismissible: true,
-                            showLogs: true);
-                        await pr.show();
-                        pr.update(message: 'processing'.tr());
-
-                        try {
-                          var payment = await ApiServices.post(
-                              '/order/payment/${order.pairId}',
-                              Global.requestObj(null));
-                          await pr.hide();
-                          Global.paymentList = paymentListModelFromJson(
-                              jsonEncode(payment?.data));
-
-                          Invoice invoice = Invoice(
-                              order: order,
-                              customer: order.customer!,
-                              payments: Global.paymentList,
-                              orders: orders,
-                              items: order.details!);
-
-                          if (order.orderTypeId == 1 ||
-                              order.orderTypeId == 2) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PdfPreviewPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 5) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PreviewRefillGoldPage(
-                                          invoice: invoice,
-                                          goHome: true,
-                                        )));
-                          }
-
-                          if (order.orderTypeId == 6) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PreviewSellUsedGoldPage(
-                                          invoice: invoice,
-                                          goHome: true,
-                                        )));
-                          }
-
-                          if (order.orderTypeId == 3 ||
-                              order.orderTypeId == 8) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PdfThengPreviewPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 33 ||
-                              order.orderTypeId == 9) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PdfThengPreviewPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 4) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PreviewSellThengPdfPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 44) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PreviewBuyThengPdfPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 10) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PreviewRefillThengGoldPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (order.orderTypeId == 11) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PreviewSellUsedThengGoldPage(
-                                  invoice: invoice,
-                                  goHome: true,
-                                ),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          await pr.hide();
-                        }
-                      },
+                      onTap: () => _handlePrintOrder(order),
                       child: Container(
                         height: 80,
                         width: 80,
+                        margin: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                            color: Colors.teal,
-                            borderRadius: BorderRadius.circular(8)),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF0F766E).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: const Icon(
                           Icons.print,
                           color: Colors.white,
+                          size: 28,
                         ),
                       ),
                     ),
@@ -490,122 +465,249 @@ class _PrintBillScreenState extends State<PrintBillScreen> {
               ),
             ],
           ),
-          // const Divider(),
         ],
       ),
     );
   }
 
-  void removeProduct(int i) async {
-    Global.ordersPapun!.removeAt(i);
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      setState(() {});
-    });
+
+
+  IconData _getOrderTypeIcon(int? orderTypeId) {
+    switch (orderTypeId) {
+      case 1:
+      case 2:
+        return Icons.shopping_cart;
+      case 3:
+      case 8:
+      case 33:
+      case 9:
+        return Icons.receipt;
+      case 4:
+        return Icons.sell;
+      case 44:
+        return Icons.shopping_bag;
+      case 5:
+      case 10:
+        return Icons.refresh;
+      case 6:
+      case 11:
+        return Icons.recycling;
+      default:
+        return Icons.description;
+    }
+  }
+
+  void _handlePrintOrder(OrderModel order) async {
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.normal,
+      isDismissible: true,
+      showLogs: true,
+    );
+
+    await pr.show();
+    pr.update(message: 'กำลังเตรียมข้อมูล...');
+
+    try {
+      var payment = await ApiServices.post(
+          '/order/payment/${order.pairId}', Global.requestObj(null));
+      await pr.hide();
+
+      Global.paymentList =
+          paymentListModelFromJson(jsonEncode(payment?.data));
+
+      Invoice invoice = Invoice(
+          order: order,
+          customer: order.customer!,
+          payments: Global.paymentList,
+          orders: orders,
+          items: order.details!);
+
+      _navigateToPreview(order, invoice);
+    } catch (e) {
+      await pr.hide();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _navigateToPreview(OrderModel order, Invoice invoice) {
+    switch (order.orderTypeId) {
+      case 1:
+      case 2:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PdfPreviewPage(
+              invoice: invoice,
+              goHome: true,
+            ),
+          ),
+        );
+        break;
+      case 5:
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PreviewRefillGoldPage(
+                  invoice: invoice,
+                  goHome: true,
+                )));
+        break;
+      case 6:
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PreviewSellUsedGoldPage(
+                  invoice: invoice,
+                  goHome: true,
+                )));
+        break;
+      case 3:
+      case 8:
+      case 33:
+      case 9:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PdfThengPreviewPage(
+              invoice: invoice,
+              goHome: true,
+            ),
+          ),
+        );
+        break;
+      case 4:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewSellThengPdfPage(
+              invoice: invoice,
+              goHome: true,
+            ),
+          ),
+        );
+        break;
+      case 44:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewBuyThengPdfPage(
+              invoice: invoice,
+              goHome: true,
+              shop: true,
+            ),
+          ),
+        );
+        break;
+      case 10:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewRefillThengGoldPage(
+              invoice: invoice,
+              goHome: true,
+            ),
+          ),
+        );
+        break;
+      case 11:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewSellUsedThengGoldPage(
+              invoice: invoice,
+              goHome: true,
+            ),
+          ),
+        );
+        break;
+    }
   }
 }
 
-class PaymentCard extends StatelessWidget {
-  const PaymentCard(
-      {Key? key, this.isSelected = false, this.title, this.image, this.action})
-      : super(key: key);
-
-  final bool? isSelected;
-  final String? title;
-  final String? image;
-  final Function()? action;
+class ModernLoadingWidgetWithText extends StatelessWidget {
+  const ModernLoadingWidgetWithText({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: action,
-      child: Stack(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: getProportionateScreenWidth(30),
-            padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(8.0),
-                vertical: getProportionateScreenHeight(8.0)),
-            margin: EdgeInsets.only(
-              bottom: getProportionateScreenHeight(8.0),
-            ),
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: isSelected!
-                  ? Colors.white
-                  : Colors.white.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(
-                getProportionateScreenWidth(
-                  4,
-                ),
-              ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                isSelected!
-                    ? BoxShadow(
-                        color: kShadowColor,
-                        offset: Offset(
-                          getProportionateScreenWidth(2),
-                          getProportionateScreenWidth(4),
-                        ),
-                        blurRadius: 80,
-                      )
-                    : const BoxShadow(color: Colors.transparent),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: getProportionateScreenWidth(30),
-                  height: getProportionateScreenWidth(30),
-                  decoration: ShapeDecoration(
-                    color: kGreyShade5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        getProportionateScreenWidth(8.0),
-                      ),
-                    ),
-                  ),
-                  child: image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(image!,
-                              fit: BoxFit.cover, width: 1000.0),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            "assets/images/no_image.png",
-                            fit: BoxFit.cover,
-                            width: 1000.0,
-                          )),
-                ),
-                SizedBox(
-                  width: getProportionateScreenWidth(8),
-                ),
-                Expanded(
-                  child: Text(
-                    title!,
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(8),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )
-              ],
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0F766E)),
+                strokeWidth: 3,
+              ),
             ),
           ),
-          if (isSelected!)
-            Positioned(
-              top: 0,
-              right: 0,
-              child: GestureDetector(
-                child: const IconButton(
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.teal,
-                  ),
-                  onPressed: null,
-                ),
-              ),
+          const SizedBox(height: 24),
+          const Text(
+            'กำลังโหลดข้อมูล...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w500,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ModernEmptyState extends StatelessWidget {
+  const ModernEmptyState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(60),
+            ),
+            child: const Icon(
+              Icons.receipt_long_outlined,
+              size: 60,
+              color: Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'ไม่มีรายการบิลที่ต้องพิมพ์',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF334155),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'เมื่อมีรายการใหม่จะแสดงที่นี่',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF64748B),
+            ),
+          ),
         ],
       ),
     );

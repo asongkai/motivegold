@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -28,7 +29,7 @@ Future<Uint8List> makeRedeemReportPdf(
     for (int j = 0; j < orders[i]!.details!.length; j++) {
       orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
       orders[i]!.details![j].customerName =
-          '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}';
+      '${getCustomerName(orders[i]!.customer!)}';
       orders[i]!.details![j].taxNumber = orders[i]!.customer?.taxNumber != ''
           ? orders[i]!.customer?.taxNumber ?? ''
           : orders[i]!.customer?.idCard ?? '';
@@ -94,10 +95,22 @@ Future<Uint8List> makeRedeemReportPdf(
         ),
       ]));
   widgets.add(height());
+
   if (type == 1) {
-    widgets.add(
-      Table(
-        border: TableBorder.all(color: PdfColors.grey500),
+    widgets.add(Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: PdfColors.grey300, width: 1),
+      ),
+      child: Table(
+        border: TableBorder(
+          top: BorderSide.none,
+          bottom: BorderSide.none,
+          left: BorderSide.none,
+          right: BorderSide.none,
+          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          verticalInside: BorderSide.none,
+        ),
         columnWidths: {
           0: const FixedColumnWidth(30),
           1: const FixedColumnWidth(30),
@@ -111,69 +124,121 @@ Future<Uint8List> makeRedeemReportPdf(
           9: const FixedColumnWidth(25),
         },
         children: [
-          TableRow(children: [
-            paddedText('วัน/เดือน/ปี', align: TextAlign.center),
-            paddedText('เลขที่ตั๋ว', align: TextAlign.center),
-            paddedText('เลขที่ใบกำกับภาษี', align: TextAlign.center),
-            paddedText('ลูกค้า', align: TextAlign.center),
-            paddedText('เลขประจำตัวผู้เสียภาษี', align: TextAlign.center),
-            paddedText('ราคาตามจำ\nนวนสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
-                align: TextAlign.center),
-            paddedText('ราคาตาม\nจำนวนสินไถ่', align: TextAlign.right),
-            paddedText('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
-                align: TextAlign.center),
-            paddedText('ฐานภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-            paddedText('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-          ]),
+          TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(11),
+                  topRight: Radius.circular(11),
+                ),
+              ),
+              children: [
+                paddedTextSmall('วัน/เดือน/ปี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ตั๋ว',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ใบกำกับภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ลูกค้า',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+              ]
+          ),
           for (int i = 0; i < details.length; i++)
             TableRow(
               decoration: const BoxDecoration(),
               children: [
-                paddedText(Global.dateOnly(details[i].redeemDate.toString()),
+                paddedTextSmall(Global.dateOnly(details[i].redeemDate.toString()),
+                    style: TextStyle(fontSize: 8),
                     align: TextAlign.center),
-                paddedText(details[i].referenceNo ?? '',
+                paddedTextSmall(details[i].referenceNo ?? '',
+                    style: TextStyle(fontSize: 8, color: PdfColors.purple600),
                     align: TextAlign.center),
-                paddedText(
+                paddedTextSmall(
                     orders
-                            .firstWhere(
-                                (item) => item?.id == details[i].redeemId)
-                            ?.redeemId ??
+                        .firstWhere(
+                            (item) => item?.id == details[i].redeemId)
+                        ?.redeemId ??
                         '',
+                    style: TextStyle(fontSize: 8),
                     align: TextAlign.center),
-                paddedText('${details[i].customerName}'),
-                paddedText(details[i].taxNumber ?? ''),
-                paddedText('${Global.format(details[i].redemptionVat ?? 0)}',
+                paddedTextSmall('${details[i].customerName}',
+                    style: TextStyle(fontSize: 8)),
+                paddedTextSmall(details[i].taxNumber ?? '',
+                    style: TextStyle(fontSize: 8)),
+                paddedTextSmall('${Global.format(details[i].redemptionVat ?? 0)}',
+                    style: TextStyle(fontSize: 8, color: PdfColors.green600),
                     align: TextAlign.right),
-                paddedText('${Global.format(details[i].redemptionValue ?? 0)}',
+                paddedTextSmall('${Global.format(details[i].redemptionValue ?? 0)}',
+                    style: TextStyle(fontSize: 8, color: PdfColors.blue600),
                     align: TextAlign.right),
-                paddedText(Global.format(details[i].depositAmount ?? 0),
+                paddedTextSmall(Global.format(details[i].depositAmount ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.orange600),
                     align: TextAlign.right),
-                paddedText(Global.format(details[i].taxBase ?? 0),
+                paddedTextSmall(Global.format(details[i].taxBase ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.teal600),
                     align: TextAlign.right),
-                paddedText(Global.format(details[i].taxAmount ?? 0),
+                paddedTextSmall(Global.format(details[i].taxAmount ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.red600),
                     align: TextAlign.right),
               ],
             ),
-          TableRow(children: [
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText('รวมทั้งหมด', align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemVat)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemValue)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalDepositAmount)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxBase)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxAmount)}',
-                align: TextAlign.right),
-          ]),
+          TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue50,
+                border: Border(
+                  top: BorderSide(color: PdfColors.blue200, width: 1),
+                ),
+              ),
+              children: [
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('รวมทั้งหมด',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemVat)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemValue)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalDepositAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxBase)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    align: TextAlign.right),
+              ]
+          ),
         ],
       ),
-    );
+    ));
   }
 
   if (type == 2 || type == 3 || type == 4) {
@@ -181,9 +246,20 @@ Future<Uint8List> makeRedeemReportPdf(
   }
 
   if (type == 2) {
-    widgets.add(
-      Table(
-        border: TableBorder.all(color: PdfColors.grey500),
+    widgets.add(Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: PdfColors.grey300, width: 1),
+      ),
+      child: Table(
+        border: TableBorder(
+          top: BorderSide.none,
+          bottom: BorderSide.none,
+          left: BorderSide.none,
+          right: BorderSide.none,
+          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          verticalInside: BorderSide.none,
+        ),
         columnWidths: {
           0: const FixedColumnWidth(30),
           1: const FixedColumnWidth(30),
@@ -199,21 +275,47 @@ Future<Uint8List> makeRedeemReportPdf(
         children: [
           // Header Row
           TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(11),
+                  topRight: Radius.circular(11),
+                ),
+              ),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                paddedText('วัน/เดือน/ปี', align: TextAlign.center),
-                paddedText('เลขที่ใบกำกับภาษี', align: TextAlign.center),
-                paddedText('ลูกค้า', align: TextAlign.center),
-                paddedText('เลขประจำตัวผู้เสียภาษี', align: TextAlign.center),
-                paddedText('เลขที่ตั๋ว', align: TextAlign.center),
-                paddedText('ราคาตามจำ\nนวนสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                paddedTextSmall('วัน/เดือน/ปี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ราคาตาม\nจำนวนสินไถ่', align: TextAlign.right),
-                paddedText('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                paddedTextSmall('เลขที่ใบกำกับภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ฐานภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedText('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-              ]),
+                paddedTextSmall('ลูกค้า',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ตั๋ว',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+              ]
+          ),
 
           // Data Rows
           for (int i = 0; i < orders.length; i++)
@@ -222,102 +324,138 @@ Future<Uint8List> makeRedeemReportPdf(
                 decoration: const BoxDecoration(),
                 children: [
                   // COLUMN 1: Date
-                  paddedText(
+                  paddedTextSmall(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? Global.dateOnly(orders[i]!.redeemDate.toString())
                         : '',
+                    style: TextStyle(fontSize: 8),
                     align: TextAlign.center,
                   ),
 
                   // COLUMN 2: Redeem ID
-                  paddedText(
+                  paddedTextSmall(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? orders[i]!.redeemId ?? ''
                         : '',
+                    style: TextStyle(fontSize: 8),
                     align: TextAlign.center,
                   ),
 
                   // COLUMN 3: Customer Name
-                  paddedText(
+                  paddedTextSmall(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}'
                         : '',
+                    style: TextStyle(fontSize: 8),
                   ),
 
                   // COLUMN 4: Tax / ID Number
-                  paddedText(
+                  paddedTextSmall(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? (orders[i]?.customer?.taxNumber ?? '') != ''
-                            ? orders[i]!.customer!.taxNumber!
-                            : orders[i]?.customer?.idCard ?? ''
+                        ? orders[i]!.customer!.taxNumber!
+                        : orders[i]?.customer?.idCard ?? ''
                         : '',
+                    style: TextStyle(fontSize: 8),
                   ),
 
                   // COLUMN 5: Reference No
-                  paddedText(
+                  paddedTextSmall(
                     orders[i]!.details![j].referenceNo ?? '',
+                    style: TextStyle(fontSize: 8, color: PdfColors.purple600),
                     align: TextAlign.center,
                   ),
 
                   // COLUMN 6: VAT
-                  paddedText(
+                  paddedTextSmall(
                     Global.format(orders[i]!.details![j].redemptionVat ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.green600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 7: Redemption Value
-                  paddedText(
+                  paddedTextSmall(
                     Global.format(orders[i]!.details![j].redemptionValue ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.blue600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 8: Deposit Amount
-                  paddedText(
+                  paddedTextSmall(
                     Global.format(orders[i]!.details![j].depositAmount ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.orange600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 9: Tax Base
-                  paddedText(
+                  paddedTextSmall(
                     Global.format(orders[i]!.details![j].taxBase ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.teal600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 10: Tax Amount
-                  paddedText(
+                  paddedTextSmall(
                     Global.format(orders[i]!.details![j].taxAmount ?? 0),
+                    style: TextStyle(fontSize: 8, color: PdfColors.red600),
                     align: TextAlign.right,
                   ),
                 ],
               ),
 
           // Summary Row
-          TableRow(children: [
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText('รวมทั้งหมด', align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemVat)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemValue)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalDepositAmount)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxBase)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxAmount)}',
-                align: TextAlign.right),
-          ]),
+          TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue50,
+                border: Border(
+                  top: BorderSide(color: PdfColors.blue200, width: 1),
+                ),
+              ),
+              children: [
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('รวมทั้งหมด',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemVat)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemValue)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalDepositAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxBase)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    align: TextAlign.right),
+              ]
+          ),
         ],
       ),
-    );
+    ));
   }
 
   if (type == 3) {
-    widgets.add(
-      Table(
-        border: TableBorder.all(color: PdfColors.grey500),
+    widgets.add(Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: PdfColors.grey300, width: 1),
+      ),
+      child: Table(
+        border: TableBorder(
+          top: BorderSide.none,
+          bottom: BorderSide.none,
+          left: BorderSide.none,
+          right: BorderSide.none,
+          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          verticalInside: BorderSide.none,
+        ),
         columnWidths: {
           0: const FixedColumnWidth(30),
           1: const FixedColumnWidth(30),
@@ -333,117 +471,177 @@ Future<Uint8List> makeRedeemReportPdf(
         children: [
           // Header Row
           TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(11),
+                  topRight: Radius.circular(11),
+                ),
+              ),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                paddedText('วัน/เดือน/ปี', align: TextAlign.center),
-                paddedText('เลขที่ใบกำกับภาษี', align: TextAlign.center),
-                paddedText('ลูกค้า', align: TextAlign.center),
-                paddedText('เลขประจำตัวผู้เสียภาษี', align: TextAlign.center),
-                paddedText('เลขที่ตั๋ว', align: TextAlign.center),
-                paddedText('ราคาตามจำ\nนวนสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                paddedTextSmall('วัน/เดือน/ปี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ราคาตาม\nจำนวนสินไถ่', align: TextAlign.right),
-                paddedText('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                paddedTextSmall('เลขที่ใบกำกับภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ฐานภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedText('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-              ]),
+                paddedTextSmall('ลูกค้า',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ตั๋ว',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+              ]
+          ),
 
           // Data Rows
           for (int i = 0; i < orders.length; i++)
-              TableRow(
-                decoration: const BoxDecoration(),
-                children: [
-                  // COLUMN 1: Date
-                  paddedText(Global.dateOnly(orders[i]!.redeemDate.toString()),
-                    align: TextAlign.center,
-                  ),
+            TableRow(
+              decoration: const BoxDecoration(),
+              children: [
+                // COLUMN 1: Date
+                paddedTextSmall(Global.dateOnly(orders[i]!.redeemDate.toString()),
+                  style: TextStyle(fontSize: 8),
+                  align: TextAlign.center,
+                ),
 
-                  // COLUMN 2: Redeem ID
-                  paddedText(orders[i]!.redeemId ?? '',
-                    align: TextAlign.center,
-                  ),
+                // COLUMN 2: Redeem ID
+                paddedTextSmall(orders[i]!.redeemId ?? '',
+                  style: TextStyle(fontSize: 8),
+                  align: TextAlign.center,
+                ),
 
-                  // COLUMN 3: Customer Name
-                  paddedText('${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
-                  ),
+                // COLUMN 3: Customer Name
+                paddedTextSmall('${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
+                  style: TextStyle(fontSize: 8),
+                ),
 
-                  // COLUMN 4: Tax / ID Number
-                  paddedText((orders[i]?.customer?.taxNumber ?? '') != ''
-                        ? orders[i]!.customer!.taxNumber!
-                        : orders[i]?.customer?.idCard ?? '',
-                  ),
+                // COLUMN 4: Tax / ID Number
+                paddedTextSmall((orders[i]?.customer?.taxNumber ?? '') != ''
+                    ? orders[i]!.customer!.taxNumber!
+                    : orders[i]?.customer?.idCard ?? '',
+                  style: TextStyle(fontSize: 8),
+                ),
 
-                  // COLUMN 5: Reference No
-                  paddedText(
-                    orders[i]!.details!
-                        .where((item) => item.redeemId == orders[i]!.id)
-                        .map((item) => item.referenceNo)
-                        .join(','),
-                    align: TextAlign.center,
-                  ),
+                // COLUMN 5: Reference No
+                paddedTextSmall(
+                  orders[i]!.details!
+                      .where((item) => item.redeemId == orders[i]!.id)
+                      .map((item) => item.referenceNo)
+                      .join(','),
+                  style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                  align: TextAlign.center,
+                ),
 
-                  // COLUMN 6: VAT
-                  paddedText(
-                    Global.format(getRedemptionVatTotal(orders[i]!.details!)),
-                    align: TextAlign.right,
-                  ),
+                // COLUMN 6: VAT
+                paddedTextSmall(
+                  Global.format(getRedemptionVatTotal(orders[i]!.details!)),
+                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  align: TextAlign.right,
+                ),
 
-                  // COLUMN 7: Redemption Value
-                  paddedText(
-                    Global.format(getRedemptionValueTotal(orders[i]!.details!)),
-                    align: TextAlign.right,
-                  ),
+                // COLUMN 7: Redemption Value
+                paddedTextSmall(
+                  Global.format(getRedemptionValueTotal(orders[i]!.details!)),
+                  style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                  align: TextAlign.right,
+                ),
 
-                  // COLUMN 8: Deposit Amount
-                  paddedText(
-                    Global.format(getDepositAmountTotal(orders[i]!.details!)),
-                    align: TextAlign.right,
-                  ),
+                // COLUMN 8: Deposit Amount
+                paddedTextSmall(
+                  Global.format(getDepositAmountTotal(orders[i]!.details!)),
+                  style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                  align: TextAlign.right,
+                ),
 
-                  // COLUMN 9: Tax Base
-                  paddedText(
-                    Global.format(getTaxBaseTotal(orders[i]!.details!)),
-                    align: TextAlign.right,
-                  ),
+                // COLUMN 9: Tax Base
+                paddedTextSmall(
+                  Global.format(getTaxBaseTotal(orders[i]!.details!)),
+                  style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                  align: TextAlign.right,
+                ),
 
-                  // COLUMN 10: Tax Amount
-                  paddedText(
-                    Global.format(getTaxAmountTotal(orders[i]!.details!)),
-                    align: TextAlign.right,
-                  ),
-                ],
-              ),
+                // COLUMN 10: Tax Amount
+                paddedTextSmall(
+                  Global.format(getTaxAmountTotal(orders[i]!.details!)),
+                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  align: TextAlign.right,
+                ),
+              ],
+            ),
 
           // Summary Row
-          TableRow(children: [
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText('รวมทั้งหมด', align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemVat)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemValue)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalDepositAmount)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxBase)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxAmount)}',
-                align: TextAlign.right),
-          ]),
+          TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue50,
+                border: Border(
+                  top: BorderSide(color: PdfColors.blue200, width: 1),
+                ),
+              ),
+              children: [
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('รวมทั้งหมด',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemVat)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemValue)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalDepositAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxBase)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    align: TextAlign.right),
+              ]
+          ),
         ],
       ),
-    );
+    ));
   }
 
-
   if (type == 4) {
-
-    widgets.add(
-      Table(
-        border: TableBorder.all(color: PdfColors.grey500),
+    widgets.add(Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: PdfColors.grey300, width: 1),
+      ),
+      child: Table(
+        border: TableBorder(
+          top: BorderSide.none,
+          bottom: BorderSide.none,
+          left: BorderSide.none,
+          right: BorderSide.none,
+          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          verticalInside: BorderSide.none,
+        ),
         columnWidths: {
           0: const FixedColumnWidth(25),
           1: const FixedColumnWidth(50),
@@ -457,19 +655,41 @@ Future<Uint8List> makeRedeemReportPdf(
         children: [
           // Header Row
           TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(11),
+                  topRight: Radius.circular(11),
+                ),
+              ),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                paddedText('วัน/เดือน/ปี', align: TextAlign.center),
-                paddedText('เลขที่ใบกำกับภาษี', align: TextAlign.center),
-                paddedText('รายการ', align: TextAlign.center),
-                paddedText('ราคาตามจำ\nนวนสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                paddedTextSmall('วัน/เดือน/ปี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ราคาตาม\nจำนวนสินไถ่', align: TextAlign.right),
-                paddedText('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                paddedTextSmall('เลขที่ใบกำกับภาษี',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
-                paddedText('ฐานภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-                paddedText('ภาษีมูลค่าเพิ่ม', align: TextAlign.center),
-              ]),
+                paddedTextSmall('รายการ',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    align: TextAlign.right),
+              ]
+          ),
 
           // Data Rows
           for (int i = 0; i < daily.length; i++)
@@ -477,70 +697,93 @@ Future<Uint8List> makeRedeemReportPdf(
               decoration: const BoxDecoration(),
               children: [
                 // COLUMN 1: Date
-                paddedText(Global.dateOnly(daily[i]!.redeemDate.toString()),
+                paddedTextSmall(Global.dateOnly(daily[i]!.redeemDate.toString()),
+                  style: TextStyle(fontSize: 8),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 2: Redeem ID
-                paddedText(daily[i]!.redeemId ?? '',
+                paddedTextSmall(daily[i]!.redeemId ?? '',
+                  style: TextStyle(fontSize: 8),
                   align: TextAlign.center,
                 ),
 
-                // COLUMN 3: Customer Name
-                paddedText(daily[i]?.referenceNo ?? "",
+                // COLUMN 3: Reference No
+                paddedTextSmall(daily[i]?.referenceNo ?? "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.purple600),
                 ),
 
-                // COLUMN 6: VAT
-                paddedText(
+                // COLUMN 4: VAT
+                paddedTextSmall(
                   Global.format(daily[i]!.redemptionVat ?? 0),
+                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
                   align: TextAlign.right,
                 ),
 
-                // COLUMN 7: Redemption Value
-                paddedText(
+                // COLUMN 5: Redemption Value
+                paddedTextSmall(
                   Global.format(daily[i]!.redemptionValue ?? 0),
+                  style: TextStyle(fontSize: 8, color: PdfColors.blue600),
                   align: TextAlign.right,
                 ),
 
-                // COLUMN 8: Deposit Amount
-                paddedText(
+                // COLUMN 6: Deposit Amount
+                paddedTextSmall(
                   Global.format(daily[i]!.depositAmount ?? 0),
+                  style: TextStyle(fontSize: 8, color: PdfColors.orange600),
                   align: TextAlign.right,
                 ),
 
-                // COLUMN 9: Tax Base
-                paddedText(
+                // COLUMN 7: Tax Base
+                paddedTextSmall(
                   Global.format(daily[i]!.taxBase ?? 0),
+                  style: TextStyle(fontSize: 8, color: PdfColors.teal600),
                   align: TextAlign.right,
                 ),
 
-                // COLUMN 10: Tax Amount
-                paddedText(
+                // COLUMN 8: Tax Amount
+                paddedTextSmall(
                   Global.format(daily[i]!.taxAmount ?? 0),
+                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
                   align: TextAlign.right,
                 ),
               ],
             ),
 
           // Summary Row
-          TableRow(children: [
-            paddedText(' ', align: TextAlign.center),
-            paddedText(' ', align: TextAlign.center),
-            paddedText('รวมทั้งหมด', align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemVat)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalRedeemValue)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalDepositAmount)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxBase)}',
-                align: TextAlign.right),
-            paddedText('${Global.format(totalTaxAmount)}',
-                align: TextAlign.right),
-          ]),
+          TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue50,
+                border: Border(
+                  top: BorderSide(color: PdfColors.blue200, width: 1),
+                ),
+              ),
+              children: [
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('รวมทั้งหมด',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemVat)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalRedeemValue)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalDepositAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxBase)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    align: TextAlign.right),
+                paddedTextSmall('${Global.format(totalTaxAmount)}',
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    align: TextAlign.right),
+              ]
+          ),
         ],
       ),
-    );
+    ));
   }
 
   pdf.addPage(
@@ -565,11 +808,11 @@ Future<Uint8List> makeRedeemReportPdf(
   return pdf.save();
 }
 
-Widget paddedText(final String text,
-        {final TextAlign align = TextAlign.left,
-        final TextStyle style = const TextStyle(fontSize: 12)}) =>
+Widget paddedTextSmall(final String text,
+    {final TextAlign align = TextAlign.left,
+      final TextStyle style = const TextStyle(fontSize: 9)}) =>
     Padding(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(4),
       child: Text(
         text,
         textAlign: align,
@@ -581,7 +824,6 @@ bool isFirstRowForOrderId(List<RedeemDetailModel?> orders, int index) {
   if (index == 0) return true;
   return orders[index]?.redeemId != orders[index - 1]?.redeemId;
 }
-
 
 String getOrderTypeTitle(int type) {
   switch(type) {

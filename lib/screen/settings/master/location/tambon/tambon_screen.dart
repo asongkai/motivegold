@@ -63,7 +63,7 @@ class _TambonScreenState extends State<TambonScreen> {
         setState(() {
           dataList = products;
           filteredList = products;
-          // Global.amphureList = products;
+          Global.tambonList = products;
         });
       } else {
         dataList = [];
@@ -93,7 +93,7 @@ class _TambonScreenState extends State<TambonScreen> {
         filteredList = (dataList ?? []).where((item) {
           return item.nameEn != null
               ? item.nameEn!.toLowerCase().contains(query) ||
-              item.nameTh!.toLowerCase().contains(query)
+                  item.nameTh!.toLowerCase().contains(query)
               : item.nameTh!.toLowerCase().contains(query);
         }).toList();
       }
@@ -130,11 +130,11 @@ class _TambonScreenState extends State<TambonScreen> {
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                    const AddTambonScreen(),
-                                    fullscreenDialog: true))
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const AddTambonScreen(),
+                                        fullscreenDialog: true))
                                 .whenComplete(() {
                               loadData();
                             });
@@ -143,7 +143,7 @@ class _TambonScreenState extends State<TambonScreen> {
                             color: Colors.teal[900],
                             child: Padding(
                               padding:
-                              const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
                               child: Row(
                                 children: [
                                   const Icon(
@@ -173,36 +173,36 @@ class _TambonScreenState extends State<TambonScreen> {
         child: loading
             ? const LoadingProgress()
             : dataList!.isEmpty
-            ? const NoDataFoundWidget()
-            : Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  hintText: 'ค้นหาตำบล...'.tr(),
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                ? const NoDataFoundWidget()
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'ค้นหาตำบล...'.tr(),
+                            prefixIcon: const Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            child: ListView.builder(
+                                itemCount: filteredList.length,
+                                itemBuilder: (context, index) {
+                                  return productCard(filteredList, index);
+                                }),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  child: ListView.builder(
-                      itemCount: filteredList.length,
-                      itemBuilder: (context, index) {
-                        return productCard(filteredList, index);
-                      }),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -225,57 +225,57 @@ class _TambonScreenState extends State<TambonScreen> {
             ),
           ),
           if (Global.user!.userType == 'ADMIN')
-          Expanded(
-            flex: 2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditTambonScreen(
-                                tambon: list[index], index: index),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      loadData();
-                    });
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.teal,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white,
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditTambonScreen(
+                                      tambon: list[index], index: index),
+                                  fullscreenDialog: true))
+                          .whenComplete(() {
+                        loadData();
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    remove(list[index].id!, index);
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      remove(list[index].id!, index);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          )
+                ],
+              ),
+            )
         ],
       ),
     );
@@ -284,31 +284,31 @@ class _TambonScreenState extends State<TambonScreen> {
   void remove(int id, int i) async {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          final ProgressDialog pr = ProgressDialog(context,
-              type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-          await pr.show();
-          pr.update(message: 'processing'.tr());
-          try {
-            var result = await ApiServices.delete('/location/tambon', id);
-            motivePrint(result?.data);
-            await pr.hide();
-            if (result?.status == "success") {
-              dataList!.removeAt(i);
-              setState(() {});
-            } else {
-              if (mounted) {
-                Alert.warning(context, 'Warning'.tr(),
-                    result!.message ?? result.data, 'OK'.tr(),
-                    action: () {});
-              }
-            }
-          } catch (e) {
-            await pr.hide();
-            if (mounted) {
-              Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                  action: () {});
-            }
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        var result = await ApiServices.delete('/location/tambon', id);
+        motivePrint(result?.data);
+        await pr.hide();
+        if (result?.status == "success") {
+          dataList!.removeAt(i);
+          setState(() {});
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(),
+                result!.message ?? result.data, 'OK'.tr(),
+                action: () {});
           }
-        });
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+              action: () {});
+        }
+      }
+    });
   }
 }

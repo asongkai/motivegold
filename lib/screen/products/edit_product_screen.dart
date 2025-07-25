@@ -32,9 +32,9 @@ class EditProductScreen extends StatefulWidget {
 
   const EditProductScreen(
       {super.key,
-      required this.showBackButton,
-      required this.product,
-      required this.index});
+        required this.showBackButton,
+        required this.product,
+        required this.index});
 
   @override
   State<EditProductScreen> createState() => _EditProductScreenState();
@@ -68,7 +68,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedType = productTypes()
         .where((element) => element.code == widget.product.type)
@@ -92,14 +91,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/producttype/all', Global.requestObj(null));
-      // print(result!.toJson());
+      await ApiServices.post('/producttype/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
-        // print(widget.product.productTypeId);
         List<ProductTypeModel> types = productTypeListModelFromJson(data);
         var pTypes =
-            types.where((e) => e.id == widget.product.productTypeId).toList();
+        types.where((e) => e.id == widget.product.productTypeId).toList();
         if (pTypes.isNotEmpty) {
           selectedProductType = pTypes.first;
           productTypeCtrl.text = selectedProductType!.name!;
@@ -117,11 +114,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
       var response = await ApiServices.post(
           '/productcategory/all', Global.requestObj(null));
-      // print(response!.toJson());
       if (response?.status == "success") {
         var data = jsonEncode(response?.data);
         List<ProductCategoryModel> categories =
-            productCategoryListModelFromJson(data);
+        productCategoryListModelFromJson(data);
         var cTypes = categories
             .where((element) => element.id == widget.product.productCategoryId)
             .toList();
@@ -158,15 +154,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: const CustomAppBar(
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Text("แก้ไขสินค้า",
               style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 16.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.w900)),
+                  fontWeight: FontWeight.w600)),
         ),
       ),
       body: SafeArea(
@@ -177,412 +174,410 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: loading
               ? const LoadingProgress()
               : SingleChildScrollView(
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product Code Section
+                  _buildFormSection(
+                    title: 'ข้อมูลพื้นฐาน',
+                    icon: Icons.info_outline_rounded,
+                    color: Colors.blue,
+                    children: [
+                      _buildTextField(
+                        label: 'รหัสสินค้า',
+                        controller: productCodeCtrl,
+                        icon: Icons.qr_code_rounded,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Product Type and Category Section
+                  _buildFormSection(
+                    title: 'ประเภทและหมวดหมู่',
+                    icon: Icons.category_rounded,
+                    color: Colors.orange,
+                    children: [
+                      Row(
                         children: [
-                          const SizedBox(
-                            height: 10,
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'ประเภท',
+                              icon: Icons.widgets_rounded,
+                              notifier: productTypeNotifier!,
+                              items: productTypeList,
+                              onChanged: (ProductTypeModel value) {
+                                productTypeCtrl.text = value.name!;
+                                selectedProductType = value;
+                                productTypeNotifier!.value = value;
+                              },
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8.0, right: 8.0),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      buildTextField(
-                                        labelText: 'รหัสสินค้า'.tr(),
-                                        validator: null,
-                                        enabled: true,
-                                        inputType: TextInputType.text,
-                                        controller: productCodeCtrl,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'ประเภท',
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      SizedBox(
-                                        height: 70,
-                                        child:
-                                        MiraiDropDownMenu<ProductTypeModel>(
-                                          key: UniqueKey(),
-                                          children: productTypeList,
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                              int index,
-                                              ProductTypeModel? project, {
-                                                bool isItemSelected = false,
-                                              }) {
-                                            return DropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: 16.sp,
-                                            );
-                                          },
-                                          onChanged: (ProductTypeModel value) {
-                                            productTypeCtrl.text = value.name!;
-                                            selectedProductType = value;
-                                            productTypeNotifier!.value = value;
-                                          },
-                                          child: DropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: 16.sp,
-                                            projectValueNotifier:
-                                            productTypeNotifier!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'หมวดหมู่',
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      SizedBox(
-                                        height: 70,
-                                        child: MiraiDropDownMenu<
-                                            ProductCategoryModel>(
-                                          key: UniqueKey(),
-                                          children: productCategoryList,
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                              int index,
-                                              ProductCategoryModel? project, {
-                                                bool isItemSelected = false,
-                                              }) {
-                                            return DropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: 16.sp,
-                                            );
-                                          },
-                                          onChanged:
-                                              (ProductCategoryModel value) {
-                                            productCategoryCtrl.text =
-                                            value.name!;
-                                            selectedCategory = value;
-                                            productCategoryNotifier!.value =
-                                                value;
-                                          },
-                                          child: DropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: 16.sp,
-                                            projectValueNotifier:
-                                            productCategoryNotifier!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8.0, right: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        'ชื่อสินค้า',
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      buildTextField(
-                                        labelText: '',
-                                        validator: null,
-                                        inputType: TextInputType.text,
-                                        controller: productNameCtrl,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'สถานะสินค้า',
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: textColor),
-                                      ),
-                                      const SizedBox(
-                                        height: 4,
-                                      ),
-                                      SizedBox(
-                                        height: 70,
-                                        child:
-                                        MiraiDropDownMenu<ProductTypeModel>(
-                                          key: UniqueKey(),
-                                          children: productTypes(),
-                                          space: 4,
-                                          maxHeight: 360,
-                                          showSearchTextField: true,
-                                          selectedItemBackgroundColor:
-                                          Colors.transparent,
-                                          emptyListMessage: 'ไม่มีข้อมูล',
-                                          showSelectedItemBackgroundColor: true,
-                                          itemWidgetBuilder: (
-                                              int index,
-                                              ProductTypeModel? project, {
-                                                bool isItemSelected = false,
-                                              }) {
-                                            return DropDownItemWidget(
-                                              project: project,
-                                              isItemSelected: isItemSelected,
-                                              firstSpace: 10,
-                                              fontSize: 16.sp,
-                                            );
-                                          },
-                                          onChanged: (ProductTypeModel value) {
-                                            typeCtrl.text = value.name!;
-                                            selectedType = value;
-                                            typeNotifier!.value = value;
-                                          },
-                                          child: DropDownObjectChildWidget(
-                                            key: GlobalKey(),
-                                            fontSize: 16.sp,
-                                            projectValueNotifier: typeNotifier!,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8.0, right: 8.0),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          buildTextFieldBig(
-                                            labelText: 'น้ำหนักหน่วยกรัม',
-                                            labelColor: Colors.orange,
-                                            inputType: TextInputType.phone,
-                                            controller: unitDefaultValue,
-                                            inputFormat: [
-                                              ThousandsFormatter(
-                                                  allowFraction: true)
-                                            ],
-                                          ),
-                                          const Text('ตัวอย่าง: 15.16')
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'หมวดหมู่',
+                              icon: Icons.view_module_rounded,
+                              notifier: productCategoryNotifier!,
+                              items: productCategoryList,
+                              onChanged: (dynamic value) {
+                                productCategoryCtrl.text = value.name!;
+                                selectedCategory = value;
+                                productCategoryNotifier!.value = value;
+                              },
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                ),
-        ),
-      ),
-      persistentFooterButtons: [
-        SizedBox(
-            height: 70,
-            width: 150,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  backgroundColor:
-                      WidgetStateProperty.all<Color>(Colors.teal[700]!),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25.0),
-                          side: BorderSide(color: Colors.teal[700]!)))),
-              onPressed: () async {
-                if (productNameCtrl.text.trim() == "") {
-                  Alert.warning(
-                      context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
-                      action: () {});
-                  return;
-                }
 
-                if (unitDefaultValue.text.trim() == "") {
-                  Alert.warning(context, 'warning'.tr(),
-                      'กรุณากรอกน้ำหนักหน่วยกรัม', 'OK'.tr(),
-                      action: () {});
-                  return;
-                }
+                  const SizedBox(height: 24),
 
-                var object = Global.requestObj({
-                  "id": id,
-                  "productCode": widget.product.productCode!.isEmpty
-                      ? generateRandomString(10).toUpperCase()
-                      : widget.product.productCode,
-                  "type": selectedType!.code,
-                  "name": productNameCtrl.text,
-                  "productTypeId": selectedProductType!.id,
-                  "productCategoryId": selectedCategory!.id,
-                  "companyId": Global.user?.companyId,
-                  "branchId": Global.user?.branchId,
-                  "unitWeight": Global.toNumber(unitDefaultValue.text),
-                });
+                  // Product Details Section
+                  _buildFormSection(
+                    title: 'รายละเอียดสินค้า',
+                    icon: Icons.inventory_2_rounded,
+                    color: Colors.green,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              label: 'ชื่อสินค้า',
+                              controller: productNameCtrl,
+                              icon: Icons.shopping_bag_rounded,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildDropdownField(
+                              label: 'สถานะสินค้า',
+                              icon: Icons.flag_rounded,
+                              notifier: typeNotifier!,
+                              items: productTypes(),
+                              onChanged: (ProductTypeModel value) {
+                                typeCtrl.text = value.name!;
+                                selectedType = value;
+                                typeNotifier!.value = value;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildWeightField(),
+                    ],
+                  ),
 
-                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                    action: () async {
-                  final ProgressDialog pr = ProgressDialog(context,
-                      type: ProgressDialogType.normal,
-                      isDismissible: true,
-                      showLogs: true);
-                  await pr.show();
-                  pr.update(message: 'processing'.tr());
-                  try {
-                    var result = await ApiServices.put('/product', id, object);
-                    await pr.hide();
-                    if (result?.status == "success") {
-                      if (mounted) {
-                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
-                            action: () {
-                          Navigator.of(context).pop();
-                        });
-                      }
-                    } else {
-                      if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(), result!.message!,
-                            'OK'.tr(),
-                            action: () {});
-                      }
-                    }
-                  } catch (e) {
-                    await pr.hide();
-                    if (mounted) {
-                      Alert.warning(
-                          context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                          action: () {});
-                    }
-                  }
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "บันทึก".tr(),
-                    style: const TextStyle(color: Colors.white, fontSize: 32),
-                  ),
-                  const SizedBox(
-                    width: 2,
-                  ),
-                  const Icon(
-                    Icons.save,
-                    color: Colors.white,
-                    size: 30,
-                  ),
+                  const SizedBox(height: 32),
                 ],
               ),
-            )),
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: _buildSaveButton(),
+    );
+  }
+
+  Widget _buildFormSection({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required List<Widget> children,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        buildTextField(
+          labelText: '',
+          validator: null,
+          enabled: true,
+          inputType: TextInputType.text,
+          controller: controller,
+        ),
       ],
     );
+  }
+
+  Widget _buildDropdownField<T>({
+    required String label,
+    required IconData icon,
+    required ValueNotifier notifier,
+    required List<T> items,
+    required Function(T) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 70,
+          child: MiraiDropDownMenu<T>(
+            key: UniqueKey(),
+            children: items,
+            space: 4,
+            maxHeight: 360,
+            showSearchTextField: true,
+            selectedItemBackgroundColor: Colors.transparent,
+            emptyListMessage: 'ไม่มีข้อมูล',
+            showSelectedItemBackgroundColor: true,
+            itemWidgetBuilder: (
+                int index,
+                T? project, {
+                  bool isItemSelected = false,
+                }) {
+              return DropDownItemWidget(
+                project: project,
+                isItemSelected: isItemSelected,
+                firstSpace: 10,
+                fontSize: 16.sp,
+              );
+            },
+            onChanged: onChanged,
+            child: DropDownObjectChildWidget(
+              key: GlobalKey(),
+              fontSize: 16.sp,
+              projectValueNotifier: notifier,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeightField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.scale_rounded, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(
+              'น้ำหนักหน่วยกรัม',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        buildTextFieldBig(
+          labelText: '',
+          labelColor: Colors.orange,
+          inputType: TextInputType.phone,
+          controller: unitDefaultValue,
+          inputFormat: [
+            ThousandsFormatter(allowFraction: true)
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'ตัวอย่าง: 15.16',
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: Colors.grey[500],
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 2,
+            ),
+            onPressed: _handleSave,
+            icon: const Icon(Icons.save_rounded, size: 24),
+            label: Text(
+              "บันทึก".tr(),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleSave() async {
+    if (productNameCtrl.text.trim() == "") {
+      Alert.warning(
+          context, 'warning'.tr(), 'กรุณากรอกข้อมูล', 'OK'.tr(),
+          action: () {});
+      return;
+    }
+
+    if (unitDefaultValue.text.trim() == "") {
+      Alert.warning(context, 'warning'.tr(),
+          'กรุณากรอกน้ำหนักหน่วยกรัม', 'OK'.tr(),
+          action: () {});
+      return;
+    }
+
+    var object = Global.requestObj({
+      "id": id,
+      "productCode": widget.product.productCode!.isEmpty
+          ? generateRandomString(10).toUpperCase()
+          : widget.product.productCode,
+      "type": selectedType!.code,
+      "name": productNameCtrl.text,
+      "productTypeId": selectedProductType!.id,
+      "productCategoryId": selectedCategory!.id,
+      "companyId": Global.user?.companyId,
+      "branchId": Global.user?.branchId,
+      "unitWeight": Global.toNumber(unitDefaultValue.text),
+    });
+
+    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+          final ProgressDialog pr = ProgressDialog(context,
+              type: ProgressDialogType.normal,
+              isDismissible: true,
+              showLogs: true);
+          await pr.show();
+          pr.update(message: 'processing'.tr());
+          try {
+            var result = await ApiServices.put('/product', id, object);
+            await pr.hide();
+            if (result?.status == "success") {
+              if (mounted) {
+                Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                    action: () {
+                      Navigator.of(context).pop();
+                    });
+              }
+            } else {
+              if (mounted) {
+                Alert.warning(context, 'Warning'.tr(), result!.message!,
+                    'OK'.tr(),
+                    action: () {});
+              }
+            }
+          } catch (e) {
+            await pr.hide();
+            if (mounted) {
+              Alert.warning(
+                  context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+                  action: () {});
+        }
+        }
+        });
   }
 }

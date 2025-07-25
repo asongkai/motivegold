@@ -41,6 +41,7 @@ class ThengSaleMatchingMenuScreenState
     });
     super.initState();
     Global.currentOrderType = 2;
+    Global.currentRedeemType = 0;
     init();
   }
 

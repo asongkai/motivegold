@@ -14,6 +14,7 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/gold/gold_mini_widget.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/calculator/calc.dart';
+import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -65,11 +66,13 @@ class _SaleDialogState extends State<SaleDialog> {
   FocusNode gramFocus = FocusNode();
   FocusNode priceFocus = FocusNode();
   FocusNode comFocus = FocusNode();
+  FocusNode priceTotalFocus = FocusNode();
 
   bool bahtReadOnly = false;
   bool gramReadOnly = false;
   bool priceReadOnly = false;
   bool comReadOnly = false;
+  bool priceTotalReadOnly = false;
 
   @override
   void initState() {
@@ -220,24 +223,69 @@ class _SaleDialogState extends State<SaleDialog> {
     if (txt == 'price') {
       priceReadOnly = true;
     }
+    if (txt == 'price_total') {
+      priceTotalReadOnly = true;
+    }
+    AppCalculatorManager.showCalculator(
+      onClose: closeCal,
+      onChanged: (key, value, expression) {
+        if (key == 'ENT' && value != 0.0) {
+          if (txt == 'com') {
+            productCommissionCtrl.text =
+            value != null
+                ? "${Global.format(value)}"
+                : "";
+            comChanged();
+          }
+          if (txt == 'gram') {
+            productWeightGramCtrl.text =
+            value != null
+                ? "${Global.format(value)}"
+                : "";
+            gramChanged();
+          }
+          if (txt == 'baht') {
+            productWeightBahtCtrl.text =
+            value != null
+                ? "${Global.format(value)}"
+                : "";
+            bahtChanged();
+          }
+          if (txt == 'price') {
+            productPriceCtrl.text = value != null
+                ? "${Global.formatInt(value)}"
+                : "";
+            priceChanged();
+          }
+
+          if (txt == 'price_total') {
+            productPriceTotalCtrl.text =
+            value != null
+                ? "${Global.formatInt(value)}"
+                : "";
+            priceTotalChanged();
+          }
+          FocusScope.of(context)
+              .requestFocus(FocusNode());
+          closeCal();
+        }
+        if (kDebugMode) {
+          print('$key\t$value\t$expression');
+        }
+      },
+    );
     setState(() {
       showCal = true;
     });
   }
 
   void closeCal() {
-    // if (txt == 'com') {
     comReadOnly = false;
-    // }
-    // if (txt == 'gram') {
     gramReadOnly = false;
-    // }
-    // if (txt == 'baht') {
     bahtReadOnly = false;
-    // }
-    // if (txt == 'price') {
     priceReadOnly = false;
-    // }
+    priceTotalReadOnly = false;
+    AppCalculatorManager.hideCalculator();
     setState(() {
       showCal = false;
     });
@@ -248,7 +296,7 @@ class _SaleDialogState extends State<SaleDialog> {
       productWeightBahtCtrl.text = Global.format(
           (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
+          Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel));
       productPriceCtrl.text = Global.format(
           Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
     } else {
@@ -256,9 +304,8 @@ class _SaleDialogState extends State<SaleDialog> {
       productWeightBahtCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
+      productCommissionCtrl.text = "";
     }
-    productCommissionCtrl.text = "";
-    productPriceTotalCtrl.text = "";
     setState(() {});
   }
 
@@ -266,7 +313,7 @@ class _SaleDialogState extends State<SaleDialog> {
     if (productPriceCtrl.text.isNotEmpty &&
         productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-          "${Global.formatInt(Global.toNumber(productCommissionCtrl.text) + (Global.getSellPrice(1) * Global.toNumber(productWeightGramCtrl.text)))}";
+          "${Global.format(Global.toNumber(productPriceCtrl.text) + Global.toNumber(productCommissionCtrl.text))}";
       setState(() {});
     } else {
       productPriceTotalCtrl.text = "";
@@ -276,12 +323,24 @@ class _SaleDialogState extends State<SaleDialog> {
   }
 
   void priceChanged() {
-    if (productPriceCtrl.text.isNotEmpty &&
-        productPriceTotalCtrl.text.isNotEmpty) {
+    if (productPriceCtrl.text.isNotEmpty && productCommissionCtrl.text.isNotEmpty) {
+      productPriceTotalCtrl.text = Global.format(
+          Global.toNumber(productPriceCtrl.text) +
+              Global.toNumber(productCommissionCtrl.text));
+      setState(() {});
+    } else {
+      productCommissionCtrl.text = "";
+      productPriceTotalCtrl.text = "";
+    }
+    setState(() {});
+  }
+
+  void priceTotalChanged() {
+    if (productPriceTotalCtrl.text.isNotEmpty &&
+        productPriceCtrl.text.isNotEmpty) {
       productCommissionCtrl.text = Global.format(
           Global.toNumber(productPriceTotalCtrl.text) -
-              (Global.getSellPrice(1) *
-                  Global.toNumber(productWeightGramCtrl.text)));
+              Global.toNumber(productPriceCtrl.text));
       setState(() {});
     } else {
       productCommissionCtrl.text = "";
@@ -294,16 +353,15 @@ class _SaleDialogState extends State<SaleDialog> {
       productWeightGramCtrl.text = Global.format(
           (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
       marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text)));
+          Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel));
       productPriceCtrl.text = Global.format(
           Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
     } else {
       productWeightGramCtrl.text = "";
       marketPriceTotalCtrl.text = "";
       productPriceCtrl.text = "";
+      productCommissionCtrl.text = "";
     }
-    productCommissionCtrl.text = "";
-    productPriceTotalCtrl.text = "";
     setState(() {});
   }
 
@@ -344,12 +402,9 @@ class _SaleDialogState extends State<SaleDialog> {
       ),
       body: loading
           ? const Center(
-        child: LoadingProgress(),
-      )
-          : Stack(
-        clipBehavior: Clip.none,
-        children: [
-          GestureDetector(
+              child: LoadingProgress(),
+            )
+          : GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
               closeCal();
@@ -374,8 +429,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           const Expanded(
                               flex: 6,
                               child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
                                     '',
@@ -398,8 +452,7 @@ class _SaleDialogState extends State<SaleDialog> {
                           Expanded(
                             flex: 6,
                             child: Padding(
-                              padding:
-                              const EdgeInsets.only(right: 8.0),
+                              padding: const EdgeInsets.only(right: 8.0),
                               child: SizedBox(
                                 height: 80,
                                 child: MiraiDropDownMenu<ProductModel>(
@@ -409,18 +462,17 @@ class _SaleDialogState extends State<SaleDialog> {
                                   maxHeight: 360,
                                   showSearchTextField: true,
                                   selectedItemBackgroundColor:
-                                  Colors.transparent,
+                                      Colors.transparent,
                                   emptyListMessage: 'ไม่มีข้อมูล',
                                   showSelectedItemBackgroundColor: true,
-                                  otherDecoration:
-                                  const InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: textColor)),
+                                  otherDecoration: const InputDecoration(
+                                      labelStyle:
+                                          TextStyle(color: textColor)),
                                   itemWidgetBuilder: (
-                                      int index,
-                                      ProductModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
+                                    int index,
+                                    ProductModel? project, {
+                                    bool isItemSelected = false,
+                                  }) {
                                     return DropDownItemWidget(
                                       project: project,
                                       isItemSelected: isItemSelected,
@@ -444,7 +496,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                     key: GlobalKey(),
                                     fontSize: 14.sp, //16.sp,
                                     projectValueNotifier:
-                                    productNotifier!,
+                                        productNotifier!,
                                   ),
                                 ),
                               ),
@@ -466,72 +518,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                 Text(
                                   'น้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: textColor),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '(กรัม)',
-                                  style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 16.sp),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          flex: 6,
-                          child: numberTextFieldBig(
-                              labelText: "",
-                              inputType: TextInputType.number,
-                              controller: productWeightGramCtrl,
-                              focusNode: gramFocus,
-                              readOnly: gramReadOnly,
-                              inputFormat: [
-                                ThousandsFormatter(allowFraction: true)
-                              ],
-                              clear: () {
-                                setState(() {
-                                  productWeightGramCtrl.text = "";
-                                });
-                                gramChanged();
-                              },
-                              onTap: () {
-                                txt = 'gram';
-                                closeCal();
-                              },
-                              openCalc: () {
-                                if (!showCal) {
-                                  txt = 'gram';
-                                  gramFocus.requestFocus();
-                                  openCal();
-                                }
-                              },
-                              onChanged: (value) {
-                                gramChanged();
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            flex: 6,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'น้ำหนัก',
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: textColor),
+                                      fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -539,8 +526,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                 Text(
                                   '(บาททอง)',
                                   style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 16.sp),
+                                      color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -594,19 +580,17 @@ class _SaleDialogState extends State<SaleDialog> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text(
-                                  'ราคาขายรวม',
+                                  'น้ำหนัก',
                                   style: TextStyle(
-                                      fontSize: size.getWidthPx(15),
-                                      color: textColor),
+                                      fontSize: 16.sp, color: textColor),
                                 ),
                                 const SizedBox(
                                   width: 10,
                                 ),
                                 Text(
-                                  '(บาท)',
+                                  '(กรัม)',
                                   style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 16.sp),
+                                      color: textColor, fontSize: 16.sp),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -618,12 +602,74 @@ class _SaleDialogState extends State<SaleDialog> {
                           child: numberTextFieldBig(
                               labelText: "",
                               inputType: TextInputType.number,
-                              controller: productPriceTotalCtrl,
+                              controller: productWeightGramCtrl,
+                              focusNode: gramFocus,
+                              readOnly: gramReadOnly,
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              clear: () {
+                                setState(() {
+                                  productWeightGramCtrl.text = "";
+                                });
+                                gramChanged();
+                              },
+                              onTap: () {
+                                txt = 'gram';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'gram';
+                                  gramFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              onChanged: (value) {
+                                gramChanged();
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ราคาทองคำแท่งขายออก',
+                                  style: TextStyle(
+                                      fontSize: 16.sp, color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาท)',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 16.sp),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextFieldBig(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productPriceCtrl,
                               focusNode: priceFocus,
                               readOnly: priceReadOnly,
                               clear: () {
                                 setState(() {
-                                  productPriceTotalCtrl.text = "";
+                                  productPriceCtrl.text = "";
                                 });
                                 priceChanged();
                               },
@@ -659,13 +705,12 @@ class _SaleDialogState extends State<SaleDialog> {
                           Expanded(
                               flex: 6,
                               child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
                                     'ค่ากำเหน็จ',
                                     style: TextStyle(
-                                        fontSize: size.getWidthPx(15),
+                                        fontSize: 16.sp,
                                         color: textColor),
                                   ),
                                   const SizedBox(
@@ -691,8 +736,7 @@ class _SaleDialogState extends State<SaleDialog> {
                                 focusNode: comFocus,
                                 readOnly: comReadOnly,
                                 inputFormat: [
-                                  ThousandsFormatter(
-                                      allowFraction: true)
+                                  ThousandsFormatter(allowFraction: true)
                                 ],
                                 clear: () {
                                   setState(() {
@@ -721,140 +765,74 @@ class _SaleDialogState extends State<SaleDialog> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'ราคาขายรวม',
+                                  style: TextStyle(
+                                      fontSize: 16.sp, color: textColor),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '(บาท)',
+                                  style: TextStyle(
+                                      color: textColor, fontSize: 16.sp),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          flex: 6,
+                          child: numberTextFieldBig(
+                              labelText: "",
+                              inputType: TextInputType.number,
+                              controller: productPriceTotalCtrl,
+                              focusNode: priceTotalFocus,
+                              readOnly: priceTotalReadOnly,
+                              clear: () {
+                                setState(() {
+                                  productPriceTotalCtrl.text = "";
+                                });
+                                priceTotalChanged();
+                              },
+                              onTap: () {
+                                txt = 'price_total';
+                                closeCal();
+                              },
+                              openCalc: () {
+                                if (!showCal) {
+                                  txt = 'price_total';
+                                  priceTotalFocus.requestFocus();
+                                  openCal();
+                                }
+                              },
+                              inputFormat: [
+                                ThousandsFormatter(allowFraction: true)
+                              ],
+                              onFocusChange: (value) {
+                                if (!value) {
+                                  priceTotalChanged();
+                                }
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          if (showCal)
-            DragArea(
-                closeCal: closeCal,
-                child: Container(
-                    width: 350,
-                    height: 500,
-                    padding: const EdgeInsets.all(5),
-                    decoration:
-                    const BoxDecoration(color: Color(0xffcccccc)),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: Color(0xffcccccc),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(0),
-                              topRight: Radius.circular(0),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: Text(
-                                    'เครื่องคิดเลข',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  closeCal();
-                                },
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(0),
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Focus(
-                            autofocus: true,
-                            onKeyEvent: (node, event) {
-                              // Handle keyboard events specifically for calculator
-                              if (event is KeyDownEvent) {
-                                // Allow number keys including "0" to pass through
-                                if (event.logicalKey ==
-                                    LogicalKeyboardKey.digit0 ||
-                                    event.logicalKey ==
-                                        LogicalKeyboardKey.numpad0) {
-                                  return KeyEventResult
-                                      .ignored; // Let calculator handle it
-                                }
-                                // Handle other calculator keys
-                                if (event.logicalKey ==
-                                    LogicalKeyboardKey.enter ||
-                                    event.logicalKey ==
-                                        LogicalKeyboardKey
-                                            .numpadEnter) {
-                                  return KeyEventResult
-                                      .ignored; // Let calculator handle enter
-                                }
-                              }
-                              return KeyEventResult.ignored;
-                            },
-                            child: Calc(
-                              closeCal: closeCal,
-                              onChanged: (key, value, expression) {
-                                if (key == 'ENT') {
-                                  if (txt == 'com') {
-                                    productCommissionCtrl.text =
-                                    value != null
-                                        ? "${Global.format(value)}"
-                                        : "";
-                                    comChanged();
-                                  }
-                                  if (txt == 'gram') {
-                                    productWeightGramCtrl.text =
-                                    value != null
-                                        ? "${Global.format(value)}"
-                                        : "";
-                                    gramChanged();
-                                  }
-                                  if (txt == 'baht') {
-                                    productWeightBahtCtrl.text =
-                                    value != null
-                                        ? "${Global.format(value)}"
-                                        : "";
-                                    bahtChanged();
-                                  }
-                                  if (txt == 'price') {
-                                    productPriceTotalCtrl.text =
-                                    value != null
-                                        ? "${Global.formatInt(value)}"
-                                        : "";
-                                    priceChanged();
-                                  }
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  closeCal();
-                                }
-                                if (kDebugMode) {
-                                  print('$key\t$value\t$expression');
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    )))
-        ],
-      ),
       persistentFooterButtons: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -885,10 +863,9 @@ class _SaleDialogState extends State<SaleDialog> {
                             "ยกเลิก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize:
-                                (MediaQuery.of(context).orientation ==
-                                    Orientation.portrait)
-                                    ? size.getWidthPx(15)
+                                fontSize: (MediaQuery.of(context).orientation ==
+                                        Orientation.portrait)
+                                    ? 16.sp
                                     : 16.sp),
                           ),
                         ],
@@ -910,6 +887,7 @@ class _SaleDialogState extends State<SaleDialog> {
                   ),
                   child: MaterialButton(
                     color: snBgColor,
+                    onPressed: _handleAddItemPressed,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -927,157 +905,14 @@ class _SaleDialogState extends State<SaleDialog> {
                             "บันทึก",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize:
-                                (MediaQuery.of(context).orientation ==
-                                    Orientation.portrait)
-                                    ? size.getWidthPx(15)
+                                fontSize: (MediaQuery.of(context).orientation ==
+                                        Orientation.portrait)
+                                    ? 16.sp
                                     : 16.sp),
                           ),
                         ],
                       ),
                     ),
-                    onPressed: () async {
-                      if (Global.company?.stock == 1) {
-                        if (Global.toNumber(productWeightRemainCtrl.text) <=
-                            0) {
-                          Alert.warning(
-                              context,
-                              'Warning'.tr(),
-                              '${productNameCtrl.text} สินค้าไม่มีสต๊อก',
-                              'OK',
-                              action: () {});
-                          return;
-                        }
-                      }
-
-                      if (selectedProduct == null) {
-                        Alert.warning(context, 'คำเตือน',
-                            getDefaultProductMessage(), 'OK',
-                            action: () {});
-                        return;
-                      }
-
-                      if (Global.company?.stock == 1) {
-                        if (selectedWarehouse == null) {
-                          Alert.warning(context, 'คำเตือน',
-                              getDefaultWarehouseMessage(), 'OK',
-                              action: () {});
-                          return;
-                        }
-                      }
-
-                      if (productWeightBahtCtrl.text.isEmpty) {
-                        Alert.warning(
-                            context, 'คำเตือน', 'กรุณาใส่น้ำหนัก', 'OK',
-                            action: () {});
-                        return;
-                      }
-
-                      if (productPriceTotalCtrl.text.isEmpty) {
-                        Alert.warning(
-                            context, 'คำเตือน', 'กรุณากรอกราคา', 'OK',
-                            action: () {});
-                        return;
-                      }
-
-                      if (Global.company?.stock == 1) {
-                        if (Global.toNumber(productWeightGramCtrl.text) >
-                            Global.toNumber(productWeightRemainCtrl.text)) {
-                          Alert.warning(
-                              context,
-                              'Warning'.tr(),
-                              'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightGramCtrl.text}',
-                              'OK',
-                              action: () {});
-                          return;
-                        }
-                      }
-
-                      // if (Global.toNumber(productWeightCtrl
-                      //         .text) >
-                      //     Global.toNumber(
-                      //         productWeightRemainCtrl.text)) {
-                      //   Alert.warning(
-                      //       context,
-                      //       'คำเตือน',
-                      //       'ไม่สามารถขายเกินปริมาณคงเหลือได้',
-                      //       'OK');
-                      //   return;
-                      // }
-
-                      var realPrice = Global.getBuyPrice(
-                          Global.toNumber(productWeightGramCtrl.text));
-                      var price = Global.toNumber(productPriceCtrl.text);
-                      var check = price - realPrice;
-
-                      // if (check >
-                      //     10000) {
-                      //   Alert.warning(
-                      //       context,
-                      //       'คำเตือน',
-                      //       'ราคาที่ป้อนสูงกว่าราคาตลาด ${Global.format(check)}',
-                      //       'OK');
-                      //
-                      //   return;
-                      // }
-
-                      if (price < realPrice) {
-                        Alert.warning(
-                            context,
-                            'คำเตือน',
-                            'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK',
-                            action: () {});
-                        return;
-                      }
-
-                      // Alert.info(
-                      //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                      //     action: () async {
-                      Global.sellOrderDetail!.add(
-                        OrderDetailModel.fromJson(
-                          jsonDecode(
-                            jsonEncode(
-                              OrderDetailModel(
-                                productName: productNameCtrl.text,
-                                productId: selectedProduct!.id,
-                                binLocationId: selectedWarehouse!.id,
-                                weight: Global.toNumber(
-                                    productWeightGramCtrl.text),
-                                weightBath: Global.toNumber(
-                                    productWeightBahtCtrl.text),
-                                commission: productCommissionCtrl.text.isEmpty
-                                    ? 0
-                                    : Global.toNumber(
-                                    productCommissionCtrl.text),
-                                taxBase: productWeightGramCtrl.text.isEmpty
-                                    ? 0
-                                    : Global.taxBase(
-                                    Global.toNumber(
-                                        productPriceTotalCtrl.text),
-                                    Global.toNumber(
-                                        productWeightGramCtrl.text)),
-                                priceIncludeTax: Global.toNumber(
-                                    productPriceTotalCtrl.text),
-                                sellPrice: Global.toNumber(
-                                    Global.goldDataModel?.paphun?.sell),
-                                buyPrice: Global.toNumber(
-                                    Global.goldDataModel?.paphun?.buy),
-                                sellTPrice: Global.toNumber(
-                                    Global.goldDataModel?.theng?.sell),
-                                buyTPrice: Global.toNumber(
-                                    Global.goldDataModel?.theng?.buy),
-                                goldDataModel: Global.goldDataModel,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                      sumSellTotal();
-                      setState(() {});
-                      Navigator.of(context).pop();
-                      // });
-                    },
                   ),
                 ),
               ),
@@ -1085,6 +920,218 @@ class _SaleDialogState extends State<SaleDialog> {
           ],
         )
       ],
+    );
+  }
+  // Extract the save logic into a separate method
+  Future<void> _handleAddItemPressed() async {
+    // Validate all requirements
+    if (!_validateItemRequirements()) {
+      return;
+    }
+
+    // Validate pricing
+    if (!_validateItemPricing()) {
+      return;
+    }
+
+    // Add the item to order
+    _addItemToOrder();
+
+    // Update UI and close dialog
+    _finalizeItemAddition();
+  }
+
+  bool _validateItemRequirements() {
+    // Check stock availability if stock management is enabled
+    if (_isStockManagementEnabled() && !_hasAvailableStock()) {
+      _showStockUnavailableAlert();
+      return false;
+    }
+
+    // Validate product selection
+    if (!_isProductSelected()) {
+      _showProductSelectionAlert();
+      return false;
+    }
+
+    // Validate warehouse selection for stock management
+    if (_isStockManagementEnabled() && !_isWarehouseSelected()) {
+      _showWarehouseSelectionAlert();
+      return false;
+    }
+
+    // Validate weight input
+    if (!_isWeightProvided()) {
+      _showWeightRequiredAlert();
+      return false;
+    }
+
+    // Validate price input
+    if (!_isPriceProvided()) {
+      _showPriceRequiredAlert();
+      return false;
+    }
+
+    // Check stock quantity vs selling quantity
+    if (_isStockManagementEnabled() && !_isSellQuantityValid()) {
+      _showExceedsStockAlert();
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _validateItemPricing() {
+    final realPrice = Global.getBuyPrice(Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel);
+    final enteredPrice = Global.toNumber(productPriceCtrl.text);
+    final priceDifference = enteredPrice - realPrice;
+
+    if (enteredPrice < realPrice) {
+      Alert.warning(
+        context,
+        'คำเตือน',
+        'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(priceDifference)}',
+        'OK',
+        action: () {},
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  void _addItemToOrder() {
+    final weight = Global.toNumber(productWeightGramCtrl.text);
+    final priceTotal = Global.toNumber(productPriceTotalCtrl.text);
+    final purchasePrice = Global.getBuyPrice(weight, Global.goldDataModel);
+    final priceDiff = priceTotal - purchasePrice;
+    final taxBase = _calculateTaxBase();
+    motivePrint(purchasePrice);
+    Global.sellOrderDetail!.add(
+      OrderDetailModel(
+        productName: productNameCtrl.text,
+        productId: selectedProduct!.id,
+        binLocationId: selectedWarehouse!.id,
+        weight: weight,
+        weightBath: Global.toNumber(productWeightBahtCtrl.text),
+        commission: _getCommission(),
+        purchasePrice: purchasePrice,
+        priceDiff: priceDiff,
+        taxAmount: Global.taxAmount(taxBase),
+        taxBase: taxBase,
+        priceExcludeTax: _calculatePriceExcludeTax(priceTotal, priceDiff),
+        priceIncludeTax: priceTotal,
+        sellPrice: Global.toNumber(Global.goldDataModel?.paphun?.sell),
+        buyPrice: Global.toNumber(Global.goldDataModel?.paphun?.buy),
+        sellTPrice: Global.toNumber(Global.goldDataModel?.theng?.sell),
+        buyTPrice: Global.toNumber(Global.goldDataModel?.theng?.buy),
+        goldDataModel: Global.goldDataModel,
+      ),
+    );
+  }
+
+  void _finalizeItemAddition() {
+    sumSellTotal();
+    setState(() {});
+    Navigator.of(context).pop();
+  }
+
+// Helper methods for validation
+  bool _isStockManagementEnabled() => Global.company?.stock == 1;
+
+  bool _hasAvailableStock() => Global.toNumber(productWeightRemainCtrl.text) > 0;
+
+  bool _isProductSelected() => selectedProduct != null;
+
+  bool _isWarehouseSelected() => selectedWarehouse != null;
+
+  bool _isWeightProvided() => productWeightBahtCtrl.text.isNotEmpty;
+
+  bool _isPriceProvided() => productPriceTotalCtrl.text.isNotEmpty;
+
+  bool _isSellQuantityValid() {
+    return Global.toNumber(productWeightGramCtrl.text) <=
+        Global.toNumber(productWeightRemainCtrl.text);
+  }
+
+// Helper methods for calculations
+  double _getCommission() {
+    return productCommissionCtrl.text.isEmpty
+        ? 0
+        : Global.toNumber(productCommissionCtrl.text);
+  }
+
+  double _calculateTaxBase() {
+    if (productWeightGramCtrl.text.isEmpty) return 0;
+
+    return Global.taxBase(
+      Global.toNumber(productPriceTotalCtrl.text),
+      Global.toNumber(productWeightGramCtrl.text),
+    );
+  }
+
+  double _calculatePriceExcludeTax(double priceTotal, double priceDiff) {
+    return priceTotal - (((priceDiff * 100 / 107) * getVatValue()));
+  }
+
+// Alert methods
+  void _showStockUnavailableAlert() {
+    Alert.warning(
+      context,
+      'Warning'.tr(),
+      '${productNameCtrl.text} สินค้าไม่มีสต๊อก',
+      'OK',
+      action: () {},
+    );
+  }
+
+  void _showProductSelectionAlert() {
+    Alert.warning(
+      context,
+      'คำเตือน',
+      getDefaultProductMessage(),
+      'OK',
+      action: () {},
+    );
+  }
+
+  void _showWarehouseSelectionAlert() {
+    Alert.warning(
+      context,
+      'คำเตือน',
+      getDefaultWarehouseMessage(),
+      'OK',
+      action: () {},
+    );
+  }
+
+  void _showWeightRequiredAlert() {
+    Alert.warning(
+      context,
+      'คำเตือน',
+      'กรุณาใส่น้ำหนัก',
+      'OK',
+      action: () {},
+    );
+  }
+
+  void _showPriceRequiredAlert() {
+    Alert.warning(
+      context,
+      'คำเตือน',
+      'กรุณากรอกราคา',
+      'OK',
+      action: () {},
+    );
+  }
+
+  void _showExceedsStockAlert() {
+    Alert.warning(
+      context,
+      'Warning'.tr(),
+      'ไม่สามารถขายได้มากกว่าสต๊อกที่มีอยู่ \nที่มีอยู่: ${productWeightRemainCtrl.text}\nขาย: ${productWeightGramCtrl.text}',
+      'OK',
+      action: () {},
     );
   }
 }

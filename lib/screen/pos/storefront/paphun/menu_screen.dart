@@ -40,6 +40,7 @@ class PosMenuScreenState extends State<PosMenuScreen> {
     });
     super.initState();
     Global.currentOrderType = 1;
+    Global.currentRedeemType = 0;
     init();
   }
 

@@ -23,6 +23,7 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/ui/text_header.dart';
 import 'package:sizer/sizer.dart';
 
 class SellThengScreen extends StatefulWidget {
@@ -32,15 +33,16 @@ class SellThengScreen extends StatefulWidget {
 
   SellThengScreen(
       {super.key,
-      required this.refreshCart,
-      required this.refreshHold,
-      required this.cartCount});
+        required this.refreshCart,
+        required this.refreshHold,
+        required this.cartCount});
 
   @override
   State<SellThengScreen> createState() => _SellThengScreenState();
 }
 
-class _SellThengScreenState extends State<SellThengScreen> {
+class _SellThengScreenState extends State<SellThengScreen>
+    with TickerProviderStateMixin {
   bool loading = false;
   List<ProductModel> productList = [];
   List<WarehouseModel> warehouseList = [];
@@ -49,6 +51,8 @@ class _SellThengScreenState extends State<SellThengScreen> {
   WarehouseModel? selectedWarehouse;
   ValueNotifier<dynamic>? productNotifier;
   ValueNotifier<dynamic>? warehouseNotifier;
+  AnimationController? _animationController;
+  Animation<double>? _fadeAnimation;
 
   TextEditingController productCodeCtrl = TextEditingController();
   TextEditingController productNameCtrl = TextEditingController();
@@ -64,17 +68,37 @@ class _SellThengScreenState extends State<SellThengScreen> {
   TextEditingController warehouseCtrl = TextEditingController();
 
   final controller = BoardDateTimeController();
-
   DateTime date = DateTime.now();
+  late Screen size;
 
   @override
   void initState() {
-    // implement initState
     super.initState();
+    Global.appBarColor = stBgColor;
+    Global.currentRedeemType = 0;
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+
+    // Initialize animation controller and animation
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController!,
+      curve: Curves.easeInOut,
+    ));
+
+    // Start animation after initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _animationController?.forward();
+    });
+
     sumSellThengTotal();
     loadProducts();
     getCart();
@@ -82,8 +106,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
+    _animationController?.dispose();
     productCodeCtrl.dispose();
     productNameCtrl.dispose();
     productWeightCtrl.dispose();
@@ -96,6 +119,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
     reserveDateCtrl.dispose();
     marketPriceTotalCtrl.dispose();
     warehouseCtrl.dispose();
+    super.dispose();
   }
 
   void loadProducts() async {
@@ -104,7 +128,7 @@ class _SellThengScreenState extends State<SellThengScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/product/type/BAR', Global.requestObj(null));
+      await ApiServices.post('/product/type/BAR', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -113,9 +137,9 @@ class _SellThengScreenState extends State<SellThengScreen> {
           if (productList.isNotEmpty) {
             selectedProduct = productList.first;
             productCodeCtrl.text =
-                (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+            (selectedProduct != null ? selectedProduct?.productCode! : "")!;
             productNameCtrl.text =
-                (selectedProduct != null ? selectedProduct?.name : "")!;
+            (selectedProduct != null ? selectedProduct?.name : "")!;
             productNotifier = ValueNotifier<ProductModel>(
                 selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
           }
@@ -151,13 +175,8 @@ class _SellThengScreenState extends State<SellThengScreen> {
 
   Future<void> loadQtyByLocation(int id) async {
     try {
-      // final ProgressDialog pr = ProgressDialog(context,
-      //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      // await pr.show();
-      // pr.update(message: 'processing'.tr());
       var result = await ApiServices.get(
           '/qtybylocation/by-product-location/$id/${selectedProduct!.id}');
-      // await pr.hide();
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         motivePrint(data);
@@ -173,7 +192,6 @@ class _SellThengScreenState extends State<SellThengScreen> {
       productWeightBahtRemainCtrl.text = formatter
           .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
       setState(() {});
-      setState(() {});
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -183,458 +201,599 @@ class _SellThengScreenState extends State<SellThengScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
+    size = Screen(MediaQuery.of(context).size);
+
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: stBgColor,
-        centerTitle: true,
-        title: const Text(
-          'ขายทองคำแท่ง',
-          style: TextStyle(fontSize: 32),
-        ),
-        // backgroundColor: bgColor,
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const GoldPriceScreen(
-                            showBackButton: true,
-                          ),
-                      fullscreenDialog: true));
-            },
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.price_change_outlined,
-                  size: 50,
-                ),
-                Text(
-                  'ราคาทองคำ',
-                  style: TextStyle(fontSize: 16.sp),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            width: 20,
-          )
-        ],
-      ),
+      backgroundColor: Colors.grey[50],
+      appBar: _buildModernAppBar(),
       body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
         child: SafeArea(
           child: loading
               ? const LoadingProgress()
-              : Row(
+              : _fadeAnimation != null
+              ? FadeTransition(
+            opacity: _fadeAnimation!,
+            child: _buildMainContent(),
+          )
+              : _buildMainContent(),
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildModernAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: stBgColor,
+      automaticallyImplyLeading: false,
+      centerTitle: true,
+      title: titleText(context, 'ขายทองคำแท่ง'),
+      actions: [
+        Container(
+          margin: const EdgeInsets.all(6),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const GoldPriceScreen(
+                          showBackButton: true,
+                        ),
+                        fullscreenDialog: true));
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white30),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          color: stBgColorLight,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 150,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: stBgColor,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const SellDialog(),
-                                          fullscreenDialog: true))
-                                      .whenComplete(() {
-                                    setState(() {});
-                                  });
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add, size: 32),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      'เพิ่ม',
-                                      style: TextStyle(fontSize: 32),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
-                                  color: stBgColorLight,
-                                ),
-                                child: ListView.builder(
-                                    itemCount:
-                                        Global.sellThengOrderDetail!.length,
-                                    itemBuilder: (context, index) {
-                                      return _itemOrderList(
-                                          order: Global
-                                              .sellThengOrderDetail![index],
-                                          index: index);
-                                    }),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                color: stBgColorLight,
-                                border: const Border(
-                                  bottom: BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                  right: BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                  top: BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'ยอดรวม',
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue[900]),
-                                      ),
-                                      Text(
-                                        "${Global.format(Global.sellThengSubTotal)} บาท",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue[900]),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    const Icon(
+                      Icons.trending_up,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'ราคาทองคำ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-        ),
-      ),
-      persistentFooterButtons: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: stBgColorLight,
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue[700],
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
-                          return;
-                        }
-
-                        // final ProgressDialog pr = ProgressDialog(context,
-                        //     type: ProgressDialogType.normal,
-                        //     isDismissible: true,
-                        //     showLogs: true);
-                        // await pr.show();
-                        // pr.update(message: 'processing'.tr());
-                        try {
-                          // var result = await ApiServices.post(
-                          //     '/order/gen/4', Global.requestObj(null));
-                          // await pr.hide();
-                          // if (result!.status == "success") {
-                            OrderModel order = OrderModel(
-                                orderId: "",
-                                orderDate: DateTime.now(),
-                                details: Global.sellThengOrderDetail!,
-                                orderTypeId: 4);
-                            final data = order.toJson();
-                            Global.ordersTheng?.add(OrderModel.fromJson(data));
-                            widget
-                                .refreshCart(Global.ordersTheng?.length.toString());
-                            writeCart();
-                            Global.sellThengOrderDetail!.clear();
-                            setState(() {
-                              Global.sellThengSubTotal = 0;
-                              Global.sellThengTax = 0;
-                              Global.sellThengTotal = 0;
-                            });
-                            if (mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  "เพิ่มลงรถเข็นสำเร็จ...",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                backgroundColor: Colors.teal,
-                              ));
-                            }
-                          // } else {
-                          //   if (mounted) {
-                          //     Alert.warning(
-                          //         context,
-                          //         'Warning'.tr(),
-                          //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                          //         'OK'.tr(),
-                          //         action: () {});
-                          //   }
-                          // }
-                        } catch (e) {
-                          // await pr.hide();
-                          if (mounted) {
-                            Alert.warning(context, 'Warning'.tr(), e.toString(),
-                                'OK'.tr(),
-                                action: () {});
-                          }
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เพิ่มลงในรถเข็น',
-                            style: TextStyle(fontSize: 16.sp),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.orange,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
-                          return;
-                        }
-
-                        OrderModel order = OrderModel(
-                            orderId: "",
-                            orderDate: DateTime.now(),
-                            details: Global.sellThengOrderDetail!,
-                            orderTypeId: 4);
-
-                        final data = order.toJson();
-                        Global.holdOrder(OrderModel.fromJson(data));
-                        // print(OrderModel.fromJson(data).toJson());
-                        Future.delayed(const Duration(milliseconds: 500),
-                            () async {
-                          String holds =
-                              (await Global.getHoldList()).length.toString();
-                          widget.refreshHold(holds);
-                          setState(() {});
-                        });
-
-                        Global.sellThengOrderDetail!.clear();
-                        setState(() {
-                          Global.sellThengSubTotal = 0;
-                          Global.sellThengTax = 0;
-                          Global.sellThengTotal = 0;
-                        });
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text(
-                            "ระงับการสั่งซื้อสำเร็จ...",
-                            style: TextStyle(fontSize: 22),
-                          ),
-                          backgroundColor: Colors.teal,
-                        ));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.save, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'ระงับการสั่งซื้อ',
-                            style: TextStyle(fontSize: 16.sp),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: stBgColor,
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () async {
-                        if (Global.sellThengOrderDetail!.isEmpty) {
-                          return;
-                        }
-                        // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                        //     action: () async {
-                          // final ProgressDialog pr = ProgressDialog(context,
-                          //     type: ProgressDialogType.normal,
-                          //     isDismissible: true,
-                          //     showLogs: true);
-                          // await pr.show();
-                          // pr.update(message: 'processing'.tr());
-                          try {
-                            // var result = await ApiServices.post(
-                            //     '/order/gen/4', Global.requestObj(null));
-                            // await pr.hide();
-                            // if (result!.status == "success") {
-                              OrderModel order = OrderModel(
-                                  orderId: "",
-                                  orderDate: DateTime.now(),
-                                  details: Global.sellThengOrderDetail!,
-                                  orderTypeId: 4);
-                              final data = order.toJson();
-                              Global.ordersTheng?.add(OrderModel.fromJson(data));
-                              widget.refreshCart(
-                                  Global.ordersTheng?.length.toString());
-                              writeCart();
-                              Global.sellThengOrderDetail!.clear();
-                              setState(() {
-                                Global.sellThengSubTotal = 0;
-                                Global.sellThengTax = 0;
-                                Global.sellThengTotal = 0;
-                              });
-
-                              if (mounted) {
-                                Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CheckOutScreen()))
-                                    .whenComplete(() {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                      () async {
-                                    String holds = (await Global.getHoldList())
-                                        .length
-                                        .toString();
-                                    widget.refreshHold(holds);
-                                    widget.refreshCart(
-                                        Global.ordersTheng?.length.toString());
-                                    writeCart();
-                                    setState(() {});
-                                  });
-                                });
-                              }
-                            // } else {
-                            //   if (mounted) {
-                            //     Alert.warning(
-                            //         context,
-                            //         'Warning'.tr(),
-                            //         'ไม่สามารถสร้างรหัสธุรกรรมได้ \nโปรดติดต่อฝ่ายสนับสนุน',
-                            //         'OK'.tr(),
-                            //         action: () {});
-                            //   }
-                            // }
-                          } catch (e) {
-                            // await pr.hide();
-                            if (mounted) {
-                              Alert.warning(context, 'Warning'.tr(),
-                                  e.toString(), 'OK'.tr(),
-                                  action: () {});
-                            }
-                          }
-                        // });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'เช็คเอาท์',
-                            style: TextStyle(fontSize: 16.sp),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
               ),
-            ],
+            ),
           ),
         ),
       ],
     );
   }
 
+  Widget _buildMainContent() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              _buildAddItemButton(),
+              const Spacer(), // This will push the button to the left
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(child: _buildOrderList()),
+          const SizedBox(height: 16),
+          _buildTotalSection(),
+          const SizedBox(height: 16),
+          _buildActionButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddItemButton() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [stBgColor, stBgColor.withOpacity(0.8)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: stBgColor.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SellDialog(),
+                      fullscreenDialog: true))
+                  .whenComplete(() {
+                setState(() {});
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'เพิ่มสินค้าใหม่',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderList() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          if (Global.sellThengOrderDetail!.isNotEmpty) _buildListHeader(),
+          Expanded(
+            child: Global.sellThengOrderDetail!.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: Global.sellThengOrderDetail!.length,
+              itemBuilder: (context, index) {
+                return _buildModernOrderItem(
+                  order: Global.sellThengOrderDetail![index],
+                  index: index,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: stBgColor.withOpacity(0.1),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Row(
+        children: [
+          _buildHeaderCell('ลำดับ', flex: 1),
+          _buildHeaderCell('รายการ', flex: 3),
+          _buildHeaderCell('น้ำหนัก (บาท)', flex: 2),
+          _buildHeaderCell('จำนวนเงิน', flex: 3),
+          _buildHeaderCell('จัดการ', flex: 2),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderCell(String title, {required int flex}) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w600,
+          color: stBgColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.bar_chart_outlined,
+              size: 48,
+              color: Colors.grey[400],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'ยังไม่มีทองคำแท่งในรายการ',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'เพิ่มทองคำแท่งเพื่อเริ่มการขาย',
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernOrderItem({required OrderDetailModel order, required int index}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          _buildItemCell('${index + 1}', flex: 1),
+          _buildItemCell(order.productName, flex: 3, isProductName: true),
+          _buildItemCell('${Global.format(order.weight! / getUnitWeightValue())} บาท', flex: 2),
+          _buildItemCell(Global.format(order.priceIncludeTax!), flex: 3, isMoney: true),
+          _buildActionCell(index, flex: 2),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemCell(String text, {required int flex, bool isProductName = false, bool isMoney = false}) {
+    return Expanded(
+      flex: flex,
+      child: Text(
+        text,
+        textAlign: isProductName ? TextAlign.left : TextAlign.center,
+        style: TextStyle(
+          fontSize: 12.sp,
+          color: isMoney ? stBgColor : Colors.grey[800],
+          fontWeight: isMoney ? FontWeight.w600 : FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCell(int index, {required int flex}) {
+    return Expanded(
+      flex: flex,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildActionButton(
+            icon: Icons.delete_outline,
+            color: Colors.red[600]!,
+            onTap: () => removeProduct(index),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 20,
+              ),
+              const SizedBox(width: 8,),
+              Text('ลบ')
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTotalSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.white, Colors.grey[50]!],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'ยอดรวมทั้งหมด',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[800],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: stBgColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              "${Global.format(Global.sellThengSubTotal)} บาท",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: stBgColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildModernButton(
+            text: 'ระงับการสั่งซื้อ',
+            icon: Icons.pause_circle_outline,
+            color: Colors.orange[600]!,
+            onPressed: () async {
+              if (Global.sellThengOrderDetail!.isEmpty) {
+                return;
+              }
+
+              OrderModel order = OrderModel(
+                  orderId: "",
+                  orderDate: DateTime.now(),
+                  details: Global.sellThengOrderDetail!,
+                  orderTypeId: 4);
+
+              final data = order.toJson();
+              Global.holdOrder(OrderModel.fromJson(data));
+              Future.delayed(const Duration(milliseconds: 500), () async {
+                String holds =
+                (await Global.getHoldList()).length.toString();
+                widget.refreshHold(holds);
+                setState(() {});
+              });
+
+              Global.sellThengOrderDetail!.clear();
+              setState(() {
+                Global.sellThengSubTotal = 0;
+                Global.sellThengTax = 0;
+                Global.sellThengTotal = 0;
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text(
+                    "ระงับการสั่งซื้อสำเร็จ...",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  backgroundColor: Colors.orange[600],
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildModernButton(
+            text: 'เพิ่มลงรถเข็น/ชำระเงิน',
+            icon: Icons.shopping_cart_checkout,
+            color: stBgColor,
+            onPressed: () async {
+              if (Global.sellThengOrderDetail!.isEmpty) {
+                return;
+              }
+
+              try {
+                OrderModel order = OrderModel(
+                    orderId: "",
+                    orderDate: DateTime.now(),
+                    details: Global.sellThengOrderDetail!,
+                    orderTypeId: 4);
+                final data = order.toJson();
+                Global.ordersTheng?.add(OrderModel.fromJson(data));
+                widget.refreshCart(Global.ordersTheng?.length.toString());
+                writeCart();
+                Global.sellThengOrderDetail!.clear();
+                setState(() {
+                  Global.sellThengSubTotal = 0;
+                  Global.sellThengTax = 0;
+                  Global.sellThengTotal = 0;
+                });
+
+                if (Global.buyThengOrderDetail!.isNotEmpty) {
+                  OrderModel order = OrderModel(
+                      orderId: "",
+                      orderDate: DateTime.now(),
+                      details: Global.buyThengOrderDetail!,
+                      orderTypeId: 44);
+                  final data = order.toJson();
+                  Global.ordersTheng?.add(OrderModel.fromJson(data));
+                  widget.refreshCart(Global.ordersTheng?.length.toString());
+                  writeCart();
+                  Global.buyThengOrderDetail!.clear();
+                  setState(() {
+                    Global.buyThengSubTotal = 0;
+                    Global.buyThengTax = 0;
+                    Global.buyThengTotal = 0;
+                  });
+                }
+
+                if (mounted) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CheckOutScreen()))
+                      .whenComplete(() {
+                    Future.delayed(const Duration(milliseconds: 500), () async {
+                      String holds =
+                      (await Global.getHoldList()).length.toString();
+                      widget.refreshHold(holds);
+                      widget.refreshCart(Global.ordersTheng?.length.toString());
+                      writeCart();
+                      setState(() {});
+                    });
+                  });
+                }
+              } catch (e) {
+                if (mounted) {
+                  Alert.warning(context, 'Warning'.tr(), e.toString(),
+                      'OK'.tr(),
+                      action: () {});
+                }
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernButton({
+    required String text,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color, color.withOpacity(0.8)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onPressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 18),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Keep all the original methods unchanged
   void comChanged() {
     if (productPriceCtrl.text.isNotEmpty &&
         productCommissionCtrl.text.isNotEmpty) {
       productPriceTotalCtrl.text =
-          "${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}";
+      "${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}";
       setState(() {});
     }
   }
@@ -681,9 +840,9 @@ class _SellThengScreenState extends State<SellThengScreen> {
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
     productCodeCtrl.text =
-        (selectedProduct != null ? selectedProduct?.productCode! : "")!;
+    (selectedProduct != null ? selectedProduct?.productCode! : "")!;
     productNameCtrl.text =
-        (selectedProduct != null ? selectedProduct?.name : "")!;
+    (selectedProduct != null ? selectedProduct?.name : "")!;
     productNotifier = ValueNotifier<ProductModel>(
         selectedProduct ?? ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
@@ -693,75 +852,12 @@ class _SellThengScreenState extends State<SellThengScreen> {
   removeProduct(index) {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-      Global.sellThengOrderDetail!.removeAt(index);
-      if (Global.sellThengOrderDetail!.isEmpty) {
-        Global.sellThengOrderDetail!.clear();
-      }
-      sumSellThengTotal();
-      setState(() {});
-    });
-  }
-
-  Widget _itemOrderList({required OrderDetailModel order, required index}) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          bottom: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          left: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-          right: BorderSide(
-            color: Colors.white,
-            width: 2,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 8,
-            child: ListTile(
-              title: ListTileData(
-                leftTitle: order.productName,
-                leftValue: Global.format(order.priceIncludeTax!),
-                rightTitle: 'น้ำหนัก',
-                rightValue: '${Global.format(order.weight! / getUnitWeightValue())} บาท',
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    removeProduct(index);
-                  },
-                  child: Container(
-                    height: 70,
-                    width: 80,
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+          Global.sellThengOrderDetail!.removeAt(index);
+          if (Global.sellThengOrderDetail!.isEmpty) {
+            Global.sellThengOrderDetail!.clear();
+          }
+          sumSellThengTotal();
+          setState(() {});
+        });
   }
 }

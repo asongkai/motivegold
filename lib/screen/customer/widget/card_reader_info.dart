@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sizer/sizer.dart';
 
 class EmptyHeader extends StatelessWidget {
   final IconData? icon;
@@ -27,8 +28,8 @@ class EmptyHeader extends StatelessWidget {
                     child: Text(
                       text ?? 'Empty',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 32,
+                      style: TextStyle(
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     )),

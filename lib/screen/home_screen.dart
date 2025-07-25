@@ -7,10 +7,12 @@ import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/dashboard/pawn_menu.dart';
 import 'package:motivegold/screen/pos/history_screen.dart';
+import 'package:motivegold/screen/pos/redeem/ui/single_redeem_history.dart';
 import 'package:motivegold/screen/pos/storefront/broker/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/matching_menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
+import 'package:motivegold/screen/pos/storefront/theng/ui-matching/matching_pending_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_paphun_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_theng_screen.dart';
 import 'package:motivegold/screen/reports/paphun_report_menu_screen.dart';
@@ -90,36 +92,36 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.shopping_cart_outlined,
+                icon: Icons.store, // Better for storefront sales
                 label: 'ซื้อขายทองรูป\nพรรณหน้าร้าน',
-                color: Colors.teal[400]!,
+                color: Colors.amber[600]!, // Gold color for gold jewelry
                 pageBuilder: (_) =>
                 const PosMenuScreen(title: 'ซื้อขายทองรูปพรรณหน้าร้าน'),
               ),
               MenuItemData(
-                icon: Icons.shopping_basket,
+                icon: Icons.business, // Better for wholesale business
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองรูปพรรณ)',
-                color: Colors.orange[400]!,
+                color: Colors.orange[700]!, // Orange for wholesale
                 pageBuilder: (_) =>
                 const WholeSalePaphunMenuScreen(
                     title: 'ซื้อขายทองกับร้านขายส่ง(ทองรูปพรรณ)'),
               ),
               MenuItemData(
-                icon: Icons.swap_horiz,
+                icon: Icons.transfer_within_a_station, // Better for transfers
                 label: 'โอนทอง',
-                color: Colors.orange[500]!,
+                color: Colors.blue[600]!, // Blue for transfers/movement
                 pageBuilder: (_) => const TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.analytics,
+                icon: Icons.assessment, // Better for reports/analytics
                 label: 'รายงาน\nทองรูปพรรณ',
-                color: Colors.orange[600]!,
+                color: Colors.green[600]!, // Green for reports/analytics
                 pageBuilder: (_) => PaphunReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.list_alt_outlined,
+                icon: Icons.history, // Better for transaction history
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.deepOrange,
+                color: Colors.grey[600]!, // Grey for history
                 pageBuilder: (_) =>
                     HistoryScreen(
                       productType: orderTypes()[0],
@@ -134,66 +136,68 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.functions,
+                icon: Icons.security, // Better for pawn/security services
                 label: 'ขายฝากทอง\n(จำนำ)',
-                color: Colors.purple[600]!,
+                color: Colors.purple[600]!, // Purple for pawn services
                 pageBuilder: (_) => const PawnMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.functions,
+                icon: Icons.gavel, // Auction/lost items
                 label: 'ของหลุด',
-                color: Colors.purple[600]!,
+                color: Colors.red[600]!, // Red for lost/auction items
                 pageBuilder: null,
               ),
               MenuItemData(
-                icon: Icons.analytics_outlined,
+                icon: Icons.assessment, // Reports
                 label: 'รายงาน\nขายฝาก',
-                color: Colors.purple[700]!,
+                color: Colors.green[600]!, // Green for reports
                 pageBuilder: (_) => PawnReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.list_alt_outlined,
+                icon: Icons.history, // Transaction history
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.orange[600]!,
-                pageBuilder: null,
+                color: Colors.grey[600]!, // Grey for history
+                pageBuilder: (_) => SingleRedeemHistoryScreen(
+                  productType: redeemTypes()[0],
+                ),
               ),
             ]),
 
             SizedBox(height: 32),
 
-            // Third section - ทองต้มแก่ง
+            // Third section - ทองคำแท่ง
             _buildSectionHeader('ทองคำแท่ง'),
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.category,
+                icon: Icons.diamond, // Gold bars - diamond represents precious items
                 label: 'ซื้อขายทองแท่ง\nหน้าร้าน',
-                color: Colors.red[500]!,
+                color: Colors.amber[700]!, // Gold/amber for gold bars
                 pageBuilder: (_) => const ThengSaleMenuScreen(title: 'Real'),
               ),
               MenuItemData(
-                icon: Icons.shopping_basket,
+                icon: Icons.business, // Wholesale business
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองแท่ง)',
-                color: Colors.teal[600]!,
+                color: Colors.orange[700]!, // Orange for wholesale
                 pageBuilder: (_) =>
                 const WholeSaleThengMenuScreen(title: 'POS'),
               ),
               MenuItemData(
-                icon: Icons.swap_horiz,
+                icon: Icons.transfer_within_a_station, // Transfer
                 label: 'โอนทอง',
-                color: Colors.orange[500]!,
+                color: Colors.blue[600]!, // Blue for transfers
                 pageBuilder: (_) => TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.analytics,
+                icon: Icons.assessment, // Reports
                 label: 'รายงาน\nทองคำแท่ง',
-                color: Colors.orange[600]!,
+                color: Colors.green[600]!, // Green for reports
                 pageBuilder: (_) => ThengReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.list_alt_outlined,
+                icon: Icons.history, // History
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.orange[600]!,
+                color: Colors.grey[600]!, // Grey for history
                 pageBuilder: (_) =>
                     HistoryScreen(
                       productType: orderTypes()[4],
@@ -208,29 +212,36 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.category,
+                icon: Icons.link, // Better for matching/pairing
                 label: 'ซื้อขายทองแท่ง\n(จับคู่)',
-                color: Colors.red[500]!,
+                color: Colors.indigo[600]!, // Indigo for matching services
                 pageBuilder: (_) =>
                 const ThengSaleMatchingMenuScreen(title: 'Matching'),
               ),
               MenuItemData(
-                icon: Icons.shopping_cart,
-                label: 'ซื้อขายทองแต่ง\nกับโบรกเกอร์',
-                color: Colors.brown[600]!,
+                icon: Icons.pending, // Pending actions
+                label: 'รายการที่รอ\nดำเนินการ',
+                color: Colors.orange[500]!, // Orange for pending/waiting
+                pageBuilder: (_) =>
+                const MatchingPendingScreen(),
+              ),
+              MenuItemData(
+                icon: Icons.handshake, // Better for broker relations
+                label: 'ซื้อขายทองแท่ง\nกับโบรกเกอร์',
+                color: Colors.brown[600]!, // Brown for broker business
                 pageBuilder: (_) =>
                 const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
               ),
               MenuItemData(
-                icon: Icons.analytics_outlined,
+                icon: Icons.assessment, // Reports
                 label: 'รายงานทอง\nคำแท่ง(จับคู่)',
-                color: Colors.orange[600]!,
+                color: Colors.green[600]!, // Green for reports
                 pageBuilder: (_) => ThengMatchingReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.list_alt_outlined,
+                icon: Icons.history, // History
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.orange[600]!,
+                color: Colors.grey[600]!, // Grey for history
                 pageBuilder: (_) =>
                     HistoryScreen(
                       productType: orderTypes()[2],

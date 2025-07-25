@@ -1,9 +1,9 @@
-
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/landing_screen.dart';
+import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
 import 'package:motivegold/screen/settings/company/company_list_screen.dart';
 import 'package:motivegold/screen/settings/master/defaultPayment/default_payment_screen.dart';
@@ -14,6 +14,7 @@ import 'package:motivegold/screen/settings/pos-id/pos_id_screen.dart';
 import 'package:motivegold/screen/settings/prefix/order_id_prefix.dart';
 import 'package:motivegold/screen/settings/setting-value/setting_value.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -52,12 +53,6 @@ class _SettingScreenState extends State<SettingScreen> {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            // user card
-            // SimpleUserCard(
-            //   imageRadius: 10,
-            //   userName: Global.user!.username!,
-            //   userProfilePic: const AssetImage("assets/images/sample_profile.jpg"),
-            // ),
             SettingsGroup(
               settingsGroupTitle: "เมนูหลัก",
               items: [
@@ -66,130 +61,161 @@ class _SettingScreenState extends State<SettingScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                            const CompanyListScreen()));
+                            builder: (context) => const CompanyListScreen()));
                   },
-                  icons: CupertinoIcons.building_2_fill,
+                  icons: Icons.business,
+                  // Better for company/business
                   iconStyle: IconStyle(
-                      backgroundColor: Colors.blue[700]
-                  ),
-                  title:
-                  'บริษัท',
-                  subtitle:
-                  "ข้อมูลบริษัท",
+                      backgroundColor:
+                          Colors.blue[600]! // Professional blue for company
+                      ),
+                  title: 'บริษัท',
+                  subtitle: "ข้อมูลบริษัท",
                   titleMaxLine: 1,
                   subtitleMaxLine: 1,
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                            const BranchListScreen()));
+                            builder: (context) => const BranchListScreen()));
                   },
-                  icons: Icons.dataset,
+                  icons: Icons.location_on,
+                  // Better for branch/location
                   iconStyle: IconStyle(
-                      backgroundColor: Colors.orange
-                  ),
-                  title:
-                  'สาขา',
-                  subtitle:
-                  "ข้อมูลสาขา",
+                      backgroundColor: Colors.green[600]! // Green for locations
+                      ),
+                  title: 'สาขา',
+                  subtitle: "ข้อมูลสาขา",
                   titleMaxLine: 1,
                   subtitleMaxLine: 1,
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
                 if (Global.user?.userType == 'COMPANY')
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const OrderIdPrefixScreen()));
-                  },
-                  icons: Icons.numbers,
-                  iconStyle: IconStyle(
-                      backgroundColor: Colors.teal
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const OrderIdPrefixScreen()));
+                    },
+                    icons: Icons.tag,
+                    // Better for ID/tags
+                    iconStyle: IconStyle(
+                        backgroundColor:
+                            Colors.orange[600]! // Orange for ID management
+                        ),
+                    title: 'รหัสธุรกรรม',
+                    subtitle: "การตั้งค่า ID การทำธุรกรรม",
+                    titleMaxLine: 1,
+                    subtitleMaxLine: 1,
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
                   ),
-                  title:
-                  'รหัสธุรกรรม',
-                  subtitle:
-                  "การตั้งค่า ID การทำธุรกรรม",
-                  titleMaxLine: 1,
-                  subtitleMaxLine: 1,
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                if (Global.user?.userType == 'COMPANY' && Global.user?.userRole == 'Administrator')
+                if (Global.user?.userType == 'COMPANY' &&
+                    Global.user?.userRole == 'Administrator')
                   SettingsItem(
                     onTap: () async {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                              const PosIdScreen()));
-                      // Alert.success(context, 'title', '${await getDeviceId()}', 'OK', action: () {});
+                              builder: (context) => const PosIdScreen()));
                     },
-                    icons: CupertinoIcons.italic,
+                    icons: Icons.point_of_sale,
+                    // Better for POS systems
                     iconStyle: IconStyle(
-                        backgroundColor: Colors.teal
-                    ),
-                    title:
-                    'POS ID',
-                    subtitle:
-                    "การตั้งค่า POS ID",
+                        backgroundColor: Colors.purple[600]! // Purple for POS
+                        ),
+                    title: 'POS ID',
+                    subtitle: "การตั้งค่า POS ID",
                     titleMaxLine: 1,
                     subtitleMaxLine: 1,
-                    titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                    subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
                   ),
-                if (Global.user?.userType == 'COMPANY' && Global.user?.userRole == 'Administrator')
+                if (Global.user?.userType == 'COMPANY' &&
+                    Global.user?.userRole == 'Administrator')
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const LocationListScreen()));
+                    },
+                    icons: Icons.warehouse,
+                    // Better for warehouse
+                    iconStyle: IconStyle(
+                        backgroundColor:
+                            Colors.brown[600]! // Brown for warehouse
+                        ),
+                    title: 'คลังสินค้า',
+                    subtitle: "ข้อมูลคลังสินค้า",
+                    titleMaxLine: 1,
+                    subtitleMaxLine: 1,
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                            const LocationListScreen()));
-                  },
-                  icons: CupertinoIcons.circle_grid_3x3,
-                  iconStyle: IconStyle(
-                    backgroundColor: Colors.teal
-                  ),
-                  title:
-                  'คลังสินค้า',
-                  subtitle:
-                  "ข้อมูลคลังสินค้า",
-                  titleMaxLine: 1,
-                  subtitleMaxLine: 1,
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const UserListScreen()));
+                            builder: (context) => const UserListScreen()));
                   },
                   icons: Icons.people,
+                  // Good icon for users
                   iconStyle: IconStyle(
-                      backgroundColor: Colors.deepPurple
-                  ),
-                  title:
-                  'ผู้ใช้',
-                  subtitle:
-                  "การจัดการผู้ใช้",
+                      backgroundColor:
+                          Colors.indigo[600]! // Indigo for user management
+                      ),
+                  title: 'ผู้ใช้',
+                  subtitle: "การจัดการผู้ใช้",
                   titleMaxLine: 1,
                   subtitleMaxLine: 1,
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
                 SettingsItem(
                   onTap: () {
@@ -197,18 +223,23 @@ class _SettingScreenState extends State<SettingScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const DefaultProductScreen()));
+                                const DefaultProductScreen()));
                   },
-                  icons: CupertinoIcons.pencil_outline,
+                  icons: Icons.settings_applications,
+                  // Better for application settings
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.orange
-                  ),
-                  title:
-                  'จัดการค่าเริ่มต้นของหน้าจอ',
-                  subtitle:
-                  "ตั้งค่าค่าเริ่มต้น",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                      backgroundColor: Colors.teal[600]! // Teal for settings
+                      ),
+                  title: 'จัดการค่าเริ่มต้นของหน้าจอ',
+                  subtitle: "ตั้งค่าค่าเริ่มต้น",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
                 SettingsItem(
                   onTap: () {
@@ -216,39 +247,51 @@ class _SettingScreenState extends State<SettingScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const DefaultPaymentScreen()));
+                                const DefaultPaymentScreen()));
                   },
-                  icons: CupertinoIcons.money_rubl,
+                  icons: Icons.payment,
+                  // Better for payment settings
                   iconStyle: IconStyle(
-                      backgroundColor: Colors.purple
-                  ),
-                  title:
-                  'จัดการค่าเริ่มต้นขอ การชำระเงิน',
-                  subtitle:
-                  "ตั้งค่าค่าเริ่มต้น การชำระเงิน",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                      backgroundColor:
+                          Colors.green[700]! // Green for money/payment
+                      ),
+                  title: 'จัดการค่าเริ่มต้นขอ การชำระเงิน',
+                  subtitle: "ตั้งค่าค่าเริ่มต้น การชำระเงิน",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
                 if (Global.user?.userType == 'ADMIN')
-                SettingsItem(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const SettingValueScreen()));
-                  },
-                  icons: CupertinoIcons.pencil_outline,
-                  iconStyle: IconStyle(
-                      backgroundColor: Colors.blue.shade900
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const SettingValueScreen()));
+                    },
+                    icons: Icons.tune,
+                    // Better for value/tuning settings
+                    iconStyle: IconStyle(
+                        backgroundColor: Colors
+                            .deepPurple[600]! // Deep purple for admin settings
+                        ),
+                    title: 'Value Initial Setting',
+                    subtitle: "การตั้งค่ามูลค่า",
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
                   ),
-                  title:
-                  'Value Initial Setting',
-                  subtitle:
-                  "การตั้งค่ามูลค่า",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
-                ),
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
@@ -256,65 +299,55 @@ class _SettingScreenState extends State<SettingScreen> {
                         MaterialPageRoute(
                             builder: (context) => const MasterDataScreen()));
                   },
-                  icons: Icons.settings_applications_outlined,
+                  icons: Icons.storage,
+                  // Better for master data storage
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.lightGreen,
+                    backgroundColor:
+                        Colors.cyan[600]!, // Cyan for data management
                   ),
                   title: 'ข้อมูลหลัก',
                   subtitle: "จัดการข้อมูลหลัก",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
-                // SettingsItem(
-                //   onTap: () {
-                //
-                //   },
-                //   icons: CupertinoIcons.pencil_outline,
-                //   iconStyle: IconStyle(
-                //     backgroundColor: Colors.green
-                //   ),
-                //   title:
-                //   'Gold Products',
-                //   subtitle:
-                //   "Manage Gold Products",
-                //   titleMaxLine: 1,
-                //   subtitleMaxLine: 1,
-                // ),
-                // SettingsItem(
-                //   onTap: () {},
-                //   icons: Icons.fingerprint,
-                //   iconStyle: IconStyle(
-                //     iconsColor: Colors.white,
-                //     withBackground: true,
-                //     backgroundColor: Colors.red,
-                //   ),
-                //   title: 'Privacy',
-                //   subtitle: "Lock Ziar'App to improve your privacy",
-                // ),
-                // SettingsItem(
-                //   onTap: () {},
-                //   icons: Icons.dark_mode_rounded,
-                //   iconStyle: IconStyle(
-                //     iconsColor: Colors.white,
-                //     withBackground: true,
-                //     backgroundColor: Colors.red,
-                //   ),
-                //   title: 'Dark mode',
-                //   subtitle: "Automatic",
-                //   trailing: Switch.adaptive(
-                //     value: false,
-                //     onChanged: (value) {},
-                //   ),
-                // ),
               ],
             ),
-            // You can add a settings title
+            // Account section
             SettingsGroup(
               settingsGroupTitle: "บัญชี",
               items: [
                 SettingsItem(
                   onTap: () {
-                    // print(Global.deviceDetail);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AuthHistoryScreen()));
+                  },
+                  icons: Icons.history,
+                  // Better for access history
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.grey[600]!, // Grey for history
+                  ),
+                  title: 'บันทึกการเข้าถึงระบบ',
+                  subtitle: "ประวัติการเข้าใช้ระบบ",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    motivePrint('clicked');
                     Alert.info(context, 'Warning'.tr(), 'ยืนยันการออกจากระบบ', 'OK'.tr(), action: () async {
                       var authObject = Global.requestObj({
                         "deviceDetail": Global.deviceDetail.toString()
@@ -343,21 +376,21 @@ class _SettingScreenState extends State<SettingScreen> {
 
                     });
                   },
-                  icons: Icons.exit_to_app_rounded,
+                  icons: Icons.logout,
+                  // Better for logout
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.red[600]!, // Red for logout/exit
+                  ),
                   title: "ออกจากระบบ",
-                  titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey.shade600),
-                  subtitleStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
                 ),
-                // SettingsItem(
-                //   onTap: () {},
-                //   icons: CupertinoIcons.delete_solid,
-                //   title: "ลบบัญชี",
-                //   titleStyle: const TextStyle(
-                //     color: Colors.red,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                //
-                // ),
               ],
             ),
           ],

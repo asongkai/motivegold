@@ -393,7 +393,7 @@ class Global {
     return price * weight / getUnitWeightValue();
   }
 
-  static double getBuyPrice(double weight) {
+  static double getBuyPrice(double weight, dynamic goldDataModel) {
     if (goldDataModel == null) {
       return 0;
     }
@@ -623,7 +623,7 @@ class Global {
       amount += weight;
     }
 
-    amount = getBuyPrice(amount);
+    amount = getBuyPrice(amount, order.goldDataModel);
     return amount;
   }
 
@@ -852,7 +852,7 @@ class Global {
       // double price =
       //     type == 5 ? orders[i].priceExcludeTax ?? 0 : orders[i].priceIncludeTax ?? 0;
       double price = orders[i].priceIncludeTax ?? 0;
-      if (type == 5) {
+      if (type == 5 || type == 10) {
         price = -price;
       }
       amount += price;

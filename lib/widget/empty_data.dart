@@ -19,7 +19,7 @@ class NoDataFoundWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Lottie.asset('assets/no_data_found.json', width: 250, fit: BoxFit.cover),
+              Lottie.asset('assets/no_data_found.json', width: 200, fit: BoxFit.cover),
               const SizedBox(height: 20, width: 20),
               Text(
                 message,

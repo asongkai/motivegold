@@ -102,6 +102,13 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
                   value:
                       "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell))} บาท",
                 ),
+                if (Global.currentRedeemType == 1)
+                  GoldPriceListTileData(
+                    title: 'ทองคำแท่ง 96.5%',
+                    subTitle: "รับซื้อ",
+                    value:
+                    "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))} บาท",
+                  ),
                 if (widget.screen == 3 || widget.screen == 2)
                 GoldPriceListTileData(
                   title: '',
@@ -109,17 +116,17 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
                   value:
                   "${Global.format(Global.toNumber(Global.goldDataModel?.theng?.buy))} บาท",
                 ),
-                if (widget.screen == 1 || widget.screen == 2)
+                if (widget.screen == 1 || widget.screen == 2 || Global.currentRedeemType == 1)
                   GoldPriceListTileData(
                     title: 'ทองรูปพรรณ 96.5%',
-                    subTitle: "รับซื้อบาทละ",
+                    subTitle: "ฐานภาษี(บาทละ)",
                     value:
                         "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy))} บาท",
                   ),
-                if (widget.screen == 1 || widget.screen == 2)
+                if (widget.screen == 1 || widget.screen == 2 || Global.currentRedeemType == 1)
                   GoldPriceListTileData(
                     title: '',
-                    subTitle: "รับซื้อกรัมละ",
+                    subTitle: "ฐานภาษี(กรัมละ)",
                     value:
                         "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue())} บาท",
                   ),

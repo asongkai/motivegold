@@ -29,7 +29,6 @@ class PaphunReportMenuScreen extends StatefulWidget {
 class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
   @override
   Widget build(BuildContext context) {
-    // return Container();
     return Scaffold(
       backgroundColor: Colors.white.withValues(alpha: 0.94),
       appBar: const CustomAppBar(
@@ -47,7 +46,6 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
@@ -58,11 +56,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const StockReportListScreen()));
+                              const StockReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     titleStyle: Theme.of(context)
@@ -81,11 +79,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const StockMovementReportListScreen()));
+                              const StockMovementReportListScreen()));
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
                     titleStyle: Theme.of(context)
@@ -97,18 +95,17 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         .titleMedium
                         ?.copyWith(color: Colors.grey.shade600),
                   ),
-
                 SettingsItem(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyNewGoldReportScreen()));
+                            const BuyNewGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.shopping_cart, // Better for buying
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.red[600]!, // Red for buying
                   ),
                   title: 'รายงานซื้อทองใหม่',
                   titleStyle: Theme.of(context)
@@ -126,11 +123,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const SellNewGoldReportScreen()));
+                            const SellNewGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.teal[600]!, // Teal for selling new
                   ),
                   title: 'รายงานขายทองใหม่',
                   titleStyle: Theme.of(context)
@@ -148,11 +145,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const SellUsedGoldReportScreen()));
+                            const SellUsedGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.sell, // Selling icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepOrangeAccent,
+                    backgroundColor: Colors.deepOrange[600]!, // Deep orange for used items
                   ),
                   title: 'รายงานขายทองเก่า',
                   titleStyle: Theme.of(context)
@@ -170,11 +167,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyUsedGoldReportScreen()));
+                            const BuyUsedGoldReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.shopping_cart, // Buying icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.brown,
+                    backgroundColor: Colors.brown[600]!, // Brown for used items
                   ),
                   title: 'รายงานซื้อทองเก่า',
                   titleStyle: Theme.of(context)
@@ -194,9 +191,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                             builder: (context) =>
                             const MoneyMovementReportScreen()));
                   },
-                  icons: Icons.pie_chart,
+                  icons: Icons.account_balance_wallet, // Better for financial flow
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.purple[600]!, // Purple for financial reports
                   ),
                   title: 'รายงานเส้นทางการเงินทองรูปพรรณ',
                   titleStyle: Theme.of(context)
@@ -215,9 +212,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         MaterialPageRoute(
                             builder: (context) => const SellVatReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.receipt_long, // Better for tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.indigo[600]!, // Indigo for tax reports
                   ),
                   title: 'รายงานภาษีขายทองคำรูปพรรณใหม่ 96.5%',
                   titleStyle: Theme.of(context)
@@ -236,9 +233,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         MaterialPageRoute(
                             builder: (context) => const BuyVatReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.receipt_long, // Tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.indigo[600]!, // Same color for tax consistency
                   ),
                   title: 'รายงานภาษีซื้อทองคำรูปพรรณใหม่ 96.5%',
                   titleStyle: Theme.of(context)
@@ -256,11 +253,11 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const BuyUsedGoldGovReportScreen()));
+                            const BuyUsedGoldGovReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.account_balance, // Government/official reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.cyan[600]!, // Cyan for government reports
                   ),
                   title: 'รายงานบัญชีสำหรับผู้ทำการค้าของเก่า',
                   titleStyle: Theme.of(context)
@@ -280,9 +277,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                             builder: (context) =>
                             const RefillGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.add_circle, // Better for adding/refilling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.amber[600]!, // Gold color for gold refill
                   ),
                   title: 'ประวัติการเติมทอง',
                   titleStyle: Theme.of(context)
@@ -302,9 +299,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                             builder: (context) =>
                             const SellUsedGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Colors.orange[600]!, // Orange for selling used gold
                   ),
                   title: 'ประวัติการขายทองเก่า',
                   titleStyle: Theme.of(context)
@@ -324,9 +321,9 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                             builder: (context) =>
                             const TransferGoldHistoryScreen()));
                   },
-                  icons: Icons.view_list,
+                  icons: Icons.transfer_within_a_station, // Better for transfers
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.blue[600]!, // Blue for transfers
                   ),
                   title: 'ประวัติการโอนทอง',
                   titleStyle: Theme.of(context)
@@ -340,7 +337,6 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                 ),
               ],
             ),
-            // You can add a settings title
           ],
         ),
       ),

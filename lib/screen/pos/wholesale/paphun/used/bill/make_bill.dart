@@ -39,7 +39,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
       decoration: BoxDecoration(
         border: Border.all(),
       ),
-      child: buyerSellerInfoRefill(invoice.customer, invoice.order),
+      child: buyerSellerInfoSellUsedWholeSale(invoice.customer, invoice.order),
     ),
   );
   originalWidgets.add(
@@ -259,22 +259,22 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                              'ราคาสินค้ารวมค่ากําเหน็จและอื่นๆ (รวมภาษีมูลค่าเพิ่ม) :',
+                              'ราคาสินค้า (รวมภาษีมูลค่าเพิ่ม) :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('หัก ราคารับซื้อทองประจําวัน :',
+                          Text('หัก ราคารับซื้อคืน :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('ผลต่าง (รวมภาษีมูลค่าเพิ่ม) :',
+                          Text('ส่วนต่าง (ฐานภาษีมูลค่าเพิ่ม) :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                           // Text('ฐานภาษีมูลค่าเพิ่ม :',
                           //     textAlign: TextAlign.right,
                           //     style: const TextStyle(fontSize: 9)),
-                          Text('ภาษีมูลค่าเพิ่ม 7% :',
+                          Text('ภาษีมูลค่าเพิ่มร้อยละ 7 :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('ราคาสินค้าไม่รวมภาษีมูลค่าเพิ่ม :',
+                          Text('รวมเป็นเงินสุทธิ :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
                         ]),
@@ -302,7 +302,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "${Global.format(-(invoice.order.priceDiff)!)}" : Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "(${Global.format(-(invoice.order.priceDiff)!)})" : Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,
@@ -728,7 +728,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 9)),
-                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "${Global.format(-(invoice.order.priceDiff)!)}" : Global.format(invoice.order.priceDiff ?? 0)}',
+                          Text('${(invoice.order.priceDiff ?? 0) < 0 ? "(${Global.format(-(invoice.order.priceDiff)!)})" : Global.format(invoice.order.priceDiff ?? 0)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 9,

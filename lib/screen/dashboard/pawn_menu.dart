@@ -197,19 +197,19 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
             orientation == Orientation.portrait ? .70 : .90,
             children: [
               iconDashboard(
-                'ขายฝากจำนำ\nไถ่ถอน',
+                'ไถ่ถอน',
                 Image.asset('assets/icons/gold/gold.png', height: 110,),
                 stmBgColor,
                 const RedeemMenuScreen(),
               ),
               iconDashboard(
-                'ขายฝากจำนำ\nออกตั๋วและไถ่ถอน',
+                'ขายฝาก-ไถ่ถอน',
                 Image.asset('assets/icons/gold/sell-gold-tang.png'),
                 stmBgColor,
                 null,
               ),
               iconDashboard(
-                'ขายฝากจำนำ\nออกตั๋ว รับดอกเบี้ย\nและไถ่ถอน',
+                'ขายฝาก รับดอกเบี้ย\nเพิ่มต้น-ลดต้น ไถ่ถอน',
                 Image.asset('assets/icons/gold/gold-sub-dealer.png'),
                 stmBgColor,
                 null,

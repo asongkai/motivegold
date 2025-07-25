@@ -505,6 +505,90 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
       ]));
 }
 
+Widget buyerSellerInfoSellUsedWholeSale(CustomerModel customer, OrderModel order) {
+  // motivePrint(customer.toJson());
+  return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(children: [
+        Expanded(
+          child: Column(
+            children: [
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(1),
+                  1: FlexColumnWidth(4),
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('${getNameTitle(order)} : ',
+                          style: const TextStyle(fontSize: 9)),
+                      Text('${getCustomerName(customer)}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text('ที่อยู่ : ', style: const TextStyle(fontSize: 9)),
+                      Text(
+                          '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                  TableRow(
+                    children: [
+                      Text(''),
+                      Text(
+                          'โทร: ${customer.phoneNumber} ${getWorkId(customer)} ',
+                          style: const TextStyle(fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+            child: Column(children: [
+              Table(children: [
+                TableRow(children: [
+                  Text('ทองคําแท่งขายออกบาทละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text('${Global.format(order.sellTPrice ?? 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+                TableRow(children: [
+                  Text('ทองคำแท่งรับซื้อบาทละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text('${Global.format(order.sellTPrice! > 0 ? order.sellTPrice! - 100 : 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+                TableRow(children: [
+                  Text('ทองคํารูปพรรณรับซื้อบาทละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text('${Global.format(order.buyPrice ?? 0)} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+                TableRow(children: [
+                  Text('ทองคํารูปพรรณรับซื้อกรัมละ : ',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                  Text(
+                      '${Global.format((order.buyPrice ?? 0) / getUnitWeightValue())} บาท',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(fontSize: 9)),
+                ]),
+              ]),
+            ])),
+      ]));
+}
+
 Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
   // motivePrint(customer.toJson());
   return Padding(

@@ -30,19 +30,39 @@ class PrintRedeemBillScreen extends StatefulWidget {
   State<PrintRedeemBillScreen> createState() => _PrintRedeemBillScreenState();
 }
 
-class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
+class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen>
+    with SingleTickerProviderStateMixin {
   int currentIndex = 1;
   Screen? size;
   String actionText = 'change'.tr();
   TextEditingController discountCtrl = TextEditingController();
   bool loading = false;
   List<RedeemModel> redeems = [];
+  AnimationController? _animationController;
+  Animation<double>? _fadeAnimation;
 
   @override
   void initState() {
-    // implement initState
     super.initState();
+    _initializeAnimations();
     loadOrder();
+  }
+
+  void _initializeAnimations() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController!, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+    discountCtrl.dispose();
+    super.dispose();
   }
 
   void loadOrder() async {
@@ -58,7 +78,6 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
       payment = await ApiServices.post(
           '/order/payment/${Global.pairId}', Global.requestObj(null));
 
-      // motivePrint(payment?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<RedeemModel> dump = redeemListModelFromJson(data);
@@ -67,6 +86,7 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
           Global.paymentList =
               paymentListModelFromJson(jsonEncode(payment?.data));
         });
+        _animationController?.forward();
       } else {
         redeems = [];
       }
@@ -95,65 +115,51 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
                   fontWeight: FontWeight.w900)),
         ),
       ),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: loading
-            ? const LoadingProgress()
+            ? const ModernLoadingWidget()
             : GestureDetector(
                 onTap: () {
                   FocusScope.of(context).requestFocus(FocusNode());
                 },
                 child: redeems.isEmpty
-                    ? const Center(
-                        child: NoDataFoundWidget(),
-                      )
-                    : Column(
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          getProportionateScreenWidth(0.0),
+                    ? const ModernEmptyState()
+                    : _fadeAnimation != null
+                        ? FadeTransition(
+                            opacity: _fadeAnimation!,
+                            child: RefreshIndicator(
+                              onRefresh: () async => loadOrder(),
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: redeems.length,
+                                itemBuilder: (context, index) {
+                                  return AnimatedContainer(
+                                    duration: Duration(
+                                        milliseconds: 300 + (index * 100)),
+                                    curve: Curves.easeOutBack,
+                                    child: _modernRedeemCard(
+                                      order: redeems[index],
+                                      index: index,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        SingleChildScrollView(
-                                          child: Container(
-                                            height: MediaQuery.of(context)
-                                                .size
-                                                .height,
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
-                                              color: bgColor2,
-                                            ),
-                                            child: ListView.builder(
-                                                itemCount: redeems.length,
-                                                itemBuilder: (context, index) {
-                                                  return _itemOrderList(
-                                                      order: redeems[index],
-                                                      index: index);
-                                                }),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: () async => loadOrder(),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: redeems.length,
+                              itemBuilder: (context, index) {
+                                return _modernRedeemCard(
+                                  order: redeems[index],
+                                  index: index,
+                                );
+                              },
+                            ),
                           ),
-                        ],
-                      ),
               ),
       ),
     );
@@ -163,8 +169,11 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
     setState(() {});
   }
 
-  Widget _itemOrderList({required RedeemModel order, required index}) {
+  Widget _modernRedeemCard({required RedeemModel order, required index}) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Column(
         children: [
           Row(
@@ -173,143 +182,240 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
                 flex: 8,
                 child: Column(
                   children: [
-                    ProductListTileData(
-                      orderId: order.redeemId,
-                      weight: null,
-                      showTotal: false,
-                      type: '',
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: ProductListTileData(
+                        orderId: order.redeemId,
+                        weight: null,
+                        showTotal: false,
+                        type: '',
+                      ),
                     ),
-                    Table(
-                      border: TableBorder.all(color: Colors.grey.shade300),
-                      children: [
-                        TableRow(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Text(
-                                '',
-                                textAlign: TextAlign.center,
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Table(
+                        border: TableBorder.all(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        children: [
+                          TableRow(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('น้ำหนัก',
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('ราคา',
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                          ],
-                        ),
-                        ...order.details!.map(
-                          (e) => TableRow(
-                            decoration: const BoxDecoration(),
                             children: [
-                              paddedTextBigXL(e.referenceNo ?? ''),
-                              paddedText(Global.format(e.weight ?? 0),
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                              paddedText(Global.format(e.paymentAmount ?? 0),
-                                  align: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
+                              const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  'รายการ',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'น้ำหนัก',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ราคา',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ผลรวมย่อย',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
-                              ),
+                          ...order.details!.asMap().entries.map(
+                            (entry) {
+                              int idx = entry.key;
+                              var e = entry.value;
+                              return TableRow(
+                                decoration: BoxDecoration(
+                                  color: idx % 2 == 0
+                                      ? Colors.white
+                                      : const Color(0xFFFAFBFC),
+                                ),
+                                children: [
+                                  paddedTextBigXL(e.referenceNo ?? ''),
+                                  paddedText(
+                                    Global.format(e.weight ?? 0),
+                                    align: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: size?.getWidthPx(8),
+                                      color: const Color(0xFF4B5563),
+                                    ),
+                                  ),
+                                  paddedText(
+                                    Global.format(e.paymentAmount ?? 0),
+                                    align: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: size?.getWidthPx(8),
+                                      color: const Color(0xFF4B5563),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                          TableRow(
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF3F4F6),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ผลรวมย่อย',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(Global.getRedeemTotalWeight(
                                       order.details ?? [])),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(Global.getRedeemTotalPayment(
                                       order.details ?? [])),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ส่วนลด',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF374151),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ส่วนลด',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    color: const Color(0xFF4B5563),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  '',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  Global.format(order.discount ?? 0),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFFDC2626),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0F766E).withOpacity(0.1),
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('',
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  'ยอดรวมทั้งหมด',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(Global.format(order.discount ?? 0),
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
-                                'ยอดรวมทั้งหมด',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: size?.getWidthPx(8)),
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   '${Global.format(Global.getRedeemTotalWeight(order.details ?? []))}',
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Text(
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
                                   Global.format(Global.getRedeemSubPaymentTotal(
                                       order.details ?? [],
                                       discount: order.discount ?? 0)),
                                   textAlign: TextAlign.center,
-                                  style:
-                                      TextStyle(fontSize: size?.getWidthPx(8))),
-                            ),
-                          ],
-                        ),
-                      ],
+                                  style: TextStyle(
+                                    fontSize: size?.getWidthPx(8),
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF0F766E),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -319,52 +425,30 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () async {
-                        // loadOrder();
-                        // return;
-                        final ProgressDialog pr = ProgressDialog(context,
-                            type: ProgressDialogType.normal,
-                            isDismissible: true,
-                            showLogs: true);
-                        await pr.show();
-                        pr.update(message: 'processing'.tr());
-
-                        try {
-                          var payment = await ApiServices.post(
-                              '/order/payment/${order.pairId}',
-                              Global.requestObj(null));
-                          await pr.hide();
-                          Global.paymentList = paymentListModelFromJson(
-                              jsonEncode(payment?.data));
-
-
-                          InvoiceRedeem invoice = InvoiceRedeem(
-                              order: order,
-                              customer: order.customer!,
-                              payments: Global.paymentList,
-                              orders: redeems,
-                              items: order.details!);
-
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PdfPreviewRedeemPage(invoice: invoice, goHome: true,),
-                            ),
-                          );
-                        } catch (e) {
-                          motivePrint(e.toString());
-                          await pr.hide();
-                        }
-                      },
+                      onTap: () => _handlePrintRedeem(order),
                       child: Container(
                         height: 80,
                         width: 80,
+                        margin: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                            color: Colors.teal,
-                            borderRadius: BorderRadius.circular(8)),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF0F766E).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: const Icon(
                           Icons.print,
                           color: Colors.white,
+                          size: 28,
                         ),
                       ),
                     ),
@@ -373,10 +457,55 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
               ),
             ],
           ),
-          // const Divider(),
         ],
       ),
     );
+  }
+
+  void _handlePrintRedeem(RedeemModel order) async {
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.normal,
+      isDismissible: true,
+      showLogs: true,
+    );
+
+    await pr.show();
+    pr.update(message: 'กำลังเตรียมข้อมูล...');
+
+    try {
+      var payment = await ApiServices.post(
+          '/order/payment/${order.pairId}', Global.requestObj(null));
+      await pr.hide();
+      Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
+
+      InvoiceRedeem invoice = InvoiceRedeem(
+          order: order,
+          customer: order.customer!,
+          payments: Global.paymentList,
+          orders: redeems,
+          items: order.details!);
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PdfPreviewRedeemPage(
+            invoice: invoice,
+            goHome: true,
+          ),
+        ),
+      );
+    } catch (e) {
+      motivePrint(e.toString());
+      await pr.hide();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void removeProduct(int i) async {
@@ -387,106 +516,90 @@ class _PrintRedeemBillScreenState extends State<PrintRedeemBillScreen> {
   }
 }
 
-class PaymentCard extends StatelessWidget {
-  const PaymentCard(
-      {Key? key, this.isSelected = false, this.title, this.image, this.action})
-      : super(key: key);
-
-  final bool? isSelected;
-  final String? title;
-  final String? image;
-  final Function()? action;
+class ModernLoadingWidget extends StatelessWidget {
+  const ModernLoadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: action,
-      child: Stack(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: getProportionateScreenWidth(30),
-            padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(8.0),
-                vertical: getProportionateScreenHeight(8.0)),
-            margin: EdgeInsets.only(
-              bottom: getProportionateScreenHeight(8.0),
-            ),
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: isSelected! ? Colors.white : Colors.white.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(
-                getProportionateScreenWidth(
-                  4,
-                ),
-              ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                isSelected!
-                    ? BoxShadow(
-                        color: kShadowColor,
-                        offset: Offset(
-                          getProportionateScreenWidth(2),
-                          getProportionateScreenWidth(4),
-                        ),
-                        blurRadius: 80,
-                      )
-                    : const BoxShadow(color: Colors.transparent),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: getProportionateScreenWidth(30),
-                  height: getProportionateScreenWidth(30),
-                  decoration: ShapeDecoration(
-                    color: kGreyShade5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        getProportionateScreenWidth(8.0),
-                      ),
-                    ),
-                  ),
-                  child: image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(image!,
-                              fit: BoxFit.cover, width: 1000.0),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
-                            "assets/images/no_image.png",
-                            fit: BoxFit.cover,
-                            width: 1000.0,
-                          )),
-                ),
-                SizedBox(
-                  width: getProportionateScreenWidth(8),
-                ),
-                Expanded(
-                  child: Text(
-                    title!,
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(8),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                )
-              ],
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0F766E)),
+                strokeWidth: 3,
+              ),
             ),
           ),
-          if (isSelected!)
-            Positioned(
-              top: 0,
-              right: 0,
-              child: GestureDetector(
-                child: const IconButton(
-                  icon: Icon(
-                    Icons.check,
-                    color: Colors.teal,
-                  ),
-                  onPressed: null,
-                ),
-              ),
+          const SizedBox(height: 24),
+          const Text(
+            'กำลังโหลดข้อมูล...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w500,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ModernEmptyState extends StatelessWidget {
+  const ModernEmptyState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(60),
+            ),
+            child: const Icon(
+              Icons.receipt_long_outlined,
+              size: 60,
+              color: Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'ไม่มีรายการบิลไถ่ถอนที่ต้องพิมพ์',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF334155),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'เมื่อมีรายการใหม่จะแสดงที่นี่',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF64748B),
+            ),
+          ),
         ],
       ),
     );

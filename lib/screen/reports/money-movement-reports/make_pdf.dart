@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/model/order.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -9,9 +10,21 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 
+// Helper function to get order type color for PDF
+PdfColor getOrderTypeColor(int? orderTypeId) {
+  if (orderTypeId == null) return PdfColors.grey600;
+
+  if (orderTypeId == 1) {
+    return PdfColors.green600; // Sale (selling to customer)
+  } else if (orderTypeId == 2) {
+    return PdfColors.red600;   // Buy (buying from customer)
+  } else {
+    return PdfColors.grey600;
+  }
+}
+
 Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
     String date) async {
-  // Global.printLongString(orders!.map((e) => e.toJson()).toString());
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -19,7 +32,9 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
+
   List<Widget> widgets = [];
+
   widgets.add(Center(
     child: Text(
       'รายงานเส้นทางการเงินซื้อ-ขายทองรูปพรรณใหม่ 96.5%',
@@ -27,130 +42,330 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
     ),
   ));
   widgets.add(Center(
-      child:
-      Text("ระหว่างวันที่: $date"),
+    child: Text("ระหว่างวันที่: $date"),
   ));
   widgets.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Text(
-          "ชื่อผู้ประกอบการ: ${Global.branch?.name}"),
+      Text("ชื่อผู้ประกอบการ: ${Global.branch?.name}"),
       Text('วันที่พิมพ์: ${Global.formatDate(DateTime.now().toString())}'),
     ],
   ));
-  // widgets.add(Row(
-  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //   children: [
-  //     Text(
-  //         "ที่อยู่: ${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}"),
-  //   ],
-  // ));
 
   widgets.add(height());
-  widgets.add(Table(
-    border: TableBorder.all(color: PdfColors.grey500),
-    children: [
-      TableRow(children: [
-        paddedText('ลำดับ'),
-        paddedText('เลขที่ใบกํากับภาษี'),
-        paddedText('ชื่อผู้ซื้อ'),
-        paddedText('วันที่'),
-        paddedText('เวลา'),
-        paddedText('นน.\nทองรูปพรรณใหม่ 96.5%\nขายออก (กรัม)'),
-        paddedText('นน.\nทองรูปพรรณเก่า 96.5%\nรับซื้อ (กรัม)'),
-        paddedText('จำนวนเงิน'),
-        paddedText('เลขที่อ้างอิง'),
-        paddedText('เส้นทางการเงิน'),
-        paddedText('ผลต่าง'),
-        paddedText('ยอดรับเงิน'),
-        paddedText('ยอดจ่ายเงิน'),
-        paddedText('ส่วนลด'),
-        paddedText('จ่ายเงินสด'),
-        paddedText('จ่ายเงินโอน'),
-        paddedText('บัตรเครดิต'),
-      ]),
-      for (int i = 0; i < orders!.length; i++)
+
+  // Apply modern design pattern
+  widgets.add(Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: PdfColors.grey300, width: 1),
+    ),
+    child: Table(
+      border: TableBorder(
+        top: BorderSide.none,
+        bottom: BorderSide.none,
+        left: BorderSide.none,
+        right: BorderSide.none,
+        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        verticalInside: BorderSide.none,
+      ),
+      children: [
+        // Clean header row with rounded top corners
         TableRow(
-          decoration: const BoxDecoration(),
-          children: [
-            paddedText('${i + 1}'),
-            paddedText(orders[i].orderId),
-            paddedText(
-                '${orders[i].customer?.firstName} ${orders[i].customer
-                    ?.lastName}'),
-            paddedText(Global.dateOnly(orders[i].createdDate.toString())),
-            paddedText(Global.timeOnly(orders[i].createdDate.toString())),
-            paddedText(
-                (orders[i].orderTypeId == 1)
-                    ? Global.format(getWeight(orders[i]))
-                    : "",
-                align: TextAlign.right),
-            paddedText(
-                (orders[i].orderTypeId == 2)
-                    ? Global.format(getWeight(orders[i]))
-                    : "",
-                align: TextAlign.right),
-            paddedText(Global.format(orders[i].priceIncludeTax ?? 0),
-                align: TextAlign.right),
-            paddedText(getReferenceNumber(orders, orders[i]),
-                align: TextAlign.right),
-            paddedText(Global.getPayTittle(
-                payToCustomerOrShopValue(orders, orders[i]))),
-            paddedText(
-                Global.format(payToCustomerOrShopValue(orders, orders[i])),
-                align: TextAlign.right),
-            paddedText(
-                (orders[i].orderTypeId == 1)
-                    ? Global.format(orders[i].priceIncludeTax ?? 0)
-                    : "",
-                align: TextAlign.right),
-            paddedText(
-                (orders[i].orderTypeId == 2)
-                    ? Global.format(orders[i].priceIncludeTax ?? 0)
-                    : "",
-                align: TextAlign.right),
-            paddedText(
-                (orders[i].orderTypeId == 1)
-                    ? Global.format(orders[i].discount ?? 0)
-                    : "",
-                align: TextAlign.right),
-            paddedText(getCashPayment(orders, orders[i]),
-                align: TextAlign.right),
-            paddedText(getTransferPayment(orders, orders[i]),
-                align: TextAlign.right),
-            paddedText(getCreditPayment(orders, orders[i]),
-                align: TextAlign.right),
-          ],
+            decoration: BoxDecoration(
+              color: PdfColors.blue600,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
+              ),
+            ),
+            children: [
+              paddedTextSmall('ลำดับ',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('เลขที่ใบกํากับภาษี',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('ชื่อผู้ซื้อ',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('วันที่',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('เวลา',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('นน.\nทองรูปพรรณใหม่ 96.5%\nขายออก (กรัม)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('นน.\nทองรูปพรรณเก่า 96.5%\nรับซื้อ (กรัม)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('จำนวนเงิน',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('เลขที่อ้างอิง',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('เส้นทางการเงิน',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('ผลต่าง',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ยอดรับเงิน',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ยอดจ่ายเงิน',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ส่วนลด',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('จ่ายเงินสด',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('จ่ายเงินโอน',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('บัตรเครดิต',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+            ]
         ),
-      TableRow(children: [
-        paddedText(''),
-        paddedText(''),
-        paddedText(''),
-        paddedText(''),
-        paddedText('รวมท้ังหมด'),
-        paddedText(Global.format(getWeightTotalSN(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(getWeightTotalBU(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(priceIncludeTaxTotal(orders)),
-            align: TextAlign.right),
-        paddedText('', align: TextAlign.right),
-        paddedText('', align: TextAlign.right),
-        paddedText('', align: TextAlign.right),
-        paddedText(Global.format(priceIncludeTaxTotalSN(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(priceIncludeTaxTotalBU(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(discountTotal(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(getCashPaymentTotal(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(getTransferPaymentTotal(orders)),
-            align: TextAlign.right),
-        paddedText(Global.format(getCreditPaymentTotal(orders)),
-            align: TextAlign.right),
-      ])
-    ],
+        // Data rows with color coding
+        for (int i = 0; i < orders!.length; i++)
+          TableRow(
+            decoration: const BoxDecoration(),
+            children: [
+              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8)),
+              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8)),
+              paddedTextSmall('${getCustomerName(orders[i].customer!)}',
+                  style: TextStyle(fontSize: 8)),
+              paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
+                  style: TextStyle(fontSize: 8)),
+              paddedTextSmall(Global.timeOnly(orders[i].createdDate.toString()),
+                  style: TextStyle(fontSize: 8)),
+              paddedTextSmall(
+                  (orders[i].orderTypeId == 1)
+                      ? Global.format(getWeight(orders[i]))
+                      : "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  (orders[i].orderTypeId == 2)
+                      ? Global.format(getWeight(orders[i]))
+                      : "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(orders[i].priceIncludeTax ?? 0),
+                  style: TextStyle(fontSize: 8, color: getOrderTypeColor(orders[i].orderTypeId)),
+                  align: TextAlign.right),
+              paddedTextSmall(getReferenceNumber(orders, orders[i]),
+                  style: TextStyle(fontSize: 8)),
+              paddedTextSmall(Global.getPayTittle(
+                  payToCustomerOrShopValue(orders, orders[i])),
+                  style: TextStyle(fontSize: 8)),
+              paddedTextSmall(
+                  Global.format(payToCustomerOrShopValue(orders, orders[i])),
+                  style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  (orders[i].orderTypeId == 1)
+                      ? Global.format(orders[i].priceIncludeTax ?? 0)
+                      : "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  (orders[i].orderTypeId == 2)
+                      ? Global.format(orders[i].priceIncludeTax ?? 0)
+                      : "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  (orders[i].orderTypeId == 1)
+                      ? Global.format(orders[i].discount ?? 0)
+                      : "",
+                  style: TextStyle(fontSize: 8, color: PdfColors.orange700),
+                  align: TextAlign.right),
+              paddedTextSmall(getCashPayment(orders, orders[i]),
+                  style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                  align: TextAlign.right),
+              paddedTextSmall(getTransferPayment(orders, orders[i]),
+                  style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                  align: TextAlign.right),
+              paddedTextSmall(getCreditPayment(orders, orders[i]),
+                  style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                  align: TextAlign.right),
+            ],
+          ),
+        // Summary row with clean styling
+        TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue50,
+              border: Border(
+                top: BorderSide(color: PdfColors.blue200, width: 1),
+              ),
+            ),
+            children: [
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('รวมท้ังหมด',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue800
+                  )),
+              paddedTextSmall(Global.format(getWeightTotalSN(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.green700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(getWeightTotalBU(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.red700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(priceIncludeTaxTotal(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall(Global.format(priceIncludeTaxTotalSN(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.green700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(priceIncludeTaxTotalBU(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.red700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(discountTotal(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.orange700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(getCashPaymentTotal(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(getTransferPaymentTotal(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.purple700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(Global.format(getCreditPaymentTotal(orders)),
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.teal700
+                  ),
+                  align: TextAlign.right),
+            ]
+        ),
+      ],
+    ),
   ));
 
   pdf.addPage(
@@ -194,7 +409,6 @@ double getCashPaymentTotal(List<OrderModel> orders) {
   double total = 0;
   for (int i = 0; i < orders.length; i++) {
     if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      // motivePrint(orders[i].cashPayment ?? 0);
       if (orders[i].orderTypeId == 1) {
         total += orders[i].cashPayment ?? 0;
       }
@@ -227,7 +441,6 @@ double getTransferPaymentTotal(List<OrderModel> orders) {
   double total = 0;
   for (int i = 0; i < orders.length; i++) {
     if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      // motivePrint(orders[i].cashPayment ?? 0);
       if (orders[i].orderTypeId == 1) {
         total += orders[i].transferPayment ?? 0;
       }
@@ -260,7 +473,6 @@ double getCreditPaymentTotal(List<OrderModel> orders) {
   double total = 0;
   for (int i = 0; i < orders.length; i++) {
     if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      // motivePrint(orders[i].cashPayment ?? 0);
       if (orders[i].orderTypeId == 1) {
         total += orders[i].creditPayment ?? 0;
       }
@@ -306,7 +518,6 @@ double payToCustomerOrShopValue(List<OrderModel> orders, OrderModel order) {
   return order.priceIncludeTax ?? 0;
 }
 
-
 double payToCustomerOrShopValueB(List<OrderModel> orders, OrderModel order) {
   var orders0 = orders
       .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
@@ -350,11 +561,11 @@ String getReferenceNumber(List<OrderModel?> orders, OrderModel? order) {
   return "";
 }
 
-Widget paddedText(final String text,
+Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 10)}) =>
+      final TextStyle style = const TextStyle(fontSize: 9)}) =>
     Padding(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(4),
       child: Text(
         text,
         textAlign: align,

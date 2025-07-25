@@ -31,7 +31,6 @@ class PawnReportMenuScreen extends StatefulWidget {
 class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
   @override
   Widget build(BuildContext context) {
-    // return Container();
     return Scaffold(
       backgroundColor: Colors.white.withValues(alpha: 0.94),
       appBar: const CustomAppBar(
@@ -55,17 +54,12 @@ class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
                 if (Global.company?.stock == 1)
                   SettingsItem(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) =>
-                      //         const StockReportListScreen()));
                       Alert.info(context, 'Warning'.tr(),
                           'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     titleStyle: Theme.of(context)
@@ -80,17 +74,12 @@ class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
                 if (Global.company?.stock == 1)
                   SettingsItem(
                     onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) =>
-                      //         const StockMovementReportListScreen()));
                       Alert.info(context, 'Warning'.tr(),
                           'จะนำมาใช้งานเร็วๆ นี้', 'OK');
                     },
-                    icons: Icons.pie_chart,
+                    icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
                     titleStyle: Theme.of(context)
@@ -108,11 +97,11 @@ class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const RedeemSingleReportScreen()));
+                            const RedeemSingleReportScreen()));
                   },
-                  icons: Icons.checklist_rtl_outlined,
+                  icons: Icons.redeem, // Perfect for redeem/pawn reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: Colors.deepPurple[600]!, // Deep purple for pawn/redeem
                   ),
                   title: 'รายงานภาษีขายตามสัญญาขายฝากทองคำรูปพรรณใหม่ 96.5% ',
                   titleStyle: Theme.of(context)
@@ -126,7 +115,6 @@ class _PawnReportMenuScreenState extends State<PawnReportMenuScreen> {
                 ),
               ],
             ),
-            // You can add a settings title
           ],
         ),
       ),

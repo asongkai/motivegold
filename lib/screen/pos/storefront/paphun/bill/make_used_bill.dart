@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
+import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
@@ -840,8 +841,10 @@ Future<Uint8List> makeUsedBill(Invoice invoice) async {
 }
 
 Widget sn(List<OrderModel>? orders) {
+  double total = 0;
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 1) {
+      total += orders[i].details?.totalPriceIncludeTax ?? 0;
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -875,8 +878,10 @@ Widget sn(List<OrderModel>? orders) {
 }
 
 Widget bu(List<OrderModel>? orders) {
+  double total = 0;
   for (int i = 0; i < orders!.length; i++) {
     if (orders[i].orderTypeId == 2) {
+      total += orders[i].details?.totalPriceIncludeTax ?? 0;
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

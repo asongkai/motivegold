@@ -17,6 +17,7 @@ import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:sizer/sizer.dart';
+
 class TransferGoldHistoryScreen extends StatefulWidget {
   const TransferGoldHistoryScreen({super.key});
 
@@ -42,8 +43,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     });
     try {
       var result =
-          await ApiServices.post('/transfer/all', Global.reportRequestObj(null));
-      // motivePrint(result?.toJson());
+      await ApiServices.post('/transfer/all', Global.reportRequestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<TransferModel> products = transferListModelFromJson(data);
@@ -67,279 +67,426 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
   Widget build(BuildContext context) {
     size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: const CustomAppBar(
+      backgroundColor: Colors.grey[50],
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Text("รายการประวัติการโอนทอง",
               style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 16.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.w900)),
+                  fontWeight: FontWeight.w600)),
         ),
       ),
       body: SafeArea(
         child: loading
             ? const LoadingProgress()
             : list!.isEmpty
-                ? const Center(child: NoDataFoundWidget())
-                : SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                            itemCount: list!.length,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (BuildContext context, int index) {
-                              return dataCard(list![index], index);
-                            }),
-                      ),
-                    ),
-                  ),
+            ? const Center(child: NoDataFoundWidget())
+            : Container(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.separated(
+            itemCount: list!.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (BuildContext context, int index) {
+              return modernTransferCard(list![index], index);
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget dataCard(TransferModel list, int index) {
-    return Stack(
-      children: [
-        Card(
-          color:
-              list.status == 'PENDING' ? Colors.orange.shade50 : Colors.white,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: ListTile(
-                  title: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+  Widget modernTransferCard(TransferModel transfer, int index) {
+    final isInterBranch = transfer.toBranchId != null && transfer.toBranchId != 0;
+    final canCancel = transfer.toBranchId != null &&
+        transfer.toBranchId != 0 &&
+        transfer.status == 'PENDING' &&
+        transfer.toBranchId != Global.user!.branchId;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: transfer.status == 'PENDING' ? Colors.orange[50] : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: transfer.status == 'PENDING'
+            ? Border.all(color: Colors.orange[200]!, width: 1)
+            : null,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // Header with Status Badges
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isInterBranch
+                        ? Colors.teal.withOpacity(0.1)
+                        : Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    isInterBranch
+                        ? Icons.swap_horiz_rounded
+                        : Icons.transform_rounded,
+                    color: isInterBranch ? Colors.teal : Colors.blue,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '#${list.transferId.toString()}',
-                        style: TextStyle(fontSize: 16.sp),
+                        '#${transfer.transferId.toString()}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2D3748),
+                        ),
                       ),
-                      Text(
-                        Global.formatDate(list.transferDate.toString()),
-                        style: TextStyle(
-                            color: Colors.green, fontSize: 16.sp),
-                      )
-                    ],
-                  ),
-                  subtitle: Table(
-                    children: [
-                      TableRow(
+                      const SizedBox(height: 4),
+                      Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Text('สินค้า',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: Colors.orange)),
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: Colors.grey[600],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Text('น้ำหนัก',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: Colors.orange)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Text('คลังสินค้า',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: Colors.orange)),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatThaiDate(transfer.transferDate.toString()),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
-                      ...list.details!.map(
-                        (e) => TableRow(
-                          decoration: const BoxDecoration(),
+                    ],
+                  ),
+                ),
+                // Status and Type Badges
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // Status Badge
+                    if (transfer.status == 'PENDING' ||
+                        transfer.status == 'CANCEL' ||
+                        transfer.status == 'REJECT')
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(transfer.status).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getStatusColor(transfer.status),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            paddedText(e.product!.name,
-                                style:
-                                    TextStyle(fontSize: size?.getWidthPx(7))),
-                            paddedText(formatter.format(e.weight!),
-                                align: TextAlign.center,
-                                style:
-                                    TextStyle(fontSize: size?.getWidthPx(7))),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    paddedText('ต้นทาง:',
-                                        align: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(7),
-                                            fontWeight: FontWeight.w900)),
-                                    paddedText(
-                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.fromBinLocation!.name}',
-                                        align: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(7))),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    paddedText('ปลายทาง:',
-                                        align: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(7),
-                                            fontWeight: FontWeight.w900)),
-                                    paddedText(
-                                        '${list.toBranchId != null && list.toBranchId != 0 ? 'สาขา ${list.toBranchName}' : ''} คลัง ${list.toBinLocation!.name}',
-                                        align: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: size?.getWidthPx(7))),
-                                  ],
-                                )
-                              ],
-                            )
+                            Icon(
+                              _getStatusIcon(transfer.status),
+                              size: 12,
+                              color: _getStatusColor(transfer.status),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              transfer.status ?? 'N/A',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: _getStatusColor(transfer.status),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
+                    const SizedBox(height: 6),
+                    // Transfer Type Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isInterBranch
+                            ? Colors.teal.withOpacity(0.1)
+                            : Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        isInterBranch ? 'โอนระหว่างสาขา' : 'โอนภายใน',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: isInterBranch ? Colors.teal[700] : Colors.blue[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Transfer Details
+            if (transfer.details != null && transfer.details!.isNotEmpty) ...[
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Column(
+                  children: [
+                    // Table Header
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: _buildTableHeader('สินค้า', Icons.inventory_2_rounded),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: _buildTableHeader('น้ำหนัก', Icons.scale_rounded),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: _buildTableHeader('เส้นทางการโอน', Icons.route_rounded),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Transfer Detail Rows
+                    ...transfer.details!.asMap().entries.map((entry) {
+                      int idx = entry.key;
+                      var detail = entry.value;
+
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: idx % 2 == 0 ? Colors.white : Colors.grey[25],
+                          borderRadius: idx == transfer.details!.length - 1
+                              ? const BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          )
+                              : null,
+                        ),
+                        child: Row(
+                          children: [
+                            // Product Name
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                detail.product?.name ?? '',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+
+                            // Weight
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                formatter.format(detail.weight ?? 0),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue[700],
+                                ),
+                              ),
+                            ),
+
+                            // Transfer Route
+                            Expanded(
+                              flex: 4,
+                              child: _buildTransferRoute(transfer),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            ],
+
+            // Action Button
+            if (canCancel) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                  onPressed: () => cancel(transfer),
+                  icon: const Icon(Icons.cancel_rounded, size: 18),
+                  label: const Text(
+                    'ยกเลิกการโอน',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (list.toBranchId != null &&
-                          list.toBranchId != 0 &&
-                          list.status == 'PENDING' && list.toBranchId != Global.user!.branchId)
-                        GestureDetector(
-                          onTap: () {
-                            cancel(list);
-                          },
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(8)),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    'ยกเลิก',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              )
             ],
-          ),
+          ],
         ),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: Center(
-            child: Row(
-              children: [
-                if (list.status == 'PENDING' || list.status == 'CANCEL' || list.status == 'REJECT')
-                Container(
-                  decoration: BoxDecoration(
-                      color: list.status == 'PENDING'
-                          ? Colors.deepOrange
-                          : Colors.red,
-                      borderRadius: BorderRadius.circular(10.0)),
-                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        ClipOval(
-                          child: SizedBox(
-                            width: 30.0,
-                            height: 30.0,
-                            child: RawMaterialButton(
-                              elevation: 10.0,
-                              child: const Icon(
-                                Icons.pending_actions,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ),
-                        Text('${list.status}',
-                          style: const TextStyle(color: Colors.white, fontSize: 20),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20,),
-                Container(
-                  decoration: BoxDecoration(
-                      color: list.toBranchId != null && list.toBranchId != 0
-                          ? Colors.teal.shade900
-                          : Colors.blue.shade900,
-                      borderRadius: BorderRadius.circular(10.0)),
-                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        ClipOval(
-                          child: SizedBox(
-                            width: 30.0,
-                            height: 30.0,
-                            child: RawMaterialButton(
-                              elevation: 10.0,
-                              child: const Icon(
-                                Icons.transform_outlined,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ),
-                        Text(
-                          list.toBranchId != null && list.toBranchId != 0
-                              ? 'โอนระหว่างสาขา'
-                              : 'โอนภายใน',
-                          style: const TextStyle(color: Colors.white, fontSize: 20),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+      ),
+    );
+  }
+
+  Widget _buildTableHeader(String title, IconData icon) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 14,
+          color: Colors.grey[600],
+        ),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
             ),
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildTransferRoute(TransferModel transfer) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Source
+        _buildRouteInfo(
+          'ต้นทาง',
+          '${transfer.toBranchId != null && transfer.toBranchId != 0 ? 'สาขา ${transfer.toBranchName ?? 'N/A'}' : ''} คลัง ${transfer.fromBinLocation?.name ?? 'N/A'}',
+          Colors.orange,
+          Icons.location_on_rounded,
+        ),
+        const SizedBox(height: 8),
+        // Destination
+        _buildRouteInfo(
+          'ปลายทาง',
+          '${transfer.toBranchId != null && transfer.toBranchId != 0 ? 'สาขา ${transfer.toBranchName ?? 'N/A'}' : ''} คลัง ${transfer.toBinLocation?.name ?? 'N/A'}',
+          Colors.green,
+          Icons.flag_rounded,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRouteInfo(String label, String location, Color color, IconData icon) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Icon(
+            icon,
+            size: 12,
+            color: color,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$label:',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+              Text(
+                location,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
+        return Colors.orange;
+      case 'COMPLETED':
+        return Colors.green;
+      case 'CANCEL':
+      case 'REJECT':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getStatusIcon(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
+        return Icons.pending_actions_rounded;
+      case 'COMPLETED':
+        return Icons.check_circle_rounded;
+      case 'CANCEL':
+      case 'REJECT':
+        return Icons.cancel_rounded;
+      default:
+        return Icons.help_rounded;
+    }
   }
 
   void removeProduct(int id, int i) async {
@@ -368,10 +515,8 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     }
   }
 
-  void cancel(TransferModel list) async {
+  void cancel(TransferModel transfer) async {
     try {
-      // motivePrint(list.toJson());
-      // return;
       Alert.info(
           context, 'คุณแน่ใจที่จะยกเลิกการทำธุรกรรมนี้หรือไม่?', '', 'ตกลง',
           action: () async {
@@ -382,7 +527,7 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
             await pr.show();
             pr.update(message: 'processing'.tr());
             var result = await ApiServices.post(
-                '/transfer/between-branch-cancel', Global.requestObj(list));
+                '/transfer/between-branch-cancel', Global.requestObj(transfer));
             await pr.hide();
             if (result?.status == "success") {
               loadData();
@@ -395,5 +540,30 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
         print(e.toString());
       }
     }
+  }
+
+  // Helper method to format Thai date
+  String _formatThaiDate(String dateString) {
+    try {
+      DateTime date = DateTime.parse(dateString);
+      String day = date.day.toString().padLeft(2, '0');
+      String monthName = _getThaiMonthName(date.month);
+      String year = (date.year + 543).toString(); // Convert to Buddhist year
+      String time = '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+
+      return '$day $monthName $year เวลา $time น.';
+    } catch (e) {
+      return Global.formatDate(dateString); // Fallback to original format
+    }
+  }
+
+  // Helper method to get Thai month names
+  String _getThaiMonthName(int month) {
+    const thaiMonths = [
+      '', // Index 0 (not used)
+      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    ];
+    return month > 0 && month <= 12 ? thaiMonths[month] : 'ไม่ระบุ';
   }
 }

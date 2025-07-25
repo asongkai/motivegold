@@ -21,7 +21,7 @@ class GoldPriceListTileData extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
-              flex: 6,
+              flex: 3,
               child: Text(
                 title!,
                 style: TextStyle(
@@ -31,7 +31,7 @@ class GoldPriceListTileData extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Text(
                 subTitle!,
                 textAlign: TextAlign.end,
@@ -42,7 +42,7 @@ class GoldPriceListTileData extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 4,
+              flex: 3,
               child: Text(
                 value!,
                 textAlign: TextAlign.end,

@@ -13,7 +13,7 @@ import 'package:pdf/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
-  // motivePrint(invoice.payments?.length);
+  motivePrint(invoice.order?.toJson());
   var myTheme = ThemeData.withFont(
     base: Font.ttf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
@@ -46,7 +46,8 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
         paddedText('หลักประกัน', align: TextAlign.center),
         paddedText('น้ำหนัก\n(กรัม)', align: TextAlign.center),
         paddedText('จำนวน\n(ชิ้น)', align: TextAlign.center),
-        paddedText('ราคาตามจำนวนสินไถ่\nรวมภาษีมูลค่าเพิ่ม(บาท)', align: TextAlign.center),
+        paddedText('ราคาตามจำนวนสินไถ่\nรวมภาษีมูลค่าเพิ่ม(บาท)',
+            align: TextAlign.center),
         paddedText('ราคาตามจำนวน\nสินไถ่ (บาท)', align: TextAlign.center),
         paddedText('ราคาตามจำนวน\nขายฝาก (บาท)', align: TextAlign.center),
         paddedText('ฐานภาษี\n(บาท)', align: TextAlign.center),
@@ -131,12 +132,18 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
         paddedText('ร้อยละ', isPadding: false),
         paddedText('7%', isPadding: false),
         paddedText('', isPadding: false),
-        underlinedText(text: '${Global.format(getTaxAmountTotal(invoice.items))}', axis: CrossAxisAlignment.end, fontWeight: FontWeight.normal),
+        underlinedText(
+            text: '${Global.format(getTaxAmountTotal(invoice.items))}',
+            axis: CrossAxisAlignment.end,
+            fontWeight: FontWeight.normal),
         // paddedText('${Global.format(getTaxAmountTotal(invoice.items))}',
         //     isPadding: false, align: TextAlign.right),
         paddedText('บาท', isPadding: false, align: TextAlign.center),
         paddedText('หัก รวมราคาตามราคาขายฝาก', isPadding: false),
-        underlinedText(text: '${Global.format(getDepositAmountTotal(invoice.items))}', axis: CrossAxisAlignment.end, fontWeight: FontWeight.normal),
+        underlinedText(
+            text: '${Global.format(getDepositAmountTotal(invoice.items))}',
+            axis: CrossAxisAlignment.end,
+            fontWeight: FontWeight.normal),
         // paddedText('${Global.format(getDepositAmountTotal(invoice.items))}',
         //     isPadding: false, align: TextAlign.right),
         paddedText('บาท', isPadding: false, align: TextAlign.center),
@@ -146,12 +153,20 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
         paddedText('', isPadding: false),
         paddedText('', isPadding: false),
         paddedText('', isPadding: false),
-        underlinedText(text: '${Global.format(getRedemptionVatTotal(invoice.items))}', axis: CrossAxisAlignment.end, doubleLine: true, fontWeight: FontWeight.normal),
+        underlinedText(
+            text: '${Global.format(getRedemptionVatTotal(invoice.items))}',
+            axis: CrossAxisAlignment.end,
+            doubleLine: true,
+            fontWeight: FontWeight.normal),
         // paddedText('${Global.format(getRedemptionVatTotal(invoice.items))}',
         //     isPadding: false, align: TextAlign.right),
         paddedText('บาท', isPadding: false, align: TextAlign.center),
         paddedText('รวมมูลค่าฐานภาษีมูลค่าเพิ่ม', isPadding: false),
-        underlinedText(text: '${Global.format(getTaxBaseTotal(invoice.items))}', axis: CrossAxisAlignment.end, doubleLine: true, fontWeight: FontWeight.normal),
+        underlinedText(
+            text: '${Global.format(getTaxBaseTotal(invoice.items))}',
+            axis: CrossAxisAlignment.end,
+            doubleLine: true,
+            fontWeight: FontWeight.normal),
         // paddedText('${Global.format(getTaxBaseTotal(invoice.items))}',
         //     isPadding: false, align: TextAlign.right),
         paddedText('บาท', isPadding: false, align: TextAlign.center),
@@ -166,7 +181,8 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
   ]));
 
   widgets.add(Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Expanded(child: Table(
+    Expanded(
+        child: Table(
       columnWidths: {
         0: const FixedColumnWidth(20),
         1: const FixedColumnWidth(120),
@@ -176,14 +192,20 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
       children: [
         TableRow(children: [
           paddedText('', isPadding: false),
-          paddedText('รับผลประโยชน์ครั้งสุดท้ายรวม (${Global.format(taxBaseTotal(invoice.items))} - ${Global.format(getTaxBaseTotal(invoice.items) - getBenefitAmountTotal(invoice.items))})', isPadding: false),
-          paddedText('${Global.format(getBenefitAmountTotal(invoice.items))} บาท',
-              isPadding: false, align: TextAlign.right),
+          paddedText(
+              'รับผลประโยชน์ครั้งสุดท้ายรวม (${Global.format(taxBaseTotal(invoice.items))} - ${Global.format(getTaxBaseTotal(invoice.items) - getBenefitAmountTotal(invoice.items))})',
+              isPadding: false),
+          paddedText(
+              '${Global.format(getBenefitAmountTotal(invoice.items))} บาท',
+              isPadding: false,
+              align: TextAlign.right),
           paddedText('', isPadding: false),
         ]),
         TableRow(children: [
           paddedText('', isPadding: false),
-          paddedText('ร้านรับ - ลูกค้าจ่าย เงินรวม (${Global.format(getDepositAmountTotal(invoice.items))} + ${Global.format(getBenefitAmountTotal(invoice.items))})', isPadding: false),
+          paddedText(
+              'ร้านรับ - ลูกค้าจ่าย เงินรวม (${Global.format(getDepositAmountTotal(invoice.items))} + ${Global.format(getBenefitAmountTotal(invoice.items))})',
+              isPadding: false),
           paddedText(
               '${Global.format(getDepositAmountTotal(invoice.items) + getBenefitAmountTotal(invoice.items))} บาท',
               isPadding: false,
@@ -192,7 +214,8 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
         ]),
       ],
     )),
-    Expanded(child: Table(
+    Expanded(
+        child: Table(
       columnWidths: {
         0: const FixedColumnWidth(20),
         1: const FixedColumnWidth(120),
@@ -202,22 +225,35 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice) async {
       children: [
         TableRow(children: [
           paddedText('', isPadding: false),
-          paddedText('ส่วนลด : (${Global.format(getRedemptionVatTotal(invoice.items))} - ${Global.format(getRedemptionValueTotal(invoice.items))})', isPadding: false),
-          paddedText('(${Global.format(getTaxAmountTotal(invoice.items))}) บาท',
-              isPadding: false, align: TextAlign.right, style: const TextStyle(fontSize: 9, color: PdfColors.red)),
+          if (invoice.order.vatOption == 'Exclude')
+            paddedText(
+                'ส่วนลด : (${Global.format(getRedemptionVatTotal(invoice.items))} - ${Global.format(getRedemptionValueTotal(invoice.items))})',
+                isPadding: false),
+          if (invoice.order.vatOption == 'Include')
+            paddedText('ส่วนลด : _', isPadding: false),
+          if (invoice.order.vatOption == 'Exclude')
+            paddedText(
+                '(${Global.format(getTaxAmountTotal(invoice.items))}) บาท',
+                isPadding: false,
+                align: TextAlign.right,
+                style: const TextStyle(fontSize: 9, color: PdfColors.red)),
+          if (invoice.order.vatOption == 'Include')
+            paddedText('_',
+                isPadding: false,
+                align: TextAlign.right,
+                style: const TextStyle(fontSize: 9, color: PdfColors.red)),
           paddedText('', isPadding: false),
         ]),
         for (int i = 0; i < invoice.payments!.length; i++)
           TableRow(children: [
             paddedText('', isPadding: false),
-            paddedText('${getPaymentType(invoice.payments![i].paymentMethod)} : ', isPadding: false),
             paddedText(
-                '${Global.format(invoice.payments![i].amount ?? 0)} บาท',
-                isPadding: false,
-                align: TextAlign.right),
+                '${getPaymentType(invoice.payments![i].paymentMethod)} : ',
+                isPadding: false),
+            paddedText('${Global.format(invoice.payments![i].amount ?? 0)} บาท',
+                isPadding: false, align: TextAlign.right),
             paddedText('', isPadding: false),
           ]),
-
       ],
     )),
   ]));

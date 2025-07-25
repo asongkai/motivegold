@@ -16,6 +16,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:sizer/sizer.dart';
 
 class SettingValueScreen extends StatefulWidget {
   const SettingValueScreen({super.key, this.posIdModel});
@@ -73,13 +74,13 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
   Widget build(BuildContext context) {
     Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         height: 300,
         child: TitleContent(
           backButton: true,
           title: Text("Set Default Value",
               style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 16.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w900)),
         ),

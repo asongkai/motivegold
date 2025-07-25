@@ -13,6 +13,20 @@ double weightLineTotal = 0;
 double unitCostLineTotal = 0;
 double priceLineTotal = 0;
 
+// Helper function to get movement type color for PDF
+PdfColor getMovementTypeColor(String? type) {
+  if (type == null) return PdfColors.grey600;
+
+  String lowerType = type.toLowerCase();
+  if (lowerType.contains('in')) {
+    return PdfColors.green600;
+  } else if (lowerType.contains('out') || lowerType.contains('sale')) {
+    return PdfColors.red600;
+  } else {
+    return PdfColors.grey600;
+  }
+}
+
 Future<Uint8List> makeStockCardReportPdf(
     List<StockMovementModel> list,
     int type,
@@ -27,13 +41,6 @@ Future<Uint8List> makeStockCardReportPdf(
         await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
-  // final imageLogo = MemoryImage(
-  //     (await rootBundle.load('assets/images/app_icon2.png'))
-  //         .buffer
-  //         .asUint8List());
-  // var data =
-  //     await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf");
-  // var font = Font.ttf(data);
 
   weightLineTotal = movement?.weightBalance ?? 0;
   unitCostLineTotal = movement?.unitCostBalance ?? 0;
@@ -41,18 +48,7 @@ Future<Uint8List> makeStockCardReportPdf(
 
   List<Widget> widgets = [];
 
-  // widgets.add(Center(
-  //     child: Column(children: [
-  //       Text('${Global.company?.name}'),
-  //       Text('(${Global.branch?.name})'),
-  //       //   Text('(สํานักงานใหญ่)'),
-  //       //   Text('${Global.company?.name}'),
-  //       Text(
-  //           '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-  //       //   Text('${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-  //       Text('เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
-  //     ])));
-
+  // Keep the original header format
   widgets.add(Center(
     child: Text(
       'รายงานความเคลื่อนไหวสต๊อกสินค้า',
@@ -69,10 +65,10 @@ Future<Uint8List> makeStockCardReportPdf(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-        Text('สินค้า: ${product?.name}'),
-        Text('คลังสินค้า: ${warehouse?.name}'),
-        Text('ระหว่างวันที่: $date'),
-      ])));
+            Text('สินค้า: ${product?.name}'),
+            Text('คลังสินค้า: ${warehouse?.name}'),
+            Text('ระหว่างวันที่: $date'),
+          ])));
 
   widgets.add(Container(height: 10));
   widgets.add(Row(
@@ -91,130 +87,227 @@ Future<Uint8List> makeStockCardReportPdf(
   ));
   widgets.add(Container(height: 10));
 
-  widgets.add(Table(
-    border: TableBorder.all(color: PdfColors.grey500),
-    children: [
-      TableRow(children: [
-        paddedTextBig('เลขที่ใบ\nกํากับภาษ'),
-        paddedTextBig('วัน/เดือน/ปี'),
-        paddedTextBig('ประเภท\nการเคลื่อนไหว'),
-        paddedTextBig('น้ำหนักรวม\n(IN)'),
-        paddedTextBig('น้ำหนักรวม\n(OUT)'),
-        paddedTextBig('น้ำหนักรวม\n(Balance)'),
-        paddedTextBig('ราคาต่อหน่วย\n(IN)'),
-        paddedTextBig('ราคาต่อหน่วย\n(OUT)'),
-        paddedTextBig('ราคาต่อหน่วย\n(Balance)'),
-        paddedTextBig('ราคารวม\n(IN)'),
-        paddedTextBig('ราคารวม\n(OUT)'),
-        paddedTextBig('ราคารวม\n(Balance)'),
-      ]),
-      TableRow(children: [
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('จุดเริ่มต้นยอดคงเหลือ'),
-        paddedTextBig('${Global.format(movement?.weightBalance ?? 0)}',
-            align: TextAlign.right),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('${Global.format6(movement?.unitCostBalance ?? 0)}',
-            align: TextAlign.right),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('${Global.format6(movement?.priceBalance ?? 0)}',
-            align: TextAlign.right),
-      ]),
-      for (int i = 0; i < list.length; i++)
-        lineItem(list[i], movement),
-      TableRow(children: [
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('ยอดคงเหลือสิ้นสุด'),
-        paddedTextBig('${Global.format(weightLineTotal ?? 0)}',
-            align: TextAlign.right),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('${Global.format6(unitCostLineTotal ?? 0)}',
-            align: TextAlign.right),
-        paddedTextBig(''),
-        paddedTextBig(''),
-        paddedTextBig('${Global.format6(priceLineTotal ?? 0)}',
-            align: TextAlign.right),
-      ]),
-      // TableRow(
-      //   decoration: const BoxDecoration(),
-      //   children: [
-      //     paddedTextBig(list[i].orderId!),
-      //     paddedTextBig(Global.dateOnly(list[i].createdDate.toString())),
-      //     paddedTextBig(list[i].type!),
-      //     if (list[i].weight! > 0)
-      //       paddedTextBig(' ${Global.format(list[i].weight ?? 0)}',
-      //           style: const TextStyle(fontSize: 16),
-      //           align: TextAlign.right),
-      //     if (list[i].weight! < 0) paddedTextBig(''),
-      //     if (list[i].weight! < 0)
-      //       paddedTextBig(' ${Global.format(list[i].weight ?? 0)}',
-      //           style: const TextStyle(fontSize: 16),
-      //           align: TextAlign.right),
-      //     if (list[i].weight! > 0) paddedTextBig(''),
-      //     paddedTextBig(
-      //         '${Global.format(weightLineTotal)}'),
-      //     paddedTextBig(' ${Global.format(list[i].weight ?? 0)}',
-      //         style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //     paddedTextBig(' ${Global.format6(list[i].unitCost ?? 0)}',
-      //         style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //     paddedTextBig(' ${Global.format6(list[i].price ?? 0)}',
-      //         style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //   ],
-      // ),
-      // ...list.map((e) => TableRow(
-      //       decoration: const BoxDecoration(),
-      //       children: [
-      //         paddedTextBig(e.orderId!),
-      //         paddedTextBig(Global.dateOnly(e.createdDate.toString())),
-      //         paddedTextBig(e.type!),
-      //         if (e.weight! > 0)
-      //           paddedTextBig(' ${Global.format(e.weight ?? 0)}',
-      //               style: const TextStyle(fontSize: 16),
-      //               align: TextAlign.right),
-      //         if (e.weight! < 0) paddedTextBig(''),
-      //         if (e.weight! < 0)
-      //           paddedTextBig(' ${Global.format(e.weight ?? 0)}',
-      //               style: const TextStyle(fontSize: 16),
-      //               align: TextAlign.right),
-      //         if (e.weight! > 0) paddedTextBig(''),
-      //         paddedTextBig(''),
-      //         paddedTextBig(' ${Global.format(e.weight ?? 0)}',
-      //             style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //         paddedTextBig(' ${Global.format6(e.unitCost ?? 0)}',
-      //             style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //         paddedTextBig(' ${Global.format6(e.price ?? 0)}',
-      //             style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      //       ],
-      //     )),
-      // TableRow(children: [
-      //   paddedTextBig('', style: const TextStyle(fontSize: 14)),
-      //   paddedTextBig(''),
-      //   paddedTextBig(''),
-      //   paddedTextBig('รวมท้ังหมด'),
-      //   paddedTextBig(Global.format(getWeightTotal(ods))),
-      //   paddedTextBig(''),
-      //   paddedTextBig(Global.format(priceIncludeTaxTotal(ods))),
-      //   paddedTextBig(Global.format(purchasePriceTotal(ods))),
-      //   paddedTextBig(Global.format(priceDiffTotal(ods))),
-      //   paddedTextBig(Global.format(taxBaseTotal(ods))),
-      //   paddedTextBig(Global.format(taxAmountTotal(ods))),
-      //   paddedTextBig(Global.format(priceExcludeTaxTotal(ods))),
-      // ])
-    ],
+  // Apply the modern design pattern from makeStockMovementReportPdf
+  widgets.add(Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: PdfColors.grey300, width: 1),
+    ),
+    child: Table(
+      border: TableBorder(
+        top: BorderSide.none,
+        bottom: BorderSide.none,
+        left: BorderSide.none,
+        right: BorderSide.none,
+        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        verticalInside: BorderSide.none,
+      ),
+      children: [
+        // Clean header row with rounded top corners
+        TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue600,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
+              ),
+            ),
+            children: [
+              paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('วัน/เดือน/ปี',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('ประเภท\nการเคลื่อนไหว',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  )
+              ),
+              paddedTextSmall('น้ำหนักรวม\n(IN)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('น้ำหนักรวม\n(OUT)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('น้ำหนักรวม\n(Balance)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคาต่อหน่วย\n(IN)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคาต่อหน่วย\n(OUT)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคาต่อหน่วย\n(Balance)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคารวม\n(IN)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคารวม\n(OUT)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+              paddedTextSmall('ราคารวม\n(Balance)',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white
+                  ),
+                  align: TextAlign.right
+              ),
+            ]
+        ),
+        // Starting balance row with clean styling
+        TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue50,
+            ),
+            children: [
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('จุดเริ่มต้นยอดคงเหลือ',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue800
+                  )
+              ),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format(movement?.weightBalance ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format6(movement?.unitCostBalance ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.orange700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format6(movement?.priceBalance ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.green700
+                  ),
+                  align: TextAlign.right),
+            ]
+        ),
+        // Data rows with color coding
+        for (int i = 0; i < list.length; i++)
+          lineItem(list[i], movement),
+        // Ending balance row with clean styling
+        TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue50,
+              border: Border(
+                top: BorderSide(color: PdfColors.blue200, width: 1),
+              ),
+            ),
+            children: [
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('ยอดคงเหลือสิ้นสุด',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue800
+                  )
+              ),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format(weightLineTotal ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format6(unitCostLineTotal ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.orange700
+                  ),
+                  align: TextAlign.right),
+              paddedTextSmall(''),
+              paddedTextSmall(''),
+              paddedTextSmall('${Global.format6(priceLineTotal ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.green700
+                  ),
+                  align: TextAlign.right),
+            ]
+        ),
+      ],
+    ),
   ));
 
   pdf.addPage(
     MultiPage(
-      // maxPages: 100,
       margin: const EdgeInsets.all(20),
       pageFormat: PdfPageFormat(
         PdfPageFormat.a4.height, // height becomes width
@@ -227,59 +320,83 @@ Future<Uint8List> makeStockCardReportPdf(
   return pdf.save();
 }
 
-
-
-lineItem(StockMovementModel list, StockMovementModel? movement) {
-
+TableRow lineItem(StockMovementModel list, StockMovementModel? movement) {
   weightLineTotal += list.weight ?? 0;
   unitCostLineTotal += list.unitCost ?? 0;
   priceLineTotal += list.price ?? 0;
 
+  final movementColor = getMovementTypeColor(list.type);
+
   return TableRow(
     decoration: const BoxDecoration(),
     children: [
-      paddedTextBig(list.orderId!),
-      paddedTextBig(Global.dateOnly(list.createdDate.toString())),
-      paddedTextBig(list.type!),
+      paddedTextSmall(list.orderId!, style: TextStyle(fontSize: 8)),
+      paddedTextSmall(Global.dateOnly(list.createdDate.toString()), style: TextStyle(fontSize: 8)),
+      paddedTextSmall(list.type!,
+          style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              color: movementColor
+          )
+      ),
       if (list.weight! > 0)
-        paddedTextBig(' ${Global.format(list.weight ?? 0)}',
-            style: const TextStyle(fontSize: 16),
+        paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.green600),
             align: TextAlign.right),
-      if (list.weight! < 0) paddedTextBig(''),
+      if (list.weight! < 0) paddedTextSmall(''),
       if (list.weight! < 0)
-        paddedTextBig(' ${Global.format(list.weight ?? 0)}',
-            style: const TextStyle(fontSize: 16),
+        paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.red600),
             align: TextAlign.right),
-      if (list.weight! > 0) paddedTextBig(''),
-      paddedTextBig(
-          '${Global.format(weightLineTotal)}'),
+      if (list.weight! > 0) paddedTextSmall(''),
+      paddedTextSmall('${Global.format(weightLineTotal)}',
+          style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+              color: PdfColors.blue700
+          ),
+          align: TextAlign.right),
       if (list.unitCost! > 0)
-      paddedTextBig(' ${Global.format6(list.unitCost ?? 0)}',
-          style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      if (list.unitCost! < 0) paddedTextBig(''),
+        paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.green600),
+            align: TextAlign.right),
+      if (list.unitCost! < 0) paddedTextSmall(''),
       if (list.unitCost! < 0)
-        paddedTextBig(' ${Global.format6(list.unitCost ?? 0)}',
-            style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      if (list.unitCost! > 0) paddedTextBig(''),
-      paddedTextBig(' ${Global.format6(unitCostLineTotal)}',
-          style: const TextStyle(fontSize: 16), align: TextAlign.right),
+        paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.red600),
+            align: TextAlign.right),
+      if (list.unitCost! > 0) paddedTextSmall(''),
+      paddedTextSmall(' ${Global.format6(unitCostLineTotal)}',
+          style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+              color: PdfColors.orange700
+          ),
+          align: TextAlign.right),
       if (list.price! > 0)
-      paddedTextBig(' ${Global.format6(list.price ?? 0)}',
-          style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      if (list.price! < 0) paddedTextBig(''),
+        paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.green600),
+            align: TextAlign.right),
+      if (list.price! < 0) paddedTextSmall(''),
       if (list.price! < 0)
-        paddedTextBig(' ${Global.format6(list.price ?? 0)}',
-            style: const TextStyle(fontSize: 16), align: TextAlign.right),
-      if (list.price! > 0) paddedTextBig(''),
-      paddedTextBig(' ${Global.format6(priceLineTotal)}',
-          style: const TextStyle(fontSize: 16), align: TextAlign.right),
+        paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
+            style: TextStyle(fontSize: 8, color: PdfColors.red600),
+            align: TextAlign.right),
+      if (list.price! > 0) paddedTextSmall(''),
+      paddedTextSmall(' ${Global.format6(priceLineTotal)}',
+          style: TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+              color: PdfColors.green700
+          ),
+          align: TextAlign.right),
     ],
   );
 }
 
 Widget paddedText(final String text,
-        {final TextAlign align = TextAlign.left,
-        final TextStyle style = const TextStyle(fontSize: 12)}) =>
+    {final TextAlign align = TextAlign.left,
+      final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(10),
       child: Text(
@@ -289,11 +406,11 @@ Widget paddedText(final String text,
       ),
     );
 
-Widget paddedTextBig(final String text,
-        {final TextAlign align = TextAlign.left,
-        final TextStyle style = const TextStyle(fontSize: 14)}) =>
+Widget paddedTextSmall(final String text,
+    {final TextAlign align = TextAlign.left,
+      final TextStyle style = const TextStyle(fontSize: 9)}) =>
     Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(4),
       child: Text(
         text,
         textAlign: align,

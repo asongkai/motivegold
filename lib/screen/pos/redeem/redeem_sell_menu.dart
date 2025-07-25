@@ -32,6 +32,7 @@ class RedeemMenuScreenState extends State<RedeemMenuScreen> {
     });
     super.initState();
     Global.currentRedeemType = 1;
+    Global.currentOrderType = 0;
     init();
   }
 
