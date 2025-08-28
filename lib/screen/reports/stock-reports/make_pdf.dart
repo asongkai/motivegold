@@ -10,10 +10,9 @@ import 'package:motivegold/utils/global.dart';
 
 Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
 

@@ -1356,6 +1356,8 @@ checkDate(String date) {
   }
 }
 
+
+
 getWorkId(CustomerModel customer) {
   if (customer.nationality == 'Foreigner') {
     return 'Work permit: ${customer.workPermit} Passport: ${customer.passportId} Tax ID: ${customer.taxNumber}';

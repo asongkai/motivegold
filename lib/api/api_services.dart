@@ -40,7 +40,7 @@ class ApiServices {
 
   static Future<Response>? post(String url, dynamic data) {
     try {
-      motivePrint(url);
+      motivePrint(Constants.BACKEND_URL + url);
       return http.post(Uri.parse(Constants.BACKEND_URL + url), headers: headers, body: data).then((response) {
         // motivePrint(response.body);
         if (response.statusCode == 200) {

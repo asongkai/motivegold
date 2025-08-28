@@ -13,10 +13,9 @@ import 'package:motivegold/utils/helps/common_function.dart';
 Future<Uint8List> makeSellUsedGoldReportPdf(
     List<OrderModel?> orders, int type, String date) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
 
@@ -80,7 +79,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
             children: [
               paddedTextSmall('วัน/เดือน/ปี',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -88,7 +87,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('เลขท่ีใบสําคัญ\nรับเงิน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -96,7 +95,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('ชื่อผู้ซื้อ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -104,7 +103,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -112,7 +111,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('รายการสินค้า',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -120,7 +119,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('น้ําหนัก\n(กรัม)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -128,7 +127,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
               paddedTextSmall('จํานวนเงิน\n(บาท)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -141,31 +140,31 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
           decoration: const BoxDecoration(),
           children: [
             paddedTextSmall(Global.dateOnly(e!.orderDate.toString()),
-                style: TextStyle(fontSize: 8),
+                style: TextStyle(fontSize: 10),
                 align: TextAlign.center),
             paddedTextSmall(e.orderId,
-                style: TextStyle(fontSize: 8),
+                style: TextStyle(fontSize: 10),
                 align: TextAlign.center),
             paddedTextSmall(
                 type == 1
                     ? '${getCustomerName(e.customer!)}'
                     : 'รวมรายการทองเก่า\nประจําวัน',
-                style: TextStyle(fontSize: 8),
+                style: TextStyle(fontSize: 10),
                 align: TextAlign.center),
             paddedTextSmall(e.customer?.taxNumber != ''
                 ? e.customer?.taxNumber ?? ''
                 : e.customer?.idCard ?? '',
-                style: TextStyle(fontSize: 8),
+                style: TextStyle(fontSize: 10),
                 align: TextAlign.center),
             paddedTextSmall('ทองเก่า',
-                style: TextStyle(fontSize: 8, color: PdfColors.orange600, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 10, color: PdfColors.orange600, fontWeight: FontWeight.bold),
                 align: TextAlign.center),
             paddedTextSmall(
                 '${type == 1 ? Global.format(getWeight(e)) : Global.format(e.weight!)}',
-                style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                style: TextStyle(fontSize: 10, color: PdfColors.blue600),
                 align: TextAlign.right),
             paddedTextSmall(Global.format(e.priceIncludeTax ?? 0),
-                style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                style: TextStyle(fontSize: 10, color: PdfColors.green600),
                 align: TextAlign.right)
           ],
         )),
@@ -178,13 +177,13 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               ),
             ),
             children: [
-              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue800
                   ),
@@ -192,14 +191,14 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
               paddedTextSmall(
                   '${type == 1 ? Global.format(getWeightTotal(orders)) : Global.format(getWeightTotalB(orders))}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceIncludeTaxTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.green700
                   ),
@@ -233,7 +232,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
 
 Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+      final TextStyle style = const TextStyle(fontSize: 11)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

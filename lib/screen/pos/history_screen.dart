@@ -1151,7 +1151,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PreviewBuyThengPdfPage(
             invoice: invoice,
-            shop: true,
           ),
         ));
         break;

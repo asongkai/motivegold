@@ -99,7 +99,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
     }
   }
 
-  void search() async {
+  Future<void> search() async {
+
     makeSearchDate();
 
     setState(() {
@@ -213,7 +214,7 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           );
         }
 
-        if (value == 2) {
+        if (value == 2 || value == 3) {
           List<OrderModel> dailyList = genDailyList(filterList);
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
@@ -223,7 +224,38 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             MaterialPageRoute(
               builder: (context) => PreviewSellVatReportPage(
                 orders: dailyList,
-                type: 2,
+                type: value,
+                fromDate: fromDate,
+                toDate: toDate,
+                date: '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+              ),
+            ),
+          );
+        }
+
+        if (value == 4) {
+
+          if (yearCtrl.text.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+            return;
+          }
+
+          DateTime now = DateTime.now();
+          fromDate = DateTime(now.year, 1, 1);
+          toDate = DateTime(now.year, 12, 31);
+
+          await search();
+
+          List<OrderModel> monthlyList = genMonthlyList(filterList);
+          if (monthlyList.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+            return;
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PreviewSellVatReportPage(
+                orders: monthlyList,
+                type: value,
                 fromDate: fromDate,
                 toDate: toDate,
                 date: '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
@@ -237,14 +269,28 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           value: 1,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('แบบเรียงเบอร์', style: TextStyle(fontSize: 14)),
+            title: Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
           value: 2,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('แบบรายวัน', style: TextStyle(fontSize: 14)),
+            title: Text('สรุปรายวัน(แสดงทุกวัน)', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('สรุปรายวัน(แสดงวันที่มีรายการ)', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        PopupMenuItem(
+          value: 4,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('สรุปรายเดือน', style: TextStyle(fontSize: 14)),
           ),
         ),
       ],
@@ -1327,20 +1373,30 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
     return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
   }
 
-  List<OrderModel> genDailyList(List<OrderModel?>? filterList) {
+  List<OrderModel> genDailyList(List<OrderModel?>? filterList, {int? value}) {
     List<OrderModel> orderList = [];
     int days = Global.daysBetween(fromDate!, toDate!);
+
     for (int i = 0; i <= days; i++) {
-      DateTime? monthDate = fromDate!.add(Duration(days: i));
+      DateTime monthDate = fromDate!.add(Duration(days: i));
+
+      // Get all orders for this specific date
       var dateList = filterList
-          ?.where((element) =>
-      Global.dateOnly(element!.createdDate.toString()) ==
-          Global.dateOnly(monthDate.toString()))
+          ?.where((element) => element != null &&
+          Global.dateOnly(element.createdDate.toString()) ==
+              Global.dateOnly(monthDate.toString()))
+          .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
-      if (dateList!.isNotEmpty) {
+
+      if (dateList != null && dateList.isNotEmpty) {
+        // Create order ID from first and last order
+        String combinedOrderId = dateList.length == 1
+            ? dateList.first.orderId
+            : '${dateList.first.orderId} - ${dateList.last.orderId}';
+
         var order = OrderModel(
-            orderId: '${dateList.last?.orderId} - ${dateList.first?.orderId}',
-            orderDate: dateList.first?.orderDate,
+            orderId: combinedOrderId, // Combined all order IDs
+            orderDate: dateList.first.orderDate,
             createdDate: monthDate,
             customerId: 0,
             weight: getWeightTotal(dateList),
@@ -1350,7 +1406,85 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             taxBase: taxBaseTotal(dateList),
             taxAmount: taxAmountTotal(dateList),
             priceExcludeTax: priceExcludeTaxTotal(dateList));
+
         orderList.add(order);
+      } else {
+        // Optional: Add "no sales" entry for days with no orders
+        if (value == 2) {
+          var noSalesOrder = OrderModel(
+              orderId: 'ไม่มียอดขาย',
+              orderDate: monthDate,
+              createdDate: monthDate,
+              customerId: 0,
+              weight: 0.0,
+              priceIncludeTax: 0.0,
+              purchasePrice: 0.0,
+              priceDiff: 0.0,
+              taxBase: 0.0,
+              taxAmount: 0.0,
+              priceExcludeTax: 0.0);
+
+          orderList.add(noSalesOrder);
+        }
+      }
+    }
+    return orderList;
+  }
+
+  List<OrderModel> genMonthlyList(List<OrderModel?>? filterList) {
+    List<OrderModel> orderList = [];
+
+    // Calculate months between fromDate and toDate
+    int monthsDiff = ((toDate!.year - fromDate!.year) * 12) + (toDate!.month - fromDate!.month);
+
+    for (int i = 0; i <= monthsDiff; i++) {
+      // Get the first day of each month
+      DateTime monthDate = DateTime(fromDate!.year, fromDate!.month + i, 1);
+
+      // Get all orders for this specific month and year
+      var monthList = filterList
+          ?.where((element) => element != null &&
+          element.createdDate?.year == monthDate.year &&
+          element.createdDate?.month == monthDate.month)
+          .cast<OrderModel>() // Cast to non-nullable OrderModel
+          .toList();
+
+      if (monthList != null && monthList.isNotEmpty) {
+        // Create order ID from first and last order of the month
+        String combinedOrderId = monthList.length == 1
+            ? monthList.first.orderId
+            : '${monthList.first.orderId} - ${monthList.last.orderId}';
+
+        var order = OrderModel(
+            orderId: combinedOrderId,
+            orderDate: monthList.first.orderDate,
+            createdDate: monthDate, // First day of the month
+            customerId: 0,
+            weight: getWeightTotal(monthList),
+            priceIncludeTax: priceIncludeTaxTotal(monthList),
+            purchasePrice: purchasePriceTotal(monthList),
+            priceDiff: priceDiffTotal(monthList),
+            taxBase: taxBaseTotal(monthList),
+            taxAmount: taxAmountTotal(monthList),
+            priceExcludeTax: priceExcludeTaxTotal(monthList));
+
+        orderList.add(order);
+      } else {
+        // Optional: Add "no sales" entry for months with no orders
+        var noSalesOrder = OrderModel(
+            orderId: 'ไม่มียอดขาย',
+            orderDate: monthDate,
+            createdDate: monthDate,
+            customerId: 0,
+            weight: 0.0,
+            priceIncludeTax: 0.0,
+            purchasePrice: 0.0,
+            priceDiff: 0.0,
+            taxBase: 0.0,
+            taxAmount: 0.0,
+            priceExcludeTax: 0.0);
+
+        orderList.add(noSalesOrder);
       }
     }
     return orderList;

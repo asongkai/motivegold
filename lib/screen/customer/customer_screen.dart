@@ -204,7 +204,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         fontSize: 30,
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
-                if (widget.selected != true)
+                // if (widget.selected != true)
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context)

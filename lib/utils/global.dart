@@ -113,6 +113,14 @@ class Global {
   static String? refillThengAttachWeb;
   static String? sellUsedThengAttachWeb;
 
+  static File? pawnAttach;
+  static String? pawnAttachWeb;
+
+  static List<OrderModel>? pawnOrders = [];
+  static OrderModel? pawnOrder;
+
+  static List<OrderDetailModel>? pawnOrderDetail = [];
+
   // PAYMENT
   static String? currentPaymentMethod;
 
@@ -260,7 +268,7 @@ class Global {
     return number;
   }
 
-  static format(dynamic value) {
+  static format(dynamic value, {bool option = false}) {
     String number = formatter.format(value);
     var part = number.split('.');
     if (part.length > 1) {
@@ -269,6 +277,9 @@ class Global {
       }
       return number;
     } else {
+      if (option) {
+        return number;
+      }
       return '$number.00';
     }
   }
@@ -912,6 +923,17 @@ class Global {
     return sum;
   }
 
+  static double getOrderTotalAmountExclude(List<OrderDetailModel> data) {
+    if (data.isEmpty) {
+      return 0;
+    }
+    double sum = 0;
+    for (var e in data) {
+      sum += e.priceExcludeTax!;
+    }
+    return sum;
+  }
+
   static double getOrderTotalAmountWholeSale(
       int orderTypeId, List<OrderDetailModel> data) {
     if (data.isEmpty) {
@@ -1280,6 +1302,16 @@ class Global {
   static String formatDateMF(String date) {
     DateTime tempDate = DateTime.parse(date).toLocal();
     return DateFormat('dd MMM yyyy').format(tempDate);
+  }
+
+  static String formatDateMFT(String date) {
+    DateTime tempDate = DateTime.parse(date).toLocal();
+    return DateFormat('MMMM').format(tempDate);
+  }
+
+  static String formatDateYFT(String date) {
+    DateTime tempDate = DateTime.parse(date).toLocal();
+    return DateFormat('yyyy').format(tempDate);
   }
 
   static String formatDateThai(String date) {

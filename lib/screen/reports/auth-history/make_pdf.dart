@@ -10,14 +10,13 @@ import 'package:motivegold/utils/global.dart';
 
 Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
   // final imageLogo = MemoryImage(
-  //     (await rootBundle.load('assets/images/app_icon2.png'))
+  //     (await rootBundle.load('assets/images/logo.png'))
   //         .buffer
   //         .asUint8List());
   // var data =
@@ -55,19 +54,19 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
                       children: [
                         Text(
                           'Type: ${e.type!.toUpperCase()}',
-                          style: const TextStyle(fontSize: 9),
+                          style: const TextStyle(fontSize: 11),
                         ),
                         Text(
                           'User ID: ${e.user?.id!}',
-                          style: const TextStyle(fontSize: 9),
+                          style: const TextStyle(fontSize: 11),
                         ),
                         Text(
                           'Username: ${e.user?.username!}',
-                          style: const TextStyle(fontSize: 9),
+                          style: const TextStyle(fontSize: 11),
                         ),
                         Text(
                           'Date: ${Global.formatDate(e.date.toString())}',
-                          style: const TextStyle(fontSize: 9),
+                          style: const TextStyle(fontSize: 11),
                         )
                       ]),
                   padding: const EdgeInsets.all(10),
@@ -182,7 +181,7 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
 
 Widget paddedText(final String text,
         {final TextAlign align = TextAlign.left,
-        final TextStyle style = const TextStyle(fontSize: 9)}) =>
+        final TextStyle style = const TextStyle(fontSize: 11)}) =>
     Padding(
       padding: const EdgeInsets.all(10),
       child: Text(

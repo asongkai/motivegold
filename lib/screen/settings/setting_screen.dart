@@ -10,6 +10,7 @@ import 'package:motivegold/screen/settings/master/defaultPayment/default_payment
 import 'package:motivegold/screen/settings/master/defaultProduct/default_product_screen.dart';
 import 'package:motivegold/screen/settings/master/warehouse/location_list_screen.dart';
 import 'package:motivegold/screen/settings/master_data_screen.dart';
+import 'package:motivegold/screen/settings/pawn/default/default_pawn_setting_screen.dart';
 import 'package:motivegold/screen/settings/pos-id/pos_id_screen.dart';
 import 'package:motivegold/screen/settings/prefix/order_id_prefix.dart';
 import 'package:motivegold/screen/settings/setting-value/setting_value.dart';
@@ -257,6 +258,31 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                   title: 'จัดการค่าเริ่มต้นขอ การชำระเงิน',
                   subtitle: "ตั้งค่าค่าเริ่มต้น การชำระเงิน",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const DefaultPawnSettingScreen()));
+                  },
+                  icons: Icons.remove_from_queue_outlined,
+                  // Better for payment settings
+                  iconStyle: IconStyle(
+                      backgroundColor:
+                      Colors.purple[700]! // Green for money/payment
+                  ),
+                  title: 'จัดการค่าเริ่มต้น ขายฝาก',
+                  subtitle: "ตั้งค่าค่าเริ่มต้น ขายฝาก",
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge

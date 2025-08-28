@@ -181,7 +181,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
               children: [
                 Expanded(
                   flex: 6,
-                  child: Text("รายงานขายทองใหม่",
+                  child: Text("รายงานขายทองรูปพรรณใหม่",
                       style: TextStyle(
                           fontSize: 14.sp,
                           color: Colors.white,

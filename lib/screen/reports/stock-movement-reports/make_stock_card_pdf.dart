@@ -35,10 +35,9 @@ Future<Uint8List> makeStockCardReportPdf(
     String? date,
     StockMovementModel? movement) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
 
@@ -115,28 +114,28 @@ Future<Uint8List> makeStockCardReportPdf(
             children: [
               paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('วัน/เดือน/ปี',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('ประเภท\nการเคลื่อนไหว',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('น้ำหนักรวม\n(IN)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -144,7 +143,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('น้ำหนักรวม\n(OUT)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -152,7 +151,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('น้ำหนักรวม\n(Balance)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -160,7 +159,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคาต่อหน่วย\n(IN)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -168,7 +167,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคาต่อหน่วย\n(OUT)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -176,7 +175,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคาต่อหน่วย\n(Balance)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -184,7 +183,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคารวม\n(IN)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -192,7 +191,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคารวม\n(OUT)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -200,7 +199,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall('ราคารวม\n(Balance)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -218,7 +217,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('จุดเริ่มต้นยอดคงเหลือ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue800
                   )
@@ -227,7 +226,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format(movement?.weightBalance ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700
                   ),
@@ -236,7 +235,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format6(movement?.unitCostBalance ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.orange700
                   ),
@@ -245,7 +244,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format6(movement?.priceBalance ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.green700
                   ),
@@ -268,7 +267,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('ยอดคงเหลือสิ้นสุด',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue800
                   )
@@ -277,7 +276,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format(weightLineTotal ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700
                   ),
@@ -286,7 +285,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format6(unitCostLineTotal ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.orange700
                   ),
@@ -295,7 +294,7 @@ Future<Uint8List> makeStockCardReportPdf(
               paddedTextSmall(''),
               paddedTextSmall('${Global.format6(priceLineTotal ?? 0)}',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.green700
                   ),
@@ -330,62 +329,62 @@ TableRow lineItem(StockMovementModel list, StockMovementModel? movement) {
   return TableRow(
     decoration: const BoxDecoration(),
     children: [
-      paddedTextSmall(list.orderId!, style: TextStyle(fontSize: 8)),
-      paddedTextSmall(Global.dateOnly(list.createdDate.toString()), style: TextStyle(fontSize: 8)),
+      paddedTextSmall(list.orderId!, style: TextStyle(fontSize: 10)),
+      paddedTextSmall(Global.dateOnly(list.createdDate.toString()), style: TextStyle(fontSize: 10)),
       paddedTextSmall(list.type!,
           style: TextStyle(
-              fontSize: 9,
+              fontSize: 11,
               fontWeight: FontWeight.bold,
               color: movementColor
           )
       ),
       if (list.weight! > 0)
         paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10, color: PdfColors.green600),
             align: TextAlign.right),
       if (list.weight! < 0) paddedTextSmall(''),
       if (list.weight! < 0)
         paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: PdfColors.red600),
             align: TextAlign.right),
       if (list.weight! > 0) paddedTextSmall(''),
       paddedTextSmall('${Global.format(weightLineTotal)}',
           style: TextStyle(
-              fontSize: 8,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: PdfColors.blue700
           ),
           align: TextAlign.right),
       if (list.unitCost! > 0)
         paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10, color: PdfColors.green600),
             align: TextAlign.right),
       if (list.unitCost! < 0) paddedTextSmall(''),
       if (list.unitCost! < 0)
         paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: PdfColors.red600),
             align: TextAlign.right),
       if (list.unitCost! > 0) paddedTextSmall(''),
       paddedTextSmall(' ${Global.format6(unitCostLineTotal)}',
           style: TextStyle(
-              fontSize: 8,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: PdfColors.orange700
           ),
           align: TextAlign.right),
       if (list.price! > 0)
         paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10, color: PdfColors.green600),
             align: TextAlign.right),
       if (list.price! < 0) paddedTextSmall(''),
       if (list.price! < 0)
         paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
-            style: TextStyle(fontSize: 8, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: PdfColors.red600),
             align: TextAlign.right),
       if (list.price! > 0) paddedTextSmall(''),
       paddedTextSmall(' ${Global.format6(priceLineTotal)}',
           style: TextStyle(
-              fontSize: 8,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
               color: PdfColors.green700
           ),
@@ -408,7 +407,7 @@ Widget paddedText(final String text,
 
 Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+      final TextStyle style = const TextStyle(fontSize: 11)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

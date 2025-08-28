@@ -542,40 +542,43 @@ class _BranchListScreenState extends State<BranchListScreen>
   }
 
   Widget _buildActionButtons(BranchModel branch, int index) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (Global.user!.userRole == 'Administrator')
-          _buildActionButton(
-            icon: Icons.edit_outlined,
-            color: Colors.blue,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditBranchScreen(
-                    showBackButton: true,
-                    branch: branch,
-                    index: index,
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (Global.user!.userRole == 'Administrator')
+            _buildActionButton(
+              icon: Icons.edit_outlined,
+              color: Colors.blue,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditBranchScreen(
+                      showBackButton: true,
+                      branch: branch,
+                      index: index,
+                    ),
+                    fullscreenDialog: true,
                   ),
-                  fullscreenDialog: true,
-                ),
-              ).whenComplete(() {
-                loadProducts();
-              });
-            },
-          ),
-        if (Global.user!.userType == 'ADMIN') ...[
-          const SizedBox(width: 8),
-          _buildActionButton(
-            icon: Icons.delete_outline,
-            color: Colors.red,
-            onTap: () {
-              _showDeleteConfirmation(branch.id!, index);
-            },
-          ),
+                ).whenComplete(() {
+                  loadProducts();
+                });
+              },
+            ),
+          if (Global.user!.userType == 'ADMIN') ...[
+            const SizedBox(width: 8),
+            _buildActionButton(
+              icon: Icons.delete_outline,
+              color: Colors.red,
+              onTap: () {
+                _showDeleteConfirmation(branch.id!, index);
+              },
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 

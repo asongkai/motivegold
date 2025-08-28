@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:sizer/sizer.dart';
 
 class DropDownItemWidget extends StatelessWidget {
@@ -21,6 +22,7 @@ class DropDownItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    motivePrint('project: ${project}');
     if (project == null) return const SizedBox.shrink();
     return Padding(
       padding: padding ??

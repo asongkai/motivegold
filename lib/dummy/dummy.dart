@@ -88,3 +88,19 @@ List<ProductTypeModel> redeemTypes() {
   data.add(ProductTypeModel(id: 1, code: 'RED', name: "ไถ่ถอน - ขายฝาก"));
   return data;
 }
+
+
+List<ProductTypeModel> pawnPrinciples() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'Tic_minus_int', name: "มูลค่าขายฝากลบผลประโยชน์สะสม"));
+  data.add(ProductTypeModel(id: 1, code: 'Tic_price', name: "มูลค่าขายฝาก"));
+  return data;
+}
+
+List<ProductTypeModel> intMethods() {
+  List<ProductTypeModel> data = [];
+  data.add(ProductTypeModel(id: 1, code: 'Month', name: "เดือน"));
+  data.add(ProductTypeModel(id: 2, code: 'Day', name: "วัน"));
+  data.add(ProductTypeModel(id: 3, code: 'Hour', name: "ปี"));
+  return data;
+}

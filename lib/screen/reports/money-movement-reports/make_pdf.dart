@@ -26,10 +26,9 @@ PdfColor getOrderTypeColor(int? orderTypeId) {
 Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
     String date) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
 
@@ -82,42 +81,42 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
             children: [
               paddedTextSmall('ลำดับ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('เลขที่ใบกํากับภาษี',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('ชื่อผู้ซื้อ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('วันที่',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('เวลา',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('นน.\nทองรูปพรรณใหม่ 96.5%\nขายออก (กรัม)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -125,7 +124,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('นน.\nทองรูปพรรณเก่า 96.5%\nรับซื้อ (กรัม)',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -133,7 +132,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('จำนวนเงิน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -141,21 +140,21 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('เลขที่อ้างอิง',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('เส้นทางการเงิน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('ผลต่าง',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -163,7 +162,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('ยอดรับเงิน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -171,7 +170,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('ยอดจ่ายเงิน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -179,7 +178,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('ส่วนลด',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -187,7 +186,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('จ่ายเงินสด',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -195,7 +194,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('จ่ายเงินโอน',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -203,7 +202,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               ),
               paddedTextSmall('บัตรเครดิต',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -292,27 +291,27 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('รวมท้ังหมด',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue800
                   )),
               paddedTextSmall(Global.format(getWeightTotalSN(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.green700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(getWeightTotalBU(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.red700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceIncludeTaxTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700
                   ),
@@ -322,42 +321,42 @@ Future<Uint8List> makeMoneyMovementReportPdf(List<OrderModel>? orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall(Global.format(priceIncludeTaxTotalSN(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.green700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceIncludeTaxTotalBU(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.red700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(discountTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.orange700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(getCashPaymentTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(getTransferPaymentTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.purple700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(getCreditPaymentTotal(orders)),
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.teal700
                   ),
@@ -563,7 +562,7 @@ String getReferenceNumber(List<OrderModel?> orders, OrderModel? order) {
 
 Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+      final TextStyle style = const TextStyle(fontSize: 10)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

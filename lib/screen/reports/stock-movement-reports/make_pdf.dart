@@ -24,10 +24,9 @@ PdfColor getMovementTypeColor(String? type) {
 Future<Uint8List> makeStockMovementReportPdf(
     List<StockMovementModel> list, int type) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
 
@@ -99,49 +98,49 @@ Future<Uint8List> makeStockMovementReportPdf(
             children: [
               paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('วัน/เดือน/ปี',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('สินค้า',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('คลังสินค้า',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('ประเภท\nการเคลื่อนไหว',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('ประเภท\nเอกสาร',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   )
               ),
               paddedTextSmall('น้ำหนักรวม',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -149,7 +148,7 @@ Future<Uint8List> makeStockMovementReportPdf(
               ),
               paddedTextSmall('ราคา\nต่อหน่วย',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -157,7 +156,7 @@ Future<Uint8List> makeStockMovementReportPdf(
               ),
               paddedTextSmall('ราคารวม',
                   style: TextStyle(
-                      fontSize: 9,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white
                   ),
@@ -178,22 +177,22 @@ Future<Uint8List> makeStockMovementReportPdf(
               paddedTextSmall(e.binLocation == null ? "" : e.binLocation!.name),
               paddedTextSmall('${e.type!} ',
                   style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: movementColor
                   )
               ),
               paddedTextSmall('${e.docType!} '),
               paddedTextSmall(' ${Global.format(e.weight ?? 0)}',
-                  style: TextStyle(fontSize: 10, color: movementColor),
+                  style: TextStyle(fontSize: 11, color: movementColor),
                   align: TextAlign.right),
               paddedTextSmall(
                   ' ${Global.format6(e.unitCost ?? 0)}',
-                  style: TextStyle(fontSize: 10),
+                  style: TextStyle(fontSize: 11),
                   align: TextAlign.right),
               paddedTextSmall(
                   ' ${Global.format6(e.price ?? 0)}',
-                  style: TextStyle(fontSize: 10, color: movementColor),
+                  style: TextStyle(fontSize: 11, color: movementColor),
                   align: TextAlign.right),
             ],
           );
@@ -208,19 +207,19 @@ Future<Uint8List> makeStockMovementReportPdf(
           ),
           children: [
             paddedTextSmall('',
-                style: const TextStyle(fontSize: 9)
+                style: const TextStyle(fontSize: 11)
             ),
             paddedTextSmall('',
-                style: const TextStyle(fontSize: 9)
+                style: const TextStyle(fontSize: 11)
             ),
             paddedTextSmall('',
-                style: const TextStyle(fontSize: 9)
+                style: const TextStyle(fontSize: 11)
             ),
             paddedTextSmall('',
-                style: const TextStyle(fontSize: 9)
+                style: const TextStyle(fontSize: 11)
             ),
             paddedTextSmall('',
-                style: const TextStyle(fontSize: 9)
+                style: const TextStyle(fontSize: 11)
             ),
             paddedTextSmall('รวมทั้งหมด',
                 style: TextStyle(
@@ -291,7 +290,7 @@ Widget paddedText(final String text,
 
 Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+      final TextStyle style = const TextStyle(fontSize: 11)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

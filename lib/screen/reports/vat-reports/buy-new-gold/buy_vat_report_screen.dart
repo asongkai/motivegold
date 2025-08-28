@@ -246,14 +246,14 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
           value: 1,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('แบบเรียงเบอร์', style: TextStyle(fontSize: 14)),
+            title: Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
           value: 2,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('แบบรายวัน', style: TextStyle(fontSize: 14)),
+            title: Text('สรุปรายเดือน', style: TextStyle(fontSize: 14)),
           ),
         ),
       ],

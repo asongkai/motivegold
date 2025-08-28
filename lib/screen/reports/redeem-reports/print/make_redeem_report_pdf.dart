@@ -13,10 +13,9 @@ import 'package:motivegold/utils/global.dart';
 Future<Uint8List> makeRedeemReportPdf(
     List<RedeemModel?> orders, int type, String date, List<RedeemModel?> daily) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Regular.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/NotoSansThai-Bold.ttf")),
+        await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
   final pdf = Document(theme: myTheme);
   double totalRedeemVat = 0;
@@ -134,34 +133,34 @@ Future<Uint8List> makeRedeemReportPdf(
               ),
               children: [
                 paddedTextSmall('วัน/เดือน/ปี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ตั๋ว',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ใบกำกับภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ลูกค้า',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
               ]
           ),
@@ -170,10 +169,10 @@ Future<Uint8List> makeRedeemReportPdf(
               decoration: const BoxDecoration(),
               children: [
                 paddedTextSmall(Global.dateOnly(details[i].redeemDate.toString()),
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                     align: TextAlign.center),
                 paddedTextSmall(details[i].referenceNo ?? '',
-                    style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.purple600),
                     align: TextAlign.center),
                 paddedTextSmall(
                     orders
@@ -181,26 +180,26 @@ Future<Uint8List> makeRedeemReportPdf(
                             (item) => item?.id == details[i].redeemId)
                         ?.redeemId ??
                         '',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                     align: TextAlign.center),
                 paddedTextSmall('${details[i].customerName}',
-                    style: TextStyle(fontSize: 8)),
+                    style: TextStyle(fontSize: 11)),
                 paddedTextSmall(details[i].taxNumber ?? '',
-                    style: TextStyle(fontSize: 8)),
+                    style: TextStyle(fontSize: 11)),
                 paddedTextSmall('${Global.format(details[i].redemptionVat ?? 0)}',
-                    style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.green600),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(details[i].redemptionValue ?? 0)}',
-                    style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.blue600),
                     align: TextAlign.right),
                 paddedTextSmall(Global.format(details[i].depositAmount ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.orange600),
                     align: TextAlign.right),
                 paddedTextSmall(Global.format(details[i].taxBase ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.teal600),
                     align: TextAlign.right),
                 paddedTextSmall(Global.format(details[i].taxAmount ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.red600),
                     align: TextAlign.right),
               ],
             ),
@@ -212,27 +211,27 @@ Future<Uint8List> makeRedeemReportPdf(
                 ),
               ),
               children: [
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
                 paddedTextSmall('รวมทั้งหมด',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue800),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemVat)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.green700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemValue)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalDepositAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.orange700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxBase)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.teal700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.red700),
                     align: TextAlign.right),
               ]
           ),
@@ -285,34 +284,34 @@ Future<Uint8List> makeRedeemReportPdf(
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 paddedTextSmall('วัน/เดือน/ปี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ใบกำกับภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ลูกค้า',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ตั๋ว',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
               ]
           ),
@@ -328,7 +327,7 @@ Future<Uint8List> makeRedeemReportPdf(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? Global.dateOnly(orders[i]!.redeemDate.toString())
                         : '',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                     align: TextAlign.center,
                   ),
 
@@ -337,7 +336,7 @@ Future<Uint8List> makeRedeemReportPdf(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? orders[i]!.redeemId ?? ''
                         : '',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                     align: TextAlign.center,
                   ),
 
@@ -346,7 +345,7 @@ Future<Uint8List> makeRedeemReportPdf(
                     isFirstRowForOrderId(orders[i]!.details!, j)
                         ? '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}'
                         : '',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                   ),
 
                   // COLUMN 4: Tax / ID Number
@@ -356,48 +355,48 @@ Future<Uint8List> makeRedeemReportPdf(
                         ? orders[i]!.customer!.taxNumber!
                         : orders[i]?.customer?.idCard ?? ''
                         : '',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 11),
                   ),
 
                   // COLUMN 5: Reference No
                   paddedTextSmall(
                     orders[i]!.details![j].referenceNo ?? '',
-                    style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.purple600),
                     align: TextAlign.center,
                   ),
 
                   // COLUMN 6: VAT
                   paddedTextSmall(
                     Global.format(orders[i]!.details![j].redemptionVat ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.green600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 7: Redemption Value
                   paddedTextSmall(
                     Global.format(orders[i]!.details![j].redemptionValue ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.blue600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 8: Deposit Amount
                   paddedTextSmall(
                     Global.format(orders[i]!.details![j].depositAmount ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.orange600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 9: Tax Base
                   paddedTextSmall(
                     Global.format(orders[i]!.details![j].taxBase ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.teal600),
                     align: TextAlign.right,
                   ),
 
                   // COLUMN 10: Tax Amount
                   paddedTextSmall(
                     Global.format(orders[i]!.details![j].taxAmount ?? 0),
-                    style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                    style: TextStyle(fontSize: 11, color: PdfColors.red600),
                     align: TextAlign.right,
                   ),
                 ],
@@ -412,27 +411,27 @@ Future<Uint8List> makeRedeemReportPdf(
                 ),
               ),
               children: [
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
                 paddedTextSmall('รวมทั้งหมด',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue800),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemVat)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.green700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemValue)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalDepositAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.orange700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxBase)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.teal700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.red700),
                     align: TextAlign.right),
               ]
           ),
@@ -481,34 +480,34 @@ Future<Uint8List> makeRedeemReportPdf(
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 paddedTextSmall('วัน/เดือน/ปี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ใบกำกับภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ลูกค้า',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขประจำตัว\nผู้เสียภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ตั๋ว',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
               ]
           ),
@@ -520,26 +519,26 @@ Future<Uint8List> makeRedeemReportPdf(
               children: [
                 // COLUMN 1: Date
                 paddedTextSmall(Global.dateOnly(orders[i]!.redeemDate.toString()),
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 2: Redeem ID
                 paddedTextSmall(orders[i]!.redeemId ?? '',
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 3: Customer Name
                 paddedTextSmall('${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                 ),
 
                 // COLUMN 4: Tax / ID Number
                 paddedTextSmall((orders[i]?.customer?.taxNumber ?? '') != ''
                     ? orders[i]!.customer!.taxNumber!
                     : orders[i]?.customer?.idCard ?? '',
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                 ),
 
                 // COLUMN 5: Reference No
@@ -548,42 +547,42 @@ Future<Uint8List> makeRedeemReportPdf(
                       .where((item) => item.redeemId == orders[i]!.id)
                       .map((item) => item.referenceNo)
                       .join(','),
-                  style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.purple600),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 6: VAT
                 paddedTextSmall(
                   Global.format(getRedemptionVatTotal(orders[i]!.details!)),
-                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.green600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 7: Redemption Value
                 paddedTextSmall(
                   Global.format(getRedemptionValueTotal(orders[i]!.details!)),
-                  style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.blue600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 8: Deposit Amount
                 paddedTextSmall(
                   Global.format(getDepositAmountTotal(orders[i]!.details!)),
-                  style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.orange600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 9: Tax Base
                 paddedTextSmall(
                   Global.format(getTaxBaseTotal(orders[i]!.details!)),
-                  style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.teal600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 10: Tax Amount
                 paddedTextSmall(
                   Global.format(getTaxAmountTotal(orders[i]!.details!)),
-                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.red600),
                   align: TextAlign.right,
                 ),
               ],
@@ -598,27 +597,27 @@ Future<Uint8List> makeRedeemReportPdf(
                 ),
               ),
               children: [
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
                 paddedTextSmall('รวมทั้งหมด',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue800),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemVat)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.green700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemValue)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalDepositAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.orange700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxBase)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.teal700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.red700),
                     align: TextAlign.right),
               ]
           ),
@@ -665,28 +664,28 @@ Future<Uint8List> makeRedeemReportPdf(
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 paddedTextSmall('วัน/เดือน/ปี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('เลขที่ใบกำกับภาษี',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('รายการ',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.center),
                 paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
                 paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
                     align: TextAlign.right),
               ]
           ),
@@ -698,53 +697,53 @@ Future<Uint8List> makeRedeemReportPdf(
               children: [
                 // COLUMN 1: Date
                 paddedTextSmall(Global.dateOnly(daily[i]!.redeemDate.toString()),
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 2: Redeem ID
                 paddedTextSmall(daily[i]!.redeemId ?? '',
-                  style: TextStyle(fontSize: 8),
+                  style: TextStyle(fontSize: 11),
                   align: TextAlign.center,
                 ),
 
                 // COLUMN 3: Reference No
                 paddedTextSmall(daily[i]?.referenceNo ?? "",
-                  style: TextStyle(fontSize: 8, color: PdfColors.purple600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.purple600),
                 ),
 
                 // COLUMN 4: VAT
                 paddedTextSmall(
                   Global.format(daily[i]!.redemptionVat ?? 0),
-                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.green600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 5: Redemption Value
                 paddedTextSmall(
                   Global.format(daily[i]!.redemptionValue ?? 0),
-                  style: TextStyle(fontSize: 8, color: PdfColors.blue600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.blue600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 6: Deposit Amount
                 paddedTextSmall(
                   Global.format(daily[i]!.depositAmount ?? 0),
-                  style: TextStyle(fontSize: 8, color: PdfColors.orange600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.orange600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 7: Tax Base
                 paddedTextSmall(
                   Global.format(daily[i]!.taxBase ?? 0),
-                  style: TextStyle(fontSize: 8, color: PdfColors.teal600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.teal600),
                   align: TextAlign.right,
                 ),
 
                 // COLUMN 8: Tax Amount
                 paddedTextSmall(
                   Global.format(daily[i]!.taxAmount ?? 0),
-                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  style: TextStyle(fontSize: 11, color: PdfColors.red600),
                   align: TextAlign.right,
                 ),
               ],
@@ -759,25 +758,25 @@ Future<Uint8List> makeRedeemReportPdf(
                 ),
               ),
               children: [
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-                paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
                 paddedTextSmall('รวมทั้งหมด',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue800),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue800),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemVat)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.green700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalRedeemValue)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalDepositAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.orange700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxBase)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.teal700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.teal700),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(totalTaxAmount)}',
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.red700),
                     align: TextAlign.right),
               ]
           ),
@@ -810,7 +809,7 @@ Future<Uint8List> makeRedeemReportPdf(
 
 Widget paddedTextSmall(final String text,
     {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 9)}) =>
+      final TextStyle style = const TextStyle(fontSize: 11)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

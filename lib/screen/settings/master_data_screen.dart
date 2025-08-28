@@ -7,6 +7,7 @@ import 'package:motivegold/screen/settings/master/location/province/province_scr
 import 'package:motivegold/screen/settings/master/location/tambon/tambon_screen.dart';
 import 'package:motivegold/screen/settings/master/productCategory/product_category_list_screen.dart';
 import 'package:motivegold/screen/settings/master/productType/product_type_list_screen.dart';
+import 'package:motivegold/screen/settings/pawn/rateint/rate_int_list_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 
@@ -183,6 +184,30 @@ class MasterDataScreen extends StatelessWidget {
                       ),
                     ]),
 
+                    const SizedBox(height: 24),
+
+                    _buildSectionHeader(
+                      icon: Icons.percent,
+                      title: "อัตราดอกเบี้ย",
+                      color: Colors.purple,
+                      theme: theme,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildModernCard([
+                      _buildModernListTile(
+                        'อัตราดอกเบี้ย',
+                        Icons.map_rounded,
+                        Colors.purple,
+                        theme,
+                        onTab: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const RateIntListScreen()));
+                        },
+                      ),
+                    ]),
                     const SizedBox(height: 24),
                   ],
                 ),
