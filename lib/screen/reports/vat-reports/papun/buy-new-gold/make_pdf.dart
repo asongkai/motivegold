@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
@@ -12,10 +11,9 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:sizer/sizer.dart';
 
-Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
+Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
     String date, DateTime fromDate, DateTime toDate) async {
   List<OrderModel> list = [];
-  List<OrderModel> list3 = [];
 
   int days = Global.daysBetween(fromDate, toDate);
 
@@ -29,15 +27,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
       // Add all orders for this day
       for (var order in ordersForDay) {
         list.add(order!);
-        list3.add(order);
       }
-    } else {
-      // No orders for this day, add one "no sales" record
-      list.add(OrderModel(
-          orderId: 'ไม่มียอดขาย',
-          orderDate: indexDay,
-          customer: orders.isNotEmpty ? orders.first!.customer : null
-      ));
     }
   }
 
@@ -50,22 +40,22 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
 
   List<Widget> widgets = [];
 
-  widgets.add(height());
-  widgets.add(Align(
-    alignment: Alignment.topRight,
-      child: Container(
-          decoration: BoxDecoration(
-            color: PdfColor.fromHex('#F06292'), // Or whatever pink shade you prefer
-            borderRadius: BorderRadius.circular(0), // Optional: rounded corners
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: getHeaderText(type)
-      )
-  ));
-  widgets.add(height());
+  // widgets.add(height());
+  // widgets.add(Align(
+  //     alignment: Alignment.topRight,
+  //     child: Container(
+  //         decoration: BoxDecoration(
+  //           color: PdfColor.fromHex('#ffca28'), // Or whatever pink shade you prefer
+  //           borderRadius: BorderRadius.circular(0), // Optional: rounded corners
+  //         ),
+  //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  //         child: getHeaderText(type)
+  //     )
+  // ));
+  // widgets.add(height());
   widgets.add(Center(
     child: Text(
-      'รายงานภาษีมูลค่าเพิม : รายงานภาษีขายทองคํารูปพรรณใหม่',
+      'รายงานภาษีมูลค่าเพิม : รายงานภาษีซื้อทองคํารูปพรรณใหม่',
       style: TextStyle(
           decoration: TextDecoration.none,
           fontSize: 20,
@@ -73,7 +63,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
     ),
   ));
   widgets.add(Center(
-    child: type == 4 ? Text(
+    child: type == 2 ? Text(
       'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
       style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
     ) : Text(
@@ -81,77 +71,9 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
       style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
     ),
   ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ชื่อผู้ประกอบการ : "),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text('${Global.company!.name} (${Global.branch!.name})'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text(' ', textAlign: TextAlign.right),
-      )
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ชชื่อสถานประกอบการ :"),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text('${Global.company!.name} (${Global.branch!.name})'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text("เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber ?? ''}", textAlign: TextAlign.right),
-      )
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ทีอยู่ : "),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text(
-                    '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text(
-            'วันทีพิมพ์ ${Global.formatDate(DateTime.now().toString())} ',
-            textAlign: TextAlign.right),
-      )
-    ],
-  ));
-
   widgets.add(height());
+  widgets.add(reportsHeader());
+  widgets.add(height(h: 2));
 
   // Apply modern design pattern
   widgets.add(Container(
@@ -166,7 +88,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
         left: BorderSide.none,
         right: BorderSide.none,
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        verticalInside: BorderSide.none,
       ),
       children: [
         // Clean header row with rounded top corners
@@ -188,7 +110,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 ),
                 align: TextAlign.center
             ),
-            if (type == 2 || type == 3 || type == 4) paddedTextSmall('วันที่',
+            if (type == 2) paddedTextSmall('วันที',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -205,7 +127,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                   ),
                   align: TextAlign.center
               ),
-            if (type == 1) paddedTextSmall('วันที่',
+            if (type == 1) paddedTextSmall('วันที',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -221,7 +143,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
             //     ),
             //     align: TextAlign.center
             // ),
-            if (type == 1) paddedTextSmall('ชื่อผู้ซื้อ',
+            if (type == 1) paddedTextSmall('ผู้ขาย',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -238,7 +160,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                   ),
                   align: TextAlign.center
               ),
-            if (type == 2 || type == 3 || type == 4)
+            if (type == 2)
               paddedTextSmall('เลขที่\nใบกํากับภาษี',
                   style: TextStyle(
                       fontSize: 11,
@@ -247,7 +169,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                   ),
                   align: TextAlign.center
               ),
-            if (type == 2 || type == 3 || type == 4) paddedTextSmall('รายการสินค้า',
+            if (type == 2) paddedTextSmall('รายการสินค้า',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -255,7 +177,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 ),
                 align: TextAlign.center
             ),
-            paddedTextSmall('น้ำหนักรวม\n(กรัม)',
+            paddedTextSmall('นําหนักรวม\n(กรัม)',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -263,7 +185,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 ),
                 align: TextAlign.center
             ),
-            paddedTextSmall('ยอดขายรวม\nภาษีมูลค่าเพิม\nจำนวนเงิน (บาท)',
+            paddedTextSmall('ราคาซื้อ\nไม่รวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -271,7 +193,8 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 ),
                 align: TextAlign.center
             ),
-            paddedTextSmall('มูลค่าฐานภาษี\nยกเว้น\nจำนวนเงิน (บาท)',
+
+            paddedTextSmall('มูลค่าฐานภาษียกเว้น\nจำนวนเงิน (บาท)',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -279,15 +202,15 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 ),
                 align: TextAlign.center
             ),
-            paddedTextSmall('ผลต่าง\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white
-                ),
-                align: TextAlign.center
-            ),
-            paddedTextSmall('ฐานภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+            // paddedTextSmall('ผลต่างรวมภาษี\nมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+            //     style: TextStyle(
+            //         fontSize: 11,
+            //         fontWeight: FontWeight.bold,
+            //         color: PdfColors.white
+            //     ),
+            //     align: TextAlign.right
+            // ),
+            paddedTextSmall('ผลต่างฐานภาษ\nจำนวนเงิน (บาท)',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -301,16 +224,18 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                     fontWeight: FontWeight.bold,
                     color: PdfColors.white
                 ),
-                align: TextAlign.center
+                align: TextAlign.right
             ),
-            paddedTextSmall('ยอดขายไม่รวมภาษี\nมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+
+            paddedTextSmall('ราคาซื้อ\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: PdfColors.white
                 ),
-                align: TextAlign.center
+                align: TextAlign.right
             ),
+
           ],
         ),
         // Data rows with color coding for type 1
@@ -328,20 +253,20 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 )),
                 paddedTextSmall(orders[i]!.orderId, style: TextStyle(
                     fontSize: 10,
-                    color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.red900
+                    color: orders[i]!.status == "2" ? PdfColors.red900 : null
                 )),
                 paddedTextSmall(Global.dateOnly(orders[i]!.orderDate.toString()), style: TextStyle(
                     fontSize: 10,
                     color: orders[i]!.status == "2" ? PdfColors.red900 : null
                 )),
-                // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
+                // paddedTextSmall(Global.timeOnlyF(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall('${getCustomerName(orders[i]!.customer!)} ', style: TextStyle(
                     fontSize: 10,
                     color: orders[i]!.status == "2" ? PdfColors.red900 : null
                 )),
                 paddedTextSmall(orders[i]!.customer?.taxNumber != null
                     ? orders[i]!.customer?.taxNumber ?? ''
-                    : '', style: TextStyle(
+                    : orders[i]!.customer?.idCard ?? '', style: TextStyle(
                     fontSize: 10,
                     color: orders[i]!.status == "2" ? PdfColors.red900 : null
                 )),
@@ -351,10 +276,10 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                         color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.blue600
                     ),
                     align: TextAlign.right),
-                paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
+                paddedTextSmall(Global.format(orders[i]!.priceExcludeTax ?? 0),
                     style: TextStyle(
                         fontSize: 10,
-                        color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
+                        color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.red600
                     ),
                     align: TextAlign.right),
                 paddedTextSmall(Global.format(orders[i]!.purchasePrice ?? 0),
@@ -363,12 +288,9 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                         color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.orange600
                     ),
                     align: TextAlign.right),
-                paddedTextSmall(Global.format(orders[i]!.priceDiff ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.purple600
-                    ),
-                    align: TextAlign.right),
+                // paddedTextSmall(Global.format(orders[i]!.priceDiff ?? 0),
+                //     style: TextStyle(fontSize: 10, color: PdfColors.purple600),
+                //     align: TextAlign.right),
                 paddedTextSmall(Global.format(orders[i]!.taxBase ?? 0),
                     style: TextStyle(
                         fontSize: 10,
@@ -378,10 +300,10 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall(Global.format(orders[i]!.taxAmount ?? 0),
                     style: TextStyle(
                         fontSize: 10,
-                        color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.red600
+                        color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.red700
                     ),
                     align: TextAlign.right),
-                paddedTextSmall(Global.format(orders[i]!.priceExcludeTax ?? 0),
+                paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.indigo600
@@ -402,7 +324,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                     fontSize: 10,
                     color: list[i].status == "2" ? PdfColors.red900 : null
                 )),
-                paddedTextSmall(Global.dateOnly(list[i].orderDate.toString()), style: TextStyle(
+                paddedTextSmall(Global.formatDateMFT(list[i].orderDate.toString()), style: TextStyle(
                     fontSize: 10,
                     color: list[i].status == "2" ? PdfColors.red900 : null
                 )),
@@ -413,7 +335,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall('ทองคำรูปพรรณ 96.5%',
                     style: TextStyle(
                         fontSize: 10,
-                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.orange600,
+                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.red600,
                         fontWeight: FontWeight.bold
                     )),
                 paddedTextSmall(
@@ -429,7 +351,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                         : Global.format(list[i].priceIncludeTax ?? 0),
                     style: TextStyle(
                         fontSize: 10,
-                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.green600
+                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.red600
                     ),
                     align: TextAlign.right),
                 paddedTextSmall(
@@ -441,15 +363,12 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                         color: list[i].status == "2" ? PdfColors.red900 : PdfColors.orange600
                     ),
                     align: TextAlign.right),
-                paddedTextSmall(
-                    list[i].priceDiff == null
-                        ? ''
-                        : Global.format(list[i].priceDiff ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.purple600
-                    ),
-                    align: TextAlign.right),
+                // paddedTextSmall(
+                //     list[i].priceDiff == null
+                //         ? ''
+                //         : Global.format(list[i].priceDiff ?? 0),
+                //     style: TextStyle(fontSize: 10, color: PdfColors.purple600),
+                //     align: TextAlign.right),
                 paddedTextSmall(
                     list[i].taxBase == null
                         ? ''
@@ -465,7 +384,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                         : Global.format(list[i].taxAmount ?? 0),
                     style: TextStyle(
                         fontSize: 10,
-                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.red600
+                        color: list[i].status == "2" ? PdfColors.red900 : PdfColors.red700
                     ),
                     align: TextAlign.right),
                 paddedTextSmall(
@@ -475,186 +394,6 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                     style: TextStyle(
                         fontSize: 10,
                         color: list[i].status == "2" ? PdfColors.red900 : PdfColors.indigo600
-                    ),
-                    align: TextAlign.right)
-              ],
-            ),
-        // Data rows with color coding for type 2
-        if (type == 3)
-          for (int i = 0; i < list3.length; i++)
-            TableRow(
-              verticalAlignment: TableCellVerticalAlignment.middle,
-              decoration: BoxDecoration(
-                  color: list3[i].status == "2" ? PdfColors.pink100 : PdfColors.white
-              ),
-              children: [
-                paddedTextSmall('${i + 1}', style: TextStyle(
-                    fontSize: 10,
-                    color: list3[i].status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall(Global.dateOnly(list[i].orderDate.toString()), style: TextStyle(
-                    fontSize: 10,
-                    color: list3[i].status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall(list3[i].orderId, style: TextStyle(
-                    fontSize: 10,
-                    color: list3[i].status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall('ทองคำรูปพรรณ 96.5%',
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.orange600,
-                        fontWeight: FontWeight.bold
-                    )),
-                paddedTextSmall(
-                    list3[i].weight == null ? '' : Global.format(list3[i].weight!),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.blue600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list[i].priceIncludeTax == null
-                        ? ''
-                        : Global.format(list3[i].priceIncludeTax ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.green600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list3[i].purchasePrice == null
-                        ? ''
-                        : Global.format(list3[i].purchasePrice ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.orange600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list[i].priceDiff == null
-                        ? ''
-                        : Global.format(list3[i].priceDiff ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.purple600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list3[i].taxBase == null
-                        ? ''
-                        : Global.format(list3[i].taxBase ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.teal600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list3[i].taxAmount == null
-                        ? ''
-                        : Global.format(list3[i].taxAmount ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.red600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    list3[i].priceExcludeTax == null
-                        ? ''
-                        : Global.format(list3[i].priceExcludeTax ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: list3[i].status == "2" ? PdfColors.red900 : PdfColors.indigo600
-                    ),
-                    align: TextAlign.right)
-              ],
-            ),
-        // Data rows with color coding for type 4
-        if (type == 4)
-          for (int i = 0; i < orders.length; i++)
-            TableRow(
-              verticalAlignment: TableCellVerticalAlignment.middle,
-              decoration: BoxDecoration(
-                  color: orders[i]?.status == "2" ? PdfColors.pink100 : PdfColors.white
-              ),
-              children: [
-                paddedTextSmall('${i + 1}', style: TextStyle(
-                    fontSize: 10,
-                    color: orders[i]?.status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall(Global.formatDateMFT(orders[i]!.orderDate.toString()), style: TextStyle(
-                    fontSize: 10,
-                    color: orders[i]?.status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall(orders[i]!.orderId, style: TextStyle(
-                    fontSize: 10,
-                    color: orders[i]?.status == "2" ? PdfColors.red900 : null
-                )),
-                paddedTextSmall('ทองคำรูปพรรณ 96.5%',
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.orange600,
-                        fontWeight: FontWeight.bold
-                    )),
-                paddedTextSmall(
-                    orders[i]?.weight == null ? '' : Global.format(orders[i]?.weight!),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.blue600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.priceIncludeTax == null
-                        ? ''
-                        : Global.format(orders[i]?.priceIncludeTax ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.green600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.purchasePrice == null
-                        ? ''
-                        : Global.format(orders[i]?.purchasePrice ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.orange600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.priceDiff == null
-                        ? ''
-                        : Global.format(orders[i]?.priceDiff ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.purple600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.taxBase == null
-                        ? ''
-                        : Global.format(orders[i]?.taxBase ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.teal600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.taxAmount == null
-                        ? ''
-                        : Global.format(orders[i]?.taxAmount ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.red600
-                    ),
-                    align: TextAlign.right),
-                paddedTextSmall(
-                    orders[i]?.priceExcludeTax == null
-                        ? ''
-                        : Global.format(orders[i]?.priceExcludeTax ?? 0),
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: orders[i]?.status == "2" ? PdfColors.red900 : PdfColors.indigo600
                     ),
                     align: TextAlign.right)
               ],
@@ -674,7 +413,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
               if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               // if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-              if (type == 2 || type == 3 || type == 4) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 2) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',
                   style: TextStyle(
                       fontSize: 11,
@@ -696,7 +435,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.green700
+                      color: PdfColors.red700
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(purchasePriceTotal(orders)),
@@ -706,13 +445,13 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                       color: PdfColors.orange700
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceDiffTotal(orders)),
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.purple700
-                  ),
-                  align: TextAlign.right),
+              // paddedTextSmall(Global.format(priceDiffTotal(orders)),
+              //     style: TextStyle(
+              //         fontSize: 11,
+              //         fontWeight: FontWeight.bold,
+              //         color: PdfColors.purple700
+              //     ),
+              //     align: TextAlign.right),
               paddedTextSmall(Global.format(taxBaseTotal(orders)),
                   style: TextStyle(
                       fontSize: 11,
@@ -724,7 +463,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.red700
+                      color: PdfColors.red800
                   ),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceExcludeTaxTotal(orders)),
@@ -775,38 +514,18 @@ getHeaderText(int type) {
     return Text(
       'จัดลำดับตามเลขที่ใบเสร็จรับเงิน/ใบกำกับภาษี',
       style: TextStyle(
-        color: PdfColors.white, // White text on pink background
-        fontSize: 12.sp,
+        color: PdfColors.black, // White text on pink background
+        fontSize: 13.sp,
         fontWeight: FontWeight.bold,
       ),
     );
   }
   if (type == 2) {
     return Text(
-      'จัดลำดับตามวันที่',
-      style: TextStyle(
-        color: PdfColors.white, // White text on pink background
-        fontSize: 12.sp,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-  if (type == 3) {
-    return Text(
-      'จัดลำดับตามวันที่\nเฉพาะวันที่มียอดขาย',
-      style: TextStyle(
-        color: PdfColors.white, // White text on pink background
-        fontSize: 12.sp,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-  if (type == 4) {
-    return Text(
       'จัดลำดับตามเดือน',
       style: TextStyle(
-        color: PdfColors.white, // White text on pink background
-        fontSize: 12.sp,
+        color: PdfColors.black, // White text on pink background
+        fontSize: 13.sp,
         fontWeight: FontWeight.bold,
       ),
     );

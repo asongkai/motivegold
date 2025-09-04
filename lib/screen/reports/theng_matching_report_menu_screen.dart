@@ -11,8 +11,8 @@ import 'package:motivegold/screen/reports/sell-new-gold-reports/sell_new_gold_re
 import 'package:motivegold/screen/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
 import 'package:motivegold/screen/reports/stock-reports/stock_report_list_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_report_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/buy_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/utils/global.dart';

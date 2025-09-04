@@ -47,7 +47,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
     super.initState();
   }
 
-  void loadProducts() async {
+  Future<void> loadProducts() async {
     setState(() {
       loading = true;
     });
@@ -112,7 +112,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
               children: [
                 Expanded(
                   flex: 6,
-                  child: Text("รายงานซื้อทองเก่า",
+                  child: Text("รายงานซื้อทองรูปพรรณเก่า",
                       style: TextStyle(
                           fontSize: 24,
                           color: Colors.white,
@@ -124,7 +124,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _buildPrintButton(),
+                      _buildPrintButtons(),
                     ],
                   ),
                 ),
@@ -146,31 +146,137 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
     );
   }
 
-  Widget _buildPrintButton() {
-    return GestureDetector(
-      onTap: () {
-        if (fromDateCtrl.text.isEmpty) {
-          Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
-          return;
-        }
-        if (toDateCtrl.text.isEmpty) {
-          Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
-          return;
-        }
-        if (filterList!.isEmpty) {
-          Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
-          return;
-        }
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PreviewBuyUsedGoldReportPage(
-              orders: filterList!.reversed.toList(),
-              type: 1,
-              date: '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
+  Widget _buildPrintButtons() {
+    return PopupMenuButton<int>(
+      onSelected: (int value) async {
+        if (value == 1) {
+          if (fromDateCtrl.text.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+            return;
+          }
+          if (toDateCtrl.text.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+            return;
+          }
+          if (filterList!.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
+            return;
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PreviewBuyUsedGoldReportPage(
+                orders: filterList!.reversed.toList(),
+                type: 1,
+                fromDate: DateTime.parse(fromDateCtrl.text),
+                toDate: DateTime.parse(toDateCtrl.text),
+                date: '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
+              ),
             ),
-          ),
-        );
+          );
+        }
+
+        if (value == 2 || value == 3) {
+          if (fromDateCtrl.text.isEmpty) {
+            DateTime now = DateTime.now();
+            DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+            fromDateCtrl.text = Global.formatDateDD(firstDayOfMonth.toString());
+          }
+          if (toDateCtrl.text.isEmpty) {
+            DateTime now = DateTime.now();
+            DateTime lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+            toDateCtrl.text = Global.formatDateDD(lastDayOfMonth.toString());
+          }
+
+          await loadProducts();
+
+          if (filterList!.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
+            return;
+          }
+
+          List<OrderModel> dailyList = genDailyList(filterList, value: value);
+          if (dailyList.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+            return;
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PreviewBuyUsedGoldReportPage(
+                orders: dailyList,
+                type: value,
+                fromDate: DateTime.parse(fromDateCtrl.text),
+                toDate: DateTime.parse(toDateCtrl.text),
+                date: '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
+              ),
+            ),
+          );
+        }
+
+        if (value == 4) {
+
+          DateTime now = DateTime.now();
+          DateTime fromDate = DateTime(now.year, 1, 1);
+          DateTime toDate = DateTime(now.year, 12, 31);
+
+          fromDateCtrl.text = Global.formatDateDD(fromDate.toString());
+          toDateCtrl.text = Global.formatDateDD(toDate.toString());
+
+          await loadProducts();
+
+          if (filterList!.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+            return;
+          }
+
+          List<OrderModel> monthlyList = genMonthlyList(filterList, fromDate, toDate);
+          if (monthlyList.isEmpty) {
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+            return;
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PreviewBuyUsedGoldReportPage(
+                orders: monthlyList,
+                type: value,
+                fromDate: fromDate,
+                toDate: toDate,
+                date:
+                '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+              ),
+            ),
+          );
+        }
       },
+      itemBuilder: (BuildContext context) => [
+        PopupMenuItem(
+          value: 1,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('สรุปรายวัน(แสดงทุกวัน)', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('สรุปรายวัน(แสดงวันที่มีรายการ)', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+        PopupMenuItem(
+          value: 4,
+          child: ListTile(
+            leading: Icon(Icons.print, size: 16),
+            title: Text('สรุปรายเดือน', style: TextStyle(fontSize: 14)),
+          ),
+        ),
+      ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -183,7 +289,13 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
           children: [
             const Icon(Icons.print_rounded, size: 20, color: Colors.white),
             const SizedBox(width: 6),
-            Text('พิมพ์', style: TextStyle(fontSize: 14.sp, color: Colors.white, fontWeight: FontWeight.w500)),
+            Text('พิมพ์',
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500)),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down_outlined, color: Colors.white, size: 16),
           ],
         ),
       ),
@@ -924,5 +1036,123 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
       filters.add('ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
     }
     return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
+  }
+
+  List<OrderModel> genDailyList(List<OrderModel?>? filterList, {int? value}) {
+    List<OrderModel> orderList = [];
+
+    int days = Global.daysBetween(DateTime.parse(fromDateCtrl.text), DateTime.parse(toDateCtrl.text));
+
+    for (int i = 0; i <= days; i++) {
+      DateTime monthDate = DateTime.parse(fromDateCtrl.text).add(Duration(days: i));
+
+      // Get all orders for this specific date
+      var dateList = filterList
+          ?.where((element) => element != null &&
+          Global.dateOnly(element.createdDate.toString()) ==
+              Global.dateOnly(monthDate.toString()))
+          .cast<OrderModel>() // Cast to non-nullable OrderModel
+          .toList();
+
+      if (dateList != null && dateList.isNotEmpty) {
+        // Create order ID from first and last order
+        String combinedOrderId = dateList.length == 1
+            ? dateList.first.orderId
+            : '${dateList.first.orderId} - ${dateList.last.orderId}';
+
+        var order = OrderModel(
+            orderId: combinedOrderId, // Combined all order IDs
+            orderDate: dateList.first.orderDate,
+            createdDate: monthDate,
+            customerId: 0,
+            weight: getWeightTotal(dateList),
+            priceIncludeTax: priceIncludeTaxTotal(dateList),
+            purchasePrice: purchasePriceTotal(dateList),
+            priceDiff: priceDiffTotal(dateList),
+            taxBase: taxBaseTotal(dateList),
+            taxAmount: taxAmountTotal(dateList),
+            priceExcludeTax: priceExcludeTaxTotal(dateList));
+
+        orderList.add(order);
+      } else {
+        // Optional: Add "no sales" entry for days with no orders
+        if (value == 2) {
+          var noSalesOrder = OrderModel(
+              orderId: 'ไม่มียอดซื้อ',
+              orderDate: monthDate,
+              createdDate: monthDate,
+              customerId: 0,
+              weight: 0.0,
+              priceIncludeTax: 0.0,
+              purchasePrice: 0.0,
+              priceDiff: 0.0,
+              taxBase: 0.0,
+              taxAmount: 0.0,
+              priceExcludeTax: 0.0);
+
+          orderList.add(noSalesOrder);
+        }
+      }
+    }
+    return orderList;
+  }
+
+  List<OrderModel> genMonthlyList(List<OrderModel?>? filterList, DateTime fromDate, DateTime toDate) {
+    List<OrderModel> orderList = [];
+
+    // Calculate months between fromDate and toDate
+    int monthsDiff = ((toDate.year - fromDate.year) * 12) + (toDate.month - fromDate.month);
+
+    for (int i = 0; i <= monthsDiff; i++) {
+      // Get the first day of each month
+      DateTime monthDate = DateTime(fromDate.year, fromDate.month + i, 1);
+
+      // Get all orders for this specific month and year
+      var monthList = filterList
+          ?.where((element) => element != null &&
+          element.createdDate?.year == monthDate.year &&
+          element.createdDate?.month == monthDate.month)
+          .cast<OrderModel>() // Cast to non-nullable OrderModel
+          .toList();
+
+      if (monthList != null && monthList.isNotEmpty) {
+        // Create order ID from first and last order of the month
+        String combinedOrderId = monthList.length == 1
+            ? monthList.first.orderId
+            : '${monthList.first.orderId} - ${monthList.last.orderId}';
+
+        var order = OrderModel(
+            orderId: combinedOrderId,
+            orderDate: monthList.first.orderDate,
+            createdDate: monthDate, // First day of the month
+            customerId: 0,
+            weight: getWeightTotal(monthList),
+            priceIncludeTax: priceIncludeTaxTotal(monthList),
+            purchasePrice: purchasePriceTotal(monthList),
+            priceDiff: priceDiffTotal(monthList),
+            taxBase: taxBaseTotal(monthList),
+            taxAmount: taxAmountTotal(monthList),
+            priceExcludeTax: priceExcludeTaxTotal(monthList));
+
+        orderList.add(order);
+      } else {
+        // Optional: Add "no sales" entry for months with no orders
+        var noSalesOrder = OrderModel(
+            orderId: 'ไม่มียอดซื้อ',
+            orderDate: monthDate,
+            createdDate: monthDate,
+            customerId: 0,
+            weight: 0.0,
+            priceIncludeTax: 0.0,
+            purchasePrice: 0.0,
+            priceDiff: 0.0,
+            taxBase: 0.0,
+            taxAmount: 0.0,
+            priceExcludeTax: 0.0);
+
+        orderList.add(noSalesOrder);
+      }
+    }
+    return orderList;
   }
 }

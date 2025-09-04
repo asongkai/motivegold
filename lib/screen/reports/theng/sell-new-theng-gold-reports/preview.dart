@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/order.dart';
-import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/make_pdf.dart';
+import 'package:motivegold/screen/reports/theng/sell-new-theng-gold-reports/make_pdf.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/make_pdf.dart';
+import 'package:motivegold/screen/reports/vat-reports/theng/sell-gold/make_pdf.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:printing/printing.dart';
 
-class PreviewBuyVatReportPage extends StatelessWidget {
+class PreviewSellThengReportPage extends StatelessWidget {
   final List<OrderModel?> orders;
   final int type;
   final String date;
   final DateTime? fromDate;
   final DateTime? toDate;
-  const PreviewBuyVatReportPage({super.key, required this.orders, required this.type, required this.date, this.fromDate, this.toDate});
+  const PreviewSellThengReportPage({super.key, required this.orders, required this.type, required this.date, this.fromDate, this.toDate});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class PreviewBuyVatReportPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeBuyVatReportPdf(orders, type, date, fromDate!, toDate!),
+        build: (context) => makeSellThengReportPdf(orders, type, date, fromDate!, toDate!),
       ),
     );
   }

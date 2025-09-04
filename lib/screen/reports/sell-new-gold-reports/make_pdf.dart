@@ -33,77 +33,9 @@ Future<Uint8List> makeNewGoldReportPdf(
       style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
     ),
   ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ชื่อผู้ประกอบการ : "),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text('${Global.company!.name} (${Global.branch!.name})'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text(' ', textAlign: TextAlign.right),
-      )
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ชชื่อสถานประกอบการ :"),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text('${Global.company!.name} (${Global.branch!.name})'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text("เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber ?? ''}", textAlign: TextAlign.right),
-      )
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Expanded(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Text("ทีอยู่ : "),
-            ),
-            Expanded(
-                flex: 6,
-                child: Text(
-                    '${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}'))
-          ],
-        ),
-      ),
-      Expanded(
-        child: Text(
-            'วันทีพิมพ์ ${Global.formatDate(DateTime.now().toString())} ',
-            textAlign: TextAlign.right),
-      )
-    ],
-  ));
-
   widgets.add(height());
+  widgets.add(reportsHeader());
+  widgets.add(height(h: 2));
 
   // Apply modern design pattern
   widgets.add(Container(
@@ -130,6 +62,7 @@ Future<Uint8List> makeNewGoldReportPdf(
                 topRight: Radius.circular(11),
               ),
             ),
+            verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
               paddedTextSmall('ลำดับ',
                   style: TextStyle(

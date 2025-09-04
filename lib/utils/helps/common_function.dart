@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/utils/util.dart';
 
 void motivePrint(Object? object) {
   if (kDebugMode) {
@@ -147,7 +148,7 @@ double priceIncludeTaxTotalSN(List<dynamic> orders) {
   }
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 1) {
+    if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
       for (int j = 0; j < orders[i].details.length; j++) {
         amount += orders[i]!.priceIncludeTax ?? 0;
       }
@@ -162,7 +163,7 @@ double priceIncludeTaxTotalBU(List<dynamic> orders) {
   }
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 2) {
+    if (orders[i].orderTypeId == 2 || orders[i].orderTypeId == 44) {
       for (int j = 0; j < orders[i].details.length; j++) {
         amount += orders[i]!.priceIncludeTax ?? 0;
       }
@@ -177,8 +178,8 @@ double discountTotal(List<dynamic> orders) {
   }
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 1) {
-      amount += orders[i]!.discount ?? 0;
+    if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
+      amount += addDisValue(orders[i]!.discount, orders[i]!.addPrice);
     }
   }
   return amount;
@@ -191,6 +192,21 @@ double priceIncludeTaxTotal(List<dynamic> orders) {
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
     amount += orders[i]!.priceIncludeTax ?? 0;
+  }
+  return amount;
+}
+
+double priceIncludeTaxTotalMovement(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i]!.orderTypeId == 2 || orders[i]!.orderTypeId == 44) {
+      amount -= orders[i]!.priceIncludeTax ?? 0;
+    } else  {
+      amount += orders[i]!.priceIncludeTax ?? 0;
+    }
   }
   return amount;
 }
@@ -213,6 +229,32 @@ double priceDiffTotal(List<dynamic> orders) {
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
     amount += orders[i]!.priceDiff ?? 0;
+  }
+  return amount;
+}
+
+double priceDiffTotalP(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i]!.priceDiff! > 0) {
+      amount += orders[i]!.priceDiff ?? 0;
+    }
+  }
+  return amount;
+}
+
+double priceDiffTotalM(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    if (orders[i]!.priceDiff! < 0) {
+      amount += orders[i]!.priceDiff ?? 0;
+    }
   }
   return amount;
 }
@@ -276,13 +318,24 @@ double getWeightTotal(List<dynamic> orders) {
   return amount;
 }
 
+double getWeightBahtTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += getWeightBaht(orders[i]!);
+  }
+  return amount;
+}
+
 double getWeightTotalBU(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 2) {
+    if (orders[i].orderTypeId == 2 || orders[i].orderTypeId == 44) {
       amount += getWeight(orders[i]!);
     }
   }
@@ -295,7 +348,7 @@ double getWeightTotalSN(List<dynamic> orders) {
   }
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 1) {
+    if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
       amount += getWeight(orders[i]!);
     }
   }
@@ -313,10 +366,87 @@ double getWeightTotalB(List<dynamic> orders) {
   return amount;
 }
 
+double getWeightTotalBaht(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    amount += (orders[i]!.weight ?? 0) / 15.16;
+  }
+  return amount;
+}
+
 double getWeight(dynamic order) {
+  if (order.id == null || order.details == null || order.details!.isEmpty) {
+    return 0;
+  }
   double amount = 0;
   for (int j = 0; j < order.details!.length; j++) {
     amount += order.details![j].weight ?? 0;
+  }
+
+  return amount;
+}
+
+double getWeightBaht(dynamic order) {
+  if (order.id == null || order.details == null || order.details!.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int j = 0; j < order.details!.length; j++) {
+    amount += order.details![j].weightBath ?? 0;
+  }
+
+  return amount;
+}
+
+double commissionHeadTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    for (int j = 0; j < orders[i].details.length; j++) {
+      amount += orders[i]!.details[j].commission ?? 0;
+    }
+  }
+  // print(amount);
+  return amount;
+}
+
+double getCommissionDetailTotal(dynamic order) {
+  if (order.id == null || order.details == null || order.details!.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int j = 0; j < order.details!.length; j++) {
+    amount += order.details![j].commission ?? 0;
+  }
+
+  return amount;
+}
+
+double packageHeadTotal(List<dynamic> orders) {
+  if (orders.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int i = 0; i < orders.length; i++) {
+    for (int j = 0; j < orders[i].details.length; j++) {
+      amount += orders[i]!.details[j].packagePrice ?? 0;
+    }
+  }
+  return amount;
+}
+
+double getPackagePriceDetailTotal(dynamic order) {
+  if (order.id == null || order.details == null || order.details!.isEmpty) {
+    return 0;
+  }
+  double amount = 0;
+  for (int j = 0; j < order.details!.length; j++) {
+    amount += order.details![j].packagePrice ?? 0;
   }
 
   return amount;

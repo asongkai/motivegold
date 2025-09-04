@@ -46,6 +46,7 @@ class CustomerModel {
   String? workPermit;
   String? passportId;
   String? branchCode;
+  int? defaultWalkIn;
 
   CustomerModel({
     this.id,
@@ -77,6 +78,7 @@ class CustomerModel {
     this.workPermit,
     this.passportId,
     this.branchCode,
+    this.defaultWalkIn,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
@@ -113,6 +115,7 @@ class CustomerModel {
             ? null
             : DateTime.parse(json["updatedDate"]).toLocal(),
         branchCode: json["branchCode"],
+        defaultWalkIn: json["defaultWalkIn"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -145,6 +148,7 @@ class CustomerModel {
         "createdDate": createdDate?.toIso8601String(),
         "updatedDate": updatedDate?.toIso8601String(),
         "branchCode": branchCode,
+        "defaultWalkIn": defaultWalkIn,
       };
 
   @override

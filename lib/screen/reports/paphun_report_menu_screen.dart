@@ -11,8 +11,8 @@ import 'package:motivegold/screen/reports/sell-new-gold-reports/sell_new_gold_re
 import 'package:motivegold/screen/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
 import 'package:motivegold/screen/reports/stock-reports/stock_report_list_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_report_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/buy_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/sell_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/utils/global.dart';
@@ -107,7 +107,7 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                   iconStyle: IconStyle(
                     backgroundColor: Colors.red[600]!, // Red for buying
                   ),
-                  title: 'รายงานซื้อทองใหม่',
+                  title: 'รายงานซื้อทองรูปพรรณใหม่',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -129,7 +129,7 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                   iconStyle: IconStyle(
                     backgroundColor: Colors.teal[600]!, // Teal for selling new
                   ),
-                  title: 'รายงานขายทองใหม่',
+                  title: 'รายงานขายทองรูปพรรณใหม่',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -151,7 +151,7 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                   iconStyle: IconStyle(
                     backgroundColor: Colors.deepOrange[600]!, // Deep orange for used items
                   ),
-                  title: 'รายงานขายทองเก่า',
+                  title: 'รายงานขายทองรูปพรรณเก่า',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -173,7 +173,7 @@ class _PaphunReportMenuScreenState extends State<PaphunReportMenuScreen> {
                   iconStyle: IconStyle(
                     backgroundColor: Colors.brown[600]!, // Brown for used items
                   ),
-                  title: 'รายงานซื้อทองเก่า',
+                  title: 'รายงานซื้อทองรูปพรรณเก่า',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge

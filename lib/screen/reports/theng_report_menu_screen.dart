@@ -12,8 +12,15 @@ import 'package:motivegold/screen/reports/sell-new-gold-reports/sell_new_gold_re
 import 'package:motivegold/screen/reports/sell-used-gold-reports/sell_used_gold_report_screen.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_report_list_screen.dart';
 import 'package:motivegold/screen/reports/stock-reports/stock_report_list_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/buy-new-gold/buy_vat_report_screen.dart';
-import 'package:motivegold/screen/reports/vat-reports/sell-new-gold/sell_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/theng/buy-new-theng-gold-reports/buy_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/theng/buy-used-theng-gold-reports/buy_used_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/theng/sell-new-theng-gold-reports/sell_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/theng/sell-used-theng-gold-reports/sell_used_theng_gold_report_screen.dart';
+import 'package:motivegold/screen/reports/theng/theng-money-movement-reports/theng_money_movement_reports.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/buy_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/sell_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/theng/buy-gold/buy_theng_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/vat-reports/theng/sell-gold/sell_theng_vat_report_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/utils/alert.dart';
@@ -99,7 +106,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                   ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const BuyUsedThengGoldReportScreen()));
                   },
                   icons: Icons.shopping_cart, // Better for buying
                   iconStyle: IconStyle(
@@ -117,7 +129,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const SellThengReportScreen()));
                   },
                   icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
@@ -135,7 +152,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const SellUsedThengGoldReportScreen()));
                   },
                   icons: Icons.sell, // Selling icon
                   iconStyle: IconStyle(
@@ -153,7 +175,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    //Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const BuyThengReportScreen()));
                   },
                   icons: Icons.shopping_cart, // Buying icon
                   iconStyle: IconStyle(
@@ -171,7 +198,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const ThengMoneyMovementReportScreen()));
                   },
                   icons: Icons.account_balance_wallet, // Better for financial flow
                   iconStyle: IconStyle(
@@ -189,13 +221,18 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const SellThengVatReportScreen()));
                   },
                   icons: Icons.receipt_long, // Better for tax reports
                   iconStyle: IconStyle(
                     backgroundColor: Colors.indigo[600]!, // Indigo for tax reports
                   ),
-                  title: 'รายงานภาษีขายทองคำแท่ง (บรรจุภัณฑ์)',
+                  title: 'รายงานภาษีขายทองคำแท่ง',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -207,13 +244,18 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                 ),
                 SettingsItem(
                   onTap: () {
-                    Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    // Alert.info(context, 'Warning'.tr(), 'จะนำมาใช้งานเร็วๆ นี้', 'OK');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const BuyThengVatReportScreen()));
                   },
                   icons: Icons.receipt_long, // Tax reports
                   iconStyle: IconStyle(
                     backgroundColor: Colors.indigo[600]!, // Same color for tax consistency
                   ),
-                  title: 'รายงานภาษีซื้อทองคำแท่ง (บรรจุภัณฑ์)',
+                  title: 'รายงานภาษีซื้อทองคำแท่ง',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge

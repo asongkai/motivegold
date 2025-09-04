@@ -361,6 +361,7 @@ Widget docNoRedeem(RedeemModel order) {
 }
 
 Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
+  motivePrint(customer?.toJson());
   return Padding(
       padding:
           const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 4.0, top: 4.0),
@@ -384,6 +385,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
+                  if (customer.defaultWalkIn != 1)
                   TableRow(
                     children: [
                       Text(
@@ -393,8 +395,19 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
+                  if (customer.defaultWalkIn == 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
                 ],
               ),
+              if (customer.defaultWalkIn != 1)
               Text('${getWorkId(customer)}',
                   maxLines: 1,
                   overflow: TextOverflow.clip,
@@ -461,6 +474,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
 }
 
 Widget buyerSellerInfoRedeem(CustomerModel customer, RedeemModel order) {
+
   return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(children: [
@@ -479,13 +493,27 @@ Widget buyerSellerInfoRedeem(CustomerModel customer, RedeemModel order) {
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                          'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
-                          style: const TextStyle(fontSize: 10)),
-                    ],
-                  ),
+                  if (customer.defaultWalkIn != 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  if (customer.defaultWalkIn == 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  if (customer.defaultWalkIn != 1)
                   TableRow(
                     children: [
                       Text('${getWorkId(customer)} ',
@@ -552,16 +580,30 @@ Widget buyerSellerInfoRefill(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                          'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
-                          style: const TextStyle(fontSize: 10)),
-                    ],
-                  ),
+                  if (customer.defaultWalkIn != 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  if (customer.defaultWalkIn == 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                if (customer.defaultWalkIn != 1)
                 Text('${getWorkId(customer)} ',
                     style: const TextStyle(fontSize: 10)),
                 if (order.orderTypeId == 5 || order.orderTypeId == 10)
@@ -636,16 +678,30 @@ Widget buyerSellerInfoSellUsedWholeSale(CustomerModel customer, OrderModel order
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                          'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
-                          style: const TextStyle(fontSize: 10)),
-                    ],
-                  ),
+                  if (customer.defaultWalkIn != 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  if (customer.defaultWalkIn == 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                if (customer.defaultWalkIn != 1)
                 Text('${getWorkId(customer)} ',
                     style: const TextStyle(fontSize: 10)),
                 if (order.orderTypeId == 5 || order.orderTypeId == 10)
@@ -722,16 +778,30 @@ Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 10)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                          'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
-                          style: const TextStyle(fontSize: 10)),
-                    ],
-                  ),
+                  if (customer.defaultWalkIn != 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
+                  if (customer.defaultWalkIn == 1)
+                    TableRow(
+                      children: [
+                        Text(
+                            'ที่อยู่ : ',
+                            maxLines: 2,
+                            overflow: TextOverflow.visible,
+                            style: const TextStyle(fontSize: 10)),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                if (customer.defaultWalkIn != 1)
                 Text('${getWorkId(customer)} ',
                     style: const TextStyle(fontSize: 10)),
                 if (order.orderTypeId == 5 || order.orderTypeId == 10)
@@ -946,6 +1016,32 @@ Widget getThongThengSignatureInfo(CustomerModel customer, int orderTypeId) =>
         ],
       ),
       SizedBox(height: 10),
+    ]);
+
+Widget reportsHeader() =>
+    Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text("ชื่อผู้ประกอบการ/ชชื่อสถานประกอบการ : ${Global.company!.name} (${Global.branch!.name})"),
+          ),
+          Expanded(
+            child: Text(' ', textAlign: TextAlign.right),
+          )
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text("ทีอยู่ : ${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}"),
+          ),
+          Expanded(
+            child: Text("เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber ?? ''}", textAlign: TextAlign.right),
+          )
+        ],
+      ),
     ]);
 
 Widget paddedText(final String text,

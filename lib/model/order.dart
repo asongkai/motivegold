@@ -60,6 +60,9 @@ class OrderModel {
   double? transferPayment;
   double? creditPayment;
   double? otherPayment;
+  double? depositPayment;
+  double? packageAmount;
+  double? commissionAmount;
 
   OrderModel({
     this.id,
@@ -99,6 +102,9 @@ class OrderModel {
     this.transferPayment,
     this.creditPayment,
     this.otherPayment,
+    this.depositPayment,
+    this.packageAmount,
+    this.commissionAmount,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
@@ -157,6 +163,9 @@ class OrderModel {
         transferPayment: json["transferPayment"],
         creditPayment: json["creditPayment"],
         otherPayment: json["otherPayment"],
+        depositPayment: json["depositPayment"],
+        packageAmount: json["packageAmount"],
+        commissionAmount: json["commissionAmount"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -199,6 +208,9 @@ class OrderModel {
         "transferPayment": transferPayment,
         "creditPayment": creditPayment,
         "otherPayment": otherPayment,
+        "depositPayment": depositPayment,
+        "packageAmount": packageAmount,
+        "commissionAmount": commissionAmount,
       };
 
   @override

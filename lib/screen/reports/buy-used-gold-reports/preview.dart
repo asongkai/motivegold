@@ -10,7 +10,9 @@ class PreviewBuyUsedGoldReportPage extends StatelessWidget {
   final List<OrderModel?> orders;
   final int type;
   final String date;
-  const PreviewBuyUsedGoldReportPage({super.key, required this.orders, required this.type, required this.date});
+  final DateTime fromDate;
+  final DateTime toDate;
+  const PreviewBuyUsedGoldReportPage({super.key, required this.orders, required this.type, required this.date, required this.fromDate, required this.toDate});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class PreviewBuyUsedGoldReportPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeBuyUsedGoldReportPdf(orders, type, date),
+        build: (context) => makeBuyUsedGoldReportPdf(orders, type, date, fromDate, toDate),
       ),
     );
   }
