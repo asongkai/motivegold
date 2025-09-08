@@ -16,6 +16,7 @@ import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/model/order_type.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
 import 'package:motivegold/model/payment.dart';
@@ -232,6 +233,7 @@ class Global {
   static List<BankAccountModel> accountList = [];
   static List<BankAccountModel> filterAccountList = [];
   static List<OrderTypeModel> orderTypes = [];
+  static List<ProductModel> productList = [];
 
   static List<ProvinceModel> provinceList = [];
   static List<AmphureModel> amphureList = [];

@@ -292,7 +292,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       .titleMedium
                       ?.copyWith(color: Colors.grey.shade600),
                 ),
-                if (Global.user?.userType == 'ADMIN')
+                if (Global.user?.userRole == 'Administrator')
                   SettingsItem(
                     onTap: () {
                       Navigator.push(

@@ -56,6 +56,9 @@ const Color suBgColor = Color(0xff6d4c41);
 const Color buBgColor = Color(0xffff8a65);
 const Color buBgColorLight = Color(0xfffbe9e7);
 
+const Color exBgColor = Color(0xfffcd5b5);
+const Color exBgColorLight = Color(0xffFBE9E7);
+
 const Color rfBgColor = Color(0xffffca28);
 const Color rfBgColorLight = Color(0xfffff8e1);
 

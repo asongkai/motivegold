@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/screen/pos/modal/hold_list.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/ui/buy_screen.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/ui/exchange_screen.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/ui/sell_screen.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:motivegold/utils/cart/cart.dart';
@@ -205,8 +206,8 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                 displayMode: SideMenuDisplayMode.auto,
                 hoverColor: Colors.teal[100],
                 selectedHoverColor: Colors.teal[100],
-                selectedColor: posIndex == 0 ? snBgColor : buBgColor,
-                selectedTitleTextStyle: const TextStyle(color: Colors.white),
+                selectedColor: selectedColor(),
+                selectedTitleTextStyle: TextStyle(color: posIndex == 2 ? Colors.black : Colors.white),
                 selectedIconColor: Colors.white,
                 openSideMenuWidth: 160,
                 itemHeight: 100,
@@ -253,6 +254,18 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                 //const Icon(FontAwesomeIcons.b),
                 tooltipContent: 'ลูกค้าขาย ร้านทองรับซื้อ',
               ),
+              // SideMenuItem(
+              //   title: 'แลก',
+              //   subTitle: 'เปลี่ยนทอง',
+              //   onTap: (index, _) {
+              //     posIndex = index;
+              //     setState(() {});
+              //     sideMenu.changePage(index);
+              //   },
+              //   icon: null,
+              //   //const Icon(FontAwesomeIcons.b),
+              //   tooltipContent: 'แลกเปลี่ยนทอง',
+              // ),
             ],
           ),
           Expanded(
@@ -270,12 +283,30 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                   refreshHold: refreshHold,
                   cartCount: cartCount,
                 ),
+                // PaphunExchangeScreen(
+                //   refreshCart: refreshCart,
+                //   refreshHold: refreshHold,
+                //   cartCount: cartCount,
+                // ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Color selectedColor() {
+    if (posIndex == 0) {
+      return snBgColor;
+    }
+    if (posIndex == 1) {
+      return buBgColor;
+    }
+    if (posIndex == 2) {
+      return exBgColor;
+    }
+    return buBgColor;
   }
 
   void refreshCart(dynamic childValue) {

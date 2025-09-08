@@ -1,6 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/util.dart';
 
 void motivePrint(Object? object) {
@@ -204,7 +205,7 @@ double priceIncludeTaxTotalMovement(List<dynamic> orders) {
   for (int i = 0; i < orders.length; i++) {
     if (orders[i]!.orderTypeId == 2 || orders[i]!.orderTypeId == 44) {
       amount -= orders[i]!.priceIncludeTax ?? 0;
-    } else  {
+    } else {
       amount += orders[i]!.priceIncludeTax ?? 0;
     }
   }
@@ -568,8 +569,8 @@ double getPaymentAmountTotal(List<dynamic> orders) {
 /// END Redeem
 
 Widget paddedText(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 12)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(5),
       child: Text(
@@ -580,8 +581,8 @@ Widget paddedText(final String text,
     );
 
 Widget paddedTextBig(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 14)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 14)}) =>
     Padding(
       padding: const EdgeInsets.all(5),
       child: Text(
@@ -592,8 +593,8 @@ Widget paddedTextBig(final String text,
     );
 
 Widget paddedTextBigL(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 18)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 18)}) =>
     Padding(
       padding: const EdgeInsets.all(5),
       child: Text(
@@ -604,8 +605,8 @@ Widget paddedTextBigL(final String text,
     );
 
 Widget paddedTextBigXL(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 22)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 22)}) =>
     Padding(
       padding: const EdgeInsets.all(8),
       child: Text(
@@ -616,5 +617,18 @@ Widget paddedTextBigXL(final String text,
     );
 
 String twoDigit(int num) {
-return '${num.toString().length < 2 ? '0$num' : num}';
+  return '${num.toString().length < 2 ? '0$num' : num}';
+}
+
+// Function to filter by product ID and return unitWeight
+double? getUnitWeightByProductId(List<ProductModel> products, int productId) {
+  try {
+    // Find the product with the matching ID
+    ProductModel product =
+        products.firstWhere((product) => product.id == productId);
+    return product.unitWeight;
+  } catch (e) {
+    // Return null if no product found with the given ID
+    return 15.16;
+  }
 }

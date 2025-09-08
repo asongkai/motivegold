@@ -1319,10 +1319,11 @@ getVatValue() {
 }
 
 getUnitWeightValue() {
-  if (Global.settingValueModel == null) {
-    return 15.16;
-  }
-  return Global.settingValueModel?.unitWeight ?? 15.16;
+  // if (Global.settingValueModel == null) {
+  //   return 15.16;
+  // }
+  // return Global.settingValueModel?.unitWeight ?? 15.16;
+
 }
 
 getMaxKycValue() {

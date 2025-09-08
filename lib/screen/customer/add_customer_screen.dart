@@ -15,6 +15,7 @@ import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
 import 'package:motivegold/screen/customer/ocr/id_data_screen.dart';
+import 'package:motivegold/screen/customer/ocr/tesseract_ocr_screen.dart';
 import 'package:motivegold/screen/customer/widget/card_reader_info.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
@@ -584,7 +585,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
                       });
                     });
-                    Global.printLongString(ocrResult.toString());
+                    // Global.printLongString(ocrResult.toString());
 
                     if (ocrResult != null) {
                       idCardCtrl.text = ocrResult["id_number"];

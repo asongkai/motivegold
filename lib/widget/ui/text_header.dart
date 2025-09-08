@@ -68,13 +68,13 @@ Widget posHeaderText(BuildContext context, Color color, String text) {
   );
 }
 
-Widget titleText(BuildContext context, String text) {
+Widget titleText(BuildContext context, String text, {int? index}) {
   return Text(
     text,
     style: TextStyle(
       fontSize: 14.sp,
       fontWeight: FontWeight.w600,
-      color: Colors.white,
+      color: index == 3 ? Colors.black : Colors.white,
       letterSpacing: 0.3,
       height: 1.3,
     ),

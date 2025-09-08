@@ -49,7 +49,7 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
     try {
       deviceIdCtrl.text = (await getDeviceId())!;
       var result =
-          await ApiServices.post('/settings/all', Global.requestObj(null));
+          await ApiServices.post('/settings/by-company', Global.requestObj(null));
       // print(result!.toJson());
       if (result?.status == "success") {
         settingsValueModel = SettingsValueModel.fromJson(result?.data);

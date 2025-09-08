@@ -300,6 +300,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         List<ProductModel> products = productListModelFromJson(data);
         setState(() {
           productList = products;
+          Global.productList = products;
         });
       } else {
         productList = [];

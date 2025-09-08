@@ -10,6 +10,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/master/setting_value.dart';
 import 'package:motivegold/model/pos_id.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/user.dart';
 import 'package:motivegold/screen/auth/signin_screen.dart';
 import 'package:motivegold/screen/tab_screen.dart';
@@ -242,6 +243,18 @@ class _LandingScreenState extends State<LandingScreen> {
           Global.provinceList = [];
         }
 
+        var product =
+            await ApiServices.post('/product/all', Global.requestObj(null));
+        if (product?.status == "success") {
+          var data = jsonEncode(product?.data);
+          List<ProductModel> products = productListModelFromJson(data);
+          setState(() {
+            Global.productList = products;
+          });
+        } else {
+          Global.productList = [];
+        }
+
         // Navigator.of(context).pushReplacement(
         //     MaterialPageRoute(builder: (context) => const SignInTen()));
         if (mounted) {
@@ -255,7 +268,8 @@ class _LandingScreenState extends State<LandingScreen> {
       }
     } catch (e, stack) {
       motivePrint(e.toString());
-      Alert.warning(context, 'Error: ${e.toString()}', stack.toString(), 'OK', action: () {
+      Alert.warning(context, 'Error: ${e.toString()}', stack.toString(), 'OK',
+          action: () {
         resetAtLogout();
         if (e is PlatformException && e.code == 'BadPaddingException') {
           LocalStorage.sharedInstance.deleteAll();
