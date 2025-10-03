@@ -223,7 +223,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
       productWeightCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue(selectedProduct?.id));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -831,7 +831,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
       productEntryWeightCtrl.text = Global.format(
-          (Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productEntryWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -840,7 +840,7 @@ class _SellUsedDialogState extends State<SellUsedDialog> {
   void gramChanged() {
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text =
-          Global.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue()));
+          Global.format((Global.toNumber(productEntryWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }

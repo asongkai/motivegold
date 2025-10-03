@@ -52,7 +52,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
   WarehouseModel? selectedFromLocation;
   WarehouseModel? selectedToLocation;
 
-  TextEditingController productCodeCtrl = TextEditingController();
+  TextEditingController productIdCtrl = TextEditingController();
   TextEditingController productNameCtrl = TextEditingController();
   TextEditingController productWeightCtrl = TextEditingController();
   TextEditingController productWeightBahtCtrl = TextEditingController();
@@ -153,7 +153,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
       await pr.show();
       pr.update(message: 'processing'.tr());
       var result = await ApiServices.get(
-          '/qtybylocation/by-product-location/$id/${int.parse(productCodeCtrl.text)}');
+          '/qtybylocation/by-product-location/$id/${int.parse(productIdCtrl.text)}');
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<QtyLocationModel> qtys = qtyLocationListModelFromJson(data);
@@ -169,9 +169,9 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(int.parse(productIdCtrl.text)));
       qtyLocation = qtyLocationList.isNotEmpty ? qtyLocationList.first : null;
-      motivePrint(qtyLocation?.toJson());
+      // motivePrint(qtyLocation?.toJson());
       setState(() {});
     } catch (e) {
       if (kDebugMode) {
@@ -480,7 +480,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                         warehouseCtrl.text = value.id!.toString();
                         selectedFromLocation = value;
                         fromWarehouseNotifier!.value = value;
-                        if (productCodeCtrl.text != "") {
+                        if (productIdCtrl.text != "") {
                           loadQtyByLocation(value.id!);
                           setState(() {});
                         }
@@ -968,7 +968,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                   icon: Icons.monetization_on,
                   title: 'บาททองรวม',
                   value:
-                      '${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue())} บาททอง',
+                      '${Global.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue(Global.toNumber(productIdCtrl.text).toInt()))} บาททอง',
                   color: Colors.orange,
                 ),
               ),
@@ -1115,8 +1115,6 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
       return;
     }
 
-
-
     if (Global.transfer == null) {
       final ProgressDialog pr = ProgressDialog(
         context,
@@ -1181,7 +1179,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                             ),
                             const Spacer(),
                             IconButton(
-                              onPressed: () => Navigator.of(context).pop(),
+                              onPressed: () {
+                                Global.transfer = null;
+                                Navigator.of(context).pop();
+                              },
                               icon: const Icon(Icons.close),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.grey.shade100,
@@ -1260,7 +1261,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                         );
                       },
                       onChanged: (ProductModel value) {
-                        productCodeCtrl.text = value.id!.toString();
+                        productIdCtrl.text = value.id!.toString();
                         productNameCtrl.text = value.name;
                         productNotifier!.value = value;
                         if (warehouseCtrl.text != "") {
@@ -1299,10 +1300,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                   ],
                   onChanged: (String value) {
                     if (productWeightCtrl.text.isNotEmpty) {
-                      productWeightBahtCtrl.text = formatter.format(
+                      productWeightBahtCtrl.text = Global.format(
                           (Global.toNumber(productWeightCtrl.text) /
-                                  getUnitWeightValue())
-                              .toPrecision(2));
+                                  getUnitWeightValue(Global.toNumber(productIdCtrl.text).toInt()))
+                      );
                     } else {
                       productWeightBahtCtrl.text = "";
                     }
@@ -1325,10 +1326,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                   ],
                   onChanged: (String value) {
                     if (productWeightBahtCtrl.text.isNotEmpty) {
-                      productWeightCtrl.text = formatter.format(
+                      productWeightCtrl.text = Global.format(
                           (Global.toNumber(productWeightBahtCtrl.text) *
-                                  getUnitWeightValue())
-                              .toPrecision(2));
+                                  getUnitWeightValue(Global.toInt(productIdCtrl.text)))
+                      );
                     } else {
                       productWeightCtrl.text = "";
                     }
@@ -1356,10 +1357,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                   ],
                   onChanged: (String value) {
                     if (productEntryWeightCtrl.text.isNotEmpty) {
-                      productEntryWeightBahtCtrl.text = formatter.format(
+                      productEntryWeightBahtCtrl.text = Global.format(
                           (Global.toNumber(productEntryWeightCtrl.text) /
-                                  getUnitWeightValue())
-                              .toPrecision(2));
+                                  getUnitWeightValue(Global.toInt(productIdCtrl.text)))
+                      );
                     } else {
                       productEntryWeightBahtCtrl.text = "";
                     }
@@ -1381,10 +1382,10 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                   ],
                   onChanged: (String value) {
                     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
-                      productEntryWeightCtrl.text = formatter.format(
+                      productEntryWeightCtrl.text = Global.format(
                           (Global.toNumber(productEntryWeightBahtCtrl.text) *
-                                  getUnitWeightValue())
-                              .toPrecision(2));
+                                  getUnitWeightValue(Global.toInt(productIdCtrl.text)))
+                              );
                     } else {
                       productEntryWeightCtrl.text = "";
                     }
@@ -1423,7 +1424,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
                 Global.transferDetail!.add(
                   TransferDetailModel(
                     productName: productNameCtrl.text,
-                    productId: int.parse(productCodeCtrl.text),
+                    productId: int.parse(productIdCtrl.text),
                     weight: Global.toNumber(productEntryWeightCtrl.text),
                     weightBath:
                         Global.toNumber(productEntryWeightBahtCtrl.text),
@@ -1497,7 +1498,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
   }
 
   resetText() {
-    productCodeCtrl.text = "";
+    productIdCtrl.text = "";
     productNameCtrl.text = "";
     productWeightCtrl.text = "";
     productWeightBahtCtrl.text = "";
@@ -1508,7 +1509,7 @@ class _TransferGoldScreenState extends State<TransferGoldScreen>
   }
 
   resetTextAll() {
-    productCodeCtrl.text = "";
+    productIdCtrl.text = "";
     productNameCtrl.text = "";
     productWeightCtrl.text = "";
     productWeightBahtCtrl.text = "";

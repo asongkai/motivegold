@@ -78,7 +78,6 @@ class _SellDialogState extends State<SellDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumSellThengTotalBroker();
     loadProducts();
   }
 
@@ -144,6 +143,11 @@ class _SellDialogState extends State<SellDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellThengTotalBroker(selectedProduct!.id!);
+      }
+
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -178,7 +182,7 @@ class _SellDialogState extends State<SellDialog> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -260,9 +264,10 @@ class _SellDialogState extends State<SellDialog> {
             children: [
               posHeaderText(
                   context, Colors.teal[900]!, 'ขายทองแท่งกับโบรกเกอร์'),
-              const Padding(
+              if (selectedProduct != null)
+              Padding(
                 padding: EdgeInsets.only(left: 10, right: 10),
-                child: GoldMiniWidget(),
+                child: GoldMiniWidget(product: selectedProduct!,),
               ),
               const SizedBox(
                 height: 20,
@@ -590,7 +595,7 @@ class _SellDialogState extends State<SellDialog> {
                       }
 
                       var realPrice = Global.getBuyThengPrice(
-                          Global.toNumber(productWeightCtrl.text));
+                          Global.toNumber(productWeightCtrl.text), selectedProduct!.id!);
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
 
@@ -633,7 +638,7 @@ class _SellDialogState extends State<SellDialog> {
                                 Global.toNumber(productPriceTotalCtrl.text),
                             bookDate: null),
                       );
-                      sumSellThengTotalBroker();
+                      sumSellThengTotalBroker(selectedProduct!.id!);
                       setState(() {});
                       Navigator.of(context).pop();
                       // });
@@ -673,9 +678,9 @@ class _SellDialogState extends State<SellDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
       marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
       productPriceCtrl.text = marketPriceTotalCtrl.text;
       productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
           ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'

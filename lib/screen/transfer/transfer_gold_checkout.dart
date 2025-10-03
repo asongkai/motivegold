@@ -592,7 +592,7 @@ class _TransferGoldCheckOutScreenState extends State<TransferGoldCheckOutScreen>
                 const SizedBox(height: 8),
                 PriceBreakdown(
                   title: 'บาททองรวม',
-                  price: '${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue())} บาททอง',
+                  price: '${formatter.format(Global.getTransferWeightTotalAmount() / getUnitWeightValue(Global.transferDetail?.first.productId))} บาททอง',
                 ),
               ],
             ),

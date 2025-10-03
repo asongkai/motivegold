@@ -111,11 +111,11 @@ class ThengBrokerMenuScreenState extends State<ThengBrokerMenuScreen> {
                                               fullscreenDialog: true))
                                       .whenComplete(() {
                                     init();
-                                    if (Global.posIndex == 0) {
-                                      sumSellThengTotalBroker();
+                                    if (Global.posIndex == 0 && Global.sellThengOrderDetailBroker!.isNotEmpty) {
+                                      sumSellThengTotalBroker(Global.sellThengOrderDetailBroker!.first.productId!);
                                     }
-                                    if (Global.posIndex == 1) {
-                                      sumBuyThengTotalBroker();
+                                    if (Global.posIndex == 1 && Global.buyThengOrderDetailBroker!.isNotEmpty) {
+                                      sumBuyThengTotalBroker(Global.buyThengOrderDetailBroker!.first.productId!);
                                     }
                                     sideMenu.changePage(Global.posIndex);
                                     pageController.jumpToPage(Global.posIndex);

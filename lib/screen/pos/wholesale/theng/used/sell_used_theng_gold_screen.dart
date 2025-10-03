@@ -290,7 +290,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
           Global.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = Global.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -633,6 +633,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
                             ),
                           ],
                         ),
+                        if (Global.company?.stock == 1)
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -1080,7 +1081,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text = Global.format(
           (Global.toNumber(productEntryWeightCtrl.text) /
-              getUnitWeightValue()));
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }
@@ -1088,9 +1089,9 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
 
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
-      productEntryWeightCtrl.text = Global.format(
+      productEntryWeightCtrl.text = Global.format4(
           (Global.toNumber(productEntryWeightBahtCtrl.text) *
-              getUnitWeightValue()));
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -1223,7 +1224,7 @@ class _SellUsedThengGoldScreenState extends State<SellUsedThengGoldScreen> {
         weightBath: Global.toNumber(productEntryWeightBahtCtrl.text),
         weightAdj: Global.toNumber(priceAdjCtrl.text),
         weightBathAdj:
-            Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(),
+            Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(selectedProduct?.id),
         commission: 0,
         unitCost: Global.toNumber(priceIncludeTaxCtrl.text) /
             Global.toNumber(productEntryWeightCtrl.text),

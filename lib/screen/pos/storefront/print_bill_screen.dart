@@ -133,42 +133,43 @@ class _PrintBillScreenState extends State<PrintBillScreen>
         child: loading
             ? const ModernLoadingWidgetWithText()
             : orders.isEmpty
-            ? const ModernEmptyState()
-            : _fadeAnimation != null
-            ? FadeTransition(
-          opacity: _fadeAnimation!,
-          child: RefreshIndicator(
-            onRefresh: () async => loadOrder(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                return AnimatedContainer(
-                  duration: Duration(milliseconds: 300 + (index * 100)),
-                  curve: Curves.easeOutBack,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: _modernOrderCard(
-                    order: orders[index],
-                    index: index,
-                  ),
-                );
-              },
-            ),
-          ),
-        )
-            : RefreshIndicator(
-          onRefresh: () async => loadOrder(),
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              return _modernOrderCard(
-                order: orders[index],
-                index: index,
-              );
-            },
-          ),
-        ),
+                ? const ModernEmptyState()
+                : _fadeAnimation != null
+                    ? FadeTransition(
+                        opacity: _fadeAnimation!,
+                        child: RefreshIndicator(
+                          onRefresh: () async => loadOrder(),
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: orders.length,
+                            itemBuilder: (context, index) {
+                              return AnimatedContainer(
+                                duration:
+                                    Duration(milliseconds: 300 + (index * 100)),
+                                curve: Curves.easeOutBack,
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: _modernOrderCard(
+                                  order: orders[index],
+                                  index: index,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () async => loadOrder(),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: orders.length,
+                          itemBuilder: (context, index) {
+                            return _modernOrderCard(
+                              order: orders[index],
+                              index: index,
+                            );
+                          },
+                        ),
+                      ),
       ),
     );
   }
@@ -254,17 +255,24 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                             ],
                           ),
                           ...order.details!.asMap().entries.map(
-                                (entry) {
+                            (entry) {
                               int idx = entry.key;
                               var e = entry.value;
                               return TableRow(
                                 decoration: BoxDecoration(
-                                  color: idx % 2 == 0 ? Colors.white : const Color(0xFFFAFBFC),
+                                  color: idx % 2 == 0
+                                      ? Colors.white
+                                      : const Color(0xFFFAFBFC),
                                 ),
                                 children: [
                                   paddedTextBigXL(e.productName),
                                   paddedText(
-                                    Global.format(e.weight!),
+                                    order.orderTypeId == 4 ||
+                                            order.orderTypeId == 44 ||
+                                            order.orderTypeId == 10 ||
+                                            order.orderTypeId == 11
+                                        ? Global.format4(e.weight!)
+                                        : Global.format(e.weight!),
                                     align: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16.sp,
@@ -303,9 +311,16 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  Global.format(
-                                      Global.getOrderWeightTotalAmountApi(
-                                          order.details)),
+                                  order.orderTypeId == 4 ||
+                                          order.orderTypeId == 44 ||
+                                          order.orderTypeId == 10 ||
+                                          order.orderTypeId == 11
+                                      ? Global.format4(
+                                          Global.getOrderWeightTotalAmountApi(
+                                              order.details))
+                                      : Global.format(
+                                          Global.getOrderWeightTotalAmountApi(
+                                              order.details)),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16.sp,
@@ -331,7 +346,8 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                             ],
                           ),
                           TableRow(
-                            decoration: const BoxDecoration(color: Colors.white),
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(16),
@@ -361,8 +377,8 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w500,
                                     color: addDisValue(order.discount ?? 0,
-                                        order.addPrice ?? 0) <
-                                        0
+                                                order.addPrice ?? 0) <
+                                            0
                                         ? const Color(0xFFDC2626)
                                         : const Color(0xFF059669),
                                   ),
@@ -394,7 +410,7 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  '${Global.format(Global.getOrderTotalWeight(order.details!))}',
+                                  '${order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ? Global.format4(Global.getOrderTotalWeight(order.details!)) : Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 16.sp,
@@ -432,34 +448,40 @@ class _PrintBillScreenState extends State<PrintBillScreen>
                 flex: 2,
                 child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () => _handlePrintOrder(order),
-                      child: Container(
-                        height: 80,
-                        width: 80,
-                        margin: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF0F766E).withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
+                    (order.orderTypeId == 1 || order.orderTypeId == 4)
+                        ? _buildPrintButtons(order)
+                        : GestureDetector(
+                            onTap: () => _handlePrintOrder(order),
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              margin: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF0F766E),
+                                    Color(0xFF14B8A6)
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF0F766E)
+                                        .withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.print,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.print,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                    ),
+                          ),
                   ],
                 ),
               ),
@@ -469,8 +491,6 @@ class _PrintBillScreenState extends State<PrintBillScreen>
       ),
     );
   }
-
-
 
   IconData _getOrderTypeIcon(int? orderTypeId) {
     switch (orderTypeId) {
@@ -497,6 +517,198 @@ class _PrintBillScreenState extends State<PrintBillScreen>
     }
   }
 
+  Widget _buildPrintButtons(OrderModel order) {
+    return Column(
+      children: [
+        // Full Tax Invoice Button
+        GestureDetector(
+          onTap: () => _handlePrintOrderWithType(order, 'full_tax'),
+          child: Container(
+            height: 80,
+            // width: 120,
+            margin: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0F766E).withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.print,
+                  color: Colors.white,
+                  size: 26,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'ใบกำกับภาษีเต็มรูป',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Simple Tax Invoice Button
+        GestureDetector(
+          onTap: () => _handlePrintOrderWithType(order, 'simple_tax'),
+          child: Container(
+            height: 80,
+            // width: 120,
+            margin: const EdgeInsets.only(left: 8, right: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0288d1),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0288d1).withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.print,
+                  color: Colors.white,
+                  size: 26,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'ใบกำกับภาษีอย่างย่อ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handlePrintOrderWithType(
+      OrderModel order, String printType) async {
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.normal,
+      isDismissible: true,
+      showLogs: true,
+    );
+
+    await pr.show();
+    pr.update(message: 'กำลังเตรียมข้อมูล...');
+
+    try {
+      var payment = await ApiServices.post(
+          '/order/payment/${order.pairId}', Global.requestObj(null));
+      await pr.hide();
+
+      Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
+
+      Invoice invoice = Invoice(
+          order: order,
+          customer: order.customer!,
+          payments: Global.paymentList,
+          orders: orders,
+          items: order.details!);
+
+      _navigateToPreviewWithType(order, invoice, printType);
+    } catch (e) {
+      await pr.hide();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _navigateToPreviewWithType(
+      OrderModel order, Invoice invoice, String printType) {
+    // Handle order type 1 separately
+    if (order.orderTypeId == 1) {
+      if (printType == 'full_tax') {
+        // Navigate to full tax invoice preview for order type 1
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PdfPreviewPage(
+              invoice: invoice,
+              goHome: true,
+              billType: 'full',
+            ),
+          ),
+        );
+      } else if (printType == 'simple_tax') {
+        // Navigate to simple tax invoice preview for order type 1
+        // You may need to create a different preview page or pass a parameter
+        // to differentiate between full and simple tax invoice for type 1
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PdfPreviewPage(
+              invoice: invoice,
+              goHome: true,
+              billType: 'short',
+            ),
+          ),
+        );
+      }
+    }
+    // Handle order type 4 separately
+    else if (order.orderTypeId == 4) {
+      if (printType == 'full_tax') {
+        // Navigate to full tax invoice preview for order type 4
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewSellThengPdfPage(
+              invoice: invoice,
+              goHome: true,
+              billType: 'full',
+            ),
+          ),
+        );
+      } else if (printType == 'simple_tax') {
+        // Navigate to simple tax invoice preview for order type 4
+        // You may need to create a different preview page or pass a parameter
+        // to differentiate between full and simple tax invoice for type 4
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewSellThengPdfPage(
+              invoice: invoice,
+              goHome: true,
+              billType: 'short',
+            ),
+          ),
+        );
+      }
+    } else {
+      // For other order types, use the original navigation logic
+      _navigateToPreview(order, invoice);
+    }
+  }
+
   void _handlePrintOrder(OrderModel order) async {
     final ProgressDialog pr = ProgressDialog(
       context,
@@ -513,8 +725,7 @@ class _PrintBillScreenState extends State<PrintBillScreen>
           '/order/payment/${order.pairId}', Global.requestObj(null));
       await pr.hide();
 
-      Global.paymentList =
-          paymentListModelFromJson(jsonEncode(payment?.data));
+      Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
 
       Invoice invoice = Invoice(
           order: order,
@@ -537,13 +748,13 @@ class _PrintBillScreenState extends State<PrintBillScreen>
 
   void _navigateToPreview(OrderModel order, Invoice invoice) {
     switch (order.orderTypeId) {
-      case 1:
       case 2:
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PdfPreviewPage(
               invoice: invoice,
               goHome: true,
+              billType: 'full',
             ),
           ),
         );
@@ -553,18 +764,18 @@ class _PrintBillScreenState extends State<PrintBillScreen>
             context,
             MaterialPageRoute(
                 builder: (context) => PreviewRefillGoldPage(
-                  invoice: invoice,
-                  goHome: true,
-                )));
+                      invoice: invoice,
+                      goHome: true,
+                    )));
         break;
       case 6:
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => PreviewSellUsedGoldPage(
-                  invoice: invoice,
-                  goHome: true,
-                )));
+                      invoice: invoice,
+                      goHome: true,
+                    )));
         break;
       case 3:
       case 8:
@@ -585,6 +796,7 @@ class _PrintBillScreenState extends State<PrintBillScreen>
             builder: (context) => PreviewSellThengPdfPage(
               invoice: invoice,
               goHome: true,
+              billType: 'full',
             ),
           ),
         );
@@ -595,7 +807,7 @@ class _PrintBillScreenState extends State<PrintBillScreen>
             builder: (context) => PreviewBuyThengPdfPage(
               invoice: invoice,
               goHome: true,
-              shop: true,
+              shop: false,
             ),
           ),
         );

@@ -118,25 +118,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   void initState() {
     super.initState();
 
-    // Sample data
-    if (env == ENV.DEV) {
-      orderDateCtrl.text = "01-06-2025";
-      referenceNumberCtrl.text = "90803535";
-      productSellThengPriceCtrl.text =
-          Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
-      productBuyThengPriceCtrl.text = "0";
-      productSellPriceCtrl.text = "0";
-      productBuyPriceCtrl.text =
-          Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
-      productBuyPricePerGramCtrl.text = Global.format(
-          Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue());
 
-      productWeightCtrl.text = Global.format(270);
-      purchasePriceCtrl.text = Global.format(
-          Global.toNumber(productWeightCtrl.text) *
-              Global.toNumber(productBuyPricePerGramCtrl.text));
-      priceIncludeTaxCtrl.text = Global.format(929918.17);
-    }
 
     Global.appBarColor = rfBgColor;
     productTypeNotifier = ValueNotifier<ProductTypeModel>(
@@ -147,9 +129,28 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
     getCart();
+    // Sample data
+    if (env == ENV.DEV) {
+      orderDateCtrl.text = "01-06-2025";
+      referenceNumberCtrl.text = "90803535";
+      productSellThengPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.theng?.sell));
+      productBuyThengPriceCtrl.text = "0";
+      productSellPriceCtrl.text = "0";
+      productBuyPriceCtrl.text =
+          Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy));
+      // productBuyPricePerGramCtrl.text = Global.format(
+      //     Global.toNumber(productBuyPriceCtrl.text) / getUnitWeightValue(selectedProduct?.id));
+
+      productWeightCtrl.text = Global.format(270);
+      purchasePriceCtrl.text = Global.format(
+          Global.toNumber(productWeightCtrl.text) *
+              Global.toNumber(productBuyPricePerGramCtrl.text));
+      priceIncludeTaxCtrl.text = Global.format(929918.17);
+    }
   }
 
-  void loadProducts() async {
+  Future<void> loadProducts() async {
     setState(() {
       loading = true;
     });
@@ -597,7 +598,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
                                         productBuyPriceCtrl.text =
                                             Global.format(
                                                 Global.toNumber(value) *
-                                                    getUnitWeightValue());
+                                                    getUnitWeightValue(selectedProduct?.id));
                                         gramChanged();
                                       }
                                     },
@@ -1397,7 +1398,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
           Global.toNumber(productWeightCtrl.text) *
               Global.toNumber(productBuyPricePerGramCtrl.text));
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -1413,6 +1414,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
     } else {
       priceDiffCtrl.text = "";
     }
+
     getOtherAmount();
   }
 
@@ -1421,6 +1423,7 @@ class _RefillGoldStockScreenState extends State<RefillGoldStockScreen> {
   }
 
   void getOtherAmount() {
+
     taxBaseCtrl.text = Global.toNumber(priceDiffCtrl.text) < 0
         ? "0"
         : Global.format(Global.toNumber(priceDiffCtrl.text) * 100 / 107);

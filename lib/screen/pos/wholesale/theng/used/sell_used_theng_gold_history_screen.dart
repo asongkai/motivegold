@@ -724,7 +724,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                               Global.format((Global.toNumber(
                                                       productEntryWeightCtrl
                                                           .text) /
-                                                  getUnitWeightValue()));
+                                                  getUnitWeightValue(e.productId)));
                                         } else {
                                           productEntryWeightBahtCtrl.text = "";
                                         }
@@ -749,7 +749,7 @@ class _SellUsedThengGoldHistoryScreenState extends State<SellUsedThengGoldHistor
                                               Global.format((Global.toNumber(
                                                       productEntryWeightBahtCtrl
                                                           .text) *
-                                                  getUnitWeightValue()));
+                                                  getUnitWeightValue(e.productId)));
                                         } else {
                                           productEntryWeightCtrl.text = "";
                                         }

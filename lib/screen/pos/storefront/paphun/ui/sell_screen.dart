@@ -14,6 +14,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -88,7 +89,9 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
       _animationController?.forward();
     });
 
-    sumSellTotal();
+    if (Global.sellOrderDetail!.isNotEmpty) {
+      sumSellTotal(Global.sellOrderDetail!.first.productId!);
+    }
     getCart();
   }
 
@@ -202,7 +205,12 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
           ),
           const SizedBox(height: 16),
           Expanded(child: _buildOrderList()),
+          // Modern Remarks Section
+          _buildModernRemarks(),
+
+          // Modern Attachment Section
           const SizedBox(height: 16),
+
           _buildTotalSection(),
           const SizedBox(height: 16),
           _buildActionButtons(),
@@ -488,6 +496,49 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
     );
   }
 
+  // Modern Remarks Section
+  Widget _buildModernRemarks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'หมายเหตุ',
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: TextField(
+            controller: Motive.sellNewGoldRemarkCtrl,
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            style: TextStyle(fontSize: 14.sp),
+            decoration: InputDecoration(
+              hintText: 'กรอกหมายเหตุ (ถ้ามี)',
+              prefixIcon: Icon(Icons.note_add, color: rfBgColor, size: 20),
+              hintStyle: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[500],
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildTotalSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -550,6 +601,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
 
               OrderModel order = OrderModel(
                   orderId: "",
+                  remark: Motive.sellNewGoldRemarkCtrl.text,
                   orderDate: DateTime.now(),
                   details: Global.sellOrderDetail!,
                   orderTypeId: 1);
@@ -568,6 +620,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
                 Global.sellSubTotal = 0;
                 Global.sellTax = 0;
                 Global.sellTotal = 0;
+                Motive.sellNewGoldRemarkCtrl.text = '';
               });
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -601,6 +654,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
                 OrderModel newGold = OrderModel(
                     orderId: '',
                     orderDate: DateTime.now(),
+                    remark: Motive.sellNewGoldRemarkCtrl.text,
                     priceExcludeTax: orderDetails.totalPriceExcludeTax,
                     priceDiff: orderDetails.totalPriceDiff,
                     purchasePrice: orderDetails.totalPurchasePrice,
@@ -626,6 +680,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
                   OrderModel usedGold = OrderModel(
                       orderId: "",
                       orderDate: DateTime.now(),
+                      remark: Motive.buyUsedGoldRemarkCtrl.text,
                       priceExcludeTax: orderDetails.totalPriceExcludeTax,
                       priceDiff: orderDetails.totalPriceDiff,
                       purchasePrice: orderDetails.totalPurchasePrice,
@@ -645,6 +700,9 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
                     Global.buyTotal = 0;
                   });
                 }
+
+                Motive.sellNewGoldRemarkCtrl.text = '';
+                Motive.buyUsedGoldRemarkCtrl.text = '';
 
                 if (mounted) {
                   Navigator.push(
@@ -737,6 +795,7 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
     productPriceTotalCtrl.text = "";
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
+    Motive.sellNewGoldRemarkCtrl.text = "";
     selectedProduct = productList.first;
     productCodeCtrl.text =
     (selectedProduct != null ? selectedProduct?.productCode! : "")!;
@@ -754,8 +813,13 @@ class _PaphunSellScreenState extends State<PaphunSellScreen>
           Global.sellOrderDetail!.removeAt(index);
           if (Global.sellOrderDetail!.isEmpty) {
             Global.sellOrderDetail!.clear();
+            Global.sellSubTotal = 0;
+            Global.sellTax = 0;
+            Global.sellTotal = 0;
+            Global.sellWeightTotal = 0;
+          } else {
+            sumSellTotal(Global.sellOrderDetail!.first.productId!);
           }
-          sumSellTotal();
           setState(() {});
         });
   }

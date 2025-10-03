@@ -18,18 +18,17 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:sizer/sizer.dart';
 
-class SettingValueScreen extends StatefulWidget {
-  const SettingValueScreen({super.key, this.posIdModel});
+class VatSettingScreen extends StatefulWidget {
+  const VatSettingScreen({super.key, this.posIdModel});
 
   final PosIdModel? posIdModel;
 
   @override
-  State<SettingValueScreen> createState() => _SettingValueScreenState();
+  State<VatSettingScreen> createState() => _VatSettingScreenState();
 }
 
-class _SettingValueScreenState extends State<SettingValueScreen> {
+class _VatSettingScreenState extends State<VatSettingScreen> {
   final TextEditingController vatDefaultValue = TextEditingController();
-  final TextEditingController maxKycValue = TextEditingController();
   final TextEditingController deviceIdCtrl = TextEditingController();
 
   bool loading = false;
@@ -47,17 +46,17 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
       loading = true;
     });
     try {
-      deviceIdCtrl.text = (await getDeviceId())!;
+      // deviceIdCtrl.text = (await getDeviceId())!;
       var result =
-          await ApiServices.post('/settings/by-company', Global.requestObj(null));
-      // print(result!.toJson());
-      if (result?.status == "success") {
+          await ApiServices.post('/settings/vat-by-company', Global.requestObj(null));
+      if (result != null) {
+        motivePrint(result.toJson());
+      }
+      if (result?.status == "success" && result?.data != null) {
         settingsValueModel = SettingsValueModel.fromJson(result?.data);
-        Global.settingValueModel = settingsValueModel;
+        Global.vatSettingModel = settingsValueModel;
         // motivePrint(settingsValueModel?.toJson());
         vatDefaultValue.text = Global.format(settingsValueModel!.vatValue ?? 0);
-
-        maxKycValue.text = Global.format(settingsValueModel!.maxKycValue ?? 0);
         setState(() {});
       }
     } catch (e) {
@@ -72,7 +71,6 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
     return Scaffold(
       appBar: CustomAppBar(
         height: 300,
@@ -142,39 +140,6 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'มูลค่าสูงสุดของ KYC',
-                                            labelColor: Colors.orange,
-                                            inputType: TextInputType.phone,
-                                            controller: maxKycValue,
-                                            inputFormat: [
-                                              ThousandsFormatter(
-                                                  allowFraction: true)
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
                             ],
                           ),
                         ),
@@ -205,16 +170,8 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                   return;
                 }
 
-                if (maxKycValue.text.trim() == "") {
-                  Alert.warning(context, 'warning'.tr(),
-                      'กรุณากรอกมูลค่าสูงสุดของ KYC', 'OK'.tr(),
-                      action: () {});
-                  return;
-                }
-
                 var object = Global.requestObj({
-                  "vatValue": Global.toNumber(vatDefaultValue.text),
-                  "maxKycValue": Global.toNumber(maxKycValue.text)
+                  "vatValue": Global.toNumber(vatDefaultValue.text)
                 });
 
                 Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
@@ -227,13 +184,15 @@ class _SettingValueScreenState extends State<SettingValueScreen> {
                   pr.update(message: 'processing'.tr());
                   try {
                     var result =
-                        await ApiServices.post('/settings/create', object);
-                    motivePrint(result?.toJson());
+                        await ApiServices.post('/settings/create-vat', object);
+                    if (result != null) {
+                      motivePrint(result.toJson());
+                    }
                     await pr.hide();
                     if (result?.status == "success") {
                       loadData();
                       if (mounted) {
-                        Alert.success(context, 'Success'.tr(), '', 'OK'.tr(),
+                        Alert.success(context, 'Success'.tr(), 'กรุณาเข้าสู่ระบบใหม่อีกครั้งเพื่อใช้งาน', 'OK'.tr(),
                             action: () {});
                       }
                     } else {

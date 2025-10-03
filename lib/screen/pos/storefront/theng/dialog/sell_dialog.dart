@@ -4,6 +4,7 @@ import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
@@ -16,6 +17,7 @@ import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 
@@ -25,6 +27,7 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
@@ -76,6 +79,8 @@ class _SellDialogState extends State<SellDialog> {
 
   final controller = BoardDateTimeController();
 
+  TextEditingController bookDateCtrl = TextEditingController();
+
   DateTime date = DateTime.now();
 
   String? txt;
@@ -109,7 +114,7 @@ class _SellDialogState extends State<SellDialog> {
         ProductModel(id: 0, name: 'เลือกบรรจุภัณฑ์'));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumSellThengTotal();
+
     loadProducts();
   }
 
@@ -188,6 +193,10 @@ class _SellDialogState extends State<SellDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellThengTotal(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -221,7 +230,7 @@ class _SellDialogState extends State<SellDialog> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
       if (Global.company?.stock == 1) {
         if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
           Alert.warning(context, 'Warning'.tr(),
@@ -256,45 +265,37 @@ class _SellDialogState extends State<SellDialog> {
       onChanged: (key, value, expression) {
         if (key == 'ENT') {
           if (txt == 'gram') {
-            productWeightCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productWeightCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             gramChanged();
           }
           if (txt == 'com') {
-            productCommissionCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productCommissionCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             comChanged();
           }
           if (txt == 'baht') {
-            productWeightBahtCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productWeightBahtCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             bahtChanged();
           }
           if (txt == 'price') {
-            priceExcludeTaxCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            priceExcludeTaxCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             priceChanged();
           }
           if (txt == 'package_qty') {
-            packageQtyCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            packageQtyCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             getOtherAmount();
           }
           if (txt == 'package_price') {
-            packagePriceCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            packagePriceCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             getOtherAmount();
           }
           if (txt == 'tax_amount') {
-            taxAmountCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            taxAmountCtrl.text = value != null ? "${Global.format(value)}" : "";
             getOtherAmount();
           }
           FocusScope.of(context).requestFocus(FocusNode());
@@ -341,12 +342,14 @@ class _SellDialogState extends State<SellDialog> {
           child: Column(
             children: [
               posHeaderText(context, stBgColor, 'ขายทองคำแท่ง'),
-              const Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: GoldMiniWidget(
-                  screen: 3,
+              if (selectedProduct != null)
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: GoldMiniWidget(
+                    product: selectedProduct!,
+                    screen: 3,
+                  ),
                 ),
-              ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
@@ -367,7 +370,8 @@ class _SellDialogState extends State<SellDialog> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 20),
                             decoration: BoxDecoration(
                               color: vatOption == 'Include'
                                   ? Colors.teal
@@ -398,10 +402,10 @@ class _SellDialogState extends State<SellDialog> {
                                   ),
                                   child: vatOption == 'Include'
                                       ? const Icon(
-                                    Icons.check,
-                                    size: 14,
-                                    color: Colors.teal,
-                                  )
+                                          Icons.check,
+                                          size: 14,
+                                          color: Colors.teal,
+                                        )
                                       : null,
                                 ),
                                 const SizedBox(width: 12),
@@ -434,7 +438,8 @@ class _SellDialogState extends State<SellDialog> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 20),
                             decoration: BoxDecoration(
                               color: vatOption == 'Exclude'
                                   ? Colors.teal
@@ -465,10 +470,10 @@ class _SellDialogState extends State<SellDialog> {
                                   ),
                                   child: vatOption == 'Exclude'
                                       ? const Icon(
-                                    Icons.check,
-                                    size: 14,
-                                    color: Colors.teal,
-                                  )
+                                          Icons.check,
+                                          size: 14,
+                                          color: Colors.teal,
+                                        )
                                       : null,
                                 ),
                                 const SizedBox(width: 12),
@@ -502,18 +507,16 @@ class _SellDialogState extends State<SellDialog> {
                           children: [
                             Text(
                               'จำนวนน้ำหนัก',
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '(บาททอง)',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -528,9 +531,7 @@ class _SellDialogState extends State<SellDialog> {
                         controller: productWeightBahtCtrl,
                         readOnly: bahtReadOnly,
                         focusNode: bahtFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             productWeightBahtCtrl.text = "";
@@ -572,18 +573,16 @@ class _SellDialogState extends State<SellDialog> {
                           children: [
                             Text(
                               'จำนวนน้ำหนัก',
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '(กรัม)',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -598,9 +597,7 @@ class _SellDialogState extends State<SellDialog> {
                         controller: productWeightCtrl,
                         readOnly: gramReadOnly,
                         focusNode: gramFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             productWeightCtrl.text = "";
@@ -643,18 +640,16 @@ class _SellDialogState extends State<SellDialog> {
                             Text(
                               'ราคาขายทอง\nคำแท่ง',
                               textAlign: TextAlign.right,
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -670,9 +665,7 @@ class _SellDialogState extends State<SellDialog> {
                         controller: priceExcludeTaxCtrl,
                         readOnly: priceReadOnly,
                         focusNode: priceFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             priceExcludeTaxCtrl.text = "";
@@ -714,18 +707,16 @@ class _SellDialogState extends State<SellDialog> {
                           children: [
                             Text(
                               'ค่าบล็อกทอง',
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -740,9 +731,7 @@ class _SellDialogState extends State<SellDialog> {
                         controller: productCommissionCtrl,
                         readOnly: comReadOnly,
                         focusNode: comFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             productCommissionCtrl.text = "";
@@ -784,9 +773,8 @@ class _SellDialogState extends State<SellDialog> {
                           children: [
                             Text(
                               'ค่าแพ็คเกจ',
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
@@ -805,8 +793,7 @@ class _SellDialogState extends State<SellDialog> {
                                 space: 4,
                                 maxHeight: 360,
                                 showSearchTextField: true,
-                                selectedItemBackgroundColor:
-                                    Colors.transparent,
+                                selectedItemBackgroundColor: Colors.transparent,
                                 emptyListMessage: 'ไม่มีข้อมูล',
                                 showSelectedItemBackgroundColor: true,
                                 itemWidgetBuilder: (
@@ -861,14 +848,13 @@ class _SellDialogState extends State<SellDialog> {
                                                 setState(() {
                                                   // Global.branchList = [];
                                                   selectedPackage = null;
-                                                  packageNotifier =
-                                                      ValueNotifier<
-                                                              ProductModel>(
-                                                          selectedPackage ??
-                                                              ProductModel(
-                                                                  id: 0,
-                                                                  name:
-                                                                      'เลือกบรรจุภัณฑ์'));
+                                                  packageNotifier = ValueNotifier<
+                                                          ProductModel>(
+                                                      selectedPackage ??
+                                                          ProductModel(
+                                                              id: 0,
+                                                              name:
+                                                                  'เลือกบรรจุภัณฑ์'));
                                                 });
                                               },
                                             ),
@@ -973,8 +959,7 @@ class _SellDialogState extends State<SellDialog> {
                               Text(
                                 'ภาษีมูลค่าเพิ่ม 7%',
                                 style: TextStyle(
-                                    fontSize: 16.sp,
-                                    color: textColor),
+                                    fontSize: 16.sp, color: textColor),
                               ),
                               const SizedBox(
                                 width: 10,
@@ -1031,18 +1016,16 @@ class _SellDialogState extends State<SellDialog> {
                           children: [
                             Text(
                               'รวมราคาขาย',
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -1065,6 +1048,97 @@ class _SellDialogState extends State<SellDialog> {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'วันที่จองราคา',
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '',
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                      flex: 6,
+                      child: MaskedTextField(
+                        controller: bookDateCtrl,
+                        mask: "##-##-####",
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 16.sp),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white70,
+                          hintText: 'dd-mm-yyyy',
+                          labelStyle: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.blue[900],
+                              fontWeight: FontWeight.w900),
+                          prefixIcon: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => SfDatePickerDialog(
+                                    initialDate: DateTime.now(),
+                                    onDateSelected: (date) {
+                                      motivePrint('You picked: $date');
+                                      String formattedDate =
+                                          DateFormat('dd-MM-yyyy').format(date);
+                                      motivePrint(formattedDate);
+                                      setState(() {
+                                        bookDateCtrl.text = formattedDate;
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.calendar_today,
+                                size: 40,
+                              )),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                          labelText: "",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              getProportionateScreenWidth(2),
+                            ),
+                            borderSide: const BorderSide(
+                              color: kGreyShade3,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              getProportionateScreenWidth(2),
+                            ),
+                            borderSide: const BorderSide(
+                              color: kGreyShade3,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -1077,7 +1151,8 @@ class _SellDialogState extends State<SellDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity,),
+                    minWidth: double.infinity,
+                  ),
                   child: MaterialButton(
                     color: Colors.redAccent,
                     child: Padding(
@@ -1095,9 +1170,8 @@ class _SellDialogState extends State<SellDialog> {
                           ),
                           Text(
                             "ยกเลิก",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.sp),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -1114,7 +1188,8 @@ class _SellDialogState extends State<SellDialog> {
                 padding: const EdgeInsets.all(8.0),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
-                      minWidth: double.infinity,),
+                    minWidth: double.infinity,
+                  ),
                   child: MaterialButton(
                     color: stBgColor,
                     child: Padding(
@@ -1132,9 +1207,8 @@ class _SellDialogState extends State<SellDialog> {
                           ),
                           Text(
                             "บันทึก",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.sp),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
                           ),
                         ],
                       ),
@@ -1197,7 +1271,8 @@ class _SellDialogState extends State<SellDialog> {
                       }
 
                       var realPrice = Global.getBuyThengPrice(
-                          Global.toNumber(productWeightCtrl.text));
+                          Global.toNumber(productWeightCtrl.text),
+                          selectedProduct!.id!);
                       var price = Global.toNumber(priceExcludeTaxCtrl.text);
                       var check = price - realPrice;
 
@@ -1213,52 +1288,23 @@ class _SellDialogState extends State<SellDialog> {
                       // }
 
                       if (price < realPrice) {
-                        Alert.warning(
+                        Alert.info(
                             context,
                             'คำเตือน',
-                            'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}',
-                            'OK',
-                            action: () {});
-
+                            'ราคาที่ป้อนน้อยกว่าราคาตลาด ${Global.format(check)}\nคุณต้องการดำเนินการต่อหรือไม่?',
+                            'ดำเนินการต่อ',
+                            action: () {
+                              // User chose to proceed - execute the save logic
+                              _proceedWithSave();
+                            });
                         return;
                       }
                       // Alert.info(
                       //     context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                       //     action: () async {
-                      Global.sellThengOrderDetail!.add(
-                        OrderDetailModel(
-                            productName: productNameCtrl.text,
-                            productId: selectedProduct!.id,
-                            binLocationId: selectedWarehouse!.id,
-                            sellTPrice: Global.toNumber(
-                                Global.goldDataModel?.theng!.sell),
-                            buyTPrice: Global.toNumber(
-                                Global.goldDataModel?.theng!.buy),
-                            sellPrice: Global.toNumber(
-                                Global.goldDataModel?.paphun!.sell),
-                            buyPrice: Global.toNumber(
-                                Global.goldDataModel?.paphun!.buy),
-                            weight: Global.toNumber(productWeightCtrl.text),
-                            weightBath:
-                                Global.toNumber(productWeightBahtCtrl.text),
-                            commission:
-                                Global.toNumber(productCommissionCtrl.text),
-                            taxBase: 0,
-                            taxAmount: Global.toNumber(taxAmountCtrl.text),
-                            priceIncludeTax:
-                                Global.toNumber(priceIncludeTaxCtrl.text),
-                            priceExcludeTax:
-                                Global.toNumber(priceExcludeTaxCtrl.text),
-                            packageId: selectedPackage?.id,
-                            packageQty: Global.toInt(packageQtyCtrl.text),
-                            packagePrice:
-                                Global.toNumber(packagePriceCtrl.text),
-                            vatOption: vatOption,
-                            bookDate: null),
-                      );
-                      sumSellThengTotal();
-                      setState(() {});
-                      Navigator.of(context).pop();
+                      if (price >= realPrice) {
+                        _proceedWithSave();
+                      }
                       // });
                     },
                   ),
@@ -1271,10 +1317,38 @@ class _SellDialogState extends State<SellDialog> {
     );
   }
 
-  void getOtherAmount() {
-    priceExcludeTaxCtrl.text = Global.format(
-        Global.toNumber(productWeightBahtCtrl.text) *
-            Global.toNumber(Global.goldDataModel?.theng?.sell));
+  void _proceedWithSave() {
+    Global.sellThengOrderDetail!.add(
+      OrderDetailModel(
+          productName: productNameCtrl.text,
+          productId: selectedProduct!.id,
+          binLocationId: selectedWarehouse!.id,
+          sellTPrice: Global.toNumber(Global.goldDataModel?.theng!.sell),
+          buyTPrice: Global.toNumber(Global.goldDataModel?.theng!.buy),
+          sellPrice: Global.toNumber(Global.goldDataModel?.paphun!.sell),
+          buyPrice: Global.toNumber(Global.goldDataModel?.paphun!.buy),
+          weight: Global.toNumber(productWeightCtrl.text),
+          weightBath: Global.toNumber(productWeightBahtCtrl.text),
+          commission: Global.toNumber(productCommissionCtrl.text),
+          taxBase: 0,
+          taxAmount: Global.toNumber(taxAmountCtrl.text),
+          priceIncludeTax: Global.toNumber(priceIncludeTaxCtrl.text),
+          priceExcludeTax: Global.toNumber(priceExcludeTaxCtrl.text),
+          packageId: selectedPackage?.id,
+          packageQty: Global.toInt(packageQtyCtrl.text),
+          packagePrice: Global.toNumber(packagePriceCtrl.text),
+          vatOption: vatOption,
+          bookDate: bookDateCtrl.text.isNotEmpty
+              ? Global.convertDate(bookDateCtrl.text)
+              : null),
+    );
+    sumSellThengTotal(selectedProduct!.id!);
+    setState(() {});
+    Navigator.of(context).pop();
+  }
+
+  void getOtherAmount({bool? self = false}) {
+    if (self == false) {}
     double com = Global.toNumber(productCommissionCtrl.text);
     double pkg = Global.toNumber(packagePriceCtrl.text);
     taxAmountCtrl.text = vatOption == 'Exclude'
@@ -1290,14 +1364,14 @@ class _SellDialogState extends State<SellDialog> {
 
   void comChanged() {
     if (productCommissionCtrl.text.isNotEmpty) {
-      getOtherAmount();
+      getOtherAmount(self: true);
       setState(() {});
     }
   }
 
   void priceChanged() {
     if (priceExcludeTaxCtrl.text.isNotEmpty) {
-      getOtherAmount();
+      getOtherAmount(self: true);
       setState(() {});
     }
   }
@@ -1306,10 +1380,14 @@ class _SellDialogState extends State<SellDialog> {
     // motivePrint(productWeightCtrl.text);
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text = Global.format(
-          Global.toNumber(productWeightCtrl.text) / getUnitWeightValue());
+          Global.toNumber(productWeightCtrl.text) /
+              getUnitWeightValue(selectedProduct?.id));
       // motivePrint(Global.toNumber(productWeightCtrl.text));
-      marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+      marketPriceTotalCtrl.text = Global.format(Global.getSellThengPrice(
+          Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
+      priceExcludeTaxCtrl.text = Global.format(
+          Global.toNumber(productWeightBahtCtrl.text) *
+              Global.toNumber(Global.goldDataModel?.theng?.sell));
       getOtherAmount();
     } else {
       productWeightBahtCtrl.text = "";
@@ -1321,10 +1399,14 @@ class _SellDialogState extends State<SellDialog> {
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
-      marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+      productWeightCtrl.text = Global.format4(
+          (Global.toNumber(productWeightBahtCtrl.text) *
+              getUnitWeightValue(selectedProduct?.id)));
+      marketPriceTotalCtrl.text = Global.format(Global.getSellThengPrice(
+          Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
+      priceExcludeTaxCtrl.text = Global.format(
+          Global.toNumber(productWeightBahtCtrl.text) *
+              Global.toNumber(Global.goldDataModel?.theng?.sell));
       getOtherAmount();
     } else {
       productWeightCtrl.text = "";
@@ -1350,6 +1432,7 @@ class _SellDialogState extends State<SellDialog> {
     productWeightBahtRemainCtrl.text = "";
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
+    bookDateCtrl.text = "";
     productCodeCtrl.text =
         (selectedProduct != null ? selectedProduct?.productCode! : "")!;
     productNameCtrl.text =

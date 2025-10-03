@@ -127,7 +127,6 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumBuyThengTotalBroker();
     loadProducts();
     getCart();
   }
@@ -190,6 +189,10 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumBuyThengTotalBroker(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -222,7 +225,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -740,9 +743,9 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
       marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
       productPriceCtrl.text = marketPriceTotalCtrl.text;
       productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
           ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
@@ -784,8 +787,13 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
       Global.buyThengOrderDetailBroker!.removeAt(index);
       if (Global.buyThengOrderDetailBroker!.isEmpty) {
         Global.buyThengOrderDetailBroker!.clear();
+        Global.buyThengSubTotalBroker = 0;
+        Global.buyThengTaxBroker = 0;
+        Global.buyThengTotalBroker = 0;
+        Global.buyThengWeightTotalBroker = 0;
+      } else {
+        sumBuyThengTotalBroker(selectedProduct!.id!);
       }
-      sumBuyThengTotalBroker();
       setState(() {});
     });
   }
@@ -800,7 +808,7 @@ class _BuyThengBrokerScreenState extends State<BuyThengBrokerScreen> {
               leftTitle: order.productName,
               leftValue: Global.format(order.priceIncludeTax!),
               rightTitle: 'น้ำหนัก',
-              rightValue: '${Global.format(order.weight! / getUnitWeightValue())} บาท',
+              rightValue: '${Global.format(order.weight! / getUnitWeightValue(selectedProduct?.id))} บาท',
             ),
           ),
         ),

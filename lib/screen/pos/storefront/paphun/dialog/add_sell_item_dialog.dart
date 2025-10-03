@@ -85,7 +85,6 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumSellTotal();
     loadProducts();
   }
 
@@ -155,6 +154,11 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellTotal(selectedProduct!.id!);
+      }
+
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -188,7 +192,7 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
 
       if (Global.company?.stock == 1) {
         if (Global.toNumber(productWeightRemainCtrl.text) <= 0) {
@@ -282,11 +286,11 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
   void gramChanged() {
     if (productWeightGramCtrl.text != "") {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightGramCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
       marketPriceTotalCtrl.text = Global.format(Global.getBuyPrice(
-          Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel));
+          Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel, selectedProduct!.id!));
       productPriceCtrl.text = Global.format(
-          Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
+          Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text), selectedProduct!.id!));
     } else {
       productWeightGramCtrl.text = "";
       productWeightBahtCtrl.text = "";
@@ -340,11 +344,11 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightGramCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
       marketPriceTotalCtrl.text = Global.format(Global.getBuyPrice(
-          Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel));
+          Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel, selectedProduct!.id!));
       productPriceCtrl.text = Global.format(
-          Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text)));
+          Global.getSellPrice(Global.toNumber(productWeightGramCtrl.text), selectedProduct!.id!));
     } else {
       productWeightGramCtrl.text = "";
       marketPriceTotalCtrl.text = "";
@@ -421,9 +425,11 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
                       // ),
                       posHeaderText(
                           context, snBgColor, 'ขายทองรูปพรรณใหม่ 96.5%'),
+                      if (selectedProduct != null)
                       Padding(
                         padding: const EdgeInsets.only(left: 10, right: 10),
                         child: GoldMiniWidget(
+                          product: selectedProduct!,
                           screen: 1,
                         ),
                       ),
@@ -1000,7 +1006,7 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
 
   bool _validateItemPricing() {
     final realPrice = Global.getBuyPrice(
-        Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel);
+        Global.toNumber(productWeightGramCtrl.text), Global.goldDataModel, selectedProduct!.id!);
     final enteredPrice = Global.toNumber(productPriceCtrl.text);
     final priceDifference = enteredPrice - realPrice;
 
@@ -1021,7 +1027,7 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
   void _addItemToOrder() {
     final weight = Global.toNumber(productWeightGramCtrl.text);
     final priceTotal = Global.toNumber(productPriceTotalCtrl.text);
-    final purchasePrice = Global.getBuyPrice(weight, Global.goldDataModel);
+    final purchasePrice = Global.getBuyPrice(weight, Global.goldDataModel, selectedProduct!.id!);
     final priceDiff = priceTotal - purchasePrice;
     final taxBase = _calculateTaxBase();
 
@@ -1080,7 +1086,7 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
   }
 
   void _finalizeItemAddition() {
-    sumSellTotal();
+    sumSellTotal(selectedProduct!.id!);
     setState(() {});
     Navigator.of(context).pop();
   }
@@ -1116,7 +1122,7 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
 
     return Global.taxBase(
       Global.toNumber(productPriceTotalCtrl.text),
-      Global.toNumber(productWeightGramCtrl.text),
+      Global.toNumber(productWeightGramCtrl.text), selectedProduct!.id!,
     );
   }
 

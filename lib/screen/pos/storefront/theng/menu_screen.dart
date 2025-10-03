@@ -115,11 +115,11 @@ class ThengSaleMenuScreenState extends State<ThengSaleMenuScreen> {
                                               fullscreenDialog: true))
                                       .whenComplete(() {
                                     init();
-                                    if (Global.posIndex == 0) {
-                                      sumSellThengTotal();
+                                    if (Global.posIndex == 0 && Global.sellThengOrderDetail!.isNotEmpty) {
+                                      sumSellThengTotal(Global.sellThengOrderDetail!.first.productId!);
                                     }
-                                    if (Global.posIndex == 1) {
-                                      sumBuyThengTotal();
+                                    if (Global.posIndex == 1 && Global.buyThengOrderDetail!.isNotEmpty) {
+                                      sumBuyThengTotal(Global.buyThengOrderDetail!.first.productId!);
                                     }
                                     sideMenu.changePage(Global.posIndex);
                                     pageController.jumpToPage(Global.posIndex);

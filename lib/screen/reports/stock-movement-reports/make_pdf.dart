@@ -183,7 +183,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   )
               ),
               paddedTextSmall('${e.docType!} '),
-              paddedTextSmall(' ${Global.format(e.weight ?? 0)}',
+              paddedTextSmall('${e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0)}',
                   style: TextStyle(fontSize: 11, color: movementColor),
                   align: TextAlign.right),
               paddedTextSmall(
@@ -230,7 +230,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                 align: TextAlign.center
             ),
             paddedTextSmall(
-                Global.format(list.fold(0.0, (sum, item) => sum + (item.weight ?? 0))),
+                Global.format4(list.fold(0.0, (sum, item) => sum + (item.weight ?? 0))),
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,

@@ -80,22 +80,22 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('เลขที่ใบกํากับภาษี',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('ชื่อลูกค้า',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('วันที่',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               // paddedTextSmall('เวลา',
               //     style: TextStyle(
               //         fontSize: 9,
@@ -137,13 +137,13 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('ยอดจ่ายเงิน',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('ร้านทองรับ\n(จ่าย)เงินสุทธิ',
                   style: TextStyle(
                       fontSize: 9,
@@ -161,7 +161,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('เงินโอน/\nฝากธนาคาร',
                   style: TextStyle(
                       fontSize: 9,
@@ -186,8 +186,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
           TableRow(
             decoration: const BoxDecoration(),
             children: [
-              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8)),
-              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8)),
+              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8), align: TextAlign.center),
+              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8), align: TextAlign.center),
               paddedTextSmall('${getCustomerName(orders[i].customer!)}',
                   style: TextStyle(fontSize: 8)),
               paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
@@ -196,13 +196,13 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
               //     style: TextStyle(fontSize: 8)),
               paddedTextSmall(
                   (orders[i].orderTypeId == 4)
-                      ? Global.format(getWeight(orders[i]))
+                      ? Global.format4(getWeight(orders[i]))
                       : "",
                   style: TextStyle(fontSize: 8, color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   (orders[i].orderTypeId == 44)
-                      ? Global.format(getWeight(orders[i]))
+                      ? Global.format4(getWeight(orders[i]))
                       : "",
                   style: TextStyle(fontSize: 8, color: PdfColors.black),
                   align: TextAlign.right),
@@ -331,13 +331,13 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue800)),
-              paddedTextSmall(Global.format(getWeightTotalSN(orders)),
+              paddedTextSmall(Global.format4(getWeightTotalSN(orders)),
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(getWeightTotalBU(orders)),
+              paddedTextSmall(Global.format4(getWeightTotalBU(orders)),
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,

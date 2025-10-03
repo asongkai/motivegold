@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
@@ -29,6 +30,27 @@ import 'package:sizer/sizer.dart';
 
 // Platform-specific imports
 import 'web_file_picker.dart' if (dart.library.io) 'mobile_file_picker.dart';
+
+// Custom formatter for MM/YY format
+class _CardExpiryFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (newText.length >= 3) {
+      newText = '${newText.substring(0, 2)}/${newText.substring(2, newText.length > 4 ? 4 : newText.length)}';
+    }
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
+}
+
 
 class PaymentMethodWidget extends StatefulWidget {
   const PaymentMethodWidget({super.key, this.index, this.payment});
@@ -59,8 +81,18 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
         Global.selectedBank ?? BankModel(name: 'เลือกธนาคาร', code: '', id: 0));
     accountNotifier = ValueNotifier<BankAccountModel>(Global.selectedAccount ??
         BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0));
-    Global.paymentDateCtrl.text =
-        Global.formatDateDD(DateTime.now().toString());
+    if (Global.currentOrderType == 5 || Global.currentOrderType == 6) {
+      Global.paymentDateCtrl.text =
+          Global.formatDateDD(Global.orders.first.orderDate.toString());
+    } else {
+      Global.paymentDateCtrl.text =
+          Global.formatDateDD(DateTime.now().toString());
+    }
+
+    if (Global.currentRedeemType == 1) {
+      Global.paymentDateCtrl.text =
+          Global.formatDateDD(Global.redeems.first.redeemDate.toString());
+    }
     init();
 
     if (widget.index != null) {}
@@ -90,7 +122,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
     try {
       if (Global.bankList.isEmpty) {
         var office =
-        await ApiServices.post('/bank/all', Global.requestObj(null));
+            await ApiServices.post('/bank/all', Global.requestObj(null));
         if (office?.status == "success") {
           var data = jsonEncode(office?.data);
           List<BankModel> products = bankModelFromJson(data);
@@ -104,7 +136,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
 
       if (Global.accountList.isEmpty) {
         var office =
-        await ApiServices.post('/bankaccount/all', Global.requestObj(null));
+            await ApiServices.post('/bankaccount/all', Global.requestObj(null));
         if (office?.status == "success") {
           var data = jsonEncode(office?.data);
           List<BankAccountModel> products = bankAccountModelFromJson(data);
@@ -127,10 +159,10 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
             Global.format(Global.paymentList![widget.index!].amount ?? 0);
         Global.selectedPayment = paymentTypes()
             .where((e) =>
-        e.code == Global.paymentList?[widget.index!].paymentMethod)
+                e.code == Global.paymentList?[widget.index!].paymentMethod)
             .first;
         paymentNotifier = ValueNotifier<ProductTypeModel>(Global
-            .selectedPayment ??
+                .selectedPayment ??
             ProductTypeModel(name: 'เลือกวิธีการชำระเงิน', code: '', id: 0));
 
         if (Global.paymentList?[widget.index!].paymentMethod == 'TR') {
@@ -139,7 +171,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
               .first;
           Global.selectedAccount = Global.accountList
               .where((e) =>
-          e.accountNo == Global.paymentList?[widget.index!].accountNo)
+                  e.accountNo == Global.paymentList?[widget.index!].accountNo)
               .first;
           filterAccount(Global.selectedBank?.id);
           Global.refNoCtrl.text =
@@ -156,8 +188,11 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
               Global.paymentList?[widget.index!].cardName ?? '';
           Global.cardNumberCtrl.text =
               Global.paymentList?[widget.index!].cardNo ?? '';
-          Global.cardExpireDateCtrl.text = Global.formatDateDD(
-              Global.paymentList![widget.index!].cardExpiryDate.toString());
+          Global.cardExpireDateCtrl.text = DateFormat('MM/yy').format(
+              Global.paymentList![widget.index!].cardExpiryDate!);
+          // if (Global.cardExpiryFullDate != null) {
+          //   Global.cardExpireDateCtrl.text = DateFormat('MM/yy').format(Global.cardExpiryFullDate!);
+          // }
         }
       }
 
@@ -166,7 +201,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
             .where((e) => e.code == widget.payment?.paymentCode)
             .first;
         paymentNotifier = ValueNotifier<ProductTypeModel>(Global
-            .selectedPayment ??
+                .selectedPayment ??
             ProductTypeModel(name: 'เลือกวิธีการชำระเงิน', code: '', id: 0));
         Global.currentPaymentMethod = widget.payment?.paymentCode ?? '';
 
@@ -272,11 +307,11 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
     return loading
         ? const ModernLoadingWidget()
         : _fadeAnimation != null
-        ? FadeTransition(
-      opacity: _fadeAnimation!,
-      child: _buildContent(),
-    )
-        : _buildContent();
+            ? FadeTransition(
+                opacity: _fadeAnimation!,
+                child: _buildContent(),
+              )
+            : _buildContent();
   }
 
   Widget _buildContent() {
@@ -399,10 +434,10 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
         showSelectedItemBackgroundColor: true,
         otherDecoration: const InputDecoration(),
         itemWidgetBuilder: (
-            int index,
-            ProductTypeModel? project, {
-              bool isItemSelected = false,
-            }) {
+          int index,
+          ProductTypeModel? project, {
+          bool isItemSelected = false,
+        }) {
           return DropDownItemWidget(
             project: project,
             isItemSelected: isItemSelected,
@@ -446,10 +481,10 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
               showSelectedItemBackgroundColor: true,
               otherDecoration: const InputDecoration(),
               itemWidgetBuilder: (
-                  int index,
-                  BankModel? project, {
-                    bool isItemSelected = false,
-                  }) {
+                int index,
+                BankModel? project, {
+                bool isItemSelected = false,
+              }) {
                 return DropDownItemWidget(
                   project: project,
                   isItemSelected: isItemSelected,
@@ -460,6 +495,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
               onChanged: (BankModel value) {
                 Global.selectedBank = value;
                 bankNotifier!.value = value;
+                accountNotifier!.value = BankAccountModel(name: 'เลือกบัญชีธนาคาร', id: 0);
                 filterAccount(value.id);
                 setState(() {});
               },
@@ -490,10 +526,10 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
               showSelectedItemBackgroundColor: true,
               otherDecoration: const InputDecoration(),
               itemWidgetBuilder: (
-                  int index,
-                  BankAccountModel? project, {
-                    bool isItemSelected = false,
-                  }) {
+                int index,
+                BankAccountModel? project, {
+                bool isItemSelected = false,
+              }) {
                 return DropDownItemWidget(
                   project: project,
                   isItemSelected: isItemSelected,
@@ -527,6 +563,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
     );
   }
 
+
+
   Widget _buildCreditCardSection() {
     return Column(
       children: [
@@ -542,43 +580,23 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: TextField(
-                  controller: Global.cardExpireDateCtrl,
-                  style: TextStyle(fontSize: 18.sp, color: textColor),
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.calendar_today),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 18.0, horizontal: 15.0),
-                    labelText: "วันหมดอายุบัตร".tr(),
-                    labelStyle: TextStyle(fontSize: 18.sp, color: textColor),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  readOnly: true,
-                  onTap: () async {
-                    showDialog(
-                      context: context,
-                      builder: (_) => SfDatePickerDialog(
-                        initialDate: DateTime.now(),
-                        onDateSelected: (date) {
-                          String formattedDate =
-                          DateFormat('yyyy-MM-dd').format(date);
-                          setState(() {
-                            Global.cardExpireDateCtrl.text = formattedDate;
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
+              child: buildTextFieldBig(
+                labelText: 'วันหมดอายุบัตร'.tr(),
+                validator: null,
+                inputType: TextInputType.text,
+                controller: Global.cardExpireDateCtrl,
+                hintText: "MM/YY",
+                inputFormat: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+                  LengthLimitingTextInputFormatter(5),
+                  _CardExpiryFormatter(),
+                ],
+                onChanged: (value) {
+                  // Convert MM/YY to full date (last day of month) when user finishes typing
+                  if (value.length == 5 && value.contains('/')) {
+                    Global.convertToFullDate(value);
+                  }
+                },
               ),
             ),
           ],
@@ -607,7 +625,7 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
           prefixIcon: const Icon(Icons.calendar_today),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           contentPadding:
-          const EdgeInsets.symmetric(vertical: 18.0, horizontal: 15.0),
+              const EdgeInsets.symmetric(vertical: 18.0, horizontal: 15.0),
           labelText: "วันที่จ่ายเงิน".tr(),
           labelStyle: TextStyle(fontSize: 18.sp, color: textColor),
           border: OutlineInputBorder(
@@ -622,7 +640,8 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
             builder: (_) => SfDatePickerDialog(
               initialDate: DateTime.now(),
               onDateSelected: (pickDate) {
-                String formattedDate = DateFormat('yyyy-MM-dd').format(pickDate);
+                String formattedDate =
+                    DateFormat('yyyy-MM-dd').format(pickDate);
                 DateTime date = Global.currentOrderType != 5
                     ? DateTime.now()
                     : Global.ordersWholesale![0].orderDate!;
@@ -755,86 +774,86 @@ class _PaymentMethodWidgetState extends State<PaymentMethodWidget>
           const SizedBox(height: 16),
           Center(
             child: Global.paymentAttachment == null &&
-                Global.paymentAttachmentWeb == null
+                    Global.paymentAttachmentWeb == null
                 ? Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.image_outlined,
-                    size: 48,
-                    color: Colors.grey.shade400,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'ไม่ได้เลือกรูปภาพ',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey.shade600,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
-                  ),
-                ],
-              ),
-            )
-                : Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Stack(
-                  children: [
-                    Container(
-                      constraints: const BoxConstraints(
-                        maxWidth: 300,
-                        maxHeight: 200,
-                      ),
-                      child: kIsWeb
-                          ? Image.memory(
-                        base64Decode(Global.paymentAttachmentWeb!
-                            .split(",")
-                            .last),
-                        fit: BoxFit.cover,
-                      )
-                          : Image.file(
-                        Global.paymentAttachment!,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            Global.paymentAttachment = null;
-                            Global.paymentAttachmentWeb = null;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 16,
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.image_outlined,
+                          size: 48,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'ไม่ได้เลือกรูปภาพ',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.grey.shade600,
                           ),
                         ),
+                      ],
+                    ),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Stack(
+                        children: [
+                          Container(
+                            constraints: const BoxConstraints(
+                              maxWidth: 300,
+                              maxHeight: 200,
+                            ),
+                            child: kIsWeb
+                                ? Image.memory(
+                                    base64Decode(Global.paymentAttachmentWeb!
+                                        .split(",")
+                                        .last),
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    Global.paymentAttachment!,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  Global.paymentAttachment = null;
+                                  Global.paymentAttachmentWeb = null;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),

@@ -137,7 +137,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
             paddedTextBigXL(e.binLocation == null
                 ? ""
                 : e.binLocation!.name),
-            paddedTextBigXL(Global.format(e.weight ?? 0),
+            paddedTextBigXL(e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0),
                 style: const TextStyle(fontSize: 12),
                 align: TextAlign.right),
             paddedTextBigXL(

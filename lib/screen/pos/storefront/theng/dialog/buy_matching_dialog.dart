@@ -79,7 +79,6 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumBuyThengTotalMatching();
     loadProducts();
   }
 
@@ -144,6 +143,10 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumBuyThengTotalMatching(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -177,7 +180,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -695,7 +698,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
                                 ? Global.convertDate(bookDate.text)
                                 : null),
                       );
-                      sumBuyThengTotalMatching();
+                      sumBuyThengTotalMatching(selectedProduct!.id!);
                       setState(() {});
                       Navigator.of(context).pop();
                       // });
@@ -724,7 +727,7 @@ class _BuyMatchingDialogState extends State<BuyMatchingDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+          Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id));
       // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(

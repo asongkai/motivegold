@@ -262,8 +262,8 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen>
                                 ),
                                 children: [
                                   paddedTextBigXL(e.productName),
-                                  paddedText(
-                                    Global.format(e.weight!),
+                                  paddedText(order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ?
+                                  Global.format4(e.weight!) : Global.format(e.weight!),
                                     align: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16.sp,
@@ -304,7 +304,10 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen>
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  Global.format(
+                                  order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ?
+                                  Global.format4(
+                                      Global.getOrderWeightTotalAmountApi(
+                                          order.details)) : Global.format(
                                       Global.getOrderWeightTotalAmountApi(
                                           order.details)),
                                   textAlign: TextAlign.center,
@@ -391,7 +394,7 @@ class _WholeSalePrintBillScreenState extends State<WholeSalePrintBillScreen>
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Text(
-                                  '${Global.format(Global.getOrderTotalWeight(order.details!))}',
+                                  '${order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ? Global.format4(Global.getOrderTotalWeight(order.details!)) : Global.format(Global.getOrderTotalWeight(order.details!))}',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: size?.getWidthPx(8),

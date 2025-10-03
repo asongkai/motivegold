@@ -161,7 +161,7 @@ Future<Uint8List> makeRefillThengBill(Invoice invoice, {int option = 1}) async {
                       ),
                     ),
                     child: paddedText(
-                        '${Global.format(invoice.items[i].weight ?? 0)}',
+                        '${Global.format4(invoice.items[i].weight ?? 0)}',
                         align: TextAlign.right),
                   )),
               Expanded(
@@ -304,7 +304,7 @@ Future<Uint8List> makeRefillThengBill(Invoice invoice, {int option = 1}) async {
                       ),
                     ),
                     child: paddedText(
-                        '${Global.format(Global.getOrderTotalWeight(invoice.items))}',
+                        '${Global.format4(Global.getOrderTotalWeight(invoice.items))}',
                         align: TextAlign.right,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   )),

@@ -787,6 +787,52 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   ),
                                 ),
                               ),
+                              SizedBox(width: 8),
+                              if (order.orderStatus != 'CANCEL')
+                              GestureDetector(
+                                onTap: () {
+                                  cancelOrder(order);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange,
+                                    border: Border.all(color: Colors.orange),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'ยกเลิก',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (order.orderStatus == 'CANCEL')
+                                GestureDetector(
+                                  onTap: () {
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black12,
+                                      border: Border.all(color: Colors.black12),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'ถูกยกเลิก',
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                           SizedBox(height: 8),
@@ -838,7 +884,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         _buildActionButton(
                           icon: Icons.receipt_long,
                           label: 'สรุป',
-                          color: Colors.blue[700]!,
+                          color: Colors.indigo[700]!,
                           onTap: () {
                             Global.pairId = order.pairId;
                             if (order.orderTypeId == 5 ||
@@ -866,12 +912,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           },
                         ),
                         SizedBox(height: 8),
-                        _buildActionButton(
-                          icon: Icons.print,
-                          label: 'พิมพ์',
-                          color: Colors.green[700]!,
-                          onTap: () => _handlePrint(order),
-                        ),
+                        // Conditional print button - dropdown for order types 1 and 4
+                        (order.orderTypeId == 1 || order.orderTypeId == 4)
+                            ? _buildPrintButtons(order)
+                            : _buildActionButton(
+                                icon: Icons.print,
+                                label: 'พิมพ์',
+                                color: Colors.green[700]!,
+                                onTap: () => _handlePrint(order),
+                              ),
                       ],
                     ),
                   ],
@@ -1003,6 +1052,86 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  Widget _buildPrintButtons(OrderModel order) {
+    return Column(
+      children: [
+        // Full Tax Invoice Button
+        GestureDetector(
+          onTap: () => _handlePrintWithType(order, 'full_tax'),
+          child: Container(
+            height: 36,
+            width: 200,
+            margin: EdgeInsets.only(bottom: 6),
+            decoration: BoxDecoration(
+              color: Colors.green[700],
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green[700]!.withOpacity(0.2),
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.print, color: Colors.white, size: 16),
+                SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    'ใบกำกับภาษีเต็มรูป',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Simple Tax Invoice Button
+        GestureDetector(
+          onTap: () => _handlePrintWithType(order, 'simple_tax'),
+          child: Container(
+            height: 36,
+            width: 200,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0288d1),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0288d1).withOpacity(0.2),
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.print, color: Colors.white, size: 16),
+                SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    'ใบกำกับภาษีอย่างย่อ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildActionButton({
     required IconData icon,
     required String label,
@@ -1012,6 +1141,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: 200,
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: color,
@@ -1025,12 +1155,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: Colors.white, size: 14),
             SizedBox(width: 4),
             Text(
               label,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12.sp,
@@ -1041,6 +1172,114 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handlePrintWithType(OrderModel order, String printType) async {
+    Global.orderIds!.add(order.orderId);
+
+    if (Global.branch == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('กรุณาเลือกสาขาก่อนพิมพ์'),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.normal,
+      isDismissible: true,
+      showLogs: true,
+    );
+    await pr.show();
+    pr.update(message: 'กำลังประมวลผล...');
+
+    try {
+      var result = await ApiServices.post(
+          '/order/print-order-list/${order.pairId}', Global.requestObj(null));
+
+      var data = jsonEncode(result?.data);
+      List<OrderModel> orders = orderListModelFromJson(data);
+
+      var payment = await ApiServices.post(
+          '/order/payment/${order.pairId}', Global.requestObj(null));
+      Global.paymentList = paymentListModelFromJson(jsonEncode(payment?.data));
+
+      await pr.hide();
+      Invoice invoice = Invoice(
+        order: order,
+        customer: order.customer!,
+        payments: Global.paymentList,
+        orders: orders,
+        items: order.details!,
+      );
+
+      // Navigate to appropriate preview based on print type and order type
+      _navigateToPreviewWithType(order, invoice, printType);
+    } catch (e) {
+      await pr.hide();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _navigateToPreviewWithType(
+      OrderModel order, Invoice invoice, String printType) {
+    // Handle order type 1 separately
+    if (order.orderTypeId == 1) {
+      if (printType == 'full_tax') {
+        // Navigate to full tax invoice preview for order type 1
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PdfPreviewPage(
+            invoice: invoice,
+            billType: 'full',
+          ),
+        ));
+      } else if (printType == 'simple_tax') {
+        // Navigate to simple tax invoice preview for order type 1
+        // You may need to create a different preview page or pass a parameter
+        // to differentiate between full and simple tax invoice for type 1
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PdfPreviewPage(
+            invoice: invoice,
+            billType: 'short',
+          ),
+        ));
+      }
+    }
+    // Handle order type 4 separately
+    else if (order.orderTypeId == 4) {
+      if (printType == 'full_tax') {
+        // Navigate to full tax invoice preview for order type 4
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PreviewSellThengPdfPage(
+            invoice: invoice,
+            billType: 'full',
+          ),
+        ));
+      } else if (printType == 'simple_tax') {
+        // Navigate to simple tax invoice preview for order type 4
+        // You may need to create a different preview page or pass a parameter
+        // to differentiate between full and simple tax invoice for type 4
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PreviewSellThengPdfPage(
+            invoice: invoice,
+            billType: 'short',
+          ),
+        ));
+      }
+    } else {
+      // For other order types, use the original navigation logic
+      _navigateToPreview(order, invoice);
+    }
   }
 
   Future<void> _handlePrint(OrderModel order) async {
@@ -1102,10 +1341,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   void _navigateToPreview(OrderModel order, Invoice invoice) {
     switch (order.orderTypeId) {
-      case 1:
       case 2:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PdfPreviewPage(invoice: invoice),
+          builder: (context) => PdfPreviewPage(
+            invoice: invoice,
+            billType: 'full',
+          ),
         ));
         break;
       case 5:
@@ -1144,16 +1385,89 @@ class _HistoryScreenState extends State<HistoryScreen> {
         break;
       case 4:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PreviewSellThengPdfPage(invoice: invoice),
+          builder: (context) => PreviewSellThengPdfPage(
+            invoice: invoice,
+            billType: 'full',
+          ),
         ));
         break;
       case 44:
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => PreviewBuyThengPdfPage(
             invoice: invoice,
+            shop: false,
           ),
         ));
         break;
     }
+  }
+
+  cancelOrder(OrderModel order) async {
+    // Get current date and order date
+    // DateTime currentDate = DateTime.now();
+    // DateTime orderDate = DateTime.parse(order.orderDate.toString());
+    //
+    // // Check if current date is the same as order date
+    // if (currentDate.year == orderDate.year &&
+    //     currentDate.month == orderDate.month &&
+    //     currentDate.day == orderDate.day) {
+    //   // Check if time has not passed 00:00 at midnight
+    //   if (currentDate.hour < 24 && currentDate.minute < 60) {
+        // Call API to cancel order
+        try {
+
+          Alert.info(context, 'คุณแน่ใจที่จะยกเลิกคำสั่งซื้อใช่ไหม?', '', 'ตกลง',
+              action: () async {
+
+          var result = await ApiServices.post(
+            '/order/cancel',
+            Global.requestObj({
+              "Id": order.id,
+            }),
+          );
+
+          if (result?.status == "success") {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('ยกเลิกคำสั่งซื้อสำเร็จแล้ว'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            // Update the order list
+            search();
+            setState(() {
+              // filterList?.remove(order);
+
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('ไม่สามารถยกเลิกคำสั่งซื้อได้'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+              });
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('ไม่สามารถยกเลิกคำสั่งซื้อได้'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+    //   } else {
+    //     Alert.warning(context, 'ยกเลิกคำสั่งซื้อ',
+    //         'คุณสามารถยกเลิกคำสั่งซื้อได้เฉพาะภายในวันเดียวกันก่อนเวลาเที่ยงคืน', 'OK',
+    //         action: () {});
+    //   }
+    // } else {
+    //   Alert.warning(context, 'ยกเลิกคำสั่งซื้อ',
+    //       'คุณสามารถยกเลิกคำสั่งซื้อได้เฉพาะภายในวันที่ทำรายการเท่านั้น', 'OK',
+    //       action: () {});
+    // }
   }
 }

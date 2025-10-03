@@ -1109,6 +1109,7 @@ class _StockMovementReportListScreenState extends State<StockMovementReportListS
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
+                                            item.product?.type == 'BAR' ? Global.format4(item.weight ?? 0) :
                                             Global.format(item.weight ?? 0),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,

@@ -15,8 +15,7 @@ import 'package:flutter/services.dart' show rootBundle;
 Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
   motivePrint(invoice.payments?.length);
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
         await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
@@ -27,7 +26,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
     List<Widget> widgets = [];
 
     widgets.add(
-      await header(invoice.order, 'ใบรับซื้อทองเก่า / ใบสําคัญจ่าย', versionText: versionText),
+      await header(invoice.order, 'ใบรับซื้อทองเก่า / ใบสําคัญจ่าย',
+          versionText: versionText),
     );
     widgets.add(
       docNo(invoice.order),
@@ -81,7 +81,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('น้ำหนัก (บาททอง)', align: TextAlign.right),
+                    child:
+                        paddedText('น้ำหนัก (บาททอง)', align: TextAlign.right),
                   )),
               Expanded(
                   flex: 2,
@@ -101,7 +102,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
+                    child:
+                        paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
                   )),
             ]),
       ),
@@ -251,7 +253,9 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
         height: 20,
         decoration: const BoxDecoration(
           border: Border(
-              left: BorderSide(width: 0.25), bottom: BorderSide(width: 0.25), right: BorderSide(width: 0.25)),
+              left: BorderSide(width: 0.25),
+              bottom: BorderSide(width: 0.25),
+              right: BorderSide(width: 0.25)),
         ),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,7 +272,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     child: paddedText(
                         '(${NumberToThaiWords.convertDouble(Global.getOrderTotal(invoice.order))})',
                         align: TextAlign.center,
-                        style: const TextStyle(fontSize: 11)),
+                        style: const TextStyle(fontSize: 12)),
                   )),
               Expanded(
                   flex: 1,
@@ -280,7 +284,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText('รวม',
                         align: TextAlign.right,
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -293,7 +298,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalWeightBaht(invoice.items))}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -305,7 +311,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalWeight(invoice.items))}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 3,
@@ -313,15 +320,44 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     decoration: const BoxDecoration(
                       border: Border(),
                     ),
-                    child: paddedText('${Global.format(Global.getOrderTotalAmount(invoice.items))}', align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: paddedText(
+                        '${Global.format(Global.getOrderTotalAmount(invoice.items))}',
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
             ]),
       ),
     );
     widgets.add(
       Container(
-        height: 60,
-        padding: const EdgeInsets.all(4.0),
+        height: 20,
+        decoration: const BoxDecoration(border: Border()),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                  child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(),
+                ),
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 0.0, top: 4.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('หมายเหตุ : ${invoice.order.remark ?? ''}',
+                              style: const TextStyle(fontSize: 12)),
+                        ])),
+              )),
+            ]),
+      ),
+    );
+    widgets.add(
+      Container(
+        height: 53,
+        padding: const EdgeInsets.only(top: 1.0),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,107 +378,119 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
       Padding(
         padding: const EdgeInsets.only(top: 0.0),
         child: Row(children: [
-          Expanded(flex: 8, child: Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-                border: Border.all(width: 0.25),
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                sn(invoice.orders),
-                bu(invoice.orders),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+          Expanded(
+              flex: 8,
+              child: Container(
+                padding: const EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                    border: Border.all(width: 0.25),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      flex: 8,
-                      child: Text('ร้านทองเพิ่ม(ลด)ให้ :',
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                              fontSize: 11, color: PdfColors.blue700)),
+                    sn(invoice.orders),
+                    bu(invoice.orders),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          flex: 8,
+                          child: Text('ร้านทองเพิ่ม(ลด)ให้ :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                  fontSize: 12, color: PdfColors.blue700)),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                              '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: addDisValue(
+                                              invoice.order.discount ?? 0,
+                                              invoice.order.addPrice ?? 0) <
+                                          0
+                                      ? PdfColors.red
+                                      : PdfColors.blue700)),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Text('${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)} บาท',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              fontSize: 11, color: addDisValue(invoice.order.discount ?? 0,
-                              invoice.order.addPrice ?? 0) <
-                              0
-                              ? PdfColors.red
-                              : PdfColors.blue700)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          flex: 8,
+                          child: Text(
+                              '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} :',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                  fontSize: 12, color: PdfColors.blue700)),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                              '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} บาท',
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                  fontSize: 12, color: PdfColors.blue700)),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        for (int i = 0; i < invoice.payments!.length; i++)
+                          Expanded(
+                              child: Container(
+                                  child: Row(children: [
+                            Expanded(
+                                flex: invoice.payments!.length > 1 ? 3 : 8,
+                                child: Text(
+                                    "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        color: PdfColors.blue700))),
+                            Expanded(
+                                flex: 2,
+                                child: Text(
+                                    "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 12,
+                                        color: PdfColors.blue700)))
+                          ])))
+                      ],
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      flex: 8,
-                      child: Text(
-                          '${Global.getPayTittle(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} :',
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                              fontSize: 11, color: PdfColors.blue700)),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                          '${Global.format(Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) >= 0 ? Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) : -Global.payToCustomerOrShopValue(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} บาท',
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                              fontSize: 11, color: PdfColors.blue700)),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    for (int i = 0; i < invoice.payments!.length; i++)
-                      Expanded(
-                          child: Container(
-                              child: Row(children: [
-                                Expanded(
-                                    flex: invoice.payments!.length > 1 ? 3 : 8,
-                                    child: Text(
-                                        "${getPaymentType(invoice.payments![i].paymentMethod)} :",
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(
-                                            fontSize: 11, color: PdfColors.blue700))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                        "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(
-                                            fontSize: 11, color: PdfColors.blue700)))
-                              ])))
-                  ],
-                ),
-              ],
-            ),
-          )),
+              )),
           SizedBox(width: 5),
           Expanded(
             flex: 3,
             child: Container(
                 height: 65,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.end, children: [
-                  SizedBox(height: 15),
-                  Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  Spacer(),
-                  Text('${Global.company?.name} (${Global.branch?.name})',
-                      style: const TextStyle(fontSize: 11)),
-                  Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  // SizedBox(height: 5),
-                ])),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(height: 15),
+                      Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                      Spacer(),
+                      Text('${Global.company?.name} (${Global.branch?.name})',
+                          style: const TextStyle(fontSize: 11)),
+                      Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                      // SizedBox(height: 5),
+                    ])),
           ),
         ]),
       ),
@@ -462,7 +510,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
   combinedWidgets.addAll(originalWidgets);
 
   // Add separator
-  combinedWidgets.add(SizedBox(height: 30));
+  combinedWidgets.add(SizedBox(height: 10));
   combinedWidgets.add(
     Container(
       height: 1,
@@ -473,7 +521,7 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
       ),
     ),
   );
-  combinedWidgets.add(SizedBox(height: 30));
+  combinedWidgets.add(SizedBox(height: 10));
 
   // Add copy version
   combinedWidgets.addAll(copyWidgets);
@@ -512,24 +560,25 @@ Widget sn(List<OrderModel>? orders) {
           Expanded(
             flex: 3,
             child: Text('ขายทองคํารูปพรรณใหม่ : ',
-                textAlign: TextAlign.left, style: const TextStyle(fontSize: 11)),
+                textAlign: TextAlign.left,
+                style: const TextStyle(fontSize: 12)),
           ),
           Expanded(
               flex: 2,
-              child:
-              Text(orders[i].orderId, style: const TextStyle(fontSize: 11))),
+              child: Text(orders[i].orderId,
+                  style: const TextStyle(fontSize: 12))),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 12))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 12))),
         ],
       );
     }
@@ -549,24 +598,25 @@ Widget bu(List<OrderModel>? orders) {
           Expanded(
             flex: 3,
             child: Text('รับซื้อทองคํารูปพรรณเก่า : ',
-                textAlign: TextAlign.left, style: const TextStyle(fontSize: 11)),
+                textAlign: TextAlign.left,
+                style: const TextStyle(fontSize: 12)),
           ),
           Expanded(
               flex: 2,
-              child:
-              Text(orders[i].orderId, style: const TextStyle(fontSize: 11))),
+              child: Text(orders[i].orderId,
+                  style: const TextStyle(fontSize: 12))),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 12))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 12))),
         ],
       );
     }
@@ -575,8 +625,8 @@ Widget bu(List<OrderModel>? orders) {
 }
 
 Widget paddedText(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 11)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

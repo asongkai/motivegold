@@ -194,7 +194,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
             return;
           }
 
-          List<OrderModel> dailyList = genDailyList(filterList, value: value);
+          List<OrderModel> dailyList = genDailyList(filterList!.reversed.toList(), value: value);
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -228,7 +228,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
             return;
           }
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList, fromDate, toDate);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList(), fromDate, toDate);
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;

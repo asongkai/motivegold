@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
@@ -553,7 +554,7 @@ class _HoldListModalState extends State<HoldListModal>
                   child: _buildDetailItem(
                     icon: Icons.balance,
                     label: 'น้ำหนัก (บาท)',
-                    value: '${formatter.format((detail.weight ?? 0) / getUnitWeightValue())} บาท',
+                    value: '${formatter.format((detail.weight ?? 0) / getUnitWeightValue(detail.productId))} บาท',
                     color: Colors.purple,
                   ),
                 ),
@@ -694,21 +695,25 @@ class _HoldListModalState extends State<HoldListModal>
       if (order.orderTypeId == 1) {
         Global.posIndex = 0;
         Global.sellOrderDetail = order.details;
+        Motive.sellNewGoldRemarkCtrl.text = order.remark ?? '';
       } else if (order.orderTypeId == 2) {
         Global.posIndex = 1;
         Global.buyOrderDetail = order.details;
+        Motive.buyUsedGoldRemarkCtrl.text = order.remark ?? '';
       } else if (order.orderTypeId == 3) {
         Global.posIndex = 0;
         Global.sellThengOrderDetailMatching = order.details;
       } else if (order.orderTypeId == 4) {
         Global.posIndex = 0;
         Global.sellThengOrderDetail = order.details;
+        Motive.sellNewThengGoldRemarkCtrl.text = order.remark ?? '';
       } else if (order.orderTypeId == 33) {
         Global.posIndex = 1;
         Global.buyThengOrderDetailMatching = order.details;
       } else if (order.orderTypeId == 44) {
         Global.posIndex = 1;
         Global.buyThengOrderDetail = order.details;
+        Motive.buyUsedThengGoldRemarkCtrl.text = order.remark ?? '';
       } else if (order.orderTypeId == 8) {
         Global.posIndex = 0;
         Global.sellThengOrderDetailBroker = order.details;

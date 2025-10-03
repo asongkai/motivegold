@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildMenuGrid([
               MenuItemData(
                 icon: Icons.security, // Better for pawn/security services
-                label: 'ขายฝากทอง\n(จำนำ)',
+                label: 'ขายฝาก',
                 color: Colors.purple[600]!, // Purple for pawn services
                 pageBuilder: (_) => const PawnMenuScreen(),
               ),

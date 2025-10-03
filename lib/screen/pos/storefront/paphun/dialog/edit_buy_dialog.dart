@@ -205,7 +205,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                 : "";
             var realPrice = Global.getBuyPrice(
                 Global.toNumber(
-                    productWeightCtrl.text), Global.goldDataModel);
+                    productWeightCtrl.text), Global.goldDataModel, selectedProduct!.id!);
             var price = Global.toNumber(
                 productPriceCtrl.text);
             var check = price - realPrice;
@@ -269,9 +269,11 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                 children: [
                   posHeaderText(context, buBgColor,
                       'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
+                  if (selectedProduct != null)
                   Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: GoldMiniWidget(
+                      product: selectedProduct!,
                       goldDataModel: widget.j == null
                           ? Global
                               .buyOrderDetail![widget.index].goldDataModel
@@ -405,7 +407,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                               onChanged: (value) {
                                 var realPrice = Global.getBuyPrice(
                                     Global.toNumber(
-                                        productWeightCtrl.text), Global.goldDataModel);
+                                        productWeightCtrl.text), Global.goldDataModel, selectedProduct!.id!);
                                 var price = Global.toNumber(
                                     productPriceCtrl.text);
                                 var check = price - realPrice;
@@ -609,11 +611,11 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                       .details![widget.j!]
                                       .goldDataModel
                                       ?.paphun
-                                      ?.buy))
+                                      ?.buy), selectedProduct!.id!)
                           .toString();
 
                       var realPrice = Global.getBuyPrice(
-                          Global.toNumber(productWeightCtrl.text), Global.goldDataModel);
+                          Global.toNumber(productWeightCtrl.text), Global.goldDataModel, selectedProduct!.id!);
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
 
@@ -751,7 +753,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -762,7 +764,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                   ? Global
                       .buyOrderDetail![widget.index].goldDataModel?.paphun?.buy
                   : Global.ordersPapun![widget.index].details![widget.j!]
-                      .goldDataModel?.paphun?.buy))
+                      .goldDataModel?.paphun?.buy), selectedProduct!.id!)
           .toString();
       // productPriceCtrl.text =
       //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
@@ -777,7 +779,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue())
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id))
               .toPrecision(2));
     } else {
       productWeightCtrl.text = "";
@@ -791,7 +793,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                   ? Global
                       .buyOrderDetail![widget.index].goldDataModel?.paphun?.buy
                   : Global.ordersPapun![widget.index].details![widget.j!]
-                      .goldDataModel?.paphun?.buy))
+                      .goldDataModel?.paphun?.buy), selectedProduct!.id!)
           .toString();
       setState(() {});
     } else {

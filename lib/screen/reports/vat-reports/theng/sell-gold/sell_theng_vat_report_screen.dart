@@ -11,6 +11,7 @@ import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/preview.dart';
 import 'package:motivegold/screen/reports/vat-reports/theng/sell-gold/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -219,7 +220,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
         }
 
         if (value == 2 || value == 3) {
-          List<OrderModel> dailyList = genDailyList(filterList);
+          List<OrderModel> dailyList = genDailyList(filterList!.reversed.toList());
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -248,9 +249,9 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           fromDate = DateTime(now.year, 1, 1);
           toDate = DateTime(now.year, 12, 31);
 
-          await search();
+          // await search();
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -1094,7 +1095,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(getWeight(item)),
+                                              Global.format4(getWeight(item)),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1293,7 +1294,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(
+                                            Global.format4(
                                                 getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
@@ -1537,6 +1538,8 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           createdDate: monthDate,
           customerId: 0,
           weight: getWeightTotal(dateList),
+          weightBath: getWeightTotal(dateList) /
+              getUnitWeightValue(dateList.first.details!.first.productId),
           priceIncludeTax: priceIncludeTaxTotal(dateList),
           purchasePrice: purchasePriceTotal(dateList),
           priceDiff: priceDiffTotal(dateList),
@@ -1557,6 +1560,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
             createdDate: monthDate,
             customerId: 0,
             weight: 0.0,
+            weightBath: 0.0,
             priceIncludeTax: 0.0,
             purchasePrice: 0.0,
             priceDiff: 0.0,
@@ -1607,6 +1611,8 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           // First day of the month
           customerId: 0,
           weight: getWeightTotal(monthList),
+          weightBath: getWeightTotal(monthList) /
+              getUnitWeightValue(monthList.first.details!.first.productId),
           priceIncludeTax: priceIncludeTaxTotal(monthList),
           purchasePrice: purchasePriceTotal(monthList),
           priceDiff: priceDiffTotal(monthList),
@@ -1626,6 +1632,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           createdDate: monthDate,
           customerId: 0,
           weight: 0.0,
+          weightBath: 0.0,
           priceIncludeTax: 0.0,
           purchasePrice: 0.0,
           priceDiff: 0.0,

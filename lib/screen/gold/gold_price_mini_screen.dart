@@ -5,6 +5,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/gold_data.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -15,9 +16,10 @@ import 'package:sizer/sizer.dart';
 
 class GoldPriceMiniScreen extends StatefulWidget {
 
-  const GoldPriceMiniScreen({super.key, this.goldDataModel});
+  const GoldPriceMiniScreen({super.key, this.goldDataModel, required this.product});
 
   final GoldDataModel? goldDataModel;
+  final ProductModel product;
 
   @override
   State<GoldPriceMiniScreen> createState() => _GoldPriceMiniScreenState();
@@ -130,7 +132,7 @@ class _GoldPriceMiniScreenState extends State<GoldPriceMiniScreen> {
                       title: '',
                       subTitle: "รับซื้อกรัมละ",
                       value:
-                          "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue())} บาท",
+                          "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue(widget.product?.id))} บาท",
                     ),
                   ],
                 ),

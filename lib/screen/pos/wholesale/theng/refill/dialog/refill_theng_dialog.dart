@@ -743,7 +743,7 @@ class _RefillThengDialogState extends State<RefillThengDialog> {
       // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
       // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -752,7 +752,7 @@ class _RefillThengDialogState extends State<RefillThengDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
       // productSellPriceCtrl.text = Global.getSellPrice(Global.toNumber(productWeightCtrl.text)).toString();
       // productBuyPriceCtrl.text = Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
     } else {

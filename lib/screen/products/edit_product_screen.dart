@@ -79,8 +79,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     id = widget.product.id;
     productNameCtrl.text = widget.product.name;
     productCodeCtrl.text = widget.product.productCode!;
-    unitDefaultValue.text =
-        Global.format(widget.product.unitWeight ?? 0);
+    unitDefaultValue.text = widget.product.unitWeight.toString();
 
     loadData();
   }

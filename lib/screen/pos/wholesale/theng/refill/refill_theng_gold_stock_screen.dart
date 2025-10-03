@@ -703,7 +703,7 @@ class _RefillThengGoldStockScreenState
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: numberTextField(
-                                    bgColor: Colors.grey.shade200,
+                                    // bgColor: Colors.grey.shade200,
                                     labelText: "",
                                     inputType: TextInputType.phone,
                                     controller: priceExcludeTaxCtrl,
@@ -1331,21 +1331,31 @@ class _RefillThengGoldStockScreenState
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) /
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightBahtCtrl.text = "";
     }
-    getOtherAmount();
+    priceExcludeTaxCtrl.text = Global.format(
+        Global.toNumber(productSellThengPriceCtrl.text) /
+            getUnitWeightValue(selectedProduct?.id) *
+            Global.toNumber(productWeightCtrl.text));
+    getOtherAmount(self: false);
   }
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+      productWeightCtrl.text = Global.format4(
+          (Global.toNumber(productWeightBahtCtrl.text) *
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightCtrl.text = "";
     }
-    getOtherAmount();
+    priceExcludeTaxCtrl.text = Global.format(
+        Global.toNumber(productSellThengPriceCtrl.text) /
+            getUnitWeightValue(selectedProduct?.id) *
+            Global.toNumber(productWeightCtrl.text));
+    getOtherAmount(self: false);
   }
 
   void priceIncludeTaxChanged() {
@@ -1361,13 +1371,13 @@ class _RefillThengGoldStockScreenState
     } else {
       priceDiffCtrl.text = "";
     }
-    getOtherAmount();
+
+    getOtherAmount(self: true);
   }
 
-  void getOtherAmount() {
-    priceExcludeTaxCtrl.text = Global.format(
-        Global.toNumber(productSellThengPriceCtrl.text) *
-            Global.toNumber(productWeightBahtCtrl.text));
+  void getOtherAmount({bool self = false}) {
+    // priceExcludeTaxCtrl.text = Global.format(Global.getSellThengPrice(
+    //     Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
     double com = Global.toNumber(productCommissionCtrl.text);
     double pkg = Global.toNumber(packagePriceCtrl.text);
     taxAmountCtrl.text = Global.format((com + pkg) * getVatValue());

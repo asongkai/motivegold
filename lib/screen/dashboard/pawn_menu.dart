@@ -203,7 +203,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
                 const RedeemMenuScreen(),
               ),
               iconDashboard(
-                'ขายฝาก-ไถ่ถอน',
+                'ออกตั๋วขายฝาก\nไถ่ถอน',
                 Image.asset('assets/icons/gold/sell-gold-tang.png'),
                 stmBgColor,
                 null,

@@ -987,7 +987,7 @@ class _ThengMoneyMovementReportScreenState extends State<ThengMoneyMovementRepor
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(getWeight(item)),
+                                            Global.format4(getWeight(item)),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 11,

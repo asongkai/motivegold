@@ -349,7 +349,7 @@ class _EditSellUsedThengGoldScreenState
           Global.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = Global.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -692,28 +692,29 @@ class _EditSellUsedThengGoldScreenState
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: buildTextField(
-                                    labelText:
-                                        "น้ำหนักรวม (กรัม) ในคลังสินค้า: ${selectedFromLocation?.name}",
-                                    inputType: TextInputType.number,
-                                    controller: productWeightCtrl,
-                                    enabled: false,
-                                    fontSize: 16.sp,
-                                    labelColor: Colors.black87,
-                                    inputFormat: [
-                                      ThousandsFormatter(allowFraction: true)
-                                    ],
-                                    onChanged: (String value) {}),
-                              ),
-                            ],
+                        if (Global.company?.stock == 1)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: buildTextField(
+                                      labelText:
+                                          "น้ำหนักรวม (กรัม) ในคลังสินค้า: ${selectedFromLocation?.name}",
+                                      inputType: TextInputType.number,
+                                      controller: productWeightCtrl,
+                                      enabled: false,
+                                      fontSize: 16.sp,
+                                      labelColor: Colors.black87,
+                                      inputFormat: [
+                                        ThousandsFormatter(allowFraction: true)
+                                      ],
+                                      onChanged: (String value) {}),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -1139,7 +1140,7 @@ class _EditSellUsedThengGoldScreenState
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text = Global.format(
           (Global.toNumber(productEntryWeightCtrl.text) /
-              getUnitWeightValue()));
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightBahtCtrl.text = "";
     }
@@ -1147,9 +1148,9 @@ class _EditSellUsedThengGoldScreenState
 
   void bahtChanged() {
     if (productEntryWeightBahtCtrl.text.isNotEmpty) {
-      productEntryWeightCtrl.text = Global.format(
+      productEntryWeightCtrl.text = Global.format4(
           (Global.toNumber(productEntryWeightBahtCtrl.text) *
-              getUnitWeightValue()));
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       productEntryWeightCtrl.text = "";
     }
@@ -1281,8 +1282,8 @@ class _EditSellUsedThengGoldScreenState
         weight: Global.toNumber(productEntryWeightCtrl.text),
         weightBath: Global.toNumber(productEntryWeightBahtCtrl.text),
         weightAdj: Global.toNumber(priceAdjCtrl.text),
-        weightBathAdj:
-            Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(),
+        weightBathAdj: Global.toNumber(priceAdjCtrl.text) /
+            getUnitWeightValue(selectedProduct?.id),
         commission: 0,
         unitCost: Global.toNumber(priceIncludeTaxCtrl.text) /
             Global.toNumber(productEntryWeightCtrl.text),

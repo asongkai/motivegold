@@ -1569,6 +1569,44 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                           const Color(0xFF059669).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',
@@ -1820,6 +1858,44 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                           const Color(0xFF0F766E).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',

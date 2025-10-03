@@ -7,6 +7,7 @@ import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/dummy/dummy.dart';
 import 'package:motivegold/model/branch.dart';
 import 'package:motivegold/model/user.dart';
+import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -116,22 +117,27 @@ class _EditUserScreenState extends State<EditUserScreen> {
 
   // ORIGINAL loadBranches functionality preserved exactly
   Future<void> loadBranches() async {
-    var result =
-    await ApiServices.get('/branch/by-company/${selectedCompany!.id}');
+    var result = await ApiServices.get('/branch/by-company/${selectedCompany!.id}');
     if (result?.status == "success") {
       var data = jsonEncode(result?.data);
       List<BranchModel> products = branchListModelFromJson(data);
       setState(() {
         branches = products;
       });
-      selectedBranch = branches
-          ?.where((element) => element.id == widget.user.branchId)
-          .first;
+
+      // Safe way to find the branch
+      selectedBranch = branches?.firstWhere(
+            (element) => element.id == widget.user.branchId,
+        orElse: () => BranchModel(id: 0, name: 'เลือกสาขา'), // Default if not found
+      );
+
       branchNotifier = ValueNotifier<BranchModel>(
           selectedBranch ?? BranchModel(id: 0, name: 'เลือกสาขา'));
-      branchCtrl.text = selectedBranch!.name;
+      branchCtrl.text = selectedBranch?.name ?? '';
     } else {
-      branches = [];
+      setState(() {
+        branches = [];
+      });
     }
   }
 
@@ -541,6 +547,8 @@ class _EditUserScreenState extends State<EditUserScreen> {
   }
 
   Widget _buildCompanyDropdown() {
+    bool isAdmin = Global.user!.userType == 'ADMIN';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -561,45 +569,85 @@ class _EditUserScreenState extends State<EditUserScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: MiraiDropDownMenu<CompanyModel>(
-            key: UniqueKey(),
-            children: companies!,
-            space: 4,
-            maxHeight: 360,
-            showSearchTextField: true,
-            selectedItemBackgroundColor: Colors.transparent,
-            emptyListMessage: 'ไม่มีข้อมูล',
-            showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (
-                int index,
-                CompanyModel? project, {
-                  bool isItemSelected = false,
-                }) {
-              return DropDownItemWidget(
-                project: project,
-                isItemSelected: isItemSelected,
-                firstSpace: 10,
+
+        // Conditional rendering based on user type
+        if (isAdmin)
+        // Admin sees dropdown
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: MiraiDropDownMenu<CompanyModel>(
+              key: UniqueKey(),
+              children: companies!,
+              space: 4,
+              maxHeight: 360,
+              showSearchTextField: true,
+              enable: true,
+              selectedItemBackgroundColor: Colors.transparent,
+              emptyListMessage: 'ไม่มีข้อมูล',
+              showSelectedItemBackgroundColor: true,
+              itemWidgetBuilder: (
+                  int index,
+                  CompanyModel? project, {
+                    bool isItemSelected = false,
+                  }) {
+                return DropDownItemWidget(
+                  project: project,
+                  isItemSelected: isItemSelected,
+                  firstSpace: 10,
+                  fontSize: 16.sp,
+                );
+              },
+              onChanged: (CompanyModel value) async {
+                companyCtrl.text = value.name;
+                selectedCompany = value;
+                companyNotifier!.value = value;
+                await loadBranches();
+                if (mounted) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  setState(() {});
+                }
+              },
+              child: DropDownObjectChildWidget(
+                key: GlobalKey(),
                 fontSize: 16.sp,
-              );
-            },
-            onChanged: (CompanyModel value) {
-              companyCtrl.text = value.name;
-              selectedCompany = value;
-              companyNotifier!.value = value;
-            },
-            child: DropDownObjectChildWidget(
-              key: GlobalKey(),
-              fontSize: 16.sp,
-              projectValueNotifier: companyNotifier!,
+                projectValueNotifier: companyNotifier!,
+              ),
+            ),
+          )
+        else
+        // Non-admin sees text display
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey[50],
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedCompany?.name ?? 'ไม่มีข้อมูลบริษัท',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: selectedCompany != null ? Colors.black87 : Colors.grey[600],
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.business,
+                  color: Colors.grey[400],
+                  size: 20,
+                ),
+              ],
             ),
           ),
-        ),
       ],
     );
   }

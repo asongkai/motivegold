@@ -159,7 +159,7 @@ class _TitleContentState extends State<TitleContent> {
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            '${company.name} (สาขา ${branch.name})',
+                                            '${company.name} (${branch.name})',
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                           .orientation ==
@@ -183,7 +183,7 @@ class _TitleContentState extends State<TitleContent> {
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            '${branch.address}, ${branch.village}, ${branch.district}, ${branch.province}',
+                                            '${branch.address} ${branch.village} ${branch.district} ${branch.province}',
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                           .orientation ==
@@ -229,7 +229,7 @@ class _TitleContentState extends State<TitleContent> {
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            'เลขประจําตัวผู้เสียภาษี/Tax ID : ${company.taxNumber} (สาขาที่ ${branch.branchId})',
+                                            'เลขประจําตัวผู้เสียภาษี/Tax ID : ${company.taxNumber}',
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                           .orientation ==

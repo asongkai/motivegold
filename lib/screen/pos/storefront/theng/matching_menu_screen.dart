@@ -120,11 +120,11 @@ class ThengSaleMatchingMenuScreenState
                                               fullscreenDialog: true))
                                       .whenComplete(() {
                                     init();
-                                    if (Global.posIndex == 0) {
-                                      sumSellThengTotalMatching();
+                                    if (Global.posIndex == 0 && Global.sellThengOrderDetailMatching!.isNotEmpty) {
+                                      sumSellThengTotalMatching(Global.sellThengOrderDetailMatching!.first.productId!);
                                     }
-                                    if (Global.posIndex == 1) {
-                                      sumBuyThengTotalMatching();
+                                    if (Global.posIndex == 1 && Global.buyThengOrderDetailMatching!.isNotEmpty) {
+                                      sumBuyThengTotalMatching(Global.buyThengOrderDetailMatching!.first.productId!);
                                     }
                                     sideMenu.changePage(Global.posIndex);
                                     pageController.jumpToPage(Global.posIndex);

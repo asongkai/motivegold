@@ -81,27 +81,27 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('เลขที่ใบกํากับภาษี',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('ชื่อผู้ซื้อ',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
               paddedTextSmall('วันที่',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-              paddedTextSmall('เวลา',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.white), align: TextAlign.center),
+              // paddedTextSmall('เวลา',
+              //     style: TextStyle(
+              //         fontSize: 9,
+              //         fontWeight: FontWeight.bold,
+              //         color: PdfColors.white)),
               paddedTextSmall('นน.ทองรูปพรรณ \n96.5% ขายออก (กรัม)',
                   style: TextStyle(
                       fontSize: 9,
@@ -138,13 +138,13 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('ยอดจ่ายเงิน',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('ร้านทองรับ\n(จ่าย)เงินสุทธิ',
                   style: TextStyle(
                       fontSize: 9,
@@ -162,7 +162,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.white),
-                  align: TextAlign.right),
+                  align: TextAlign.center),
               paddedTextSmall('เงินโอน/\nฝากธนาคาร',
                   style: TextStyle(
                       fontSize: 9,
@@ -187,14 +187,14 @@ Future<Uint8List> makeMoneyMovementReportPdf(
           TableRow(
             decoration: const BoxDecoration(),
             children: [
-              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8)),
-              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8)),
+              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8), align: TextAlign.center),
+              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8), align: TextAlign.center),
               paddedTextSmall('${getCustomerName(orders[i].customer!)}',
                   style: TextStyle(fontSize: 8)),
               paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
                   style: TextStyle(fontSize: 8)),
-              paddedTextSmall(Global.timeOnly(orders[i].createdDate.toString()),
-                  style: TextStyle(fontSize: 8)),
+              // paddedTextSmall(Global.timeOnly(orders[i].createdDate.toString()),
+              //     style: TextStyle(fontSize: 8)),
               paddedTextSmall(
                   (orders[i].orderTypeId == 1)
                       ? Global.format(getWeight(orders[i]))
@@ -327,7 +327,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 8)),
+              // paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('รวมท้ังหมด',
                   style: TextStyle(
                       fontSize: 9,
@@ -425,7 +425,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('* น้ําหนักจะเป็นน้ําหนักในหน่วยของทอง 96.5%'),
+                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5% '),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

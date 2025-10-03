@@ -961,7 +961,7 @@ class _SellThengReportScreenState extends State<SellThengReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(getWeight(item)),
+                                              Global.format4(getWeight(item)),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1160,7 +1160,7 @@ class _SellThengReportScreenState extends State<SellThengReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(
+                                            Global.format4(
                                                 getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,

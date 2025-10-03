@@ -140,6 +140,7 @@ class Global {
   static TextEditingController amountCtrl = TextEditingController();
   static BankModel? selectedBank;
   static BankAccountModel? selectedAccount;
+  static DateTime? cardExpiryFullDate;
 
   // POS
   static List<OrderDetailModel>? sellOrderDetail = [];
@@ -256,13 +257,46 @@ class Global {
 
   static PosIdModel? posIdModel;
 
-  static SettingsValueModel? settingValueModel;
+  static SettingsValueModel? vatSettingModel;
+  static List<SettingsValueModel>? kycSettingList = [];
+  static SettingsValueModel? kycSettingModel;
 
   static ifInt(dynamic value) {
     if (value is int) {
       return true;
     }
     return false;
+  }
+
+  static String? convertToFullDate(String mmyy) {
+    try {
+      List<String> parts = mmyy.split('/');
+      if (parts.length == 2) {
+        int month = int.parse(parts[0]);
+        int year = 2000 + int.parse(parts[1]); // Convert YY to 20YY
+
+        // Validate month
+        if (month >= 1 && month <= 12) {
+          // Get the last day of the month
+          DateTime lastDayOfMonth = DateTime(year, month + 1, 0);
+
+          // Store the full date in your global variable or wherever you need it
+          // For example, you might want to store it in a separate variable
+          Global.cardExpiryFullDate = lastDayOfMonth;
+
+          // Optionally, you can format and store it as a string
+          String fullDateString = DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
+          // Store this fullDateString wherever you need it for your API calls
+
+          motivePrint('Converted $mmyy to full date: $fullDateString');
+
+          return fullDateString;
+        }
+      }
+    } catch (e) {
+      motivePrint('Error converting date: $e');
+    }
+    return null;
   }
 
   static formatInt(dynamic value) {
@@ -283,6 +317,22 @@ class Global {
         return number;
       }
       return '$number.00';
+    }
+  }
+
+  static format3(dynamic value, {bool option = false}) {
+    String number = formatter3.format(value);
+    var part = number.split('.');
+    if (part.length > 1) {
+      if (part[1].length == 1) {
+        return '${number}00';
+      }
+      return number;
+    } else {
+      if (option) {
+        return number;
+      }
+      return '$number.000';
     }
   }
 
@@ -361,81 +411,81 @@ class Global {
   }
 
   // GET BATH/GRAM
-  static double bathPerGram() {
+  static double bathPerGram(int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     double taxRate = toNumber(goldDataModel!.paphun!.buy!);
-    return taxRate / getUnitWeightValue();
+    return taxRate / getUnitWeightValue(productId);
   }
 
-  static double getSellPriceTotal(double weight, double commission) {
+  static double getSellPriceTotal(double weight, double commission, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     return (toNumber(goldDataModel!.theng!.sell!) *
             weight /
-            getUnitWeightValue()) +
+            getUnitWeightValue(productId)) +
         commission;
   }
 
-  static double taxBase(double grandTotal, double weight) {
+  static double taxBase(double grandTotal, double weight, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
-    return (grandTotal - (weight * bathPerGram())) * 100 / 107;
+    return (grandTotal - (weight * bathPerGram(productId))) * 100 / 107;
   }
 
   static double taxAmount(double taxBase) {
     return taxBase * getVatValue();
   }
 
-  static double getSellPrice(double weight) {
+  static double getSellPrice(double weight, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     return toNumber(goldDataModel!.theng!.sell!) *
         weight /
-        getUnitWeightValue();
+        getUnitWeightValue(productId);
   }
 
-  static double getSellPriceUsePrice(double weight, double price) {
+  static double getSellPriceUsePrice(double weight, double price, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
-    return price * weight / getUnitWeightValue();
+    return price * weight / getUnitWeightValue(productId);
   }
 
-  static double getBuyPrice(double weight, dynamic goldDataModel) {
+  static double getBuyPrice(double weight, dynamic goldDataModel, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     return toNumber(goldDataModel!.paphun!.buy!) *
         weight /
-        getUnitWeightValue();
+        getUnitWeightValue(productId);
   }
 
-  static double getBuyPriceUsePrice(double weight, double price) {
+  static double getBuyPriceUsePrice(double weight, double price, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
-    return price * weight / getUnitWeightValue();
+    return price * weight / getUnitWeightValue(productId);
   }
 
-  static double getBuyThengPrice(double weight) {
+  static double getBuyThengPrice(double weight, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.buy!) * weight / getUnitWeightValue();
+    return toNumber(goldDataModel!.theng!.buy!) * weight / getUnitWeightValue(productId);
   }
 
-  static double getSellThengPrice(double weight) {
+  static double getSellThengPrice(double weight, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     return toNumber(goldDataModel!.theng!.sell!) *
         weight /
-        getUnitWeightValue();
+        getUnitWeightValue(productId);
   }
 
   static double getOrderSubTotalAmount() {
@@ -626,7 +676,7 @@ class Global {
     return amount;
   }
 
-  static double getPapunTotal(OrderModel? order) {
+  static double getPapunTotal(OrderModel? order, int productId) {
     if (order == null) {
       return 0;
     }
@@ -636,11 +686,11 @@ class Global {
       amount += weight;
     }
 
-    amount = getBuyPrice(amount, order.goldDataModel);
+    amount = getBuyPrice(amount, order.goldDataModel, productId);
     return amount;
   }
 
-  static double getThengTotal(OrderModel? order) {
+  static double getThengTotal(OrderModel? order, int productId) {
     if (order == null) {
       return 0;
     }
@@ -650,7 +700,7 @@ class Global {
       amount += weight;
     }
 
-    amount = getBuyThengPrice(amount);
+    amount = getBuyThengPrice(amount, productId);
     return amount;
   }
 

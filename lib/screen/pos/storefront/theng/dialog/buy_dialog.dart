@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:masked_text/masked_text.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/order_detail.dart';
@@ -16,11 +18,14 @@ import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/ui/text_header.dart';
 import 'package:sizer/sizer.dart';
 
@@ -60,6 +65,8 @@ class _BuyDialogState extends State<BuyDialog> {
 
   final controller = BoardDateTimeController();
 
+  TextEditingController bookDateCtrl = TextEditingController();
+
   DateTime date = DateTime.now();
   String? txt;
   bool showCal = false;
@@ -84,7 +91,7 @@ class _BuyDialogState extends State<BuyDialog> {
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
-    sumBuyThengTotal();
+
     loadProducts();
   }
 
@@ -149,6 +156,10 @@ class _BuyDialogState extends State<BuyDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumBuyThengTotal(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -182,7 +193,7 @@ class _BuyDialogState extends State<BuyDialog> {
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -210,36 +221,31 @@ class _BuyDialogState extends State<BuyDialog> {
       onChanged: (key, value, expression) {
         if (key == 'ENT') {
           if (txt == 'baht') {
-            productWeightBahtCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productWeightBahtCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             bahtChanged();
           }
           if (txt == 'gram') {
-            productWeightCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productWeightCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             gramChanged();
           }
 
           if (txt == 'com') {
-            productCommissionCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            productCommissionCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             comChanged();
           }
 
           if (txt == 'price') {
-            priceExcludeTaxCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            priceExcludeTaxCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             priceChanged();
           }
 
           if (txt == 'price_total') {
-            priceIncludeTaxCtrl.text = value != null
-                ? "${Global.format(value)}"
-                : "";
+            priceIncludeTaxCtrl.text =
+                value != null ? "${Global.format(value)}" : "";
             priceTotalChanged();
           }
           FocusScope.of(context).requestFocus(FocusNode());
@@ -286,10 +292,11 @@ class _BuyDialogState extends State<BuyDialog> {
           child: Column(
             children: [
               posHeaderText(context, btBgColor, 'ซื้อทองคำแท่ง'),
-              const Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: GoldMiniWidget(screen: 3),
-              ),
+              if (selectedProduct != null)
+                Padding(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: GoldMiniWidget(product: selectedProduct!, screen: 3),
+                ),
               const SizedBox(
                 height: 20,
               ),
@@ -304,16 +311,16 @@ class _BuyDialogState extends State<BuyDialog> {
                           children: [
                             Text(
                               'จำนวนน้ำหนัก',
-                              style: TextStyle(
-                                  fontSize: 16.sp, color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '(บาททอง)',
-                              style: TextStyle(
-                                  color: textColor, fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -366,16 +373,16 @@ class _BuyDialogState extends State<BuyDialog> {
                           children: [
                             Text(
                               'จำนวนน้ำหนัก',
-                              style: TextStyle(
-                                  fontSize: 16.sp, color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '(กรัม)',
-                              style: TextStyle(
-                                  color: textColor, fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -390,9 +397,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         controller: productWeightCtrl,
                         readOnly: gramReadOnly,
                         focusNode: gramFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             productWeightCtrl.text = "";
@@ -434,16 +439,16 @@ class _BuyDialogState extends State<BuyDialog> {
                           children: [
                             Text(
                               'ราคารวมทองคำแท่งรับซื้อ',
-                              style: TextStyle(
-                                  fontSize: 16.sp, color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor, fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -458,9 +463,7 @@ class _BuyDialogState extends State<BuyDialog> {
                         controller: priceExcludeTaxCtrl,
                         readOnly: priceReadOnly,
                         focusNode: priceFocus,
-                        inputFormat: [
-                          ThousandsFormatter(allowFraction: true)
-                        ],
+                        inputFormat: [ThousandsFormatter(allowFraction: true)],
                         clear: () {
                           setState(() {
                             priceExcludeTaxCtrl.text = "";
@@ -493,17 +496,17 @@ class _BuyDialogState extends State<BuyDialog> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
-                              'ค่าบล็อก',
-                              style: TextStyle(
-                                  fontSize: 16.sp, color: textColor),
+                              'หัก ค่าบล็อก',
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor, fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -558,16 +561,16 @@ class _BuyDialogState extends State<BuyDialog> {
                           children: [
                             Text(
                               'รวมราคารับซื้อสุทธิ',
-                              style: TextStyle(
-                                  fontSize: 16.sp, color: textColor),
+                              style:
+                                  TextStyle(fontSize: 16.sp, color: textColor),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
                             Text(
                               '',
-                              style: TextStyle(
-                                  color: textColor, fontSize: 16.sp),
+                              style:
+                                  TextStyle(color: textColor, fontSize: 16.sp),
                             ),
                             const SizedBox(
                               width: 10,
@@ -607,6 +610,97 @@ class _BuyDialogState extends State<BuyDialog> {
                               priceTotalChanged();
                             }
                           }),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        flex: 6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'วันที่จองราคา',
+                              style:
+                              TextStyle(fontSize: 16.sp, color: textColor),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '',
+                              style:
+                              TextStyle(color: textColor, fontSize: 16.sp),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        )),
+                    Expanded(
+                      flex: 6,
+                      child: MaskedTextField(
+                        controller: bookDateCtrl,
+                        mask: "##-##-####",
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 16.sp),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white70,
+                          hintText: 'dd-mm-yyyy',
+                          labelStyle: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.blue[900],
+                              fontWeight: FontWeight.w900),
+                          prefixIcon: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => SfDatePickerDialog(
+                                    initialDate: DateTime.now(),
+                                    onDateSelected: (date) {
+                                      motivePrint('You picked: $date');
+                                      String formattedDate =
+                                      DateFormat('dd-MM-yyyy').format(date);
+                                      motivePrint(formattedDate);
+                                      setState(() {
+                                        bookDateCtrl.text = formattedDate;
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                              child: const Icon(
+                                Icons.calendar_today,
+                                size: 40,
+                              )),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                          labelText: "",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              getProportionateScreenWidth(2),
+                            ),
+                            borderSide: const BorderSide(
+                              color: kGreyShade3,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              getProportionateScreenWidth(2),
+                            ),
+                            borderSide: const BorderSide(
+                              color: kGreyShade3,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -731,9 +825,11 @@ class _BuyDialogState extends State<BuyDialog> {
                                 Global.toNumber(priceExcludeTaxCtrl.text),
                             priceIncludeTax:
                                 Global.toNumber(priceIncludeTaxCtrl.text),
-                            bookDate: null),
+                            bookDate: bookDateCtrl.text.isNotEmpty
+                                ? Global.convertDate(bookDateCtrl.text)
+                                : null),
                       );
-                      sumBuyThengTotal();
+                      sumBuyThengTotal(selectedProduct!.id!);
                       setState(() {});
                       Navigator.of(context).pop();
                     },
@@ -750,11 +846,13 @@ class _BuyDialogState extends State<BuyDialog> {
   void gramChanged() {
     if (productWeightCtrl.text != "") {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) /
+              getUnitWeightValue(selectedProduct?.id)));
       // marketPriceTotalCtrl.text = Global.format(
       //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text), Global.goldDataModel));
-      priceExcludeTaxCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+      priceExcludeTaxCtrl.text = Global.format(Global.getBuyThengPrice(
+          Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
+      comChanged();
     } else {
       productWeightCtrl.text = "";
       productWeightBahtCtrl.text = "";
@@ -766,10 +864,9 @@ class _BuyDialogState extends State<BuyDialog> {
   }
 
   void comChanged() {
-    if (priceExcludeTaxCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
+    if (priceExcludeTaxCtrl.text.isNotEmpty) {
       priceIncludeTaxCtrl.text =
-          "${Global.format(Global.toNumber(priceExcludeTaxCtrl.text) + Global.toNumber(productCommissionCtrl.text))}";
+          "${Global.format(Global.toNumber(priceExcludeTaxCtrl.text) - Global.toNumber(productCommissionCtrl.text))}";
       setState(() {});
     } else {
       priceIncludeTaxCtrl.text = "";
@@ -779,10 +876,9 @@ class _BuyDialogState extends State<BuyDialog> {
   }
 
   void priceChanged() {
-    if (priceExcludeTaxCtrl.text.isNotEmpty &&
-        productCommissionCtrl.text.isNotEmpty) {
+    if (priceExcludeTaxCtrl.text.isNotEmpty && Global.toNumber(priceExcludeTaxCtrl.text) != 0) {
       priceIncludeTaxCtrl.text = Global.format(
-          Global.toNumber(priceExcludeTaxCtrl.text) +
+          Global.toNumber(priceExcludeTaxCtrl.text) -
               Global.toNumber(productCommissionCtrl.text));
       setState(() {});
     } else {
@@ -794,10 +890,14 @@ class _BuyDialogState extends State<BuyDialog> {
 
   void priceTotalChanged() {
     if (priceIncludeTaxCtrl.text.isNotEmpty &&
-        priceExcludeTaxCtrl.text.isNotEmpty) {
+        priceExcludeTaxCtrl.text.isNotEmpty && Global.toNumber(priceIncludeTaxCtrl.text) != 0) {
       productCommissionCtrl.text = Global.format(
-          Global.toNumber(priceIncludeTaxCtrl.text) -
-              Global.toNumber(priceExcludeTaxCtrl.text));
+          (Global.toNumber(priceExcludeTaxCtrl.text) -
+                      Global.toNumber(priceIncludeTaxCtrl.text)) <=
+                  0
+              ? 0
+              : Global.toNumber(priceExcludeTaxCtrl.text) -
+                  Global.toNumber(priceIncludeTaxCtrl.text));
       setState(() {});
     } else {
       productCommissionCtrl.text = "";
@@ -807,12 +907,14 @@ class _BuyDialogState extends State<BuyDialog> {
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+      productWeightCtrl.text = Global.format4(
+          (Global.toNumber(productWeightBahtCtrl.text) *
+              getUnitWeightValue(selectedProduct?.id)));
       // marketPriceTotalCtrl.text = Global.format(
       //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text), Global.goldDataModel));
-      priceExcludeTaxCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+      priceExcludeTaxCtrl.text = Global.format(Global.getBuyThengPrice(
+          Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
+      comChanged();
     } else {
       productWeightCtrl.text = "";
       marketPriceTotalCtrl.text = "";
@@ -835,6 +937,7 @@ class _BuyDialogState extends State<BuyDialog> {
     productWeightBahtRemainCtrl.text = "";
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
+    bookDateCtrl.text = "";
     selectedProduct = productList.first;
     productCodeCtrl.text =
         (selectedProduct != null ? selectedProduct?.productCode! : "")!;

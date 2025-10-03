@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/screen/pos/storefront/theng/bill/make_sell_bill.dart';
+import 'package:motivegold/screen/pos/storefront/theng/bill/make_sell_short_bill.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:printing/printing.dart';
@@ -11,8 +12,9 @@ import 'make_pdf.dart';
 class PreviewSellThengPdfPage extends StatefulWidget {
   final Invoice invoice;
   final bool goHome;
+  final String billType;
 
-  const PreviewSellThengPdfPage({super.key, required this.invoice, this.goHome = false});
+  const PreviewSellThengPdfPage({super.key, required this.invoice, this.goHome = false, required this.billType});
 
   @override
   State<PreviewSellThengPdfPage> createState() => _PreviewSellThengPdfPageState();
@@ -56,7 +58,7 @@ class _PreviewSellThengPdfPageState extends State<PreviewSellThengPdfPage> {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeSellThengBill(widget.invoice, option: option),
+        build: (context) => widget.billType == 'full' ? makeSellThengBill(widget.invoice, option: option) : makeSellThengShortBill(widget.invoice, option: option),
       ),
     );
   }

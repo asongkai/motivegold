@@ -132,7 +132,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    motivePrint(widget.c.toJson());
+    // motivePrint(widget.c.toJson());
     Global.provinceNotifier = ValueNotifier<ProvinceModel>(
         ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
     Global.amphureNotifier =
@@ -208,7 +208,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     birthDateCtrl.text =
     widget.c.doB != null ? Global.dateOnlyT(widget.c.doB.toString()) : '';
 
-    motivePrint(widget.c.toJson());
+    // motivePrint(widget.c.toJson());
 
     try {
       var province =
@@ -854,7 +854,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                         ),
                                       ),
                                     ),
-                                  if (nationality == 'Foreigner')
+                                  if (nationality == 'Foreigner' && selectedType?.code != 'company')
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -875,7 +875,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                         ),
                                       ),
                                     ),
-                                  if (nationality == 'Foreigner')
+                                  if (nationality == 'Foreigner' && selectedType?.code != 'company')
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -1202,34 +1202,35 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                               const SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText:
-                                            'รหัสไปรษณีย์ / Postal Code',
-                                            inputType: TextInputType.phone,
-                                            controller: postalCodeCtrl,
-                                            prefixIcon: Icon(Icons.local_post_office, size: 14.sp),
-                                          ),
-                                        ],
+                              if (!(nationality == 'Foreigner' &&
+                                  selectedType?.code == 'general'))
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            buildTextFieldBig(
+                                              labelText:
+                                              'รหัสไปรษณีย์ / Postal Code',
+                                              inputType: TextInputType.phone,
+                                              controller: postalCodeCtrl,
+                                              prefixIcon: Icon(
+                                                  Icons.local_post_office,
+                                                  size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                               const SizedBox(height: 10),
                             ],
                           ),
@@ -1310,6 +1311,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                           height: 10,
                         ),
                         // const LocationEntryWidget(),
+                        if (!(nationality == 'Foreigner' && selectedType?.code == 'general'))
                         _buildModernCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1379,11 +1381,20 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                                   fontSize: 14.sp,
                                                 );
                                               },
-                                              onChanged: (ProvinceModel value) {
+                                              onChanged: (ProvinceModel value) async {
                                                 Global.provinceModel = value;
-                                                Global.provinceNotifier!.value =
-                                                    value;
-                                                loadAmphureByProvince(value.id);
+                                                Global.provinceNotifier!.value = value;
+                                                // Reset dependent dropdowns
+                                                Global.amphureModel = null;
+                                                Global.tambonModel = null;
+                                                Global.amphureNotifier!.value = AmphureModel(id: 0, nameTh: 'เลือกอำเภอ');
+                                                Global.tambonNotifier!.value = TambonModel(id: 0, nameTh: 'เลือกตำบล');
+                                                Global.amphureList = [];
+                                                Global.tambonList = [];
+                                                setState(() {}); // Update UI to show loading state
+
+                                                await loadAmphureByProvince(value.id);
+                                                setState(() {}); // Update UI after data loads
                                               },
                                               child:
                                               LocationDropDownObjectChildWidget(
@@ -1450,11 +1461,17 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                                   fontSize: 14.sp,
                                                 );
                                               },
-                                              onChanged: (AmphureModel value) {
+                                              onChanged: (AmphureModel value) async {
                                                 Global.amphureModel = value;
-                                                Global.amphureNotifier!.value =
-                                                    value;
-                                                loadTambonByAmphure(value.id);
+                                                Global.amphureNotifier!.value = value;
+                                                Global.tambonModel = null;
+                                                Global.tambonNotifier!.value = TambonModel(id: 0, nameTh: 'เลือกตำบล');
+                                                Global.tambonList = [];
+                                                setState(() {}); // Update UI to show loading state
+                                                await loadTambonByAmphure(value.id);
+                                                setState(() {
+
+                                                });
                                               },
                                               child:
                                               LocationDropDownObjectChildWidget(
@@ -1644,89 +1661,42 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                 return;
               }
 
-              var customerObject = Global.requestObj({
-                "id": widget.c.id,
-                "customerType": selectedType?.code,
-                "companyName": companyNameCtrl.text,
-                "firstName": firstNameCtrl.text,
-                "lastName": lastNameCtrl.text,
-                "email": emailAddressCtrl.text,
-                "doB": birthDateCtrl.text.isEmpty
-                    ? ""
-                    : DateTime.parse(birthDateCtrl.text).toString(),
-                "phoneNumber": phoneCtrl.text,
-                "username": generateRandomString(8),
-                "password": generateRandomString(10),
-                "address": Global.addressCtrl.text,
-                "tambonId": Global.tambonModel?.id,
-                "amphureId": Global.amphureModel?.id,
-                "provinceId": Global.provinceModel?.id,
-                "nationality": nationality,
-                "postalCode": postalCodeCtrl.text,
-                "photoUrl": '',
-                "branchCode": branchCodeCtrl.text,
-                "idCard":
-                selectedType?.code == "general" ? idCardCtrl.text : "",
-                "taxNumber": selectedType?.code == "company"
-                    ? nationality == 'Thai'
+              // Validate Tax Number
+              String taxNumber = '';
+              if (selectedType?.code == 'company') {
+                taxNumber = nationality == 'Thai'
                     ? taxNumberCtrl.text
-                    : idCardCtrl.text
-                    : nationality == 'Thai'
+                    : taxNumberCtrl.text;
+              } else {
+                taxNumber = nationality == 'Thai'
                     ? idCardCtrl.text
-                    : taxNumberCtrl.text,
-                "isSeller": isSeller ? 1 : 0,
-                "isBuyer": isBuyer ? 1 : 0,
-                "isCustomer": isCustomer ? 1 : 0,
-                "workPermit": workPermitCtrl.text,
-                "passportId": passportNoCtrl.text,
-                "remark": remarkCtrl.text,
-                "occupation": occupationCtrl.text,
-              });
+                    : taxNumberCtrl.text;
+              }
 
-              // print(customerObject);
-              // return;
-              Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                  action: () async {
-                    final ProgressDialog pr = ProgressDialog(context,
-                        type: ProgressDialogType.normal,
-                        isDismissible: true,
-                        showLogs: true);
-                    await pr.show();
-                    pr.update(message: 'processing'.tr());
-                    // try {
-                    var result = await ApiServices.put(
-                        '/customer', widget.c.id, customerObject);
-                    motivePrint(result?.toJson());
-                    await pr.hide();
-                    if (result?.status == "success") {
-                      if (mounted) {
-                        CustomerModel customer =
-                        customerModelFromJson(jsonEncode(result!.data!));
-                        // print(customer.toJson());
-                        setState(() {
-                          Global.customer = customer;
-                        });
-                        Alert.success(context, 'Success'.tr(),
-                            "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
-                              Navigator.of(context).pop();
-                            });
-                      }
-                    } else {
-                      if (mounted) {
-                        Alert.warning(context, 'Warning'.tr(),
-                            result!.message ?? result.data, 'OK'.tr(),
-                            action: () {});
-                      }
-                    }
-                    // } catch (e) {
-                    //   await pr.hide();
-                    //   if (mounted) {
-                    //     Alert.warning(
-                    //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                    //         action: () {});
-                    //   }
-                    // }
+              if (taxNumber.isNotEmpty) {
+                // Check length for Thai nationality
+                if (nationality == 'Thai' && taxNumber.length != 13) {
+                  Alert.info(
+                      context,
+                      'คำเตือน',
+                      'Tax ID ไม่เท่ากับ 13 หลัก\nคุณแน่ใจว่าจะดำเนินการต่อ?',
+                      'ตกลง', action: () async {
+                    await _processUpdate();
                   });
+                  return;
+                }
+
+                // Check for duplicates (excluding current customer)
+                bool isValid = await validateTaxNumber(taxNumber, widget.c.id!);
+                if (!isValid) {
+                  Alert.warning(context, 'คำเตือน',
+                      'Tax number already exists. Please use a different tax number', 'OK',
+                      action: () {});
+                  return;
+                }
+              }
+
+              await _processUpdate();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1749,6 +1719,88 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
         ),
       ],
     );
+  }
+
+  Future<void> _processUpdate() async {
+    var customerObject = Global.requestObj({
+      "id": widget.c.id,
+      "customerType": selectedType?.code,
+      "companyName": companyNameCtrl.text,
+      "firstName": firstNameCtrl.text,
+      "lastName": lastNameCtrl.text,
+      "email": emailAddressCtrl.text,
+      "doB": birthDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(birthDateCtrl.text).toString(),
+      "phoneNumber": phoneCtrl.text,
+      "username": generateRandomString(8),
+      "password": generateRandomString(10),
+      "address": Global.addressCtrl.text,
+      "tambonId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 3023
+          : Global.tambonModel?.id,
+      "amphureId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 9614
+          : Global.amphureModel?.id,
+      "provinceId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 78
+          : Global.provinceModel?.id,
+      "nationality": nationality,
+      "postalCode": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? ''
+          : postalCodeCtrl.text,
+      "photoUrl": '',
+      "branchCode": branchCodeCtrl.text,
+      "idCard": selectedType?.code == "general" ? idCardCtrl.text : "",
+      "taxNumber": selectedType?.code == "company"
+          ? nationality == 'Thai'
+          ? taxNumberCtrl.text
+          : taxNumberCtrl.text
+          : nationality == 'Thai'
+          ? idCardCtrl.text
+          : taxNumberCtrl.text,
+      "isSeller": isSeller ? 1 : 0,
+      "isBuyer": isBuyer ? 1 : 0,
+      "isCustomer": isCustomer ? 1 : 0,
+      "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
+      "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
+      "remark": remarkCtrl.text,
+      "occupation": occupationCtrl.text,
+    });
+
+    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+          final ProgressDialog pr = ProgressDialog(context,
+              type: ProgressDialogType.normal,
+              isDismissible: true,
+              showLogs: true);
+          await pr.show();
+          pr.update(message: 'processing'.tr());
+
+          var result = await ApiServices.put(
+              '/customer', widget.c.id, customerObject);
+          await pr.hide();
+
+          if (result?.status == "success") {
+            if (mounted) {
+              CustomerModel customer =
+              customerModelFromJson(jsonEncode(result!.data!));
+              setState(() {
+                Global.customer = customer;
+              });
+              Alert.success(context, 'Success'.tr(),
+                  "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
+                    Navigator.of(context).pop();
+                  });
+            }
+          } else {
+            if (mounted) {
+              Alert.warning(context, 'Warning'.tr(),
+                  result!.message ?? result.data, 'OK'.tr(),
+                  action: () {});
+            }
+          }
+        });
   }
 
   saveRow() {
@@ -1793,55 +1845,22 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     return 'ลูกค้า';
   }
 
-// loadAmphureByProvince(int? id) async {
-//   // final ProgressDialog pr = ProgressDialog(context,
-//   //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-//   // await pr.show();
-//   // pr.update(message: 'processing'.tr());
-//   try {
-//     var result =
-//     await ApiServices.post('/customer/amphure/$id', Global.requestObj(null));
-//     // motivePrint(result!.toJson());
-//     // await pr.hide();
-//     if (result?.status == "success") {
-//       var data = jsonEncode(result?.data);
-//       List<AmphureModel> products = amphureModelFromJson(data);
-//       setState(() {
-//         Global.amphureList = products;
-//       });
-//     } else {
-//       Global.amphureList = [];
-//     }
-//
-//   } catch (e) {
-//     // await pr.hide();
-//     motivePrint(e.toString());
-//   }
-// }
-//
-// loadTambonByAmphure(int? id) async {
-//   // final ProgressDialog pr = ProgressDialog(context,
-//   //     type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-//   // await pr.show();
-//   // pr.update(message: 'processing'.tr());
-//   try {
-//     var result =
-//     await ApiServices.post('/customer/tambon/$id', Global.requestObj(null));
-//     // motivePrint(result!.toJson());
-//     // await pr.hide();
-//     if (result?.status == "success") {
-//       var data = jsonEncode(result?.data);
-//       List<TambonModel> products = tambonModelFromJson(data);
-//       setState(() {
-//         Global.tambonList = products;
-//       });
-//     } else {
-//       Global.tambonList = [];
-//     }
-//
-//   } catch (e) {
-//     // await pr.hide();
-//     motivePrint(e.toString());
-//   }
-// }
+  Future<bool> validateTaxNumber(String taxNumber, int currentCustomerId) async {
+    if (taxNumber.isEmpty) return true;
+
+    try {
+      var result = await ApiServices.post('/customer/check-tax-number',
+          Global.requestObj({
+            "taxNumber": taxNumber,
+            "excludeId": currentCustomerId // Exclude current customer from duplicate check
+          }));
+
+      if (result?.status == "success") {
+        return result?.data == null; // true if no duplicate found
+      }
+      return true;
+    } catch (e) {
+      return true; // Allow on error to avoid blocking
+    }
+  }
 }

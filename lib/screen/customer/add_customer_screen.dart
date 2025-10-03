@@ -146,8 +146,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     Global.tambonModel = null;
     Global.provinceNotifier = ValueNotifier<ProvinceModel>(
         ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
-    Global.tambonNotifier = ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    Global.amphureNotifier =
+        ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    Global.tambonNotifier =
+        ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
 
     // Start animations
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -172,7 +174,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     });
     try {
       var result =
-      await ApiServices.post('/customer/all', Global.requestObj(null));
+          await ApiServices.post('/customer/all', Global.requestObj(null));
       // motivePrint(result!.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -315,13 +317,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       decoration: BoxDecoration(
         gradient: value
             ? LinearGradient(
-          colors: [
-            color.withValues(alpha:0.1),
-            color.withValues(alpha:0.05),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        )
+                colors: [
+                  color.withValues(alpha: 0.1),
+                  color.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
             : null,
         color: value ? null : Colors.grey[50],
         borderRadius: BorderRadius.circular(16),
@@ -329,19 +331,21 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           color: value ? color : Colors.grey[300]!,
           width: value ? 2 : 1,
         ),
-        boxShadow: value ? [
-          BoxShadow(
-            color: color.withValues(alpha:0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ] : [
-          BoxShadow(
-            color: Colors.black.withValues(alpha:0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
+        boxShadow: value
+            ? [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -366,17 +370,18 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                   ),
                   child: value
                       ? const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 16,
-                  )
+                          Icons.check,
+                          color: Colors.white,
+                          size: 16,
+                        )
                       : null,
                 ),
                 const SizedBox(width: 16),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: value ? color.withValues(alpha:0.2) : Colors.grey[100],
+                    color:
+                        value ? color.withValues(alpha: 0.2) : Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -403,7 +408,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                         subtitle,
                         style: TextStyle(
                           fontSize: 12.sp,
-                          color: value ? color.withValues(alpha:0.8) : Colors.grey[600],
+                          color: value
+                              ? color.withValues(alpha: 0.8)
+                              : Colors.grey[600],
                         ),
                       ),
                     ],
@@ -411,7 +418,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 ),
                 if (value)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(12),
@@ -446,7 +454,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -470,7 +478,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -485,7 +493,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           labelText: labelText,
           prefixIcon: prefixIcon,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -519,7 +528,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -534,7 +543,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           labelText: labelText,
           prefixIcon: prefixIcon,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -574,40 +584,42 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                         fontWeight: FontWeight.w900)),
                 GestureDetector(
                   onTap: () async {
-                    Map<String, dynamic>? ocrResult = await Navigator.of(context)
-                        .push(
+                    Map<String, dynamic>? ocrResult =
+                        await Navigator.of(context)
+                            .push(
                       MaterialPageRoute(
                         builder: (context) => const IDCardOCRScreen(),
                       ),
                     )
-                        .whenComplete(() {
-                      setState(() {
-
-                      });
+                            .whenComplete(() {
+                      setState(() {});
                     });
                     // Global.printLongString(ocrResult.toString());
 
                     if (ocrResult != null) {
                       idCardCtrl.text = ocrResult["id_number"];
                       if (ocrResult["th_fname"] != null) {
-                        firstNameCtrl.text = '${ocrResult["th_init"]} ${ocrResult["th_fname"]}';
+                        firstNameCtrl.text =
+                            '${ocrResult["th_init"]} ${ocrResult["th_fname"]}';
                         lastNameCtrl.text = '${ocrResult["th_lname"]}';
                       } else {
-                        firstNameCtrl.text = '${ocrResult["en_init"]} ${ocrResult["en_fname"]}';
+                        firstNameCtrl.text =
+                            '${ocrResult["en_init"]} ${ocrResult["en_fname"]}';
                         lastNameCtrl.text = '${ocrResult["en_lname"]}';
                       }
                       emailAddressCtrl.text = "";
                       phoneCtrl.text = "";
-                      birthDateCtrl.text = Global.formatDateThai(ocrResult["en_dob"]);
+                      birthDateCtrl.text =
+                          Global.formatDateThai(ocrResult["en_dob"]);
                       nationality = "Thai";
                       postalCodeCtrl.text = ocrResult["postal_code"];
-                      addressCtrl.text = ocrResult["address"].toString().split("ต.")[0];
-                      Global.addressCtrl.text = ocrResult["address"].toString().split("ต.")[0];
+                      addressCtrl.text =
+                          ocrResult["address"].toString().split("ต.")[0];
+                      Global.addressCtrl.text =
+                          ocrResult["address"].toString().split("ต.")[0];
                     }
 
-                    setState(() {
-
-                    });
+                    setState(() {});
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -615,7 +627,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Row(
                         children: [
                           Icon(
@@ -649,7 +662,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           child: FadeTransition(
             opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
             child: SlideTransition(
-              position: _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
+              position:
+                  _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
               child: SingleChildScrollView(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
@@ -680,14 +694,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   space: 4,
                                   maxHeight: 360,
                                   showSearchTextField: true,
-                                  selectedItemBackgroundColor: Colors.transparent,
+                                  selectedItemBackgroundColor:
+                                      Colors.transparent,
                                   emptyListMessage: 'ไม่มีข้อมูล',
                                   showSelectedItemBackgroundColor: true,
                                   itemWidgetBuilder: (
-                                      int index,
-                                      ProductTypeModel? project, {
-                                        bool isItemSelected = false,
-                                      }) {
+                                    int index,
+                                    ProductTypeModel? project, {
+                                    bool isItemSelected = false,
+                                  }) {
                                     return DropDownItemWidget(
                                       project: project,
                                       isItemSelected: isItemSelected,
@@ -723,7 +738,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                         if (selectedType?.code == 'general')
                           if (_card != null)
                             _buildModernCard(
-                              child: Text(_card.toString(), style: const TextStyle(fontSize: 16)),
+                              child: Text(_card.toString(),
+                                  style: const TextStyle(fontSize: 16)),
                             ),
                         if (selectedType?.code == 'general')
                           if (_device == null || !_device!.isAttached) ...[
@@ -738,7 +754,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                           if (_error != null)
                             _buildModernCard(
                               color: Colors.red[50],
-                              child: Text(_error.toString(), style: TextStyle(color: Colors.red[700], fontSize: 16)),
+                              child: Text(_error.toString(),
+                                  style: TextStyle(
+                                      color: Colors.red[700], fontSize: 16)),
                             ),
                         if (selectedType?.code == 'general')
                           if (_data == null &&
@@ -762,7 +780,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               value: selectedTypes.isEmpty,
                                               onChanged: (val) {
                                                 setState(() {
-                                                  if (selectedTypes.isNotEmpty) {
+                                                  if (selectedTypes
+                                                      .isNotEmpty) {
                                                     selectedTypes = [];
                                                   }
                                                 });
@@ -775,11 +794,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Checkbox(
-                                                value: selectedTypes.contains(ea),
+                                                value:
+                                                    selectedTypes.contains(ea),
                                                 onChanged: (val) {
                                                   motivePrint(ea);
                                                   setState(() {
-                                                    if (selectedTypes.contains(ea)) {
+                                                    if (selectedTypes
+                                                        .contains(ea)) {
                                                       selectedTypes.remove(ea);
                                                     } else {
                                                       selectedTypes.add(ea);
@@ -830,17 +851,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: nationality == 'Thai' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
+                                        color: nationality == 'Thai'
+                                            ? Colors.teal.withValues(alpha: 0.1)
+                                            : Colors.grey[50],
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: nationality == 'Thai' ? Colors.teal : Colors.grey[300]!,
+                                          color: nationality == 'Thai'
+                                              ? Colors.teal
+                                              : Colors.grey[300]!,
                                           width: nationality == 'Thai' ? 2 : 1,
                                         ),
                                       ),
                                       child: RadioListTile<String>(
                                         title: Text(
                                           'สัญชาติไทย',
-                                          style: TextStyle(fontSize: 14.sp,),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                          ),
                                         ),
                                         value: 'Thai',
                                         groupValue: nationality,
@@ -858,17 +885,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: nationality == 'Foreigner' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
+                                        color: nationality == 'Foreigner'
+                                            ? Colors.teal.withValues(alpha: 0.1)
+                                            : Colors.grey[50],
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: nationality == 'Foreigner' ? Colors.teal : Colors.grey[300]!,
-                                          width: nationality == 'Foreigner' ? 2 : 1,
+                                          color: nationality == 'Foreigner'
+                                              ? Colors.teal
+                                              : Colors.grey[300]!,
+                                          width: nationality == 'Foreigner'
+                                              ? 2
+                                              : 1,
                                         ),
                                       ),
                                       child: RadioListTile<String>(
                                         title: Text(
                                           'ต่างชาติ',
-                                          style: TextStyle(fontSize: 14.sp,),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                          ),
                                         ),
                                         value: 'Foreigner',
                                         groupValue: nationality,
@@ -884,9 +919,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10,),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (nationality == 'Thai')
@@ -900,17 +938,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 10,
                                             ),
                                             buildTextFieldBig(
-                                              labelText: getIdTitle(selectedType),
+                                              labelText:
+                                                  getIdTitle(selectedType),
                                               validator: null,
-                                              inputType: TextInputType.text,
-                                              controller: idCardCtrl,
-                                              prefixIcon: Icon(Icons.credit_card, size: 14.sp),
+                                              inputType: TextInputType.number,
+                                              controller: selectedType?.code ==
+                                                      'company'
+                                                  ? taxNumberCtrl
+                                                  : idCardCtrl,
+                                              prefixIcon: Icon(
+                                                  Icons.credit_card,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
-                                  if (nationality == 'Foreigner')
+                                  if (nationality == 'Foreigner' && selectedType?.code != 'company')
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -925,13 +969,14 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: workPermitCtrl,
-                                              prefixIcon: Icon(Icons.work, size: 14.sp),
+                                              prefixIcon:
+                                                  Icon(Icons.work, size: 14.sp),
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
-                                  if (nationality == 'Foreigner')
+                                  if (nationality == 'Foreigner' && selectedType?.code != 'company')
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -946,7 +991,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: passportNoCtrl,
-                                              prefixIcon: Icon(Icons.flight, size: 14.sp),
+                                              prefixIcon: Icon(Icons.flight,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -965,9 +1011,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             buildTextFieldBig(
                                               labelText: 'Tax ID',
                                               validator: null,
-                                              inputType: TextInputType.text,
+                                              inputType: TextInputType.number,
                                               controller: taxNumberCtrl,
-                                              prefixIcon: Icon(Icons.receipt, size: 14.sp),
+                                              prefixIcon: Icon(Icons.receipt,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -988,7 +1035,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: branchCodeCtrl,
-                                              prefixIcon: Icon(Icons.store, size: 14.sp),
+                                              prefixIcon: Icon(Icons.store,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -1000,7 +1048,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (selectedType?.code == 'general')
@@ -1018,7 +1067,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: firstNameCtrl,
-                                              prefixIcon: Icon(Icons.person, size: 14.sp),
+                                              prefixIcon: Icon(Icons.person,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -1031,9 +1081,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             left: 8.0, right: 8.0),
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                           children: [
                                             const SizedBox(
                                               height: 10,
@@ -1043,7 +1093,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: lastNameCtrl,
-                                              prefixIcon: Icon(Icons.person_outline, size: 14.sp),
+                                              prefixIcon: Icon(
+                                                  Icons.person_outline,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -1056,9 +1108,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             left: 8.0, right: 8.0),
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                           children: [
                                             const SizedBox(
                                               height: 10,
@@ -1068,7 +1120,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               validator: null,
                                               inputType: TextInputType.text,
                                               controller: companyNameCtrl,
-                                              prefixIcon: Icon(Icons.business, size: 14.sp),
+                                              prefixIcon: Icon(Icons.business,
+                                                  size: 14.sp),
                                             ),
                                           ],
                                         ),
@@ -1080,7 +1133,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
@@ -1095,9 +1149,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           buildTextFieldBig(
                                             labelText: 'อีเมล'.tr(),
                                             validator: null,
-                                            inputType: TextInputType.emailAddress,
+                                            inputType:
+                                                TextInputType.emailAddress,
                                             controller: emailAddressCtrl,
-                                            prefixIcon: Icon(Icons.email, size: 14.sp),
+                                            prefixIcon:
+                                                Icon(Icons.email, size: 14.sp),
                                           ),
                                         ],
                                       ),
@@ -1109,9 +1165,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           left: 8.0, right: 8.0),
                                       child: Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.start,
+                                            MainAxisAlignment.start,
                                         children: [
                                           const SizedBox(
                                             height: 10,
@@ -1121,7 +1177,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             validator: null,
                                             inputType: TextInputType.phone,
                                             controller: phoneCtrl,
-                                            prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                            prefixIcon:
+                                                Icon(Icons.phone, size: 14.sp),
                                           ),
                                         ],
                                       ),
@@ -1136,7 +1193,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                               if (selectedType?.code == 'general')
                                 Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
@@ -1145,10 +1202,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             left: 8.0, right: 8.0),
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.black.withValues(alpha:0.03),
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -1159,29 +1218,37 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             //editing controller of this TextField
                                             style: TextStyle(fontSize: 14.sp),
                                             decoration: InputDecoration(
-                                              prefixIcon:
-                                              Icon(Icons.calendar_today, size: 14.sp),
+                                              prefixIcon: Icon(
+                                                  Icons.calendar_today,
+                                                  size: 14.sp),
                                               //icon of text field
                                               floatingLabelBehavior:
-                                              FloatingLabelBehavior.always,
+                                                  FloatingLabelBehavior.always,
                                               contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                  vertical: 20.0,
-                                                  horizontal: 16.0),
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 16.0),
                                               labelText: "วันเกิด".tr(),
                                               filled: true,
                                               fillColor: Colors.white,
                                               border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                                 borderSide: BorderSide.none,
                                               ),
                                               enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(12),
-                                                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
                                               ),
                                               focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(12),
-                                                borderSide: const BorderSide(color: Colors.teal, width: 2),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.teal,
+                                                    width: 2),
                                               ),
                                             ),
                                             readOnly: true,
@@ -1189,14 +1256,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             onTap: () async {
                                               showDialog(
                                                 context: context,
-                                                builder: (_) => SfDatePickerDialog(
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
                                                   initialDate: DateTime.now(),
                                                   onDateSelected: (date) {
-                                                    motivePrint('You picked: $date');
+                                                    motivePrint(
+                                                        'You picked: $date');
                                                     // Your logic here
                                                     String formattedDate =
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(date);
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(date);
                                                     motivePrint(
                                                         formattedDate); //formatted date output using intl package =>  2021-03-16
                                                     //you can implement different kind of Date Format here according to your requirement
@@ -1218,7 +1287,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
@@ -1234,7 +1304,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             labelText: 'อาชีพ',
                                             inputType: TextInputType.text,
                                             controller: occupationCtrl,
-                                            prefixIcon: Icon(Icons.work_outline, size: 14.sp),
+                                            prefixIcon: Icon(Icons.work_outline,
+                                                size: 14.sp),
                                           ),
                                         ],
                                       ),
@@ -1245,32 +1316,35 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                               const SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText:
-                                            'รหัสไปรษณีย์ / Postal Code',
-                                            inputType: TextInputType.phone,
-                                            controller: postalCodeCtrl,
-                                            prefixIcon: Icon(Icons.local_post_office, size: 14.sp),
-                                          ),
-                                        ],
+                              if (!(nationality == 'Foreigner' &&
+                                  selectedType?.code == 'general'))
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            buildTextFieldBig(
+                                              labelText:
+                                                  'รหัสไปรษณีย์ / Postal Code',
+                                              inputType: TextInputType.phone,
+                                              controller: postalCodeCtrl,
+                                              prefixIcon: Icon(
+                                                  Icons.local_post_office,
+                                                  size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
                               const SizedBox(height: 20),
                             ],
                           ),
@@ -1351,285 +1425,372 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                           height: 10,
                         ),
                         // const LocationEntryWidget(),
-                        _buildModernCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'ข้อมูลที่อยู่',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
+                        if (!(nationality == 'Foreigner' &&
+                            selectedType?.code == 'general'))
+                          _buildModernCard(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ข้อมูลที่อยู่',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[800],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('เลือกจังหวัด', style: TextStyle(fontSize: 14.sp, color: textColor),),
-                                          const SizedBox(height: 4,),
-                                          Container(
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.grey[300]!),
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withValues(alpha:0.03),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'เลือกจังหวัด',
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: textColor),
                                             ),
-                                            child: MiraiDropDownMenu<ProvinceModel>(
-                                              key: UniqueKey(),
-                                              children: Global.provinceList,
-                                              space: 4,
-                                              maxHeight: 360,
-                                              showSearchTextField: true,
-                                              selectedItemBackgroundColor:
-                                              Colors.transparent,
-                                              emptyListMessage: 'ไม่มีข้อมูล',
-                                              showSelectedItemBackgroundColor: true,
-                                              itemWidgetBuilder: (
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            Container(
+                                              height: 70,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!),
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(
+                                                            alpha: 0.03),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: MiraiDropDownMenu<
+                                                  ProvinceModel>(
+                                                key: UniqueKey(),
+                                                children: Global.provinceList,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor:
+                                                    true,
+                                                itemWidgetBuilder: (
                                                   int index,
                                                   ProvinceModel? project, {
-                                                    bool isItemSelected = false,
-                                                  }) {
-                                                return LocationDropDownItemWidget(
-                                                  project: project,
-                                                  isItemSelected: isItemSelected,
-                                                  firstSpace: 10,
-                                                  fontSize: 14.sp,
-                                                );
-                                              },
-                                              onChanged: (ProvinceModel value) {
-                                                Global.provinceModel = value;
-                                                Global.provinceNotifier!.value = value;
-                                                loadAmphureByProvince(value.id);
-                                                setState(() {
+                                                  bool isItemSelected = false,
+                                                }) {
+                                                  return LocationDropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected:
+                                                        isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged: (ProvinceModel
+                                                    value) async {
+                                                  Global.provinceModel = value;
+                                                  Global.provinceNotifier!
+                                                      .value = value;
+                                                  // Reset dependent dropdowns
+                                                  Global.amphureModel = null;
+                                                  Global.tambonModel = null;
+                                                  Global.amphureNotifier!
+                                                          .value =
+                                                      AmphureModel(
+                                                          id: 0,
+                                                          nameTh: 'เลือกอำเภอ');
+                                                  Global.tambonNotifier!.value =
+                                                      TambonModel(
+                                                          id: 0,
+                                                          nameTh: 'เลือกตำบล');
+                                                  Global.amphureList = [];
+                                                  Global.tambonList = [];
+                                                  setState(
+                                                      () {}); // Update UI to show loading state
 
-                                                });
-                                              },
-                                              child: LocationDropDownObjectChildWidget(
-                                                key: GlobalKey(),
-                                                fontSize: 14.sp,
-                                                projectValueNotifier:
-                                                Global.provinceNotifier!,
+                                                  await loadAmphureByProvince(
+                                                      value.id);
+                                                  setState(
+                                                      () {}); // Update UI after data loads
+                                                },
+                                                child:
+                                                    LocationDropDownObjectChildWidget(
+                                                  key: GlobalKey(),
+                                                  fontSize: 14.sp,
+                                                  projectValueNotifier:
+                                                      Global.provinceNotifier!,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('เลือกอำเภอ', style: TextStyle(fontSize: 14.sp, color: textColor),),
-                                          const SizedBox(height: 4,),
-                                          Container(
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.grey[300]!),
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withValues(alpha:0.03),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'เลือกอำเภอ',
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: textColor),
                                             ),
-                                            child: MiraiDropDownMenu<AmphureModel>(
-                                              key: UniqueKey(),
-                                              children: Global.amphureList,
-                                              space: 4,
-                                              maxHeight: 360,
-                                              showSearchTextField: true,
-                                              selectedItemBackgroundColor:
-                                              Colors.transparent,
-                                              emptyListMessage: 'ไม่มีข้อมูล',
-                                              showSelectedItemBackgroundColor: true,
-                                              itemWidgetBuilder: (
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            Container(
+                                              height: 70,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!),
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(
+                                                            alpha: 0.03),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: MiraiDropDownMenu<
+                                                  AmphureModel>(
+                                                key: UniqueKey(),
+                                                children: Global.amphureList,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor:
+                                                    true,
+                                                itemWidgetBuilder: (
                                                   int index,
                                                   AmphureModel? project, {
-                                                    bool isItemSelected = false,
-                                                  }) {
-                                                return LocationDropDownItemWidget(
-                                                  project: project,
-                                                  isItemSelected: isItemSelected,
-                                                  firstSpace: 10,
+                                                  bool isItemSelected = false,
+                                                }) {
+                                                  return LocationDropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected:
+                                                        isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (AmphureModel value) async {
+                                                  Global.amphureModel = value;
+                                                  Global.amphureNotifier!
+                                                      .value = value;
+                                                  Global.tambonModel = null;
+                                                  Global.tambonNotifier!.value =
+                                                      TambonModel(
+                                                          id: 0,
+                                                          nameTh: 'เลือกตำบล');
+                                                  Global.tambonList = [];
+                                                  setState(
+                                                      () {}); // Update UI to show loading state
+                                                  await loadTambonByAmphure(
+                                                      value.id);
+                                                  setState(() {});
+                                                },
+                                                child:
+                                                    LocationDropDownObjectChildWidget(
+                                                  key: GlobalKey(),
                                                   fontSize: 14.sp,
-                                                );
-                                              },
-                                              onChanged: (AmphureModel value) {
-                                                Global.amphureModel = value;
-                                                Global.amphureNotifier!.value = value;
-                                                loadTambonByAmphure(value.id);
-                                                setState(() {
-
-                                                });
-                                              },
-                                              child: LocationDropDownObjectChildWidget(
-                                                key: GlobalKey(),
-                                                fontSize: 14.sp,
-                                                projectValueNotifier:
-                                                Global.amphureNotifier!,
+                                                  projectValueNotifier:
+                                                      Global.amphureNotifier!,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('เลือกตำบล', style: TextStyle(fontSize: 14.sp, color: textColor),),
-                                          const SizedBox(height: 4,),
-                                          Container(
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Colors.grey[300]!),
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black.withValues(alpha:0.03),
-                                                  blurRadius: 8,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'เลือกตำบล',
+                                              style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  color: textColor),
                                             ),
-                                            child: MiraiDropDownMenu<TambonModel>(
-                                              key: UniqueKey(),
-                                              children: Global.tambonList,
-                                              space: 4,
-                                              maxHeight: 360,
-                                              showSearchTextField: true,
-                                              selectedItemBackgroundColor:
-                                              Colors.transparent,
-                                              emptyListMessage: 'ไม่มีข้อมูล',
-                                              showSelectedItemBackgroundColor: true,
-                                              itemWidgetBuilder: (
+                                            const SizedBox(
+                                              height: 4,
+                                            ),
+                                            Container(
+                                              height: 70,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!),
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(
+                                                            alpha: 0.03),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: MiraiDropDownMenu<
+                                                  TambonModel>(
+                                                key: UniqueKey(),
+                                                children: Global.tambonList,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor:
+                                                    true,
+                                                itemWidgetBuilder: (
                                                   int index,
                                                   TambonModel? project, {
-                                                    bool isItemSelected = false,
-                                                  }) {
-                                                return LocationDropDownItemWidget(
-                                                  project: project,
-                                                  isItemSelected: isItemSelected,
-                                                  firstSpace: 10,
+                                                  bool isItemSelected = false,
+                                                }) {
+                                                  return LocationDropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected:
+                                                        isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged: (TambonModel value) {
+                                                  Global.tambonModel = value;
+                                                  Global.tambonNotifier!.value =
+                                                      value;
+                                                  postalCodeCtrl.text = value.zipCode.toString();
+                                                },
+                                                child:
+                                                    LocationDropDownObjectChildWidget(
+                                                  key: GlobalKey(),
                                                   fontSize: 14.sp,
-                                                );
-                                              },
-                                              onChanged: (TambonModel value) {
-                                                Global.tambonModel = value;
-                                                Global.tambonNotifier!.value = value;
-                                              },
-                                              child: LocationDropDownObjectChildWidget(
-                                                key: GlobalKey(),
-                                                fontSize: 14.sp,
-                                                projectValueNotifier:
-                                                Global.tambonNotifier!,
+                                                  projectValueNotifier:
+                                                      Global.tambonNotifier!,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextField(
-                                            line: 3,
-                                            labelText: 'ที่อยู่'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: Global.addressCtrl,
-                                            prefixIcon: Icon(Icons.location_on, size: 14.sp),
-                                          ),
-                                        ],
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextField(
+                                              line: 3,
+                                              labelText: 'ที่อยู่'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: Global.addressCtrl,
+                                              prefixIcon: Icon(
+                                                  Icons.location_on,
+                                                  size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                      const EdgeInsets.only(left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextField(
-                                            line: 2,
-                                            labelText: 'หมายเหตุ'.tr(),
-                                            validator: null,
-                                            inputType: TextInputType.text,
-                                            controller: remarkCtrl,
-                                            prefixIcon: Icon(Icons.note, size: 14.sp),
-                                          ),
-                                        ],
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextField(
+                                              line: 2,
+                                              labelText: 'หมายเหตุ'.tr(),
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: remarkCtrl,
+                                              prefixIcon:
+                                                  Icon(Icons.note, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -1648,7 +1809,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             style: ButtonStyle(
                 foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                 backgroundColor:
-                WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                    WidgetStateProperty.all<Color>(Colors.teal[700]!),
                 elevation: WidgetStateProperty.all<double>(0),
                 shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -1661,97 +1822,42 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 return;
               }
 
-              if (selectedCustomer == null) {
-                var customerObject = Global.requestObj({
-                  "customerType": selectedType?.code,
-                  "companyName": companyNameCtrl.text,
-                  "firstName": firstNameCtrl.text,
-                  "lastName": lastNameCtrl.text,
-                  "email": emailAddressCtrl.text,
-                  "doB": birthDateCtrl.text.isEmpty
-                      ? ""
-                      : DateTime.parse(birthDateCtrl.text).toString(),
-                  "phoneNumber": phoneCtrl.text,
-                  "username": generateRandomString(8),
-                  "password": generateRandomString(10),
-                  "address": Global.addressCtrl.text,
-                  "tambonId": Global.tambonModel?.id,
-                  "amphureId": Global.amphureModel?.id,
-                  "provinceId": Global.provinceModel?.id,
-                  "nationality": nationality,
-                  "postalCode": postalCodeCtrl.text,
-                  "photoUrl": '',
-                  "branchCode": branchCodeCtrl.text,
-                  "idCard":
-                  selectedType?.code == "general" ? idCardCtrl.text : "",
-                  "taxNumber": selectedType?.code == "company"
-                      ? nationality == 'Thai'
-                      ? taxNumberCtrl.text
-                      : idCardCtrl.text
-                      : nationality == 'Thai'
-                      ? idCardCtrl.text
-                      : taxNumberCtrl.text,
-                  "isSeller": isSeller ? 1 : 0,
-                  "isBuyer": isBuyer ? 1 : 0,
-                  "isCustomer": isCustomer ? 1 : 0,
-                  "workPermit": workPermitCtrl.text,
-                  "passportId": passportNoCtrl.text,
-                  "remark": remarkCtrl.text,
-                  "occupation": occupationCtrl.text,
-                });
-
-                // print(customerObject);
-                // return;
-
-                Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-                    action: () async {
-                      final ProgressDialog pr = ProgressDialog(context,
-                          type: ProgressDialogType.normal,
-                          isDismissible: true,
-                          showLogs: true);
-                      await pr.show();
-                      pr.update(message: 'processing'.tr());
-                      // try {
-                      var result = await ApiServices.post(
-                          '/customer/create', customerObject);
-                      // motivePrint(result?.toJson());
-                      await pr.hide();
-                      if (result?.status == "success") {
-                        if (mounted) {
-                          CustomerModel customer =
-                          customerModelFromJson(jsonEncode(result!.data!));
-                          // print(customer.toJson());
-                          setState(() {
-                            Global.customer = customer;
-                          });
-                          Alert.success(context, 'Success'.tr(),
-                              "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
-                                Navigator.of(context).pop();
-                              });
-                        }
-                      } else {
-                        if (mounted) {
-                          Alert.warning(context, 'Warning'.tr(),
-                              result!.message ?? result.data, 'OK'.tr(),
-                              action: () {});
-                        }
-                      }
-                      // } catch (e) {
-                      //   await pr.hide();
-                      //   if (mounted) {
-                      //     Alert.warning(
-                      //         context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                      //         action: () {});
-                      //   }
-                      // }
-                    });
+              // Validate Tax Number
+              String taxNumber = '';
+              if (selectedType?.code == 'company') {
+                taxNumber = nationality == 'Thai'
+                    ? taxNumberCtrl.text
+                    : idCardCtrl.text;
               } else {
-                setState(() {
-                  Global.customer = selectedCustomer;
-                });
-
-                Navigator.of(context).pop();
+                taxNumber = nationality == 'Thai'
+                    ? idCardCtrl.text
+                    : taxNumberCtrl.text;
               }
+
+              if (taxNumber.isNotEmpty) {
+                // Check length for Thai nationality
+                if (nationality == 'Thai' && taxNumber.length != 13) {
+                  Alert.info(
+                      context,
+                      'คำเตือน',
+                      'Tax ID ไม่เท่ากับ 13 หลัก\nคุณแน่ใจว่าจะดำเนินการต่อ?',
+                      'ตกลง', action: () async {
+                    await _processSave();
+                  });
+                  return;
+                }
+
+                // Check for duplicates
+                bool isValid = await validateTaxNumber(taxNumber);
+                if (!isValid) {
+                  Alert.warning(context, 'คำเตือน',
+                      'Tax number already exists. Please use a different tax number', 'OK',
+                      action: () {});
+                  return;
+                }
+              }
+
+              await _processSave();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1774,6 +1880,91 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         ),
       ],
     );
+  }
+
+  Future<void> _processSave() async {
+    if (selectedCustomer == null) {
+      var customerObject = Global.requestObj({
+        "customerType": selectedType?.code,
+        "companyName": companyNameCtrl.text,
+        "firstName": firstNameCtrl.text,
+        "lastName": lastNameCtrl.text,
+        "email": emailAddressCtrl.text,
+        "doB": birthDateCtrl.text.isEmpty
+            ? ""
+            : DateTime.parse(birthDateCtrl.text).toString(),
+        "phoneNumber": phoneCtrl.text,
+        "username": generateRandomString(8),
+        "password": generateRandomString(10),
+        "address": Global.addressCtrl.text,
+        "tambonId": nationality == 'Foreigner' && selectedType?.code == 'general' ? 3023 : Global.tambonModel?.id,
+        "amphureId":
+            nationality == 'Foreigner' && selectedType?.code == 'general' ? 9614 : Global.amphureModel?.id,
+        "provinceId":
+            nationality == 'Foreigner' && selectedType?.code == 'general' ? 78 : Global.provinceModel?.id,
+        "nationality": nationality,
+        "postalCode": nationality == 'Foreigner' && selectedType?.code == 'general' ? '' : postalCodeCtrl.text,
+        // Hide for foreigners
+        "photoUrl": '',
+        "branchCode": branchCodeCtrl.text,
+        "idCard": selectedType?.code == "general" ? idCardCtrl.text : "",
+        "taxNumber": selectedType?.code == "company"
+            ? nationality == 'Thai'
+                ? taxNumberCtrl.text
+                : taxNumberCtrl.text
+            : nationality == 'Thai'
+                ? idCardCtrl.text
+                : taxNumberCtrl.text,
+        "isSeller": isSeller ? 1 : 0,
+        "isBuyer": isBuyer ? 1 : 0,
+        "isCustomer": isCustomer ? 1 : 0,
+        "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
+        // Only for foreigners
+        "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
+        // Only for foreigners
+        "remark": remarkCtrl.text,
+        "occupation": occupationCtrl.text,
+      });
+
+      Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+          action: () async {
+        final ProgressDialog pr = ProgressDialog(context,
+            type: ProgressDialogType.normal,
+            isDismissible: true,
+            showLogs: true);
+        await pr.show();
+        pr.update(message: 'processing'.tr());
+
+        var result = await ApiServices.post('/customer/create', customerObject);
+        await pr.hide();
+
+        if (result?.status == "success") {
+          if (mounted) {
+            CustomerModel customer =
+                customerModelFromJson(jsonEncode(result!.data!));
+            setState(() {
+              Global.customer = customer;
+            });
+            Alert.success(
+                context, 'Success'.tr(), "บันทึกเรียบร้อยแล้ว", 'OK'.tr(),
+                action: () {
+              Navigator.of(context).pop();
+            });
+          }
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(),
+                result!.message ?? result.data, 'OK'.tr(),
+                action: () {});
+          }
+        }
+      });
+    } else {
+      setState(() {
+        Global.customer = selectedCustomer;
+      });
+      Navigator.of(context).pop();
+    }
   }
 
   saveRow() {
@@ -1816,5 +2007,44 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       return 'ลูกค้า';
     }
     return 'ลูกค้า';
+  }
+
+  // 1. Add tax number validation function at the top of your class
+  Future<bool> validateTaxNumber(String taxNumber) async {
+    if (taxNumber.isEmpty) return true;
+
+    try {
+      var result = await ApiServices.post('/customer/check-tax-number',
+          Global.requestObj({"taxNumber": taxNumber}));
+
+      if (result?.status == "success") {
+        return result?.data == null; // true if no duplicate found
+      }
+      return true;
+    } catch (e) {
+      return true; // Allow on error to avoid blocking
+    }
+  }
+
+// 2. Replace your tax number field validation with this enhanced version:
+  Widget buildTaxNumberField() {
+    return buildTextFieldBig(
+      labelText: nationality == 'Thai'
+          ? (selectedType?.code == 'company'
+              ? 'เลขประจำตัวผู้เสียภาษี'
+              : 'เลขบัตรประชาชน')
+          : 'Tax ID',
+      inputType: TextInputType.number,
+      controller: selectedType?.code == 'company'
+          ? (nationality == 'Thai' ? taxNumberCtrl : idCardCtrl)
+          : (nationality == 'Thai' ? idCardCtrl : taxNumberCtrl),
+      prefixIcon: Icon(
+          nationality == 'Thai'
+              ? (selectedType?.code == 'company'
+                  ? Icons.receipt
+                  : Icons.credit_card)
+              : Icons.receipt,
+          size: 14.sp),
+    );
   }
 }

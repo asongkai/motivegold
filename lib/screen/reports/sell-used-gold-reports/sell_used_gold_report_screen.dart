@@ -169,7 +169,6 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
 
         if (value == 2) {
 
-
           DateTime now = DateTime.now();
           DateTime fromDate = DateTime(now.year, 1, 1);
           DateTime toDate = DateTime(now.year, 12, 31);
@@ -184,7 +183,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
             return;
           }
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList, fromDate, toDate);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList(), fromDate, toDate);
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -1080,7 +1079,7 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
       } else {
         // Optional: Add "no sales" entry for months with no orders
         var noSalesOrder = OrderModel(
-            orderId: 'ไม่มียอดซื้อ',
+            orderId: 'ไม่มียอดขาย',
             orderDate: monthDate,
             createdDate: monthDate,
             customerId: 0,

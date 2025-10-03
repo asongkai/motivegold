@@ -13,7 +13,8 @@ import 'package:motivegold/screen/settings/master_data_screen.dart';
 import 'package:motivegold/screen/settings/pawn/default/default_pawn_setting_screen.dart';
 import 'package:motivegold/screen/settings/pos-id/pos_id_screen.dart';
 import 'package:motivegold/screen/settings/prefix/order_id_prefix.dart';
-import 'package:motivegold/screen/settings/setting-value/setting_value.dart';
+import 'package:motivegold/screen/settings/setting-value/setting_menu.dart';
+import 'package:motivegold/screen/settings/setting-value/vat_setting_screen.dart';
 import 'package:motivegold/screen/settings/user/user_list_screen.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
@@ -256,7 +257,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       backgroundColor:
                           Colors.green[700]! // Green for money/payment
                       ),
-                  title: 'จัดการค่าเริ่มต้นขอ การชำระเงิน',
+                  title: 'จัดการค่าเริ่มต้นการชำระเงิน',
                   subtitle: "ตั้งค่าค่าเริ่มต้น การชำระเงิน",
                   titleStyle: Theme.of(context)
                       .textTheme
@@ -299,7 +300,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const SettingValueScreen()));
+                                  const SettingValueMenuScreen()));
                     },
                     icons: Icons.tune,
                     // Better for value/tuning settings

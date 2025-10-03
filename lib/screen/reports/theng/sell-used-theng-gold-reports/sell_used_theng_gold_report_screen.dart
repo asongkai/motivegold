@@ -6,6 +6,7 @@ import 'package:motivegold/model/order.dart';
 import 'package:motivegold/screen/reports/sell-used-gold-reports/preview.dart';
 import 'package:motivegold/screen/reports/theng/sell-used-theng-gold-reports/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
@@ -185,7 +186,7 @@ class _SellUsedThengGoldReportScreenState extends State<SellUsedThengGoldReportS
             return;
           }
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList, fromDate, toDate);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList(), fromDate, toDate);
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -788,7 +789,7 @@ class _SellUsedThengGoldReportScreenState extends State<SellUsedThengGoldReportS
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              '${Global.format(getWeight(item))}/${Global.format(getWeight(item))}',
+                                              '${Global.format4(getWeight(item))}/${Global.format4(getWeight(item))}',
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -860,7 +861,7 @@ class _SellUsedThengGoldReportScreenState extends State<SellUsedThengGoldReportS
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            '${Global.format(getWeightTotal(filterList!))}/${Global.format(getWeightTotal(filterList!))}',
+                                            '${Global.format4(getWeightTotal(filterList!))}/${Global.format4(getWeightTotal(filterList!))}',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
@@ -1070,6 +1071,8 @@ class _SellUsedThengGoldReportScreenState extends State<SellUsedThengGoldReportS
             createdDate: monthDate, // First day of the month
             customerId: 0,
             weight: getWeightTotal(monthList),
+            weightBath: getWeightTotal(monthList) /
+                getUnitWeightValue(monthList.first.details!.first.productId),
             priceIncludeTax: priceIncludeTaxTotal(monthList),
             purchasePrice: purchasePriceTotal(monthList),
             priceDiff: priceDiffTotal(monthList),
@@ -1086,6 +1089,7 @@ class _SellUsedThengGoldReportScreenState extends State<SellUsedThengGoldReportS
             createdDate: monthDate,
             customerId: 0,
             weight: 0.0,
+            weightBath: 0.0,
             priceIncludeTax: 0.0,
             purchasePrice: 0.0,
             priceDiff: 0.0,

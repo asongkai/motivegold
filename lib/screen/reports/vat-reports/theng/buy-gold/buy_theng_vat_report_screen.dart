@@ -12,6 +12,7 @@ import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/preview
 import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/preview.dart';
 import 'package:motivegold/screen/reports/vat-reports/theng/buy-gold/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/empty_data.dart';
@@ -231,9 +232,9 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           fromDate = DateTime(now.year, 1, 1);
           toDate = DateTime(now.year, 12, 31);
 
-          await search();
+          // await search();
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -992,7 +993,7 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(getWeight(item)),
+                                              Global.format4(getWeight(item)),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1176,7 +1177,7 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(getWeightTotal(filterList!)),
+                                            Global.format4(getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1483,6 +1484,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           // First day of the month
           customerId: 0,
           weight: getWeightTotal(monthList),
+          weightBath: getWeightTotal(monthList) /
+              getUnitWeightValue(monthList.first.details!.first.productId),
           priceIncludeTax: priceIncludeTaxTotal(monthList),
           purchasePrice: purchasePriceTotal(monthList),
           priceDiff: priceDiffTotal(monthList),
@@ -1502,6 +1505,7 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           createdDate: monthDate,
           customerId: 0,
           weight: 0.0,
+          weightBath: 0.0,
           priceIncludeTax: 0.0,
           purchasePrice: 0.0,
           priceDiff: 0.0,

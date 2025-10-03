@@ -80,7 +80,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
 
-    sumSellThengTotalMatching();
+
     loadProducts();
   }
 
@@ -143,6 +143,10 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellThengTotalMatching(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -175,7 +179,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -666,7 +670,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
                         );
 
                         // return;
-                        sumSellThengTotalMatching();
+                        sumSellThengTotalMatching(selectedProduct!.id!);
                         setState(() {});
 
                         Navigator.of(context).pop();
@@ -696,7 +700,7 @@ class _SellMatchingDialogState extends State<SellMatchingDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id));
       // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(

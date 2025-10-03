@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/gold_data.dart';
+import 'package:motivegold/model/product.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -10,17 +11,18 @@ import 'package:sizer/sizer.dart';
 
 class GoldMiniWidget extends StatefulWidget {
   const GoldMiniWidget(
-      {super.key, this.goldDataModel, this.fontSize = 14, this.screen});
+      {super.key, this.goldDataModel, this.fontSize = 14, this.screen, required this.product});
 
   final GoldDataModel? goldDataModel;
   final double fontSize;
   final int? screen;
+  final ProductModel product;
 
   @override
-  _GoldMiniWidgetState createState() => _GoldMiniWidgetState();
+  GoldMiniWidgetState createState() => GoldMiniWidgetState();
 }
 
-class _GoldMiniWidgetState extends State<GoldMiniWidget> {
+class GoldMiniWidgetState extends State<GoldMiniWidget> {
   bool _isExpanded = false; // Track the expansion state
 
   ApiServices api = ApiServices();
@@ -46,7 +48,6 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Screen? size = Screen(MediaQuery.of(context).size);
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -128,7 +129,7 @@ class _GoldMiniWidgetState extends State<GoldMiniWidget> {
                     title: '',
                     subTitle: "ฐานภาษี(กรัมละ)",
                     value:
-                        "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue())} บาท",
+                        "${Global.format(Global.toNumber(Global.goldDataModel?.paphun?.buy ?? "0") / getUnitWeightValue(widget.product.id))} บาท",
                   ),
               ],
             ),

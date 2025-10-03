@@ -17,6 +17,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/extentions.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -247,6 +248,10 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
           ),
           const SizedBox(height: 16),
           Expanded(child: _buildOrderList()),
+          // Modern Remarks Section
+          _buildModernRemarks(),
+
+          // Modern Attachment Section
           const SizedBox(height: 16),
           _buildTotalSection(),
           const SizedBox(height: 16),
@@ -533,6 +538,49 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
     );
   }
 
+  // Modern Remarks Section
+  Widget _buildModernRemarks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'หมายเหตุ',
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: TextField(
+            controller: Motive.buyUsedGoldRemarkCtrl,
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            style: TextStyle(fontSize: 14.sp),
+            decoration: InputDecoration(
+              hintText: 'กรอกหมายเหตุ (ถ้ามี)',
+              prefixIcon: Icon(Icons.note_add, color: rfBgColor, size: 20),
+              hintStyle: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[500],
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildTotalSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -595,6 +643,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
 
               OrderModel order = OrderModel(
                   orderId: "",
+                  remark: Motive.buyUsedGoldRemarkCtrl.text,
                   orderDate: DateTime.now(),
                   details: Global.buyOrderDetail!,
                   orderTypeId: 2);
@@ -613,6 +662,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
                 Global.buySubTotal = 0;
                 Global.buyTax = 0;
                 Global.buyTotal = 0;
+                Motive.buyUsedGoldRemarkCtrl.text = '';
               });
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -647,6 +697,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
                   OrderModel newGold = OrderModel(
                       orderId: '',
                       orderDate: DateTime.now(),
+                      remark: Motive.sellNewGoldRemarkCtrl.text,
                       priceExcludeTax: orderDetails.totalPriceExcludeTax,
                       priceDiff: orderDetails.totalPriceDiff,
                       purchasePrice: orderDetails.totalPurchasePrice,
@@ -672,6 +723,7 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
                 OrderModel order = OrderModel(
                     orderId: "",
                     orderDate: DateTime.now(),
+                    remark: Motive.buyUsedGoldRemarkCtrl.text,
                     priceExcludeTax: orderDetails.totalPriceExcludeTax,
                     priceDiff: orderDetails.totalPriceDiff,
                     purchasePrice: orderDetails.totalPurchasePrice,
@@ -690,6 +742,9 @@ class _PaphunBuyScreenState extends State<PaphunBuyScreen>
                   Global.buyTax = 0;
                   Global.buyTotal = 0;
                 });
+
+                Motive.sellNewGoldRemarkCtrl.text = '';
+                Motive.buyUsedGoldRemarkCtrl.text = '';
 
                 if (mounted) {
                   Navigator.push(

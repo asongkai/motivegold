@@ -110,7 +110,7 @@ class _EditRedeemItemDialogState extends State<EditRedeemItemDialog> {
     // depositAmountCtrl.text = Global.format(50500);
     // weightGramCtrl.text = Global.format(15.16);
     Global.appBarColor = rfBgColor;
-
+    selectedProduct = Global.productList.where((e) => e.type == 'NEW').cast<ProductModel?>().firstOrNull;
     referenceNumberCtrl.text = widget.j == null
         ? Global.redeemSingleDetail![widget.index].referenceNo ?? ''
         : Global.redeems[widget.index].details![widget.j!].referenceNo ?? '';
@@ -273,9 +273,10 @@ class _EditRedeemItemDialogState extends State<EditRedeemItemDialog> {
                     children: [
                       posHeaderText(
                           context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
-                      const Padding(
+                      if (selectedProduct != null)
+                      Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
-                        child: GoldMiniWidget(),
+                        child: GoldMiniWidget(product: selectedProduct!,),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -856,7 +857,7 @@ class _EditRedeemItemDialogState extends State<EditRedeemItemDialog> {
   void gramChanged() {
     if (weightGramCtrl.text.isNotEmpty) {
       weightBahtCtrl.text = Global.format(
-          (Global.toNumber(weightGramCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(weightGramCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       weightBahtCtrl.text = "";
     }

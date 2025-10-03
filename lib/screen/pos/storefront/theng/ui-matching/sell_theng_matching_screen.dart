@@ -77,8 +77,8 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
 
-    sumSellThengTotalMatching();
-    // loadProducts();
+
+    loadProducts();
     getCart();
   }
 
@@ -140,6 +140,10 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellThengTotalMatching(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -172,7 +176,7 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue(selectedProduct?.id));
       setState(() {});
       setState(() {});
     } catch (e) {
@@ -651,7 +655,7 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text =
-          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue());
+          Global.format(Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id));
       // unitPriceCtrl.text = Global.format(Global.getSellThengPrice(getUnitWeightValue()));
       if (unitPriceCtrl.text.isNotEmpty) {
         productPriceCtrl.text = Global.format(
@@ -694,8 +698,13 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
       Global.sellThengOrderDetailMatching!.removeAt(index);
       if (Global.sellThengOrderDetailMatching!.isEmpty) {
         Global.sellThengOrderDetailMatching!.clear();
+        Global.sellThengSubTotalMatching = 0;
+        Global.sellThengTaxMatching = 0;
+        Global.sellThengTotalMatching = 0;
+        Global.sellThengWeightTotalMatching = 0;
+      } else {
+        sumSellThengTotalMatching(selectedProduct!.id!);
       }
-      sumSellThengTotalMatching();
       setState(() {});
     });
   }
@@ -731,7 +740,7 @@ class _SellThengMatchingScreenState extends State<SellThengMatchingScreen> {
                 leftTitle: order.productName,
                 leftValue: Global.format(order.priceIncludeTax!),
                 rightTitle: 'น้ำหนัก',
-                rightValue: '${Global.format(order.weight! / getUnitWeightValue())} บาท',
+                rightValue: '${Global.format(order.weight! / getUnitWeightValue(selectedProduct?.id))} บาท',
               ),
             ),
           ),

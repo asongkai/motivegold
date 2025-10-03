@@ -107,6 +107,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     // depositAmountCtrl.text = Global.format(50500);
     // weightGramCtrl.text = Global.format(15.16);
     Global.appBarColor = rfBgColor;
+    selectedProduct = Global.productList.where((e) => e.type == 'NEW').cast<ProductModel?>().firstOrNull;
+    // motivePrint(selectedProduct?.toJson());
     redeemValueChanged();
     getCart();
   }
@@ -229,9 +231,10 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                     children: [
                       posHeaderText(
                           context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
-                      const Padding(
+                      if (selectedProduct != null)
+                      Padding(
                         padding: EdgeInsets.only(left: 10, right: 10),
-                        child: GoldMiniWidget(),
+                        child: GoldMiniWidget(product: selectedProduct!,),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
@@ -761,7 +764,7 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   void gramChanged() {
     if (weightGramCtrl.text.isNotEmpty) {
       weightBahtCtrl.text = Global.format(
-          (Global.toNumber(weightGramCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(weightGramCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       weightBahtCtrl.text = "";
     }

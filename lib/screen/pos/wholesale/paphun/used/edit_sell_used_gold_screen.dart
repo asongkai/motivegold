@@ -147,7 +147,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
     Global.ordersWholesale![widget.index].buyPrice == null
         ? "0"
         : Global.format(Global.ordersWholesale![widget.index].buyPrice! /
-        getUnitWeightValue());
+        getUnitWeightValue(selectedProduct?.id));
     motivePrint(Global.ordersWholesale![widget.index].buyPrice);
     productBuyPriceCtrl.text =
         Global.format(Global.ordersWholesale![widget.index].buyPrice ?? 0);
@@ -316,7 +316,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
           Global.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtCtrl.text = Global.format(
           Global.getTotalWeightByLocation(qtyLocationList) /
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -714,6 +714,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
                           ),
                         ],
                       ),
+                      if (Global.company?.stock == 1)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -1550,7 +1551,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
     if (productEntryWeightCtrl.text.isNotEmpty) {
       productEntryWeightBahtCtrl.text = Global.format(
           (Global.toNumber(productEntryWeightCtrl.text) /
-              getUnitWeightValue()));
+              getUnitWeightValue(selectedProduct?.id)));
       purchasePriceCtrl.text = Global.format(
           Global.toNumber(productEntryWeightCtrl.text) *
               Global.toNumber(productBuyPricePerGramCtrl.text));
@@ -1583,7 +1584,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
     if (productBuyPricePerGramCtrl.text.isNotEmpty) {
       productBuyPriceCtrl.text = Global.format(
           Global.toNumber(productBuyPricePerGramCtrl.text) *
-              getUnitWeightValue());
+              getUnitWeightValue(selectedProduct?.id));
     }
   }
 
@@ -1711,7 +1712,7 @@ class _EditSellUsedGoldScreenState extends State<EditSellUsedGoldScreen> {
         weightBath: Global.toNumber(productEntryWeightBahtCtrl.text),
         weightAdj: Global.toNumber(priceAdjCtrl.text),
         weightBathAdj:
-        Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(),
+        Global.toNumber(priceAdjCtrl.text) / getUnitWeightValue(selectedProduct?.id),
         commission: 0,
         unitCost: Global.toNumber(priceIncludeTaxCtrl.text) /
             Global.toNumber(productEntryWeightCtrl.text),

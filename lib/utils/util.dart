@@ -32,6 +32,7 @@ import 'global.dart';
 
 final formatterInt = NumberFormat("#,###");
 final formatter = NumberFormat("#,###.##");
+final formatter3 = NumberFormat("#,###.###");
 final formatter4 = NumberFormat("#,###.####");
 final formatter6 = NumberFormat("#,###.######");
 const JsonEncoder encoder = JsonEncoder();
@@ -97,6 +98,10 @@ int? filterChungVatById(int? id) {
       Global.provinceNotifier = ValueNotifier<ProvinceModel>(
           Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
       return provinces.first.id;
+    } else {
+      Global.provinceModel = null;
+      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
     }
   }
   return 0;
@@ -110,6 +115,10 @@ int? filterChungVatByName(String? name) {
       Global.provinceNotifier = ValueNotifier<ProvinceModel>(
           Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
       return provinces.first.id;
+    } else {
+      Global.provinceModel = null;
+      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
     }
   }
   return 0;
@@ -122,6 +131,10 @@ int? filterAmpheryId(int? id) {
     Global.amphureNotifier = ValueNotifier<AmphureModel>(
         Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
     return amphures.first.id;
+  } else {
+    Global.amphureModel = null;
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(
+        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
   }
   return 0;
 }
@@ -133,6 +146,10 @@ int? filterAmpheryName(String? name) {
     Global.amphureNotifier = ValueNotifier<AmphureModel>(
         Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
     return amphures.first.id;
+  } else {
+    Global.amphureModel = null;
+    Global.amphureNotifier = ValueNotifier<AmphureModel>(
+        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
   }
   return 0;
 }
@@ -145,6 +162,10 @@ int? filterTambonById(int? id) {
     Global.tambonNotifier = ValueNotifier<TambonModel>(
         Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
     return tambons.first.id;
+  } else {
+    Global.tambonModel = null;
+    Global.tambonNotifier = ValueNotifier<TambonModel>(
+        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
   }
   return 0;
 }
@@ -156,6 +177,10 @@ int? filterTambonByName(String? name) {
     Global.tambonNotifier = ValueNotifier<TambonModel>(
         Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
     return tambons.first.id;
+  } else {
+    Global.tambonModel = null;
+    Global.tambonNotifier = ValueNotifier<TambonModel>(
+        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
   }
   return 0;
 }
@@ -173,6 +198,7 @@ loadAmphureByProvince(int? id) async {
     }
   } catch (e) {
     motivePrint(e.toString());
+    Global.amphureList = [];
   }
 }
 
@@ -728,6 +754,7 @@ Widget buildTextFieldBig(
     bool isPassword = false,
     double fontSize = 40.00,
     Color? bgColor,
+      String? hintText,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -743,6 +770,7 @@ Widget buildTextFieldBig(
       textAlign: align ?? TextAlign.left,
       obscureText: isPassword,
       decoration: InputDecoration(
+        hintText: hintText ?? '',
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -1100,7 +1128,7 @@ Color colorTypeRedeem(RedeemModel list) {
   }
 }
 
-sumSellTotal() {
+sumSellTotal(int productId) {
   Global.sellSubTotal = 0;
   Global.sellTax = 0;
   Global.sellTotal = 0;
@@ -1113,11 +1141,11 @@ sumSellTotal() {
     }
   }
   Global.sellTax = Global.taxAmount(
-      Global.taxBase(Global.sellSubTotal, Global.sellWeightTotal));
+      Global.taxBase(Global.sellSubTotal, Global.sellWeightTotal, productId));
   Global.sellTotal = Global.sellSubTotal + Global.sellTax;
 }
 
-sumBuyThengTotal() {
+sumBuyThengTotal(int productId) {
   Global.buyThengSubTotal = 0;
   Global.buyThengTax = 0;
   Global.buyThengTotal = 0;
@@ -1130,11 +1158,11 @@ sumBuyThengTotal() {
     }
   }
   Global.buyThengTax = Global.taxAmount(
-      Global.taxBase(Global.buyThengSubTotal, Global.buyThengWeightTotal));
+      Global.taxBase(Global.buyThengSubTotal, Global.buyThengWeightTotal, productId));
   Global.buyThengTotal = Global.buyThengSubTotal + Global.buyThengTax;
 }
 
-sumSellThengTotal() {
+sumSellThengTotal(int productId) {
   Global.sellThengSubTotal = 0;
   Global.sellThengTax = 0;
   Global.sellThengTotal = 0;
@@ -1148,11 +1176,11 @@ sumSellThengTotal() {
     }
   }
   Global.sellThengTax = Global.taxAmount(
-      Global.taxBase(Global.sellThengSubTotal, Global.sellThengWeightTotal));
+      Global.taxBase(Global.sellThengSubTotal, Global.sellThengWeightTotal, productId));
   Global.sellThengTotal = Global.sellThengSubTotal + Global.sellThengTax;
 }
 
-sumBuyThengTotalBroker() {
+sumBuyThengTotalBroker(int productId) {
   Global.buyThengSubTotalBroker = 0;
   Global.buyThengTaxBroker = 0;
   Global.buyThengTotalBroker = 0;
@@ -1167,12 +1195,12 @@ sumBuyThengTotalBroker() {
     }
   }
   Global.buyThengTaxBroker = Global.taxAmount(Global.taxBase(
-      Global.buyThengSubTotalBroker, Global.buyThengWeightTotalBroker));
+      Global.buyThengSubTotalBroker, Global.buyThengWeightTotalBroker, productId));
   Global.buyThengTotalBroker =
       Global.buyThengSubTotalBroker + Global.buyThengTaxBroker;
 }
 
-sumSellThengTotalBroker() {
+sumSellThengTotalBroker(int productId) {
   Global.sellThengSubTotalBroker = 0;
   Global.sellThengTaxBroker = 0;
   Global.sellThengTotalBroker = 0;
@@ -1187,12 +1215,12 @@ sumSellThengTotalBroker() {
     }
   }
   Global.sellThengTaxBroker = Global.taxAmount(Global.taxBase(
-      Global.sellThengSubTotalBroker, Global.sellThengWeightTotalBroker));
+      Global.sellThengSubTotalBroker, Global.sellThengWeightTotalBroker, productId));
   Global.sellThengTotalBroker =
       Global.sellThengSubTotalBroker + Global.sellThengTaxBroker;
 }
 
-sumBuyThengTotalMatching() {
+sumBuyThengTotalMatching(int productId) {
   Global.buyThengSubTotalMatching = 0;
   Global.buyThengTaxMatching = 0;
   Global.buyThengTotalMatching = 0;
@@ -1207,12 +1235,12 @@ sumBuyThengTotalMatching() {
     }
   }
   Global.buyThengTaxMatching = Global.taxAmount(Global.taxBase(
-      Global.buyThengSubTotalMatching, Global.buyThengWeightTotalMatching));
+      Global.buyThengSubTotalMatching, Global.buyThengWeightTotalMatching, productId));
   Global.buyThengTotalMatching =
       Global.buyThengSubTotalMatching + Global.buyThengTaxMatching;
 }
 
-sumSellThengTotalMatching() {
+sumSellThengTotalMatching(int productId) {
   Global.sellThengSubTotalMatching = 0;
   Global.sellThengTaxMatching = 0;
   Global.sellThengTotalMatching = 0;
@@ -1227,7 +1255,7 @@ sumSellThengTotalMatching() {
     }
   }
   Global.sellThengTaxMatching = Global.taxAmount(Global.taxBase(
-      Global.sellThengSubTotalMatching, Global.sellThengWeightTotalMatching));
+      Global.sellThengSubTotalMatching, Global.sellThengWeightTotalMatching, productId));
   Global.sellThengTotalMatching =
       Global.sellThengSubTotalMatching + Global.sellThengTaxMatching;
 }
@@ -1311,26 +1339,26 @@ getDefaultWarehouseMessage() {
 }
 
 getVatValue() {
-  if (Global.settingValueModel == null) {
+  if (Global.vatSettingModel == null) {
     return 7.00 / 100.00;
   }
-  var vat = Global.settingValueModel?.vatValue ?? 7.00;
+  var vat = Global.vatSettingModel?.vatValue ?? 7.00;
   return vat / 100.00;
 }
 
-getUnitWeightValue() {
+getUnitWeightValue(int? productId) {
   // if (Global.settingValueModel == null) {
   //   return 15.16;
   // }
   // return Global.settingValueModel?.unitWeight ?? 15.16;
-
+  return getUnitWeightByProductId(Global.productList, productId!);
 }
 
 getMaxKycValue() {
-  if (Global.settingValueModel == null) {
+  if (Global.kycSettingModel == null) {
     return 200000.00;
   }
-  return Global.settingValueModel?.maxKycValue ?? 200000.00;
+  return Global.kycSettingModel?.maxKycValue ?? 200000.00;
 }
 
 getTaxAmount(double? amount) {}
@@ -1357,17 +1385,82 @@ checkDate(String date) {
   }
 }
 
+bool isCustomerAddressExcluded(CustomerModel customer) {
+  return customer.tambonId == 3023 ||
+      customer.amphureId == 9614 ||
+      customer.provinceId == 78;
+}
 
+// Updated function to check if work ID should be shown
+bool shouldShowWorkId(CustomerModel customer) {
+  // Show work ID if customer is not walk-in (regardless of address)
+  return customer.defaultWalkIn != 1;
+}
 
-getWorkId(CustomerModel customer) {
+// Updated function to get work ID value when it should be shown
+String getCustomerWorkIdValue(CustomerModel customer) {
+  if (!shouldShowWorkId(customer)) {
+    return '';
+  }
+
+  // Always show work ID for non-walk-in customers (regardless of address)
   if (customer.nationality == 'Foreigner') {
-    return 'Work permit: ${customer.workPermit} Passport: ${customer.passportId} Tax ID: ${customer.taxNumber}';
+    String permit = customer.workPermit ?? "";
+    String passport = customer.passportId ?? "";
+    String tax = customer.taxNumber ?? "";
+    List<String> parts = [];
+    if (permit.isNotEmpty) parts.add('Work permit: $permit');
+    if (passport.isNotEmpty) parts.add('Passport: $passport');
+    if (tax.isNotEmpty) parts.add('Tax ID: $tax');
+    return parts.join(' ');
   } else {
     if (customer.customerType == 'company') {
-      return 'เลขประจำตัวผู้เสียภาษี: ${customer.taxNumber ?? customer.idCard}';
+      String companyId = customer.taxNumber ?? customer.idCard ?? "";
+      return companyId.isNotEmpty ? companyId : "";
     }
-    return 'เลขบัตรประชาชน: ${customer.idCard}';
+    return customer.idCard ?? "";
   }
+}
+
+// Updated getWorkId function (if this exists elsewhere)
+String getWorkId(CustomerModel customer) {
+  if (!shouldShowWorkId(customer)) {
+    return getWorkIdTitleOnly(customer);
+  }
+
+  String workId = getCustomerWorkIdValue(customer);
+  if (workId.isEmpty) return getWorkIdTitleOnly(customer);
+
+  if (customer.nationality == 'Foreigner') {
+    return 'เลขประจำตัว : $workId';
+  } else {
+    if (customer.customerType == 'company') {
+      return 'เลขประจำตัวผู้เสียภาษี : $workId';
+    }
+    return 'เลขประจำตัวประชาชน : $workId';
+  }
+}
+
+// Keep the existing getWorkIdTitleOnly function as is
+String getWorkIdTitleOnly(CustomerModel customer) {
+  if (customer.nationality == 'Foreigner') {
+    return 'เลขประจำตัว : ';
+  } else {
+    if (customer.customerType == 'company') {
+      return 'เลขประจำตัวผู้เสียภาษี : ';
+    }
+    return 'เลขประจำตัวประชาชน : ';
+  }
+}
+
+// Updated function to get customer display address
+String getCustomerDisplayAddress(CustomerModel customer) {
+  if (customer.defaultWalkIn == 1 ||
+      customer.address == null ||
+      customer.address!.isEmpty) {
+    return '';
+  }
+  return customer.address!;
 }
 
 getCustomerName(CustomerModel customer) {

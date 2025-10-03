@@ -326,23 +326,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const AddCustomerScreen(),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      setState(() {});
-                    });
-                  },
-                  text: 'เพิ่ม',
-                  fullWidth: true,
-                  icon: Icons.add,
-                ),
-                const SizedBox(height: 8),
-                KclButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
                             const CustomerScreen(
                               selected: true,
                               type: "WS",
@@ -356,6 +339,23 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                   icon: Icons.search,
                   fullWidth: true,
                   color: const Color(0xFF059669),
+                ),
+                const SizedBox(height: 8),
+                KclButton(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const AddCustomerScreen(),
+                            fullscreenDialog: true))
+                        .whenComplete(() {
+                      setState(() {});
+                    });
+                  },
+                  text: 'เพิ่ม',
+                  fullWidth: true,
+                  icon: Icons.add,
                 ),
               ],
             ),
@@ -373,7 +373,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                      "${getCustomerName(Global.customer!)}",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16.sp,
@@ -439,23 +439,6 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                const AddCustomerScreen(),
-                                fullscreenDialog: true))
-                            .whenComplete(() {
-                          setState(() {});
-                        });
-                      },
-                      text: 'เพิ่ม',
-                      fullWidth: true,
-                      icon: Icons.add,
-                    ),
-                    const SizedBox(height: 8),
-                    KclButton(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
                                 const CustomerScreen(
                                   selected: true,
                                   type: "WS",
@@ -469,6 +452,23 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                       icon: Icons.search,
                       fullWidth: true,
                       color: const Color(0xFF059669),
+                    ),
+                    const SizedBox(height: 8),
+                    KclButton(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const AddCustomerScreen(),
+                                fullscreenDialog: true))
+                            .whenComplete(() {
+                          setState(() {});
+                        });
+                      },
+                      text: 'เพิ่ม',
+                      fullWidth: true,
+                      icon: Icons.add,
                     ),
                   ],
                 ),
@@ -1066,7 +1066,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                           align: TextAlign.center),
                       paddedTextBigL(order.details![j].productName,
                           style: TextStyle(fontSize: 16.sp)),
-                      paddedTextBigL(Global.format(order.details![j].weight!),
+                      paddedTextBigL(order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ? Global.format4(order.details![j].weight!) : Global.format(order.details![j].weight!),
                           align: TextAlign.right,
                           style: TextStyle(fontSize: 16.sp)),
                       paddedTextBigL(
@@ -1540,6 +1540,44 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                           shadowColor: const Color(0xFF059669).withOpacity(0.3),
                         ),
                         onPressed: () async {
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',
@@ -1786,6 +1824,46 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                           shadowColor: const Color(0xFF0F766E).withOpacity(0.3),
                         ),
                         onPressed: () async {
+
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(
+                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',

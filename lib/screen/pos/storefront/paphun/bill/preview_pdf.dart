@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/bill/make_bill.dart';
+import 'package:motivegold/screen/pos/storefront/paphun/bill/make_short_bill.dart';
 import 'package:motivegold/screen/pos/storefront/paphun/bill/make_used_bill.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -10,8 +11,9 @@ import 'package:sizer/sizer.dart';
 class PdfPreviewPage extends StatefulWidget {
   final Invoice invoice;
   final bool goHome;
+  final String billType;
 
-  const PdfPreviewPage({super.key, required this.invoice, this.goHome = false});
+  const PdfPreviewPage({super.key, required this.invoice, this.goHome = false, required this.billType});
 
   @override
   State<PdfPreviewPage> createState() => _PdfPreviewPageState();
@@ -64,7 +66,7 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
 
   getPrintOption() {
     if (widget.invoice.order.orderTypeId == 1) {
-      return makeBill(widget.invoice, option: option);
+      return widget.billType == 'full' ? makeBill(widget.invoice, option: option) : makeShortBill(widget.invoice, option: option);
     } else {
       return makeUsedBill(widget.invoice, option: option);
     }

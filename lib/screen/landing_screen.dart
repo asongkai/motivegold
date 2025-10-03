@@ -153,16 +153,6 @@ class _LandingScreenState extends State<LandingScreen> {
           }
         }
 
-        var settings =
-            await ApiServices.post('/settings/all', Global.requestObj(null));
-        if (settings?.status == "success") {
-          // motivePrint(settings?.toJson());
-          var settingsValueModel = settings?.data != null
-              ? SettingsValueModel.fromJson(settings?.data)
-              : null;
-          Global.settingValueModel = settingsValueModel;
-        }
-
         var authObject =
             Global.requestObj({"deviceDetail": Global.deviceDetail.toString()});
 
@@ -255,6 +245,25 @@ class _LandingScreenState extends State<LandingScreen> {
           Global.productList = [];
         }
 
+        var settings =
+        await ApiServices.post('/settings/vat-by-company', Global.requestObj(null));
+        if (settings?.status == "success") {
+          motivePrint(settings?.toJson());
+          var settingsValueModel = settings?.data != null
+              ? SettingsValueModel.fromJson(settings?.data)
+              : null;
+          Global.vatSettingModel = settingsValueModel;
+        }
+
+        var kycSetting =
+        await ApiServices.post('/settings/kyc-by-branch', Global.requestObj(null));
+        if (kycSetting?.status == "success") {
+          motivePrint(kycSetting?.toJson());
+          var settingsValueModel = kycSetting?.data != null
+              ? SettingsValueModel.fromJson(kycSetting?.data)
+              : null;
+          Global.kycSettingModel = settingsValueModel;
+        }
         // Navigator.of(context).pushReplacement(
         //     MaterialPageRoute(builder: (context) => const SignInTen()));
         if (mounted) {

@@ -142,7 +142,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
                   ),
                   align: TextAlign.center
               ),
-              paddedTextSmall('ราคาซื้อ\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+              paddedTextSmall('ราคาขายรวม\nภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -182,7 +182,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
                   ),
                   align: TextAlign.center
               ),
-              paddedTextSmall('ราคาซื้อ\nไม่รวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+              paddedTextSmall('ราคาขายไม่รวม\nภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -196,7 +196,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
-                color: orders[i]!.status == "2" ? PdfColors.pink100 : PdfColors.white
+                color: orders[i]!.status == "2" ? PdfColors.red100 : PdfColors.white
             ),
             children: [
               paddedTextSmall('${i + 1}', style: TextStyle(
@@ -222,7 +222,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
                   ),
                   align: TextAlign.center),
               if (type == 1)
-              paddedTextSmall(
+              paddedTextSmall(orders[i]!.status == "2" ? "ยกเลิกเอกสาร" :
                   type == 1
                       ? '${getCustomerName(orders[i]!.customer!)}'
                       : 'รวมรายการทองเก่า\nประจําวัน',
@@ -232,7 +232,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
                   ),
                   align: TextAlign.center),
               if (type == 1)
-              paddedTextSmall(orders[i]!.customer?.taxNumber != ''
+              paddedTextSmall(orders[i]!.status == "2" ? "" : orders[i]!.customer?.taxNumber != ''
                   ? orders[i]!.customer?.taxNumber ?? ''
                   : orders[i]!.customer?.idCard ?? '',
                   style: TextStyle(
@@ -247,44 +247,44 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
                       fontWeight: FontWeight.bold
                   ),
                   align: TextAlign.center),
-              paddedTextSmall(
-                  '${type == 1 ? Global.format(getWeight(orders[i]!)) : Global.format(orders[i]!.weight!)}',
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
+              '${type == 1 ? Global.format(getWeight(orders[i]!)) : Global.format(orders[i]!.weight!)}',
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.blue600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceIncludeTax ?? 0),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(orders[i]!.purchasePrice ?? 0),
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.purchasePrice ?? 0),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.priceDiff! < 0 ? '(${Global.format(orders[i]!.priceDiff ?? 0)})' : "0.00",
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : orders[i]!.priceDiff! < 0 ? '(${Global.format(orders[i]!.priceDiff ?? 0)})' : "0.00",
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : orders[i]!.priceDiff! < 0 ? PdfColors.red600 : PdfColors.green600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.priceDiff! >= 0 ? Global.format(orders[i]!.priceDiff ?? 0) : "",
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : orders[i]!.priceDiff! >= 0 ? Global.format(orders[i]!.priceDiff ?? 0) : "0.00",
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.priceDiff! < 0 ? "" : Global.format(orders[i]!.priceDiff! * getVatValue()),
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : orders[i]!.priceDiff! < 0 ? "0.00" : Global.format(orders[i]!.priceDiff! * getVatValue()),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format((orders[i]!.priceIncludeTax ?? 0) - (orders[i]!.priceDiff! < 0 ? 0 : orders[i]!.priceDiff! * getVatValue())),
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format((orders[i]!.priceIncludeTax ?? 0) - (orders[i]!.priceDiff! < 0 ? 0 : orders[i]!.priceDiff! * getVatValue())),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
@@ -385,7 +385,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('* น้ําหนักจะเป็นน้ําหนักในหน่วยของทอง 96.5%'),
+                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5% '),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

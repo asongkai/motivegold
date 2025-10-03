@@ -35,6 +35,7 @@ class OrderModel {
   double? sellPrice;
   double? buyPrice;
   double? weight;
+  double? weightBath;
   double? priceIncludeTax;
   double? purchasePrice;
   double? priceDiff;
@@ -77,6 +78,7 @@ class OrderModel {
     this.sellPrice,
     this.buyPrice,
     this.weight,
+    this.weightBath,
     this.priceIncludeTax,
     this.purchasePrice,
     this.priceDiff,
@@ -123,6 +125,7 @@ class OrderModel {
         sellPrice: json["sellPrice"],
         buyPrice: json["buyPrice"],
         weight: json["weight"],
+        weightBath: json["weightBath"],
         priceIncludeTax: json["priceIncludeTax"],
         purchasePrice: json["purchasePrice"],
         priceDiff: json["priceDiff"],
@@ -181,6 +184,7 @@ class OrderModel {
         "sellPrice": sellPrice,
         "buyPrice": buyPrice,
         "weight": weight,
+        "weightBath": weightBath,
         "priceIncludeTax": priceIncludeTax,
         "purchasePrice": purchasePrice,
         "priceDiff": priceDiff,

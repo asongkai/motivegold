@@ -27,8 +27,8 @@ Future<Uint8List> makeRedeemReportPdf(
   for (int i = 0; i < orders.length; i++) {
     for (int j = 0; j < orders[i]!.details!.length; j++) {
       orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
-      orders[i]!.details![j].customerName =
-      '${getCustomerName(orders[i]!.customer!)}';
+      orders[i]!.details![j].customerName = orders[i]!.customer != null ?
+      '${getCustomerName(orders[i]!.customer!)}' : '';
       orders[i]!.details![j].taxNumber = orders[i]!.customer?.taxNumber != ''
           ? orders[i]!.customer?.taxNumber ?? ''
           : orders[i]!.customer?.idCard ?? '';

@@ -13,6 +13,7 @@ import 'package:motivegold/screen/pos/storefront/theng/dialog/sell_dialog.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/motive.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 
@@ -99,7 +100,7 @@ class _SellThengScreenState extends State<SellThengScreen>
       _animationController?.forward();
     });
 
-    sumSellThengTotal();
+
     loadProducts();
     getCart();
   }
@@ -163,6 +164,10 @@ class _SellThengScreenState extends State<SellThengScreen>
       } else {
         warehouseList = [];
       }
+
+      if (selectedProduct != null) {
+        sumSellThengTotal(selectedProduct!.id!);
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e.toString());
@@ -190,7 +195,7 @@ class _SellThengScreenState extends State<SellThengScreen>
       productWeightRemainCtrl.text =
           formatter.format(Global.getTotalWeightByLocation(qtyLocationList));
       productWeightBahtRemainCtrl.text = formatter
-          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue());
+          .format(Global.getTotalWeightByLocation(qtyLocationList) / getUnitWeightValue(selectedProduct?.id));
       setState(() {});
     } catch (e) {
       if (kDebugMode) {
@@ -292,6 +297,10 @@ class _SellThengScreenState extends State<SellThengScreen>
           ),
           const SizedBox(height: 16),
           Expanded(child: _buildOrderList()),
+          // Modern Remarks Section
+          _buildModernRemarks(),
+
+          // Modern Attachment Section
           const SizedBox(height: 16),
           _buildTotalSection(),
           const SizedBox(height: 16),
@@ -490,7 +499,7 @@ class _SellThengScreenState extends State<SellThengScreen>
         children: [
           _buildItemCell('${index + 1}', flex: 1),
           _buildItemCell(order.productName, flex: 3, isProductName: true),
-          _buildItemCell('${Global.format(order.weight! / getUnitWeightValue())} บาท', flex: 2),
+          _buildItemCell('${Global.format(order.weight! / getUnitWeightValue(selectedProduct?.id))} บาท', flex: 2),
           _buildItemCell(Global.format(order.priceIncludeTax!), flex: 3, isMoney: true),
           _buildActionCell(index, flex: 2),
         ],
@@ -561,6 +570,49 @@ class _SellThengScreenState extends State<SellThengScreen>
     );
   }
 
+  // Modern Remarks Section
+  Widget _buildModernRemarks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'หมายเหตุ',
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: TextField(
+            controller: Motive.sellNewThengGoldRemarkCtrl,
+            keyboardType: TextInputType.text,
+            maxLines: 1,
+            style: TextStyle(fontSize: 14.sp),
+            decoration: InputDecoration(
+              hintText: 'กรอกหมายเหตุ (ถ้ามี)',
+              prefixIcon: Icon(Icons.note_add, color: rfBgColor, size: 20),
+              hintStyle: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey[500],
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildTotalSection() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -625,6 +677,7 @@ class _SellThengScreenState extends State<SellThengScreen>
 
               OrderModel order = OrderModel(
                   orderId: "",
+                  remark: Motive.sellNewThengGoldRemarkCtrl.text,
                   orderDate: DateTime.now(),
                   details: Global.sellThengOrderDetail!,
                   orderTypeId: 4);
@@ -643,6 +696,7 @@ class _SellThengScreenState extends State<SellThengScreen>
                 Global.sellThengSubTotal = 0;
                 Global.sellThengTax = 0;
                 Global.sellThengTotal = 0;
+                Motive.sellNewThengGoldRemarkCtrl.text = '';
               });
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -675,6 +729,7 @@ class _SellThengScreenState extends State<SellThengScreen>
               try {
                 OrderModel order = OrderModel(
                     orderId: "",
+                    remark: Motive.sellNewThengGoldRemarkCtrl.text,
                     orderDate: DateTime.now(),
                     details: Global.sellThengOrderDetail!,
                     orderTypeId: 4);
@@ -692,6 +747,7 @@ class _SellThengScreenState extends State<SellThengScreen>
                 if (Global.buyThengOrderDetail!.isNotEmpty) {
                   OrderModel order = OrderModel(
                       orderId: "",
+                      remark: Motive.buyUsedThengGoldRemarkCtrl.text,
                       orderDate: DateTime.now(),
                       details: Global.buyThengOrderDetail!,
                       orderTypeId: 44);
@@ -706,6 +762,9 @@ class _SellThengScreenState extends State<SellThengScreen>
                     Global.buyThengTotal = 0;
                   });
                 }
+
+                Motive.sellNewThengGoldRemarkCtrl.text = '';
+                Motive.buyUsedThengGoldRemarkCtrl.text = '';
 
                 if (mounted) {
                   Navigator.push(
@@ -811,9 +870,9 @@ class _SellThengScreenState extends State<SellThengScreen>
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
       marketPriceTotalCtrl.text = Global.format(
-          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text)));
+          Global.getBuyThengPrice(Global.toNumber(productWeightCtrl.text), selectedProduct!.id!));
       productPriceCtrl.text = marketPriceTotalCtrl.text;
       productPriceTotalCtrl.text = productCommissionCtrl.text.isNotEmpty
           ? '${Global.format(Global.toNumber(productCommissionCtrl.text) + Global.toNumber(productPriceCtrl.text))}'
@@ -839,6 +898,7 @@ class _SellThengScreenState extends State<SellThengScreen>
     productWeightBahtRemainCtrl.text = "";
     marketPriceTotalCtrl.text = "";
     warehouseCtrl.text = "";
+    Motive.sellNewThengGoldRemarkCtrl.text = "";
     productCodeCtrl.text =
     (selectedProduct != null ? selectedProduct?.productCode! : "")!;
     productNameCtrl.text =
@@ -855,8 +915,13 @@ class _SellThengScreenState extends State<SellThengScreen>
           Global.sellThengOrderDetail!.removeAt(index);
           if (Global.sellThengOrderDetail!.isEmpty) {
             Global.sellThengOrderDetail!.clear();
+            Global.sellThengSubTotal = 0;
+            Global.sellThengTax = 0;
+            Global.sellThengTotal = 0;
+            Global.sellThengWeightTotal = 0;
+          } else {
+            sumSellThengTotal(selectedProduct!.id!);
           }
-          sumSellThengTotal();
           setState(() {});
         });
   }

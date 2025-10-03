@@ -473,7 +473,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                               Global.format((Global.toNumber(
                                                           productEntryWeightCtrl
                                                               .text) /
-                                                      getUnitWeightValue()));
+                                                      getUnitWeightValue(e.productId)));
                                         } else {
                                           productEntryWeightBahtCtrl.text = "";
                                         }
@@ -482,7 +482,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                             .text
                                             .isNotEmpty) {
                                           productPriceBaseCtrl.text =Global.format(
-                                              Global.getSellPrice(Global.toNumber(productEntryWeightCtrl.text))).toString();
+                                              Global.getSellPrice(Global.toNumber(productEntryWeightCtrl.text), e.productId!)).toString();
                                           // productPriceCtrl.text =
                                           //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
                                           setState(() {});
@@ -513,7 +513,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                               Global.format((Global.toNumber(
                                                           productEntryWeightBahtCtrl
                                                               .text) *
-                                                      getUnitWeightValue()));
+                                                      getUnitWeightValue(e.productId)));
                                         } else {
                                           productEntryWeightCtrl.text = "";
                                         }
@@ -524,7 +524,7 @@ class _SellUsedThengGoldPendingScreenState extends State<SellUsedThengGoldPendin
                                           // productPriceCtrl.text =
                                           //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
                                           productPriceBaseCtrl.text = Global.format(
-                                              Global.getSellPrice(Global.toNumber(productEntryWeightCtrl.text))).toString();
+                                              Global.getSellPrice(Global.toNumber(productEntryWeightCtrl.text), e.productId!)).toString();
                                           setState(() {});
                                         } else {
                                           productPriceCtrl.text =

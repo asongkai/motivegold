@@ -447,6 +447,8 @@ class _NewUserScreenState extends State<NewUserScreen> {
   }
 
   Widget _buildCompanyDropdown() {
+    bool isAdmin = Global.user!.userType == 'ADMIN';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -467,51 +469,85 @@ class _NewUserScreenState extends State<NewUserScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: MiraiDropDownMenu<CompanyModel>(
-            key: UniqueKey(),
-            children: companies!,
-            space: 4,
-            maxHeight: 360,
-            showSearchTextField: true,
-            enable: Global.user!.userType == 'ADMIN' ? true : false,
-            selectedItemBackgroundColor: Colors.transparent,
-            emptyListMessage: 'ไม่มีข้อมูล',
-            showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (
-                int index,
-                CompanyModel? project, {
-                  bool isItemSelected = false,
-                }) {
-              return DropDownItemWidget(
-                project: project,
-                isItemSelected: isItemSelected,
-                firstSpace: 10,
+
+        // Conditional rendering based on user type
+        if (isAdmin)
+        // Admin sees dropdown
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: MiraiDropDownMenu<CompanyModel>(
+              key: UniqueKey(),
+              children: companies!,
+              space: 4,
+              maxHeight: 360,
+              showSearchTextField: true,
+              enable: true,
+              selectedItemBackgroundColor: Colors.transparent,
+              emptyListMessage: 'ไม่มีข้อมูล',
+              showSelectedItemBackgroundColor: true,
+              itemWidgetBuilder: (
+                  int index,
+                  CompanyModel? project, {
+                    bool isItemSelected = false,
+                  }) {
+                return DropDownItemWidget(
+                  project: project,
+                  isItemSelected: isItemSelected,
+                  firstSpace: 10,
+                  fontSize: 16.sp,
+                );
+              },
+              onChanged: (CompanyModel value) async {
+                companyCtrl.text = value.name;
+                selectedCompany = value;
+                companyNotifier!.value = value;
+                await loadBranches();
+                if (mounted) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  setState(() {});
+                }
+              },
+              child: DropDownObjectChildWidget(
+                key: GlobalKey(),
                 fontSize: 16.sp,
-              );
-            },
-            onChanged: (CompanyModel value) async {
-              companyCtrl.text = value.name;
-              selectedCompany = value;
-              companyNotifier!.value = value;
-              await loadBranches();
-              if (mounted) {
-                FocusScope.of(context).requestFocus(FocusNode());
-                setState(() {});
-              }
-            },
-            child: DropDownObjectChildWidget(
-              key: GlobalKey(),
-              fontSize: 16.sp,
-              projectValueNotifier: companyNotifier!,
+                projectValueNotifier: companyNotifier!,
+              ),
+            ),
+          )
+        else
+        // Non-admin sees text display
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey[50],
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedCompany?.name ?? 'ไม่มีข้อมูลบริษัท',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: selectedCompany != null ? Colors.black87 : Colors.grey[600],
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.business,
+                  color: Colors.grey[400],
+                  size: 20,
+                ),
+              ],
             ),
           ),
-        ),
       ],
     );
   }
@@ -717,8 +753,8 @@ class _NewUserScreenState extends State<NewUserScreen> {
               }
             } else {
               if (mounted) {
-                Alert.warning(context, result!.message!,
-                    result.data ?? '', 'OK'.tr(),
+                Alert.warning(context, result!.status!.toUpperCase(),
+                    result.message ?? '', 'OK'.tr(),
                     action: () {});
               }
             }

@@ -1,3 +1,4 @@
+// (updated) checkout_screen.dart
 import 'dart:convert';
 import 'dart:ui';
 
@@ -72,6 +73,8 @@ class _CheckOutScreenState extends State<CheckOutScreen>
   void initState() {
     super.initState();
     _initializeAnimations();
+    Global.discount = 0;
+    Global.addPrice = 0;
     Global.customer = null;
     Global.selectedPayment = null;
     Global.currentPaymentMethod = null;
@@ -84,12 +87,11 @@ class _CheckOutScreenState extends State<CheckOutScreen>
     Global.paymentDetailCtrl.text = "";
     Global.paymentList?.clear();
     Global.checkOutMode = "O";
-    loadDefaultPayment();
-    if (Global.currentOrderType == 1) {
-      selectedOption = 1;
-      loadCustomer();
-    }
-    loadDefaultPayment();
+
+    // Load default payment and then set default KYC radio selection based on business rules
+    loadDefaultPayment().then((_) {
+      _setDefaultKycSelection();
+    });
   }
 
   void _initializeAnimations() {
@@ -111,7 +113,7 @@ class _CheckOutScreenState extends State<CheckOutScreen>
     super.dispose();
   }
 
-  loadDefaultPayment() async {
+  Future<void> loadDefaultPayment() async {
     int orderTypeId = 0;
     if (Global.currentOrderType == 1) {
       if (Global.payToCustomerOrShopValue(
@@ -187,13 +189,51 @@ class _CheckOutScreenState extends State<CheckOutScreen>
 
     var payment = await ApiServices.post(
         '/defaultpayment/by-order-type/$orderTypeId', Global.requestObj(null));
-    motivePrint(payment?.toJson());
+    // Guard motivePrint to avoid sending null to platform channel (esp. web)
+    if (payment != null) {
+      motivePrint(payment.toJson());
+    }
     if (payment?.status == "success") {
       var data = DefaultPaymentModel.fromJson(payment?.data);
       setState(() {
         defaultPayment = data;
       });
     }
+  }
+
+  // Determine KYC radio default when page opens based on business rules:
+  // - If there's any Used Gold (orderTypeId == 2) -> default to "สำแดงตน" (selectedOption = 0)
+  // - Else (non used gold): if amount > limit -> default to "สำแดงตน", else default to "ไม่สำแดงตน"
+  // Additionally, if default becomes "สำแดงตน" we attempt to load the walkin customer (as prior logic did).
+  void _setDefaultKycSelection() {
+    Global.customer = null;
+    var amount = Global.payToCustomerOrShopValue(Global.orders,
+        Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
+
+    var checkSellUsedGold = Global.orders.where((e) => e.orderTypeId == 2);
+    bool hasUsedGold = checkSellUsedGold.isNotEmpty;
+
+    if (hasUsedGold) {
+      // Used gold: Always default to สำแดงตน (0) regardless of Force/Optional
+      // This matches the table where both บังคับ and ไม่บังคับ show ✓ for warning
+      selectedOption = 0;
+    } else {
+      // Non-used gold: Check amount vs KYC limit
+      if (amount > getMaxKycValue()) {
+        // Amount > Limit: default to สำแดงตน (0)
+        selectedOption = 0;
+      } else {
+        // Amount <= Limit: default to ไม่สำแดงตน (1)
+        selectedOption = 1;
+      }
+    }
+
+    // If default is สำแดงตน (0), try to load the walkin customer
+    if (selectedOption == 1) {
+      loadWalkInCustomer();
+    }
+
+    setState(() {});
   }
 
   openCal() {
@@ -397,7 +437,7 @@ class _CheckOutScreenState extends State<CheckOutScreen>
         setState(() {
           selectedOption = value;
           if (value == 1) {
-            loadCustomer();
+            loadWalkInCustomer();
           } else {
             Global.customer = null;
           }
@@ -532,7 +572,7 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                            "${getCustomerName(Global.customer!)}",
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 16.sp,
@@ -725,28 +765,50 @@ class _CheckOutScreenState extends State<CheckOutScreen>
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          buildTextFieldBig(
-              labelText: "ร้านทองเพิ่มให้ (บาท)",
-              labelColor: Colors.orange,
-              controller: addPriceCtrl,
-              inputType: TextInputType.phone,
-              inputFormat: [ThousandsFormatter(allowFraction: true)],
-              onChanged: (value) {
-                Global.addPrice = value.isNotEmpty ? Global.toNumber(value) : 0;
-                setState(() {});
-              }),
-          const SizedBox(height: 20),
-          buildTextFieldBig(
-              labelText: "ร้านทองลดให้ (บาท)",
-              labelColor: Colors.orange,
-              controller: discountCtrl,
-              inputType: TextInputType.phone,
-              inputFormat: [ThousandsFormatter(allowFraction: true)],
-              onChanged: (value) {
-                Global.discount = value.isNotEmpty ? Global.toNumber(value) : 0;
-                setState(() {});
-              }),
+          if (Global.payToCustomerOrShopValue(
+                  Global.orders,
+                  Global.toNumber(discountCtrl.text),
+                  Global.toNumber(addPriceCtrl.text)) <
+              0)
+            const SizedBox(height: 20),
+          if (Global.payToCustomerOrShopValue(
+                  Global.orders,
+                  Global.toNumber(discountCtrl.text),
+                  Global.toNumber(addPriceCtrl.text)) <
+              0)
+            buildTextFieldBig(
+                labelText: "ร้านทองเพิ่มให้ (บาท)",
+                labelColor: Colors.orange,
+                controller: addPriceCtrl,
+                inputType: TextInputType.phone,
+                inputFormat: [ThousandsFormatter(allowFraction: true)],
+                onChanged: (value) {
+                  Global.addPrice =
+                      value.isNotEmpty ? Global.toNumber(value) : 0;
+                  setState(() {});
+                }),
+          if (Global.payToCustomerOrShopValue(
+                  Global.orders,
+                  Global.toNumber(discountCtrl.text),
+                  Global.toNumber(addPriceCtrl.text)) >
+              0)
+            const SizedBox(height: 20),
+          if (Global.payToCustomerOrShopValue(
+                  Global.orders,
+                  Global.toNumber(discountCtrl.text),
+                  Global.toNumber(addPriceCtrl.text)) >
+              0)
+            buildTextFieldBig(
+                labelText: "ร้านทองลดให้ (บาท)",
+                labelColor: Colors.orange,
+                controller: discountCtrl,
+                inputType: TextInputType.phone,
+                inputFormat: [ThousandsFormatter(allowFraction: true)],
+                onChanged: (value) {
+                  Global.discount =
+                      value.isNotEmpty ? Global.toNumber(value) : 0;
+                  setState(() {});
+                }),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
@@ -1274,7 +1336,13 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                           align: TextAlign.center),
                       paddedTextBigL(order.details![j].productName,
                           style: TextStyle(fontSize: 14.sp)),
-                      paddedTextBigL(Global.format(order.details![j].weight!),
+                      paddedTextBigL(
+                          order.orderTypeId == 4 ||
+                                  order.orderTypeId == 44 ||
+                                  order.orderTypeId == 10 ||
+                                  order.orderTypeId == 11
+                              ? Global.format4(order.details![j].weight!)
+                              : Global.format(order.details![j].weight!),
                           align: TextAlign.right,
                           style: TextStyle(fontSize: 14.sp)),
                       paddedTextBigL(
@@ -1361,29 +1429,10 @@ class _CheckOutScreenState extends State<CheckOutScreen>
   }
 
   void _handleSaveOrder() async {
-    if (Global.customer == null) {
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
-            action: () {});
-        return;
-      }
-    }
-
-    var checkSellUsedGold = Global.orders.where((e) => e.orderTypeId == 2);
-    motivePrint(Global.orders.first.toJson());
-    if (checkSellUsedGold.isNotEmpty) {
-      if (selectedOption == 1) {
-        Alert.warning(
-            context, 'Warning'.tr(), 'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
-            action: () {});
-        return;
-      }
-      if (selectedOption == 0 && Global.customer == null) {
-        Alert.warning(
-            context, 'Warning'.tr(), 'กรุณาสำแดงตนข้อมูลลูกค้า', 'OK'.tr(),
-            action: () {});
-        return;
-      }
+    if (Global.customer == null && selectedOption == 0) {
+      Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
+          action: () {});
+      return;
     }
 
     if (Global.paymentList!.isEmpty) {
@@ -1394,28 +1443,9 @@ class _CheckOutScreenState extends State<CheckOutScreen>
         return;
       }
     }
+
     var amount = Global.payToCustomerOrShopValue(Global.orders,
         Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
-    if (amount > getMaxKycValue()) {
-      if (selectedOption == 0 && Global.customer == null) {
-        Alert.warning(
-            context,
-            'Warning'.tr(),
-            'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
-            'OK'.tr(),
-            action: () {});
-        return;
-      }
-      if (selectedOption == 1) {
-        Alert.warning(
-            context,
-            'Warning'.tr(),
-            'จำนวนเงินมากกว่า ${Global.format(getMaxKycValue())} กรุณาสำแดงตนข้อมูลลูกค้า',
-            'OK'.tr(),
-            action: () {});
-        return;
-      }
-    }
 
     if (getPaymentTotal() >
         Global.toNumber(Global.format(Global.getPaymentTotal(
@@ -1453,174 +1483,89 @@ class _CheckOutScreenState extends State<CheckOutScreen>
       }
     }
 
-    // Replace your entire original loop with just:
+    var kycValidation = validateKycRequirements();
+
+    // Check if validation has a blocking message
+    if (kycValidation.message.isNotEmpty && kycValidation.isBlocked) {
+      Alert.warning(context, 'Warning'.tr(), kycValidation.message, 'OK'.tr(),
+          action: () {});
+      return;
+    }
+
+    // For Rules 5 & 6 (Used Gold + Optional), combine warning with save confirmation
+    if (kycValidation.message.isNotEmpty && !kycValidation.isBlocked) {
+      Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', kycValidation.message,
+          'บันทึก', action: () async {
+        await _proceedWithSave();
+      });
+      return;
+    }
+
+    // Normal save confirmation for cases without warnings
+    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+      await _proceedWithSave();
+    });
+  }
+
+// Extract the save logic to a separate method
+  Future<void> _proceedWithSave() async {
+    // Continue with the original save logic...
     OrderProcessingService.processAllOrders(
       discount: discountCtrl.text,
       addPrice: addPriceCtrl.text,
     );
 
-    // for (var i = 0; i < Global.orders.length; i++) {
-    //   Global.orders[i].id = 0;
-    //   Global.orders[i].createdDate = DateTime.now();
-    //   Global.orders[i].updatedDate = DateTime.now();
-    //   Global.orders[i].customerId = Global.customer!.id!;
-    //   Global.orders[i].status = "0";
-    //   Global.orders[i].discount = Global.toNumber(discountCtrl.text);
-    //   Global.orders[i].addPrice = Global.toNumber(addPriceCtrl.text);
-    //   Global.orders[i].paymentMethod = Global.currentPaymentMethod;
-    //   Global.orders[i].attachment = null;
-    //   final orderDetails = Global.orders[i].details;
-    //   if (Global.orders[i].orderTypeId != 5 &&
-    //       Global.orders[i].orderTypeId != 6 &&
-    //       Global.orders[i].orderTypeId != 1) {
-    //     Global.orders[i].priceIncludeTax =
-    //         Global.getOrderTotal(Global.orders[i]);
-    //     // Global.orders[i].priceIncludeTax = orderDetails?.totalPriceIncludeTax;
-    //
-    //     Global.orders[i].purchasePrice = Global.orders[i].orderTypeId == 2
-    //         ? 0
-    //         : Global.getPapunTotal(Global.orders[i]);
-    //     // Global.orders[i].purchasePrice = orderDetails?.totalPurchasePrice;
-    //
-    //     Global.orders[i].priceDiff = Global.orders[i].orderTypeId == 2
-    //         ? 0
-    //         : Global.getOrderTotal(Global.orders[i]) -
-    //             Global.getPapunTotal(Global.orders[i]);
-    //     // Global.orders[i].priceDiff = orderDetails?.totalPriceDiff;
-    //
-    //     Global.orders[i].taxBase = Global.orders[i].orderTypeId == 2
-    //         ? 0
-    //         : (Global.getOrderTotal(Global.orders[i]) -
-    //                 Global.getPapunTotal(Global.orders[i])) *
-    //             100 /
-    //             107;
-    //     // Global.orders[i].taxBase = orderDetails?.totalTaxBase;
-    //
-    //     Global.orders[i].taxAmount = Global.orders[i].orderTypeId == 2
-    //         ? 0
-    //         : ((Global.getOrderTotal(Global.orders[i]) -
-    //                     Global.getPapunTotal(Global.orders[i])) *
-    //                 100 /
-    //                 107) *
-    //             getVatValue();
-    //     // Global.orders[i].taxAmount = orderDetails?.totalTaxAmount;
-    //
-    //     Global.orders[i].priceExcludeTax = Global.orders[i].orderTypeId == 2
-    //         ? 0
-    //         : Global.getOrderTotal(Global.orders[i]) -
-    //             (((Global.getOrderTotal(Global.orders[i]) -
-    //                         Global.getPapunTotal(Global.orders[i])) *
-    //                     100 /
-    //                     107) *
-    //                 getVatValue());
-    //     // Global.orders[i].priceExcludeTax = orderDetails?.totalPriceExcludeTax;
-    //   }
-    //   for (var j = 0; j < Global.orders[i].details!.length; j++) {
-    //     Global.orders[i].details![j].id = 0;
-    //     Global.orders[i].details![j].orderId = Global.orders[i].id;
-    //     Global.orders[i].details![j].unitCost =
-    //         Global.orders[i].details![j].priceIncludeTax! /
-    //             Global.orders[i].details![j].weight!;
-    //     if (Global.orders[i].orderTypeId != 4 &&
-    //         Global.orders[i].orderTypeId != 1) {
-    //       Global.orders[i].details![j].purchasePrice =
-    //           Global.orders[i].orderTypeId == 2
-    //               ? 0
-    //               : Global.getBuyPrice(Global.orders[i].details![j].weight!,
-    //                   Global.goldDataModel);
-    //       Global.orders[i].details![j].priceDiff =
-    //           Global.orders[i].orderTypeId == 2
-    //               ? 0
-    //               : Global.orders[i].details![j].priceIncludeTax! -
-    //                   Global.getBuyPrice(Global.orders[i].details![j].weight!,
-    //                       Global.goldDataModel);
-    //       Global.orders[i].details![j].taxBase =
-    //           Global.orders[i].orderTypeId == 2
-    //               ? 0
-    //               : (Global.orders[i].details![j].priceIncludeTax! -
-    //                       Global.getBuyPrice(
-    //                           Global.orders[i].details![j].weight!,
-    //                           Global.goldDataModel)) *
-    //                   100 /
-    //                   107;
-    //       Global.orders[i].details![j].taxAmount =
-    //           Global.orders[i].orderTypeId == 2
-    //               ? 0
-    //               : ((Global.orders[i].details![j].priceIncludeTax! -
-    //                           Global.getBuyPrice(
-    //                               Global.orders[i].details![j].weight!,
-    //                               Global.goldDataModel)) *
-    //                       100 /
-    //                       107) *
-    //                   getVatValue();
-    //       Global.orders[i].details![j].priceExcludeTax =
-    //           Global.orders[i].orderTypeId == 2
-    //               ? 0
-    //               : (Global.orders[i].details![j].priceIncludeTax! -
-    //                   ((((Global.orders[i].details![j].priceIncludeTax! -
-    //                               Global.getBuyPrice(
-    //                                   Global.orders[i].details![j].weight!,
-    //                                   Global.goldDataModel)) *
-    //                           100 /
-    //                           107) *
-    //                       getVatValue())));
-    //     }
-    //     Global.orders[i].details![j].createdDate = DateTime.now();
-    //     Global.orders[i].details![j].updatedDate = DateTime.now();
-    //   }
-    // }
+    // Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+    //     action: () async {
+    // ... rest of the original save logic
+    final ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+    await pr.show();
+    pr.update(message: 'processing'.tr());
+    try {
+      if (Global.posOrder != null) {
+        await reserveOrder(Global.posOrder!);
+      }
+      var pair = await ApiServices.post(
+          '/order/gen-pair/${Global.orders.first.orderTypeId}',
+          Global.requestObj(null));
 
-    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-        action: () async {
-      final ProgressDialog pr = ProgressDialog(context,
-          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-      await pr.show();
-      pr.update(message: 'processing'.tr());
-      try {
-        if (Global.posOrder != null) {
-          await reserveOrder(Global.posOrder!);
-        }
-        var pair = await ApiServices.post(
-            '/order/gen-pair/${Global.orders.first.orderTypeId}',
-            Global.requestObj(null));
-
-        if (pair?.status == "success") {
-          await postPayment(pair?.data);
-          await postOrder(pair?.data);
-          Global.orderIds = Global.orders.map((e) => e.orderId).toList();
-          Global.pairId = pair?.data;
-          await pr.hide();
-          if (mounted) {
-            Global.orders.clear();
-            Global.customer = null;
-            Global.posOrder = null;
-            Global.paymentList?.clear();
-            writeCart();
-            setState(() {});
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const PrintBillScreen()));
-          }
-        } else {
-          if (mounted) {
-            Alert.warning(context, 'Warning'.tr(),
-                'Unable to generate pairing ID', 'OK'.tr(),
-                action: () {});
-          }
-        }
-      } catch (e) {
+      if (pair?.status == "success") {
+        await postPayment(pair?.data);
+        await postOrder(pair?.data);
+        Global.orderIds = Global.orders.map((e) => e.orderId).toList();
+        Global.pairId = pair?.data;
         await pr.hide();
         if (mounted) {
-          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+          Global.orders.clear();
+          Global.customer = null;
+          Global.posOrder = null;
+          Global.paymentList?.clear();
+          writeCart();
+          setState(() {});
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const PrintBillScreen()));
+        }
+      } else {
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(),
+              'Unable to generate pairing ID', 'OK'.tr(),
               action: () {});
         }
-        return;
       }
-    });
+    } catch (e) {
+      await pr.hide();
+      if (mounted) {
+        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+            action: () {});
+      }
+      return;
+    }
+    // });
   }
 
-  // Keep all your original methods unchanged
+  // Keep all your original methods unchanged (postPayment, postOrder, removeProduct, etc.)
   Future postPayment(int pairId) async {
     if (Global.paymentList!.isNotEmpty) {
       var payment = await ApiServices.post(
@@ -1852,6 +1797,45 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                               const Color(0xFF059669).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',
@@ -1872,8 +1856,8 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                                 cardNo: Global.cardNumberCtrl.text,
                                 cardExpiryDate:
                                     Global.cardExpireDateCtrl.text.isNotEmpty
-                                        ? DateTime.parse(
-                                            Global.cardExpireDateCtrl.text)
+                                        ? DateTime.parse(Global.convertToFullDate(
+                                        Global.cardExpireDateCtrl.text)!)
                                         : null,
                                 amount: Global.toNumber(Global.amountCtrl.text),
                                 referenceNumber: Global.refNoCtrl.text,
@@ -1960,7 +1944,9 @@ class _CheckOutScreenState extends State<CheckOutScreen>
   Future<void> reserveOrder(OrderModel order) async {
     var result =
         await ApiServices.post('/order/reserve', Global.requestObj(order));
-    motivePrint(result?.toJson());
+    if (result != null) {
+      motivePrint(result.toJson());
+    }
     if (result?.status == "success") {
       motivePrint("Reverse completed");
     }
@@ -2103,6 +2089,46 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                               const Color(0xFF0F766E).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
+                          if (Global.currentPaymentMethod == "CR") {
+                            if (Global.cardNameCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.cardNumberCtrl.text.trim().isEmpty) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
+                            if (Global.selectedBank == null) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+
+                            if (Global.selectedAccount == null) {
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                                  action: () {});
+                              return;
+                            }
+                          }
+
                           Alert.info(
                             context,
                             'ต้องการบันทึกข้อมูลหรือไม่?',
@@ -2121,11 +2147,11 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                                 accountName: Global.selectedAccount?.name,
                                 cardName: Global.cardNameCtrl.text,
                                 cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate:
-                                    Global.cardExpireDateCtrl.text.isNotEmpty
-                                        ? DateTime.parse(
-                                            Global.cardExpireDateCtrl.text)
-                                        : null,
+                                cardExpiryDate: Global
+                                        .cardExpireDateCtrl.text.isNotEmpty
+                                    ? DateTime.parse(Global.convertToFullDate(
+                                        Global.cardExpireDateCtrl.text)!)
+                                    : null,
                                 amount: Global.toNumber(Global.amountCtrl.text),
                                 referenceNumber: Global.refNoCtrl.text,
                                 attachement: getPaymentAttachment(),
@@ -2231,7 +2257,7 @@ class _CheckOutScreenState extends State<CheckOutScreen>
     return amount;
   }
 
-  void loadCustomer() async {
+  void loadWalkInCustomer() async {
     setState(() {
       loading = true;
     });
@@ -2252,6 +2278,96 @@ class _CheckOutScreenState extends State<CheckOutScreen>
       loading = false;
     });
   }
+
+  // Updated validation logic implementing the business rules:
+  //
+  // Used Gold + Force + Amount > Limit: Customer identification required and block save record
+  // Used Gold + Force + Amount ≤ Limit: Customer identification required and block save record
+  // Non Used Gold + Amount > Limit: default to สำแดงตน (handled on init)
+  // Non Used Gold + Amount <= Limit: default to ไม่สำแดงตน (handled on init)
+  // Used Gold + Optional + Amount > Limit: Warning customer identification but can continue save record
+  // Used Gold + Optional + Amount ≤ Limit: No restrictions
+  // Used Gold: Force case always requires customer identification (block)
+  ValidationResult validateKycRequirements() {
+    var amount = Global.payToCustomerOrShopValue(Global.orders,
+        Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
+
+    var checkSellUsedGold = Global.orders.where((e) => e.orderTypeId == 2);
+    bool hasUsedGold = checkSellUsedGold.isNotEmpty;
+    bool customerNotIdentified =
+        selectedOption == 1 || (selectedOption == 0 && Global.customer == null);
+
+    // According to the table:
+    // การแสดงตนเมื่อรับซื้อของเก่า (Used Gold scenarios)
+    if (hasUsedGold) {
+      if (Global.kycSettingModel?.kycOption?.toLowerCase() == 'force') {
+        // บังคับ (Force): Always warn + block if customer not identified
+        if (customerNotIdentified) {
+          return ValidationResult(
+              isValid: false,
+              isBlocked: true,
+              message:
+                  'กรุณาสำแดงตนข้อมูลลูกค้า - การรับซื้อทองเก่าต้องสำแดงตนเมื่อตั้งค่าเป็นบังคับ');
+        }
+      } else {
+        // ไม่บังคับ (Optional): Always warn but don't block
+        if (customerNotIdentified) {
+          return ValidationResult(
+              isValid: true,
+              isBlocked: false,
+              message: 'คำเตือน: การรับซื้อทองเก่าแนะนำให้สำแดงตน');
+        }
+      }
+    }
+
+    // มูลค่า KYC (Amount-based KYC scenarios for non-used gold)
+    if (!hasUsedGold) {
+      if (amount <= getMaxKycValue()) {
+        // น้อยกว่าหรือเท่ากับ Limit KYC: Only warn, don't block
+        if (customerNotIdentified) {
+          return ValidationResult(
+              isValid: true,
+              isBlocked: false,
+              message:
+                  'คำเตือน: จำนวนเงิน ${Global.format(amount < 0 ? -amount : amount)} บาท แนะนำให้สำแดงตน');
+        }
+      } else {
+        // มากกว่า Limit KYC: Warn + block if customer not identified
+        if (customerNotIdentified) {
+          return ValidationResult(
+              isValid: false,
+              isBlocked: true,
+              message:
+                  'กรุณาสำแดงตนข้อมูลลูกค้า - จำนวนเงิน ${Global.format(amount < 0 ? -amount : amount)} บาท เกินกว่าขั้นสูงสุด ${Global.format(getMaxKycValue())} บาท');
+        }
+      }
+    }
+
+    // Additional check for Force KYC setting (applies to all transactions)
+    // if (Global.kycSettingModel?.kycOption?.toLowerCase() == 'force') {
+    //   if (customerNotIdentified) {
+    //     return ValidationResult(
+    //         isValid: false,
+    //         isBlocked: true,
+    //         message: 'กรุณาสำแดงตนข้อมูลลูกค้า - สาขานี้กำหนดให้สำแดงตนทุกครั้ง');
+    //   }
+    // }
+
+    return ValidationResult(isValid: true, isBlocked: false, message: '');
+  }
+}
+
+// Add this class at the top of your file or in a separate file:
+class ValidationResult {
+  final bool isValid;
+  final bool isBlocked;
+  final String message;
+
+  ValidationResult({
+    required this.isValid,
+    required this.isBlocked,
+    required this.message,
+  });
 }
 
 class ModernLoadingWidget extends StatelessWidget {

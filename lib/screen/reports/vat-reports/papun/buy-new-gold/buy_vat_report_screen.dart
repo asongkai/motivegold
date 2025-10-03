@@ -230,9 +230,9 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
           fromDate = DateTime(now.year, 1, 1);
           toDate = DateTime(now.year, 12, 31);
 
-          await search();
+          // await search();
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList);
+          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;

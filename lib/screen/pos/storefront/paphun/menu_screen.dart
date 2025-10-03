@@ -116,10 +116,10 @@ class PosMenuScreenState extends State<PosMenuScreen> {
                                               fullscreenDialog: true))
                                       .whenComplete(() {
                                     init();
-                                    if (Global.posIndex == 0) {
-                                      sumSellTotal();
+                                    if (Global.posIndex == 0 && Global.sellOrderDetail!.isNotEmpty) {
+                                      sumSellTotal(Global.sellOrderDetail!.first.productId!);
                                     }
-                                    if (Global.posIndex == 1) {
+                                    if (Global.posIndex == 1 && Global.buyOrderDetail!.isNotEmpty) {
                                       sumBuyTotal();
                                     }
                                     sideMenu.changePage(Global.posIndex);

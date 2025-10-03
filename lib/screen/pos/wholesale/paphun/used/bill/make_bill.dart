@@ -34,7 +34,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
         decoration: BoxDecoration(
           border: Border.all(width: 0.25),
         ),
-        child: buyerSellerInfoSellUsedWholeSale(invoice.customer, invoice.order),
+        child: buyerSellerInfoSellUsedWholeSale(invoice.customer, invoice.order, invoice.items[0].productId!),
       ),
     );
     widgets.add(
@@ -462,6 +462,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                 ),
               ),
             ),
+            SizedBox(width: 8),
             Expanded(
               flex: 3,
               child: Container(

@@ -111,6 +111,7 @@ class OrderProcessingService {
         customer: customer ?? Global.customer,
         paymentMethod: paymentMethod ?? Global.currentPaymentMethod,
         goldDataModel: goldDataModel ?? Global.goldDataModel,
+        productId: ordersList[i].details!.first.productId!,
       );
     }
   }
@@ -123,12 +124,13 @@ class OrderProcessingService {
     CustomerModel? customer,
     String? paymentMethod,
     GoldDataModel? goldDataModel,
+    required int productId,
   }) {
     // Initialize basic order fields
     _initializeOrderFields(order, discount, addPrice, customer, paymentMethod);
 
     // Calculate order totals based on order type
-    _calculateOrderTotals(order, goldDataModel);
+    _calculateOrderTotals(order, goldDataModel, productId);
 
     // Process all order details
     _processOrderDetails(order, goldDataModel);
@@ -154,7 +156,7 @@ class OrderProcessingService {
     order.attachment = null;
   }
 
-  static void _calculateOrderTotals(OrderModel order, GoldDataModel? goldDataModel) {
+  static void _calculateOrderTotals(OrderModel order, GoldDataModel? goldDataModel, int productId) {
     // Skip calculations for specific order types
     if (_shouldSkipOrderCalculations(order.orderTypeId)) {
       return;
@@ -163,7 +165,7 @@ class OrderProcessingService {
     if (_isOrderType2(order.orderTypeId)) {
       _setZeroOrderTotals(order);
     } else {
-      _calculateOrderFinancials(order, goldDataModel);
+      _calculateOrderFinancials(order, goldDataModel, productId);
     }
   }
 
@@ -184,9 +186,9 @@ class OrderProcessingService {
     order.priceExcludeTax = 0;
   }
 
-  static void _calculateOrderFinancials(OrderModel order, GoldDataModel? goldDataModel) {
+  static void _calculateOrderFinancials(OrderModel order, GoldDataModel? goldDataModel, int productId) {
     final orderTotal = Global.getOrderTotal(order);
-    final papunTotal = Global.getPapunTotal(order);
+    final papunTotal = Global.getPapunTotal(order, productId);
     final totalDifference = orderTotal - papunTotal;
     final taxBaseValue = totalDifference * 100 / 107;
     final taxAmountValue = taxBaseValue * getVatValue();
@@ -208,6 +210,7 @@ class OrderProcessingService {
         orderId: order.id,
         orderTypeId: order.orderTypeId,
         goldDataModel: goldDataModel,
+        productId: order.details![j].productId!
       );
     }
   }
@@ -217,6 +220,7 @@ class OrderProcessingService {
     int? orderId,
     int? orderTypeId,
     GoldDataModel? goldDataModel,
+    required int productId,
   }) {
     // Initialize basic detail fields
     _initializeDetailFields(detail, orderId);
@@ -225,7 +229,7 @@ class OrderProcessingService {
     _calculateDetailUnitCost(detail);
 
     // Calculate pricing based on order type
-    _calculateDetailPricing(detail, orderTypeId, goldDataModel);
+    _calculateDetailPricing(detail, orderTypeId, goldDataModel, productId);
 
     // Set timestamps
     _setDetailTimestamps(detail);
@@ -248,6 +252,7 @@ class OrderProcessingService {
       OrderDetailModel detail,
       int? orderTypeId,
       GoldDataModel? goldDataModel,
+      int productId,
       ) {
     // Skip pricing calculations for specific order types
     if (_shouldSkipDetailPricingCalculations(orderTypeId)) {
@@ -257,7 +262,7 @@ class OrderProcessingService {
     if (_isOrderType2(orderTypeId)) {
       _setZeroDetailPricing(detail);
     } else {
-      _calculateDetailFinancials(detail, goldDataModel);
+      _calculateDetailFinancials(detail, goldDataModel, productId);
     }
   }
 
@@ -275,11 +280,11 @@ class OrderProcessingService {
 
   static void _calculateDetailFinancials(
       OrderDetailModel detail,
-      GoldDataModel? goldDataModel,
+      GoldDataModel? goldDataModel, int productId
       ) {
     if (detail.weight == null || detail.priceIncludeTax == null) return;
 
-    final buyPrice = Global.getBuyPrice(detail.weight!, goldDataModel);
+    final buyPrice = Global.getBuyPrice(detail.weight!, goldDataModel, productId);
     final priceDifference = detail.priceIncludeTax! - buyPrice;
     final taxBaseValue = priceDifference * 100 / 107;
     final taxAmountValue = taxBaseValue * getVatValue();
@@ -327,6 +332,7 @@ extension SingleOrderProcessing on OrderModel {
     CustomerModel? customer,
     String? paymentMethod,
     GoldDataModel? goldDataModel,
+    required int productId,
   }) {
     OrderProcessingService.processOrder(
       order: this,
@@ -335,6 +341,7 @@ extension SingleOrderProcessing on OrderModel {
       customer: customer,
       paymentMethod: paymentMethod,
       goldDataModel: goldDataModel,
+      productId: productId
     );
   }
 }

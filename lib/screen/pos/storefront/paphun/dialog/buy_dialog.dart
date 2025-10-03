@@ -176,7 +176,7 @@ class _BuyDialogState extends State<BuyDialog> {
             var realPrice = Global.getBuyPrice(
                 Global.toNumber(productWeightCtrl.text),
                 Global
-                    .goldDataModel); //Global.toNumber(productPriceBaseCtrl.text);
+                    .goldDataModel, selectedProduct!.id!); //Global.toNumber(productPriceBaseCtrl.text);
             var price = Global.toNumber(productPriceCtrl.text);
             var check = price - realPrice;
 
@@ -237,9 +237,11 @@ class _BuyDialogState extends State<BuyDialog> {
                   children: [
                     posHeaderText(context, buBgColor,
                         'รับซื้อลูกค้า – ทองคำรูปพรรณเก่า 96.5%'),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10),
+                    if (selectedProduct != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
                       child: GoldMiniWidget(
+                        product: selectedProduct!,
                         screen: 2,
                       ),
                     ),
@@ -369,7 +371,7 @@ class _BuyDialogState extends State<BuyDialog> {
                                   var realPrice = Global.getBuyPrice(
                                       Global.toNumber(productWeightCtrl.text),
                                       Global
-                                          .goldDataModel); //Global.toNumber(productPriceBaseCtrl.text);
+                                          .goldDataModel, selectedProduct!.id!); //Global.toNumber(productPriceBaseCtrl.text);
                                   var price =
                                       Global.toNumber(productPriceCtrl.text);
                                   var check = price - realPrice;
@@ -573,7 +575,7 @@ class _BuyDialogState extends State<BuyDialog> {
 
                       var realPrice = Global.getBuyPrice(
                           Global.toNumber(productWeightCtrl.text),
-                          Global.goldDataModel);
+                          Global.goldDataModel, selectedProduct!.id!);
                       realPrice = Global.toNumber(Global.format(realPrice));
                       var price = Global.toNumber(productPriceCtrl.text);
                       var check = price - realPrice;
@@ -671,13 +673,13 @@ class _BuyDialogState extends State<BuyDialog> {
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text = Global.format(
-          Global.toNumber(productWeightCtrl.text) / getUnitWeightValue());
+          Global.toNumber(productWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id));
     } else {
       productWeightBahtCtrl.text = "";
     }
     if (productWeightCtrl.text.isNotEmpty) {
       productPriceBaseCtrl.text = Global.getBuyPrice(
-              Global.toNumber(productWeightCtrl.text), Global.goldDataModel)
+              Global.toNumber(productWeightCtrl.text), Global.goldDataModel, selectedProduct!.id!)
           .toString();
       // productPriceCtrl.text =
       //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
@@ -691,7 +693,7 @@ class _BuyDialogState extends State<BuyDialog> {
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
       productWeightCtrl.text = formatter.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightCtrl.text = "";
     }
@@ -699,7 +701,7 @@ class _BuyDialogState extends State<BuyDialog> {
       // productPriceCtrl.text =
       //     Global.getBuyPrice(Global.toNumber(productWeightCtrl.text)).toString();
       productPriceBaseCtrl.text = Global.getBuyPrice(
-              Global.toNumber(productWeightCtrl.text), Global.goldDataModel)
+              Global.toNumber(productWeightCtrl.text), Global.goldDataModel, selectedProduct!.id!)
           .toString();
       setState(() {});
     } else {

@@ -1409,7 +1409,7 @@ class _EditRefillThengGoldStockScreenState
   void gramChanged() {
     if (productWeightCtrl.text.isNotEmpty) {
       productWeightBahtCtrl.text = Global.format(
-          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue()));
+          (Global.toNumber(productWeightCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightBahtCtrl.text = "";
     }
@@ -1418,8 +1418,8 @@ class _EditRefillThengGoldStockScreenState
 
   void bahtChanged() {
     if (productWeightBahtCtrl.text.isNotEmpty) {
-      productWeightCtrl.text = Global.format(
-          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue()));
+      productWeightCtrl.text = Global.format4(
+          (Global.toNumber(productWeightBahtCtrl.text) * getUnitWeightValue(selectedProduct?.id)));
     } else {
       productWeightCtrl.text = "";
     }
@@ -1444,8 +1444,8 @@ class _EditRefillThengGoldStockScreenState
 
   void getOtherAmount() {
     priceExcludeTaxCtrl.text = Global.format(
-        Global.toNumber(productSellThengPriceCtrl.text) *
-            Global.toNumber(productWeightBahtCtrl.text));
+        Global.toNumber(productSellThengPriceCtrl.text) / getUnitWeightValue(selectedProduct?.id) *
+            Global.toNumber(productWeightCtrl.text));
     double com = Global.toNumber(productCommissionCtrl.text);
     double pkg = Global.toNumber(packagePriceCtrl.text);
     taxAmountCtrl.text = Global.format((com + pkg) * getVatValue());

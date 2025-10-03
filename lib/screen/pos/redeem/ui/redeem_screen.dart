@@ -87,6 +87,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
   void initState() {
     super.initState();
     orderDateCtrl.text = Global.formatDateD(DateTime.now().toString());
+
+
     getRedeemCart();
     calTotal();
   }

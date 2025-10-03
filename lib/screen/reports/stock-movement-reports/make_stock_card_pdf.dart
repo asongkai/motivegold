@@ -253,7 +253,7 @@ Future<Uint8List> makeStockCardReportPdf(
         ),
         // Data rows with color coding
         for (int i = 0; i < list.length; i++)
-          lineItem(list[i], movement),
+          lineItem(list[i], movement, product),
         // Ending balance row with clean styling
         TableRow(
             decoration: BoxDecoration(
@@ -274,7 +274,7 @@ Future<Uint8List> makeStockCardReportPdf(
               ),
               paddedTextSmall(''),
               paddedTextSmall(''),
-              paddedTextSmall('${Global.format(weightLineTotal ?? 0)}',
+              paddedTextSmall('${product?.type == 'BAR' ? Global.format4(weightLineTotal ?? 0) : Global.format(weightLineTotal ?? 0)}',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -319,7 +319,7 @@ Future<Uint8List> makeStockCardReportPdf(
   return pdf.save();
 }
 
-TableRow lineItem(StockMovementModel list, StockMovementModel? movement) {
+TableRow lineItem(StockMovementModel list, StockMovementModel? movement, ProductModel? product) {
   weightLineTotal += list.weight ?? 0;
   unitCostLineTotal += list.unitCost ?? 0;
   priceLineTotal += list.price ?? 0;
@@ -339,16 +339,16 @@ TableRow lineItem(StockMovementModel list, StockMovementModel? movement) {
           )
       ),
       if (list.weight! > 0)
-        paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
+        paddedTextSmall(' ${product?.type == 'BAR' ? Global.format4(list.weight ?? 0) : Global.format(list.weight ?? 0)}',
             style: TextStyle(fontSize: 10, color: PdfColors.green600),
             align: TextAlign.right),
       if (list.weight! < 0) paddedTextSmall(''),
       if (list.weight! < 0)
-        paddedTextSmall(' ${Global.format(list.weight ?? 0)}',
+        paddedTextSmall(' ${product?.type == 'BAR' ? Global.format4(list.weight ?? 0) : Global.format(list.weight ?? 0)}',
             style: TextStyle(fontSize: 10, color: PdfColors.red600),
             align: TextAlign.right),
       if (list.weight! > 0) paddedTextSmall(''),
-      paddedTextSmall('${Global.format(weightLineTotal)}',
+      paddedTextSmall('${product?.type == 'BAR' ? Global.format4(weightLineTotal) : Global.format(weightLineTotal)}',
           style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
