@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/landing_screen.dart';
+import 'package:motivegold/screen/reports/activity-log/activity_log_screen.dart';
 import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
 import 'package:motivegold/screen/settings/company/company_list_screen.dart';
@@ -96,7 +97,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   iconStyle: IconStyle(
                       backgroundColor: Colors.green[600]! // Green for locations
                       ),
-                  title: 'สาขา',
+                  title: 'สำนักงานใหญ่และสาขา',
                   subtitle: "ข้อมูลสาขา",
                   titleMaxLine: 1,
                   subtitleMaxLine: 1,
@@ -274,14 +275,14 @@ class _SettingScreenState extends State<SettingScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const DefaultPawnSettingScreen()));
+                                const DefaultPawnSettingScreen()));
                   },
                   icons: Icons.remove_from_queue_outlined,
                   // Better for payment settings
                   iconStyle: IconStyle(
                       backgroundColor:
-                      Colors.purple[700]! // Green for money/payment
-                  ),
+                          Colors.purple[700]! // Green for money/payment
+                      ),
                   title: 'จัดการค่าเริ่มต้น ขายฝาก',
                   subtitle: "ตั้งค่าค่าเริ่มต้น ขายฝาก",
                   titleStyle: Theme.of(context)
@@ -354,12 +355,35 @@ class _SettingScreenState extends State<SettingScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
+                            builder: (context) => const ActivityLogScreen()));
+                  },
+                  icons: Icons.track_changes,
+                  // Better for activity tracking
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.blueGrey[600]!, // Blue-grey for system logs
+                  ),
+                  title: 'กิจกรรมย้อนหลัง',
+                  subtitle: "บันทึกกิจกรรมทั้งหมดในระบบ",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
                             builder: (context) => const AuthHistoryScreen()));
                   },
-                  icons: Icons.history,
+                  icons: Icons.login,
                   // Better for access history
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.grey[600]!, // Grey for history
+                    backgroundColor: Colors.teal[600]!, // Teal for auth logs
                   ),
                   title: 'บันทึกการเข้าถึงระบบ',
                   subtitle: "ประวัติการเข้าใช้ระบบ",
@@ -375,10 +399,10 @@ class _SettingScreenState extends State<SettingScreen> {
                 SettingsItem(
                   onTap: () {
                     motivePrint('clicked');
-                    Alert.info(context, 'Warning'.tr(), 'ยืนยันการออกจากระบบ', 'OK'.tr(), action: () async {
-                      var authObject = Global.requestObj({
-                        "deviceDetail": Global.deviceDetail.toString()
-                      });
+                    Alert.info(context, 'Warning'.tr(), 'ยืนยันการออกจากระบบ',
+                        'OK'.tr(), action: () async {
+                      var authObject = Global.requestObj(
+                          {"deviceDetail": Global.deviceDetail.toString()});
 
                       // motivePrint(authObject);
                       // return;
@@ -389,18 +413,21 @@ class _SettingScreenState extends State<SettingScreen> {
                       await pr.show();
                       pr.update(message: 'processing'.tr());
                       try {
-                        await ApiServices.post('/user/logout/${Global.user!.id}', authObject);
+                        await ApiServices.post(
+                            '/user/logout/${Global.user!.id}', authObject);
                         await pr.hide();
                         resetAtLogout();
-                        LocalStorage.sharedInstance.setAuthStatus(key: Constants.isLoggedIn, value: "false");
+                        LocalStorage.sharedInstance.setAuthStatus(
+                            key: Constants.isLoggedIn, value: "false");
                         if (mounted) {
-                          Navigator.pushReplacement(context, MaterialPageRoute(
-                              builder: (_) => const LandingScreen()));
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const LandingScreen()));
                         }
                       } catch (e) {
                         await pr.hide();
                       }
-
                     });
                   },
                   icons: Icons.logout,

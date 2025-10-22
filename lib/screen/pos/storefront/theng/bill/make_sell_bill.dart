@@ -28,7 +28,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
 
     widgets.add(
       await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี',
-          versionText: versionText),
+          versionText: versionText, full: true),
     );
     widgets.add(
       docNo(invoice.order),
@@ -614,7 +614,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                         style: TextStyle(
                             fontSize: 11, fontWeight: FontWeight.bold)),
                     Spacer(),
-                    Text('${Global.company?.name} (${Global.branch?.name})', textAlign: TextAlign.center,
+                    Text('${Global.branch?.name}', textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 11)),
                     Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
                         style: TextStyle(
@@ -687,49 +687,9 @@ getCommission(OrderModel order) {
   return com;
 }
 
-getVat(OrderModel order) {
-  double vat = 0;
-  for (int i = 0; i < order.details!.length; i++) {
-    if (order.details![i].vatOption == 'Include') {
-      vat += (order.details![i].commission! + order.details![i].packagePrice!) *
-          7 /
-          107;
-    }
 
-    if (order.details![i].vatOption == 'Exclude') {
-      vat += order.details![i].taxAmount!;
-    }
-  }
-  return vat;
-}
 
-getPackageNoVat(OrderModel order) {
-  double vat = 0;
-  for (int i = 0; i < order.details!.length; i++) {
-    if (order.details![i].vatOption == 'Include') {
-      vat += order.details![i].packagePrice! * 100 / 107;
-    }
 
-    if (order.details![i].vatOption == 'Exclude') {
-      vat += order.details![i].packagePrice!;
-    }
-  }
-  return vat;
-}
-
-getCommissionNoVat(OrderModel order) {
-  double vat = 0;
-  for (int i = 0; i < order.details!.length; i++) {
-    if (order.details![i].vatOption == 'Include') {
-      vat += order.details![i].commission! * 100 / 107;
-    }
-
-    if (order.details![i].vatOption == 'Exclude') {
-      vat += order.details![i].commission!;
-    }
-  }
-  return vat;
-}
 
 getTotalPackageQty(OrderModel order) {
   double total = 0;

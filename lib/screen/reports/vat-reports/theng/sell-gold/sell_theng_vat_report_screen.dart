@@ -1520,7 +1520,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
       var dateList = filterList
           ?.where((element) =>
               element != null &&
-              Global.dateOnly(element.createdDate.toString()) ==
+              Global.dateOnly(element.orderDate.toString()) ==
                   Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
@@ -1545,7 +1545,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(dateList),
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
-          priceExcludeTax: priceExcludeTaxTotal(dateList),
+          priceExcludeTax: getPriceExcludeTaxHeadTotal(dateList),
           commissionAmount: commissionHeadTotal(dateList),
           packageAmount: packageHeadTotal(dateList),
         );
@@ -1618,7 +1618,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(monthList),
           taxBase: taxBaseTotal(monthList),
           taxAmount: taxAmountTotal(monthList),
-          priceExcludeTax: priceExcludeTaxTotal(monthList),
+          priceExcludeTax: getPriceExcludeTaxHeadTotal(monthList),
           commissionAmount: commissionHeadTotal(monthList),
           packageAmount: packageHeadTotal(monthList),
         );

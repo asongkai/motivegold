@@ -34,6 +34,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
   //     )
   // ));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานซื้อทองรูปพรรณเก่า 96.5%',

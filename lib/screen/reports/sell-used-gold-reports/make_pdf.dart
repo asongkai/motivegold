@@ -34,6 +34,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(
   //     )
   // ));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานขายทองรูปพรรณเก่า 96.5%',

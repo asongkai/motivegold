@@ -20,7 +20,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
   final pdf = Document(theme: myTheme);
 
   List<Widget> widgets = [];
-
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานซื้อทองรูปพรรณใหม่ 96.5%',
@@ -213,7 +213,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.orange600
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceDiff ?? 0),
+              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.taxBase ?? 0),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.purple600
@@ -279,7 +279,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                       fontWeight: FontWeight.bold,
                       color: PdfColors.orange700),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceDiffTotal(orders)),
+              paddedTextSmall(Global.format(taxBaseTotal(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,

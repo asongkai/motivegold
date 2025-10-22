@@ -34,6 +34,7 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
   //     )
   // ));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานขายทองคำแท่งเก่า',

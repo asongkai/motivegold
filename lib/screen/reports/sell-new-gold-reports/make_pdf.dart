@@ -20,7 +20,7 @@ Future<Uint8List> makeNewGoldReportPdf(
   final pdf = Document(theme: myTheme);
 
   List<Widget> widgets = [];
-
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานขายทองรูปพรรณใหม่ 96.5%',

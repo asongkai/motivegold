@@ -14,6 +14,7 @@ import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/screen/pos/checkout_summary_history_screen.dart';
 import 'package:motivegold/screen/pos/redeem/bill/preview.dart';
 import 'package:motivegold/screen/pos/redeem/ui/redeem_summary_screen.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
@@ -847,6 +848,15 @@ class _SingleRedeemHistoryScreenState extends State<SingleRedeemHistoryScreen> {
                           color: Colors.green[700]!,
                           onTap: () => _handlePrint(order),
                         ),
+                        if (order.redeemStatus != 'CANCEL') ...[
+                          SizedBox(height: 8),
+                          _buildActionButton(
+                            icon: Icons.cancel,
+                            label: 'ยกเลิก',
+                            color: Colors.red[700]!,
+                            onTap: () => _cancelRedeem(order),
+                          ),
+                        ],
                       ],
                     ),
                   ],
@@ -1082,6 +1092,71 @@ class _SingleRedeemHistoryScreenState extends State<SingleRedeemHistoryScreen> {
           builder: (context) => PdfPreviewRedeemPage(invoice: invoice),
         ));
         break;
+    }
+  }
+
+  Future<void> _cancelRedeem(RedeemModel redeem) async {
+    try {
+      Alert.info(
+        context,
+        'คุณแน่ใจที่จะยกเลิกรายการไถ่ถอนใช่ไหม?',
+        'การดำเนินการนี้จะยกเลิกรายการไถ่ถอนและไม่สามารถย้อนกลับได้',
+        'ตกลง',
+        action: () async {
+          try {
+            var result = await ApiServices.post(
+              '/redeem/cancel',
+              Global.requestObj({
+                "Id": redeem.id,
+              }),
+            );
+
+            if (result?.status == "success") {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('ยกเลิกรายการไถ่ถอนสำเร็จแล้ว'),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+                // Refresh the list to show updated status
+                search();
+              }
+            } else {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result?.message ?? 'ไม่สามารถยกเลิกรายการไถ่ถอนได้'),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ไม่สามารถยกเลิกรายการไถ่ถอนได้'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 }

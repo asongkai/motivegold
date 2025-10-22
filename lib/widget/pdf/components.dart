@@ -11,6 +11,7 @@ import 'package:motivegold/utils/util.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:quiver/pattern.dart';
 import 'package:sizer/sizer.dart';
 
 Widget divider() {
@@ -34,7 +35,7 @@ Future<Uint8List?> loadNetworkImage(String url) async {
 }
 
 Future<Widget> header(OrderModel order, String? title,
-    {bool? showPosId, String? versionText}) async {
+    {bool? showPosId, String? versionText, bool full = true}) async {
   // Load network image
   final Uint8List? imageData = await loadNetworkImage(
       '${Constants.DOMAIN_URL}/images/${Global.company?.logo}');
@@ -60,13 +61,12 @@ Future<Widget> header(OrderModel order, String? title,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text('${Global.company?.name} (${Global.branch!.name})',
+                  Text(getCompanyName(full: full),
                       style:
                           TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  Text(
-                      '${Global.branch?.address} ${Global.branch?.village} ${Global.branch?.district} ${Global.branch?.province}',
+                  Text('${getFullAddress()}',
                       style: const TextStyle(fontSize: 11)),
-                  Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
+                  Text('โทรศัพท์ : ${Global.branch?.phone}',
                       style: const TextStyle(fontSize: 11)),
                   Text(
                       'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
@@ -132,6 +132,22 @@ Future<Widget> header(OrderModel order, String? title,
   );
 }
 
+String getCompanyName({bool full = true}) {
+  if (Global.branch == null) {
+    return Global.company?.name ?? "";
+  }
+
+  if (Global.branch!.isHeadquarter == true) {
+    return '${Global.company?.name} (สำนักงานใหญ่)';
+  } else {
+    if (Global.branch!.showAbbreviatedName == true && full == false) {
+      return '${Global.branch?.name} สาขาที่ (${Global.branch!.branchId})';
+    } else {
+      return '${Global.company?.name} สาขาที่ (${Global.branch!.branchId}) "${Global.branch!.name}"';
+    }
+  }
+}
+
 Future<Widget> headerRedeem(RedeemModel order, String? title,
     {bool? showPosId, String? versionText}) async {
   // Load network image
@@ -157,12 +173,10 @@ Future<Widget> headerRedeem(RedeemModel order, String? title,
             flex: 6,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('${Global.company?.name} (${Global.branch!.name})',
+              Text('${getCompanyName(full: true)}',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Text(
-                  '${Global.branch?.address} ${Global.branch?.village} ${Global.branch?.district} ${Global.branch?.province}',
-                  style: const TextStyle(fontSize: 11)),
-              Text('โทรศัพท์/Phone : ${Global.branch?.phone}',
+              Text('${getFullAddress()}', style: const TextStyle(fontSize: 11)),
+              Text('โทรศัพท์ : ${Global.branch?.phone}',
                   style: const TextStyle(fontSize: 11)),
               Text(
                   'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
@@ -357,7 +371,7 @@ Widget docNoRedeem(RedeemModel order) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('เลขประจำตัว ผู้เสียภาษี : ${order.customer?.taxNumber}',
+            Text('เลขประจำตัวผู้เสียภาษี : ${order.customer?.taxNumber}',
                 style: const TextStyle(fontSize: 11)),
             Text('วันที่ : ${Global.formatDateNT(order.redeemDate.toString())}',
                 style: const TextStyle(fontSize: 11)),
@@ -698,7 +712,8 @@ Widget buyerSellerInfoRefill(
                   Text('ทองคำแท่งรับซื้อบาทละ : ',
                       textAlign: TextAlign.right,
                       style: const TextStyle(fontSize: 11)),
-                  Text('${Global.format((order.sellTPrice ?? 0) > 0 ? (order.sellTPrice ?? 0) - 100 : 0)} บาท',
+                  Text(
+                      '${Global.format((order.sellTPrice ?? 0) > 0 ? (order.sellTPrice ?? 0) - 100 : 0)} บาท',
                       textAlign: TextAlign.right,
                       style: const TextStyle(fontSize: 11)),
                 ]),
@@ -1128,14 +1143,38 @@ Widget getThongThengSignatureInfo(CustomerModel customer, int orderTypeId) =>
 
 Widget reportsHeader() => Column(children: [
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          Text(Global.branch!.isHeadquarter == true
+              ? "ชื่อสถานประกอบการ : ${Global.company!.name} "
+              : "ชื่อสถานประกอบการ : ${Global.branch!.name}"),
+          SizedBox(width: 30),
           Expanded(
-            child: Text(
-                "ชื่อผู้ประกอบการ/ชื่อสถานประกอบการ : ${Global.company!.name} (${Global.branch!.name})"),
-          ),
-          Expanded(
-            child: Text(' ', textAlign: TextAlign.right),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    // Custom checkbox using a container
+                    _buildCheckbox(
+                        Global.branch!.isHeadquarter == true ? true : false),
+                    SizedBox(width: 5),
+                    Text('สำนักงานใหญ่'),
+                  ],
+                ),
+                SizedBox(width: 20),
+                Row(
+                  children: [
+                    _buildCheckbox(
+                        Global.branch!.isHeadquarter == false ? true : false),
+                    SizedBox(width: 5),
+                    Text('สาขา'),
+                    SizedBox(width: 10),
+                    Text('${Global.branch!.branchId}'),
+                  ],
+                ),
+              ],
+            ),
           )
         ],
       ),
@@ -1143,8 +1182,7 @@ Widget reportsHeader() => Column(children: [
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
-                "ที่อยู่ : ${Global.branch?.address} ${Global.branch?.village} ${Global.branch?.district} ${Global.branch?.province}"),
+            child: Text("ที่อยู่ : ${getFullAddress()}"),
           ),
           Expanded(
             child: Text(
@@ -1154,6 +1192,103 @@ Widget reportsHeader() => Column(children: [
         ],
       ),
     ]);
+
+Widget reportsCompanyTitle() => Center(
+      child: Text(
+        Global.branch!.isHeadquarter == true
+            ? '${Global.company!.name} (สำนักงานใหญ่)'
+            : '${Global.company!.name}',
+        style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+      ),
+    );
+
+String getFullAddress() {
+  // Return empty string if branch is null
+  if (Global.branch == null) {
+    return "";
+  }
+
+  String address = "";
+  if (Global.branch?.building != null && Global.branch!.building!.isNotEmpty) {
+    address += 'อาคาร${Global.branch!.building} ';
+  }
+  if (Global.branch?.room != null && Global.branch!.room!.isNotEmpty) {
+    address += 'ห้องเลขที่${Global.branch!.room} ';
+  }
+  if (Global.branch?.floor != null && Global.branch!.floor!.isNotEmpty) {
+    address += 'ชั้นที่${Global.branch!.floor} ';
+  }
+  if (Global.branch?.address != null && Global.branch!.address!.isNotEmpty) {
+    address += 'เลขที่${Global.branch!.address} ';
+  }
+  if (Global.branch?.village != null && Global.branch!.village!.isNotEmpty) {
+    address += 'หมู่บ้าน${Global.branch!.village} ';
+  }
+  if (Global.branch?.villageNo != null &&
+      Global.branch!.villageNo!.isNotEmpty) {
+    address += 'หมู่ที่${Global.branch!.villageNo} ';
+  }
+
+  if (Global.branch?.alley != null && Global.branch!.alley!.isNotEmpty) {
+    address += 'ตรอก/ซอย${Global.branch!.alley} ';
+  }
+  if (Global.branch?.road != null && Global.branch!.road!.isNotEmpty) {
+    address += 'ถนน${Global.branch!.road} ';
+  }
+  if (Global.branch?.provinceId == 1) {
+    if (Global.branch?.tambonNavigation != null) {
+      address += 'แขวง${Global.branch!.tambonNavigation?.nameTh} ';
+    }
+    if (Global.branch?.amphureNavigation != null) {
+      address += '${Global.branch!.amphureNavigation?.nameTh} ';
+    }
+    if (Global.branch?.provinceNavigation != null) {
+      address += '${Global.branch!.provinceNavigation?.nameTh} ';
+    }
+    return '$address ${Global.branch?.postalCode ?? ""}'; //'${Global.branch?.address} ${Global.branch?.village} ${Global.branch?.district} ${Global.branch?.province}';
+  } else {
+    if (Global.branch?.tambonNavigation != null) {
+      address += 'ตำบล${Global.branch!.tambonNavigation?.nameTh} ';
+    }
+    if (Global.branch?.amphureNavigation != null) {
+      address += 'อำเภอ${Global.branch!.amphureNavigation?.nameTh} ';
+    }
+    if (Global.branch?.provinceNavigation != null) {
+      address += 'จังหวัด${Global.branch!.provinceNavigation?.nameTh} ';
+    }
+    return '$address ${Global.branch?.postalCode ?? ""}';
+  }
+}
+
+Widget _buildCheckbox(bool? isChecked) {
+  motivePrint(isChecked);
+  return Container(
+    width: 15,
+    height: 15,
+    decoration: BoxDecoration(
+      border: Border.all(
+        color: PdfColors.black,
+        width: 1,
+      ),
+    ),
+    child: isChecked != null && isChecked
+        ? CustomPaint(
+            size: PdfPoint(15, 15),
+            painter: (PdfGraphics canvas, PdfPoint size) {
+// PDF coordinate system might be inverted
+              canvas
+                ..setColor(PdfColors.black)
+                ..setLineWidth(1.5)
+// Try with inverted Y coordinates
+                ..moveTo(3, 8) // Left point
+                ..lineTo(6, 5) // Bottom point (smaller Y = down in PDF)
+                ..lineTo(12, 11) // Top-right point
+                ..strokePath();
+            },
+          )
+        : Container(),
+  );
+}
 
 Widget paddedText(final String text,
         {final TextAlign align = TextAlign.left,
@@ -1166,5 +1301,3 @@ Widget paddedText(final String text,
         style: style,
       ),
     );
-
-

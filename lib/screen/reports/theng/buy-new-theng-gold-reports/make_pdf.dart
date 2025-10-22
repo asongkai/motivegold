@@ -54,6 +54,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
   //     )
   // ));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานภาษีซื้อทองคำแท่ง',

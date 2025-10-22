@@ -76,6 +76,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   bool isSeller = false;
   bool isCustomer = false;
   bool isBuyer = false;
+  bool _isReaderConnected = false;
   String? selectedBusinessType;
 
   ProductTypeModel? selectedType;
@@ -140,8 +141,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
     // birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     Global.addressCtrl.text = "";
-    ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
-    // init();
+    // ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
+    init();
     Global.provinceModel = null;
     Global.amphureModel = null;
     Global.tambonModel = null;
@@ -159,6 +160,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         _slideController?.forward();
       }
     });
+    // ThaiIdcardReaderFlutter.deviceHandlerStream.listen((device){
+    //   setState(() {
+    //     _isReaderConnected = true;
+    //   });
+    // });
+    // ThaiIdcardReaderFlutter.cardHandlerStream.listen((cardEvent) {});
   }
 
   @override
@@ -301,7 +308,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     });
   }
 
-  readCard({List<String> only = const []}) async {
+  readCard({required List<String> only}) async {
     try {
       var response = await ThaiIdcardReaderFlutter.read(only: only);
       setState(() {
@@ -813,7 +820,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                             _buildModernCard(
                               color: Colors.orange[50],
                               child: const EmptyHeader(
-                                text: 'เสียบเครื่องอ่านบัตรก่อน',
+                                text: 'อ่านบัตร',
                               ),
                             ),
                           ],

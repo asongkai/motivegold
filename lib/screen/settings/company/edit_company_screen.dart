@@ -5,12 +5,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/company.dart';
+import 'package:motivegold/model/location/amphure.dart';
+import 'package:motivegold/model/location/province.dart';
+import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
+import 'package:motivegold/widget/dropdown/LocationDropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/image/profile_image.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -19,7 +25,8 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/util.dart';
 // Platform-specific imports
-import 'package:motivegold/widget/payment/web_file_picker.dart' if (dart.library.io) 'package:motivegold/widget/payment/mobile_file_picker.dart';
+import 'package:motivegold/widget/payment/web_file_picker.dart'
+    if (dart.library.io) 'package:motivegold/widget/payment/mobile_file_picker.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:sizer/sizer.dart';
 
@@ -49,6 +56,17 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   final TextEditingController villageCtrl = TextEditingController();
   final TextEditingController districtCtrl = TextEditingController();
   final TextEditingController provinceCtrl = TextEditingController();
+
+  // New fields for PP.01 layout
+  final TextEditingController buildingCtrl = TextEditingController();
+  final TextEditingController roomCtrl = TextEditingController();
+  final TextEditingController floorCtrl = TextEditingController();
+  final TextEditingController villageNoCtrl = TextEditingController();
+  final TextEditingController alleyCtrl = TextEditingController();
+  final TextEditingController roadCtrl = TextEditingController();
+  final TextEditingController subDistrictCtrl = TextEditingController();
+  final TextEditingController postalCodeCtrl = TextEditingController();
+
   bool nonStock = false;
 
   bool loading = false;
@@ -60,19 +78,94 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   void initState() {
     super.initState();
     id = widget.company.id;
-    nameCtrl.text = widget.company.name ?? '';
+    motivePrint(widget.company.toJson());
+    nameCtrl.text = widget.company.name;
     emailCtrl.text = widget.company.email ?? '';
     phoneCtrl.text = widget.company.phone ?? '';
     addressCtrl.text = widget.company.address ?? '';
     villageCtrl.text = widget.company.village ?? '';
-    districtCtrl.text = widget.company.district ?? '';
-    provinceCtrl.text = widget.company.province ?? '';
     taxNumberCtrl.text = widget.company.taxNumber ?? '';
     nonStock = widget.company.stock == 1 ? false : true;
+
+    // Initialize new PP.01 fields
+    buildingCtrl.text = widget.company.building ?? '';
+    roomCtrl.text = widget.company.room ?? '';
+    floorCtrl.text = widget.company.floor ?? '';
+    villageNoCtrl.text = widget.company.villageNo ?? '';
+    alleyCtrl.text = widget.company.alley ?? '';
+    roadCtrl.text = widget.company.road ?? '';
+    postalCodeCtrl.text = widget.company.postalCode ?? '';
+
+    // Initialize location dropdowns
+    Global.provinceModel = null;
+    Global.amphureModel = null;
+    Global.tambonModel = null;
+    Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+        ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+    Global.amphureNotifier =
+        ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    Global.tambonNotifier =
+        ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+
     // Set existing logo if available
     if (widget.company.logo != null && widget.company.logo!.isNotEmpty) {
       logo = widget.company.logo;
     }
+
+    // Load existing location data
+    initializeLocationDropdowns();
+  }
+
+  void initializeLocationDropdowns() async {
+    // Initialize province
+    if (widget.company.provinceId != null) {
+      var province = Global.provinceList.firstWhere(
+        (p) => p.id == widget.company.provinceId,
+        orElse: () => ProvinceModel(
+            id: 0,
+            nameTh: widget.company.province ?? '',
+            nameEn: '',
+            geographyId: 0),
+      );
+      Global.provinceModel = province;
+      Global.provinceNotifier!.value = province;
+
+      // Load and initialize amphure
+      if (province.id != 0) {
+        await loadAmphureByProvince(province.id!);
+        if (widget.company.amphureId != null) {
+          var amphure = Global.amphureList.firstWhere(
+            (a) => a.id == widget.company.amphureId,
+            orElse: () => AmphureModel(
+                id: 0,
+                nameTh: widget.company.district ?? '',
+                nameEn: '',
+                provinceId: 0),
+          );
+          Global.amphureModel = amphure;
+          Global.amphureNotifier!.value = amphure;
+
+          // Load and initialize tambon
+          if (amphure.id != 0) {
+            await loadTambonByAmphure(amphure.id!);
+            if (widget.company.tambonId != null) {
+              var tambon = Global.tambonList.firstWhere(
+                (t) => t.id == widget.company.tambonId,
+                orElse: () => TambonModel(
+                    id: 0,
+                    nameTh: widget.company.subDistrict ?? '',
+                    nameEn: '',
+                    amphureId: 0,
+                    zipCode: 0),
+              );
+              Global.tambonModel = tambon;
+              Global.tambonNotifier!.value = tambon;
+            }
+          }
+        }
+      }
+    }
+    setState(() {});
   }
 
   @override
@@ -98,149 +191,532 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
           child: loading
               ? const Center(child: LoadingProgress())
               : SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Logo Section
-                  _buildLogoSection(),
-
-                  const SizedBox(height: 24),
-
-                  // Company Information Card
-                  _buildInfoCard(
-                    title: 'ข้อมูลบริษัท',
-                    icon: Icons.business,
-                    children: [
-                      _buildModernTextField(
-                        controller: nameCtrl,
-                        label: 'ชื่อบริษัท',
-                        icon: Icons.business_outlined,
-                        required: true,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: phoneCtrl,
-                              label: 'โทรศัพท์',
-                              icon: Icons.phone_outlined,
-                              keyboardType: TextInputType.phone,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: emailCtrl,
-                              label: 'อีเมล',
-                              icon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildModernTextField(
-                        controller: taxNumberCtrl,
-                        label: 'หมายเลขประจำตัวผู้เสียภาษี',
-                        icon: Icons.assignment_outlined,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Address Information Card
-                  _buildInfoCard(
-                    title: 'ที่อยู่',
-                    icon: Icons.location_on,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: provinceCtrl,
-                              label: 'จังหวัด',
-                              icon: Icons.map_outlined,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: districtCtrl,
-                              label: 'เขต',
-                              icon: Icons.location_city_outlined,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: villageCtrl,
-                              label: 'บ้าน',
-                              icon: Icons.home_outlined,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildModernTextField(
-                              controller: addressCtrl,
-                              label: 'ที่อยู่',
-                              icon: Icons.place_outlined,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Settings Card
-                  if (Global.user!.userType == 'ADMIN')
-                    _buildInfoCard(
-                      title: 'การตั้งค่า',
-                      icon: Icons.settings,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: CheckboxListTile(
-                            title: const Text(
-                              "Non Stock",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        // Logo Section
+                        _buildLogoSection(),
+
+                        const SizedBox(height: 24),
+
+                        // Tax Information Card
+                        _buildInfoCard(
+                          title: 'ข้อมูลทางภาษี',
+                          icon: Icons.assignment_outlined,
+                          children: [
+                            _buildModernTextField(
+                              controller: taxNumberCtrl,
+                              label: 'เลขประจำตัวผู้เสียภาษี',
+                              icon: Icons.assignment_outlined,
+                              required: true,
                             ),
-                            subtitle: const Text(
-                              "เปิดใช้งานโหมด Non Stock",
-                              style: TextStyle(fontSize: 14, color: Colors.grey),
+                            const SizedBox(height: 16),
+                            _buildModernTextField(
+                              controller: nameCtrl,
+                              label: 'ชื่อผู้ประกอบการ',
+                              icon: Icons.business_outlined,
+                              required: true,
                             ),
-                            value: nonStock,
-                            visualDensity: VisualDensity.compact,
-                            activeColor: Colors.teal,
-                            onChanged: (newValue) {
-                              setState(() {
-                                nonStock = newValue!;
-                              });
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
-                          ),
+                          ],
                         ),
+
+                        const SizedBox(height: 20),
+
+                        // Address Information Card - PP.01 Format
+                        _buildInfoCard(
+                          title: 'ที่อยู่',
+                          icon: Icons.location_on,
+                          children: [
+                            // Row 1: อาคาร, ห้องเลขที่, ชั้นที่
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: buildingCtrl,
+                                    label: 'อาคาร',
+                                    icon: Icons.apartment_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: roomCtrl,
+                                    label: 'ห้องเลขที่',
+                                    icon: Icons.door_front_door_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: floorCtrl,
+                                    label: 'ชั้นที่',
+                                    icon: Icons.stairs_outlined,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Row 2: เลขที่, หมู่บ้าน, หมู่ที่
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: addressCtrl,
+                                    label: 'เลขที่',
+                                    icon: Icons.numbers_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 2,
+                                  child: _buildModernTextField(
+                                    controller: villageCtrl,
+                                    label: 'หมู่บ้าน',
+                                    icon: Icons.home_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: villageNoCtrl,
+                                    label: 'หมู่ที่',
+                                    icon: Icons.home_work_outlined,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Row 3: ตรอก/ซอย, ถนน, 3*ตำบล/แขวง
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: alleyCtrl,
+                                    label: 'ตรอก/ซอย',
+                                    icon: Icons.turn_right_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: roadCtrl,
+                                    label: 'ถนน',
+                                    icon: Icons.route_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.red,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '3',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'ตำบล/แขวง',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.grey[300]!),
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black
+                                                  .withValues(alpha: 0.03),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: MiraiDropDownMenu<TambonModel>(
+                                          key: UniqueKey(),
+                                          children: Global.tambonList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            TambonModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: 14,
+                                            );
+                                          },
+                                          onChanged: (TambonModel value) {
+                                            Global.tambonModel = value;
+                                            Global.tambonNotifier!.value =
+                                                value;
+                                            postalCodeCtrl.text =
+                                                value.zipCode.toString();
+                                            setState(() {});
+                                          },
+                                          child:
+                                              LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: 14,
+                                            projectValueNotifier:
+                                                Global.tambonNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Row 4: 2*อำเภอ/เขต, 1*จังหวัด, *รหัสไปรษณีย์
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.red,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '2',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'อำเภอ/เขต',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.grey[300]!),
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black
+                                                  .withValues(alpha: 0.03),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: MiraiDropDownMenu<AmphureModel>(
+                                          key: UniqueKey(),
+                                          children: Global.amphureList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            AmphureModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: 14,
+                                            );
+                                          },
+                                          onChanged:
+                                              (AmphureModel value) async {
+                                            Global.amphureModel = value;
+                                            Global.amphureNotifier!.value =
+                                                value;
+                                            Global.tambonModel = null;
+                                            Global.tambonNotifier!.value =
+                                                TambonModel(
+                                                    id: 0, nameTh: 'เลือกตำบล');
+                                            Global.tambonList = [];
+                                            setState(() {});
+                                            await loadTambonByAmphure(
+                                                value.id!);
+                                            setState(() {});
+                                          },
+                                          child:
+                                              LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: 14,
+                                            projectValueNotifier:
+                                                Global.amphureNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.red,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '1',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'จังหวัด',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.grey[300]!),
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black
+                                                  .withValues(alpha: 0.03),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: MiraiDropDownMenu<ProvinceModel>(
+                                          key: UniqueKey(),
+                                          children: Global.provinceList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            ProvinceModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return LocationDropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: 14,
+                                            );
+                                          },
+                                          onChanged:
+                                              (ProvinceModel value) async {
+                                            Global.provinceModel = value;
+                                            Global.provinceNotifier!.value =
+                                                value;
+                                            // Reset dependent dropdowns
+                                            Global.amphureModel = null;
+                                            Global.tambonModel = null;
+                                            Global.amphureNotifier!.value =
+                                                AmphureModel(
+                                                    id: 0,
+                                                    nameTh: 'เลือกอำเภอ');
+                                            Global.tambonNotifier!.value =
+                                                TambonModel(
+                                                    id: 0, nameTh: 'เลือกตำบล');
+                                            Global.amphureList = [];
+                                            Global.tambonList = [];
+                                            setState(() {});
+                                            await loadAmphureByProvince(
+                                                value.id!);
+                                            setState(() {});
+                                          },
+                                          child:
+                                              LocationDropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: 14,
+                                            projectValueNotifier:
+                                                Global.provinceNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: postalCodeCtrl,
+                                    label: '*รหัสไปรษณีย์',
+                                    icon: Icons.markunread_mailbox_outlined,
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Contact Information Card
+                        _buildInfoCard(
+                          title: 'ข้อมูลติดต่อ',
+                          icon: Icons.contact_phone,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: phoneCtrl,
+                                    label: 'โทรศัพท์',
+                                    icon: Icons.phone_outlined,
+                                    keyboardType: TextInputType.phone,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _buildModernTextField(
+                                    controller: emailCtrl,
+                                    label: 'อีเมล',
+                                    icon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Settings Card
+                        if (Global.user!.userType == 'ADMIN')
+                          _buildInfoCard(
+                            title: 'การตั้งค่า',
+                            icon: Icons.settings,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                ),
+                                child: CheckboxListTile(
+                                  title: const Text(
+                                    "Non Stock",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  subtitle: const Text(
+                                    "เปิดใช้งานโหมด Non Stock",
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.grey),
+                                  ),
+                                  value: nonStock,
+                                  visualDensity: VisualDensity.compact,
+                                  activeColor: Colors.teal,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      nonStock = newValue!;
+                                    });
+                                  },
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        const SizedBox(height: 100),
                       ],
                     ),
-
-                  const SizedBox(height: 100),
-                ],
-              ),
-            ),
-          ),
+                  ),
+                ),
         ),
       ),
       floatingActionButton: Container(
@@ -476,7 +952,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
             text: TextSpan(
               text: label,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
               ),
@@ -492,7 +968,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
           Text(
             label,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 18,
               fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
@@ -524,9 +1000,59 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
     );
   }
 
+  // Future<void> loadAmphureByProvince(int provinceId) async {
+  //   Global.amphureList.clear();
+  //   Global.tambonList.clear();
+  //   Global.amphureModel = null;
+  //   Global.tambonModel = null;
+  //   Global.amphureNotifier!.value = AmphureModel(
+  //       id: 0, nameTh: 'เลือกอำเภอ/เขต', nameEn: '', provinceId: 0);
+  //   Global.tambonNotifier!.value = TambonModel(
+  //       id: 0, nameTh: 'เลือกตำบล/แขวง', nameEn: '', amphureId: 0, zipCode: 0);
+  //
+  //   try {
+  //     var result = await ApiServices.get('/customer/amphure/$provinceId');
+  //     motivePrint(result!.toJson());
+  //     if (result?.status == "success") {
+  //       var data = jsonEncode(result?.data);
+  //       Global.amphureList = amphureModelFromJson(data);
+  //       setState(() {});
+  //     }
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print(e.toString());
+  //     }
+  //   }
+  // }
+
+  // Future<void> loadTambonByAmphure(int amphureId) async {
+  //   Global.tambonList.clear();
+  //   Global.tambonModel = null;
+  //   Global.tambonNotifier!.value = TambonModel(
+  //       id: 0, nameTh: 'เลือกตำบล/แขวง', nameEn: '', amphureId: 0, zipCode: 0);
+  //
+  //   try {
+  //     var result = await ApiServices.get('/customer/tambon/$amphureId');
+  //     if (result?.status == "success") {
+  //       var data = jsonEncode(result?.data);
+  //       Global.tambonList = tambonModelFromJson(data);
+  //       setState(() {});
+  //     }
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print(e.toString());
+  //     }
+  //   }
+  // }
+
   void _updateCompany() async {
     if (nameCtrl.text.trim() == "") {
-      Alert.warning(context, 'กรุณากรอกชื่อบริษัท', '', 'ตกลง');
+      Alert.warning(context, 'กรุณากรอกชื่อผู้ประกอบการ', '', 'ตกลง');
+      return;
+    }
+
+    if (taxNumberCtrl.text.trim() == "") {
+      Alert.warning(context, 'กรุณากรอกเลขประจำตัวผู้เสียภาษี', '', 'ตกลง');
       return;
     }
 
@@ -535,8 +1061,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
     if (logo != null) {
       try {
         // Check if this is a new image (base64) or existing server image
-        if (logo!.contains('base64') || logo!.startsWith('data:')) {
-          // This is a new base64 image
+        if (logo != widget.company.logo) {
+          // This is a new image - either from camera or gallery
           String base64String = logo!;
           if (base64String.startsWith('data:')) {
             base64String = base64String.split(',').last;
@@ -548,14 +1074,14 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
           // If successful, use the cleaned string
           cleanedLogo = base64String;
         } else {
-          // This is an existing server image filename, keep as is
-          cleanedLogo = logo;
+          // This is the existing server image, don't send it again
+          cleanedLogo = null;
         }
-
       } catch (e) {
         print('Invalid base64 logo data: $e');
         // Set to null if invalid, or show an error to user
-        Alert.warning(context, 'รูปภาพไม่ถูกต้อง กรุณาเลือกรูปภาพใหม่', '', 'ตกลง');
+        Alert.warning(
+            context, 'รูปภาพไม่ถูกต้อง กรุณาเลือกรูปภาพใหม่', '', 'ตกลง');
         return;
       }
     }
@@ -567,47 +1093,63 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       "phone": phoneCtrl.text,
       "address": addressCtrl.text,
       "village": villageCtrl.text,
-      "district": districtCtrl.text,
-      "province": provinceCtrl.text,
+      "district": Global.amphureModel?.nameTh ?? widget.company.district ?? "",
+      "province": Global.provinceModel?.nameTh ?? widget.company.province ?? "",
       "taxNumber": taxNumberCtrl.text,
       "logo": cleanedLogo, // Use cleaned logo instead of raw logo
-      "stock": nonStock ? 0 : 1
+      "stock": nonStock ? 0 : 1,
+      // New PP.01 fields
+      "building": buildingCtrl.text,
+      "room": roomCtrl.text,
+      "floor": floorCtrl.text,
+      "villageNo": villageNoCtrl.text,
+      "alley": alleyCtrl.text,
+      "road": roadCtrl.text,
+      "subDistrict":
+          Global.tambonModel?.nameTh ?? widget.company.subDistrict ?? "",
+      "postalCode": postalCodeCtrl.text,
+      // Location IDs for reference
+      "tambonId": Global.tambonModel?.id ?? widget.company.tambonId,
+      "amphureId": Global.amphureModel?.id ?? widget.company.amphureId,
+      "provinceId": Global.provinceModel?.id ?? widget.company.provinceId,
     });
+
+    motivePrint(object);
 
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          final ProgressDialog pr = ProgressDialog(context,
-              type: ProgressDialogType.normal,
-              isDismissible: true,
-              showLogs: true);
-          await pr.show();
-          pr.update(message: 'processing');
-          try {
-            var result = await ApiServices.put('/company', id, object);
-            await pr.hide();
-            if (result?.status == "success") {
-              if (mounted) {
-                var c = CompanyModel.fromJson(result?.data);
-                if (c.id == Global.company?.id) {
-                  Global.company = CompanyModel.fromJson(result?.data);
-                  setState(() {});
-                }
-                Alert.success(context, 'อัปเดตข้อมูลเรียบร้อยแล้ว', '', 'ตกลง', action: () {
-                  Navigator.of(context).pop();
-                });
-              }
-            } else {
-              if (mounted) {
-                Alert.warning(context, result?.message ?? 'เกิดข้อผิดพลาด', '', 'ตกลง');
-              }
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing');
+      try {
+        var result = await ApiServices.put('/company', id, object);
+        await pr.hide();
+        if (result?.status == "success") {
+          if (mounted) {
+            var c = CompanyModel.fromJson(result?.data);
+            if (c.id == Global.company?.id) {
+              Global.company = CompanyModel.fromJson(result?.data);
+              setState(() {});
             }
-          } catch (e) {
-            await pr.hide();
-            if (mounted) {
-              Alert.warning(context, 'เกิดข้อผิดพลาด: ${e.toString()}', '', 'ตกลง');
-            }
+            Alert.success(context, 'อัปเดตข้อมูลเรียบร้อยแล้ว', '', 'ตกลง',
+                action: () {
+              Navigator.of(context).pop();
+            });
           }
-        });
+        } else {
+          if (mounted) {
+            Alert.warning(
+                context, result?.message ?? 'เกิดข้อผิดพลาด', '', 'ตกลง');
+          }
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'เกิดข้อผิดพลาด: ${e.toString()}', '', 'ตกลง');
+        }
+      }
+    });
   }
 
   void _settingModalBottomSheet(context) {
@@ -698,7 +1240,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       });
     } else {
       if (imageSource == ImageSource.camera) {
-        Alert.warning(context, 'การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน', '', 'ตกลง');
+        Alert.warning(
+            context, 'การถ่ายภาพจากกล้องบนเว็บยังไม่พร้อมใช้งาน', '', 'ตกลง');
         return;
       }
 
@@ -721,7 +1264,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
               logo = cleanedResult; // Only set if valid
             } catch (e) {
               print('Invalid base64 from web picker: $e');
-              Alert.warning(context, 'รูปภาพไม่ถูกต้อง กรุณาเลือกรูปภาพใหม่', '', 'ตกลง');
+              Alert.warning(
+                  context, 'รูปภาพไม่ถูกต้อง กรุณาเลือกรูปภาพใหม่', '', 'ตกลง');
               return;
             }
           }

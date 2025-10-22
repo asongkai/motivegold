@@ -98,9 +98,14 @@ class _CompanyListScreenState extends State<CompanyListScreen>
       } else {
         filteredList = list
             ?.where((company) =>
-        company.name.toLowerCase().contains(query.toLowerCase()) ||
-            (company.phone != null && company.phone!.toLowerCase().contains(query.toLowerCase())) ||
-            _getFullAddress(company).toLowerCase().contains(query.toLowerCase()))
+                company.name.toLowerCase().contains(query.toLowerCase()) ||
+                (company.phone != null &&
+                    company.phone!
+                        .toLowerCase()
+                        .contains(query.toLowerCase())) ||
+                _getFullAddress(company)
+                    .toLowerCase()
+                    .contains(query.toLowerCase()))
             .toList();
       }
     });
@@ -152,43 +157,43 @@ class _CompanyListScreenState extends State<CompanyListScreen>
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         if (Global.user!.userType == 'ADMIN')
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const NewCompanyScreen(
-                                        showBackButton: true,
-                                      ),
-                                      fullscreenDialog: true))
-                                  .whenComplete(() {
-                                loadProducts();
-                              });
-                            },
-                            child: Container(
-                              color: Colors.teal[900],
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.add,
-                                      size: 16.sp,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      'เพิ่มบริษัทใหม่',
-                                      style: TextStyle(
-                                          fontSize: 14.sp, //16.sp,
-                                          color: Colors.white),
-                                    )
-                                  ],
-                                ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NewCompanyScreen(
+                                              showBackButton: true,
+                                            ),
+                                        fullscreenDialog: true))
+                                .whenComplete(() {
+                              loadProducts();
+                            });
+                          },
+                          child: Container(
+                            color: Colors.teal[900],
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 8.0, right: 8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    size: 16.sp,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    'เพิ่มบริษัทใหม่',
+                                    style: TextStyle(
+                                        fontSize: 14.sp, //16.sp,
+                                        color: Colors.white),
+                                  )
+                                ],
                               ),
                             ),
                           ),
+                        ),
                       ],
                     ))
               ],
@@ -200,98 +205,98 @@ class _CompanyListScreenState extends State<CompanyListScreen>
         child: loading
             ? const Center(child: LoadingProgress())
             : Column(
-          children: [
-            // Search Bar
-            if (Global.user!.userType == 'ADMIN')
-              Container(
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _filterCompanies,
-                  decoration: InputDecoration(
-                    hintText: 'ค้นหาบริษัท...',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon:
-                    Icon(Icons.search, color: Colors.grey[400]),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        if (mounted) {
-                          _searchController.clear();
-                          _filterCompanies('');
-                        }
-                      },
-                    )
-                        : null,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-              ),
-            // Company Count
-            if (Global.user!.userType == 'ADMIN')
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Text(
-                      'พบ ${filteredList?.length ?? 0} บริษัท',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                children: [
+                  // Search Bar
+                  if (Global.user!.userType == 'ADMIN')
+                    Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 10,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _filterCompanies,
+                        decoration: InputDecoration(
+                          hintText: 'ค้นหาบริษัท...',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          prefixIcon:
+                              Icon(Icons.search, color: Colors.grey[400]),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    if (mounted) {
+                                      _searchController.clear();
+                                      _filterCompanies('');
+                                    }
+                                  },
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  // Company Count
+                  if (Global.user!.userType == 'ADMIN')
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Text(
+                            'พบ ${filteredList?.length ?? 0} บริษัท',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  // Company List
+                  Expanded(
+                    child: filteredList!.isEmpty
+                        ? _buildEmptyState()
+                        : _fadeAnimation != null
+                            ? FadeTransition(
+                                opacity: _fadeAnimation!,
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  itemCount: filteredList!.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return _buildModernCompanyCard(
+                                        filteredList![index], index);
+                                  },
+                                ),
+                              )
+                            : ListView.builder(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: filteredList!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return _buildModernCompanyCard(
+                                      filteredList![index], index);
+                                },
+                              ),
+                  ),
+                ],
               ),
-            const SizedBox(height: 8),
-            // Company List
-            Expanded(
-              child: filteredList!.isEmpty
-                  ? _buildEmptyState()
-                  : _fadeAnimation != null
-                  ? FadeTransition(
-                opacity: _fadeAnimation!,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16),
-                  itemCount: filteredList!.length,
-                  itemBuilder:
-                      (BuildContext context, int index) {
-                    return _buildModernCompanyCard(
-                        filteredList![index], index);
-                  },
-                ),
-              )
-                  : ListView.builder(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: filteredList!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _buildModernCompanyCard(
-                      filteredList![index], index);
-                },
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -424,7 +429,7 @@ class _CompanyListScreenState extends State<CompanyListScreen>
                   // Contact Info
                   Container(
                     padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.green[50],
                       borderRadius: BorderRadius.circular(8),
@@ -525,8 +530,8 @@ class _CompanyListScreenState extends State<CompanyListScreen>
   void _showDeleteConfirmation(int id, int index) {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          removeProduct(id, index);
-        });
+      removeProduct(id, index);
+    });
   }
 
   void removeProduct(int id, int index) async {

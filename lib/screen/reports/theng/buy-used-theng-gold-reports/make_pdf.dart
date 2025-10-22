@@ -61,6 +61,7 @@ Future<Uint8List> makeBuyUsedThengGoldReportPdf(List<OrderModel?> orders,
   //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
   //         child: getHeaderText(type))));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานซื้อทองคำแท่งเก่า',

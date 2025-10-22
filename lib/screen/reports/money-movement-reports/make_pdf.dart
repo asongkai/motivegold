@@ -33,7 +33,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
   final pdf = Document(theme: myTheme);
 
   List<Widget> widgets = [];
-
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานเส้นทางทองรูปพรรณ-เส้นทางการเงิน',

@@ -8,8 +8,11 @@ import 'package:motivegold/model/company.dart';
 import 'package:motivegold/screen/tab_screen.dart';
 import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/global.dart';
+import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/localbindings.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/pdf/components.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:sizer/sizer.dart';
 
@@ -30,27 +33,120 @@ class TitleContent extends StatefulWidget {
 }
 
 class _TitleContentState extends State<TitleContent> {
+  static bool _isCollapsed = false; // Static to persist across all instances
+  static const String _headerCollapseKey = 'header_collapse_state';
+
   @override
   void initState() {
     super.initState();
+    // Load collapse state from local storage
+    _loadCollapseState();
+
     // Initialize if null, otherwise update the existing notifier
+
     if (Global.branchNotifier == null) {
       Global.branchNotifier = ValueNotifier<BranchModel>(
-        Global.branch ?? BranchModel(id: 0, name: 'เลือกสาขา'),
+        Global.branch ?? BranchModel(id: 0, name: 'เลือก'),
       );
     } else {
       Global.branchNotifier!.value =
-          Global.branch ?? BranchModel(id: 0, name: 'เลือกสาขา');
+          Global.branch ?? BranchModel(id: 0, name: 'เลือก');
     }
 
     if (Global.companyNotifier == null) {
       Global.companyNotifier = ValueNotifier<CompanyModel>(
-        Global.company ?? CompanyModel(id: 0, name: 'เลือกบริษัท'),
+        Global.company ?? CompanyModel(id: 0, name: 'เลือก'),
       );
     } else {
       Global.companyNotifier!.value =
-          Global.company ?? CompanyModel(id: 0, name: 'เลือกบริษัท');
+          Global.company ?? CompanyModel(id: 0, name: 'เลือก');
     }
+  }
+
+  // Load collapse state from local storage
+  Future<void> _loadCollapseState() async {
+    final storage = LocalStorage.sharedInstance;
+    final bool? savedState = await storage.getBool(_headerCollapseKey);
+    if (savedState != null) {
+      setState(() {
+        _isCollapsed = savedState;
+      });
+    }
+  }
+
+  // Save collapse state to local storage
+  Future<void> _saveCollapseState(bool isCollapsed) async {
+    final storage = LocalStorage.sharedInstance;
+    await storage.setBool(_headerCollapseKey, isCollapsed);
+  }
+
+  Widget _buildCollapsedContent() {
+    return ValueListenableBuilder<dynamic>(
+      valueListenable: Global.companyNotifier!,
+      builder: (context, company, child) {
+        return ValueListenableBuilder<dynamic>(
+          valueListenable: Global.branchNotifier!,
+          builder: (context, branch, child) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (widget.backButton)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: RawMaterialButton(
+                        onPressed: () {
+                          if (widget.goHome) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const TabScreen(
+                                          title: "MENU",
+                                        )));
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        elevation: 2.0,
+                        fillColor: Colors.white,
+                        constraints: const BoxConstraints(minWidth: 0.0),
+                        padding: const EdgeInsets.all(8.0),
+                        shape: const CircleBorder(),
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 16.sp,
+                        ),
+                      ),
+                    ),
+                  Icon(Icons.business, size: 14, color: Colors.white70),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${company.name}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    Global.branch?.isHeadquarter == true
+                        ? '(สำนักงานใหญ่)'
+                        : 'สาขาที่ (${branch.branchId ?? ""})',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -59,509 +155,608 @@ class _TitleContentState extends State<TitleContent> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Stack(
+          clipBehavior: Clip.none,
           children: [
-            if (widget.backButton)
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RawMaterialButton(
-                    onPressed: () {
-                      if (widget.goHome) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const TabScreen(
-                                      title: "MENU",
-                                    )));
-                      } else {
-                        Navigator.of(context).pop();
-                      }
-                    },
-                    elevation: 2.0,
-                    fillColor: Colors.white,
-                    constraints: const BoxConstraints(minWidth: 0.0),
-                    padding: const EdgeInsets.all(8.0),
-                    shape: const CircleBorder(),
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 16.sp, // Adjust based on screen size
-                    ),
-                  ),
-                ),
-              ),
-            Expanded(
-              flex: 5,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ValueListenableBuilder<dynamic>(
-                    valueListenable: Global.companyNotifier!,
-                    builder: (context, company, child) {
-                      return ValueListenableBuilder<dynamic>(
-                        valueListenable: Global.branchNotifier!,
-                        builder: (context, branch, child) {
-                          return Row(
+            Padding(
+              padding:
+                  const EdgeInsets.only(right: 0.0), // Space for the button
+              child: _isCollapsed
+                  ? _buildCollapsedContent()
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (widget.backButton)
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: RawMaterialButton(
+                                onPressed: () {
+                                  if (widget.goHome) {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => const TabScreen(
+                                                  title: "MENU",
+                                                )));
+                                  } else {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                elevation: 2.0,
+                                fillColor: Colors.white,
+                                constraints:
+                                    const BoxConstraints(minWidth: 0.0),
+                                padding: const EdgeInsets.all(8.0),
+                                shape: const CircleBorder(),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  size: 16.sp, // Adjust based on screen size
+                                ),
+                              ),
+                            ),
+                          ),
+                        Expanded(
+                          flex: 5,
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Expanded(
-                                flex: 2,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: company.logo == null
-                                        ? Container()
-                                        : Container(
-                                            height: 80,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withValues(alpha: 0.2),
-                                                  blurRadius: 4,
-                                                  offset: const Offset(0, 2),
-                                                ),
-                                              ],
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Image.network(
-                                                '${Constants.DOMAIN_URL}/images/${company.logo}',
-                                                fit: BoxFit.fitHeight,
-                                                errorBuilder: (context, error,
-                                                        stackTrace) =>
-                                                    Container(),
+                              ValueListenableBuilder<dynamic>(
+                                valueListenable: Global.companyNotifier!,
+                                builder: (context, company, child) {
+                                  motivePrint(
+                                      '${Constants.DOMAIN_URL}/images/${company.logo}');
+                                  motivePrint(company!.toJson());
+                                  return ValueListenableBuilder<dynamic>(
+                                    valueListenable: Global.branchNotifier!,
+                                    builder: (context, branch, child) {
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            flex: 2,
+                                            child: Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: company.logo == null
+                                                    ? Container()
+                                                    : Container(
+                                                        height: 80,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.2),
+                                                              blurRadius: 4,
+                                                              offset:
+                                                                  const Offset(
+                                                                      0, 2),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8),
+                                                          child: Image.network(
+                                                            '${Constants.DOMAIN_URL}/images/${company.logo}',
+                                                            fit: BoxFit
+                                                                .fitHeight,
+                                                            errorBuilder: (context,
+                                                                    error,
+                                                                    stackTrace) =>
+                                                                Container(),
+                                                          ),
+                                                        ),
+                                                      ),
                                               ),
                                             ),
                                           ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 8,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.business,
-                                          size: 16,
-                                          color: Colors.white70,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            '${company.name} (${branch.name})',
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(context)
-                                                          .orientation ==
-                                                      Orientation.portrait
-                                                  ? 14.sp
-                                                  : 12.sp,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w900,
+                                          Expanded(
+                                            flex: 8,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.business,
+                                                      size: 16,
+                                                      color: Colors.white70,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Expanded(
+                                                      child: Text(
+                                                        Global.branch
+                                                                    ?.isHeadquarter ==
+                                                                true
+                                                            ? '${company.name} (สำนักงานใหญ่)'
+                                                            : '${company.name} สาขาที่ (${branch.branchId ?? ""})',
+                                                        style: TextStyle(
+                                                          fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .orientation ==
+                                                                  Orientation
+                                                                      .portrait
+                                                              ? 14.sp
+                                                              : 12.sp,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      size: 14,
+                                                      color: Colors.white70,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Expanded(
+                                                      child: Text(
+                                                        '${getFullAddress()}',
+                                                        style: TextStyle(
+                                                          fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .orientation ==
+                                                                  Orientation
+                                                                      .portrait
+                                                              ? 12.sp
+                                                              : 11.sp,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.phone,
+                                                      size: 14,
+                                                      color: Colors.white70,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Expanded(
+                                                      child: Text(
+                                                        'โทรศัพท์ : ${branch.phone ?? ""}',
+                                                        style: TextStyle(
+                                                          fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .orientation ==
+                                                                  Orientation
+                                                                      .portrait
+                                                              ? 12.sp
+                                                              : 11.sp,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.receipt_long,
+                                                      size: 14,
+                                                      color: Colors.white70,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Expanded(
+                                                      child: Text(
+                                                        'เลขประจําตัวผู้เสียภาษี/Tax ID : ${company.taxNumber ?? ""}',
+                                                        style: TextStyle(
+                                                          fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .orientation ==
+                                                                  Orientation
+                                                                      .portrait
+                                                              ? 12.sp
+                                                              : 11.sp,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.location_on,
-                                          size: 14,
-                                          color: Colors.white70,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            '${branch.address} ${branch.village} ${branch.district} ${branch.province}',
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(context)
-                                                          .orientation ==
-                                                      Orientation.portrait
-                                                  ? 12.sp
-                                                  : 11.sp,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.phone,
-                                          size: 14,
-                                          color: Colors.white70,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            'โทรศัพท์/Phone : ${branch.phone}',
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(context)
-                                                          .orientation ==
-                                                      Orientation.portrait
-                                                  ? 12.sp
-                                                  : 11.sp,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.receipt_long,
-                                          size: 14,
-                                          color: Colors.white70,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(
-                                            'เลขประจําตัวผู้เสียภาษี/Tax ID : ${company.taxNumber}',
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(context)
-                                                          .orientation ==
-                                                      Orientation.portrait
-                                                  ? 12.sp
-                                                  : 11.sp,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
                               ),
                             ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ติดต่อฝ่ายช่วยเหลือโปรแกรม',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: MediaQuery.of(context).orientation ==
-                              Orientation.portrait
-                          ? 13.sp
-                          : 12.sp,
-                    ),
-                  ),
-                  Text(
-                    '90039450835',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: MediaQuery.of(context).orientation ==
-                              Orientation.portrait
-                          ? 12.sp
-                          : 12.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0, right: 4.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.person,
-                          size: 16,
-                          color: Colors.white70,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          Global.user != null ? 'ผู้ใช้: ' : '',
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).orientation ==
-                                    Orientation.portrait
-                                ? 13.sp
-                                : 12.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
                           ),
                         ),
-                        Text(
-                          Global.user != null
-                              ? '${Global.user!.firstName!} ${Global.user!.lastName!}'
-                              : '',
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).orientation ==
-                                    Orientation.portrait
-                                ? 13.sp
-                                : 12.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    if (Global.user?.userType == 'ADMIN')
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.domain,
-                                  size: 14,
-                                  color: Colors.white70,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'บริษัท: ',
-                                  style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).orientation ==
-                                                Orientation.portrait
-                                            ? 13.sp
-                                            : 12.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 6,
-                            child: MiraiDropDownMenu<CompanyModel>(
-                              key: UniqueKey(),
-                              children: Global.companyList,
-                              space: 4,
-                              maxHeight: 360,
-                              showSearchTextField: false,
-                              selectedItemBackgroundColor: Colors.transparent,
-                              emptyListMessage: 'ไม่มีข้อมูล',
-                              showSelectedItemBackgroundColor: true,
-                              itemWidgetBuilder: (
-                                int index,
-                                CompanyModel? project, {
-                                bool isItemSelected = false,
-                              }) {
-                                return DropDownItemWidget(
-                                  project: project,
-                                  isItemSelected: isItemSelected,
-                                  firstSpace: 10,
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ติดต่อฝ่ายช่วยเหลือโปรแกรม',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
                                   fontSize:
                                       MediaQuery.of(context).orientation ==
                                               Orientation.portrait
                                           ? 13.sp
                                           : 12.sp,
-                                );
-                              },
-                              onChanged: (CompanyModel value) async {
-                                Global.company = value;
-                                Global.companyNotifier!.value = value;
-                                await loadBranchList();
-                                setState(() {});
-                              },
-                              child: DropDownObjectChildWidget(
-                                key: GlobalKey(),
-                                fontSize: MediaQuery.of(context).orientation ==
-                                        Orientation.portrait
-                                    ? 13.sp
-                                    : 12.sp,
-                                projectValueNotifier: Global.companyNotifier!,
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    if (Global.user?.userRole == 'Administrator')
-                      const SizedBox(height: 10),
-                    if (Global.user?.userRole == 'Administrator')
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.store,
-                                  size: 14,
-                                  color: Colors.white70,
+                              Text(
+                                '080 006 8480',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize:
+                                      MediaQuery.of(context).orientation ==
+                                              Orientation.portrait
+                                          ? 12.sp
+                                          : 12.sp,
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'สาขา: ',
-                                  style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).orientation ==
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          flex: 3,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, right: 0.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.person,
+                                      size: 16,
+                                      color: Colors.white70,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      Global.user != null ? 'ผู้ใช้: ' : '',
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                    .orientation ==
                                                 Orientation.portrait
                                             ? 13.sp
                                             : 12.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            flex: 6,
-                            child: Stack(
-                              children: [
-                                MiraiDropDownMenu<BranchModel>(
-                                  key: UniqueKey(),
-                                  children: Global.branchList,
-                                  space: 4,
-                                  maxHeight: 360,
-                                  showSearchTextField: false,
-                                  selectedItemBackgroundColor:
-                                      Colors.transparent,
-                                  emptyListMessage: 'ไม่มีข้อมูล',
-                                  showSelectedItemBackgroundColor: true,
-                                  itemWidgetBuilder: (
-                                    int index,
-                                    BranchModel? project, {
-                                    bool isItemSelected = false,
-                                  }) {
-                                    return DropDownItemWidget(
-                                      project: project,
-                                      isItemSelected: isItemSelected,
-                                      firstSpace: 10,
-                                      fontSize:
-                                          MediaQuery.of(context).orientation ==
-                                                  Orientation.portrait
-                                              ? 13.sp
-                                              : 12.sp,
-                                    );
-                                  },
-                                  onChanged: (BranchModel value) {
-                                    Global.branch = value;
-                                    Global.branchNotifier!.value = value;
-                                    setState(() {});
-                                  },
-                                  child: DropDownObjectChildWidget(
-                                    key: GlobalKey(),
-                                    fontSize:
-                                        MediaQuery.of(context).orientation ==
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    Text(
+                                      Global.user != null
+                                          ? '${Global.user!.firstName!} ${Global.user!.lastName!}'
+                                          : '',
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                    .orientation ==
                                                 Orientation.portrait
                                             ? 13.sp
                                             : 12.sp,
-                                    projectValueNotifier:
-                                        Global.branchNotifier!,
-                                  ),
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                if (Global.branch != null)
-                                  Positioned(
-                                    right: 5,
-                                    top: 5,
-                                    child: Center(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(100.0),
-                                        ),
+                                const SizedBox(height: 10),
+                                if (Global.user?.userType == 'ADMIN')
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 4,
                                         child: Row(
                                           children: [
-                                            ClipOval(
-                                              child: SizedBox(
-                                                width: 30.0,
-                                                height: 30.0,
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        Global.branch = null;
-                                                        Global.branchNotifier!
-                                                                .value =
-                                                            BranchModel(
-                                                          id: 0,
-                                                          name: 'เลือกสาขา',
-                                                        );
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: const Icon(
-                                                        Icons.clear,
-                                                        color: Colors.white,
-                                                        size: 14,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
+                                            Icon(
+                                              Icons.domain,
+                                              size: 14,
+                                              color: Colors.white70,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              'บริษัท: ',
+                                              style: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                            .orientation ==
+                                                        Orientation.portrait
+                                                    ? 13.sp
+                                                    : 12.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: MiraiDropDownMenu<CompanyModel>(
+                                          key: UniqueKey(),
+                                          children: Global.companyList,
+                                          space: 4,
+                                          maxHeight: 360,
+                                          showSearchTextField: false,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (
+                                            int index,
+                                            CompanyModel? project, {
+                                            bool isItemSelected = false,
+                                          }) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: MediaQuery.of(context)
+                                                          .orientation ==
+                                                      Orientation.portrait
+                                                  ? 13.sp
+                                                  : 12.sp,
+                                            );
+                                          },
+                                          onChanged:
+                                              (CompanyModel value) async {
+                                            Global.company = value;
+                                            Global.companyNotifier!.value =
+                                                value;
+                                            await loadBranchList();
+                                            setState(() {});
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: MediaQuery.of(context)
+                                                        .orientation ==
+                                                    Orientation.portrait
+                                                ? 13.sp
+                                                : 12.sp,
+                                            projectValueNotifier:
+                                                Global.companyNotifier!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                if (Global.user?.userRole == 'Administrator')
+                                  const SizedBox(height: 10),
+                                if (Global.user?.userRole == 'Administrator')
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 6,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.store,
+                                              size: 14,
+                                              color: Colors.white70,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              'สถานประกอบการ: ',
+                                              style: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                            .orientation ==
+                                                        Orientation.portrait
+                                                    ? 13.sp
+                                                    : 12.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 6,
+                                        child: Stack(
+                                          children: [
+                                            MiraiDropDownMenu<BranchModel>(
+                                              key: UniqueKey(),
+                                              children: Global.branchList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: false,
+                                              selectedItemBackgroundColor:
+                                                  Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor:
+                                                  true,
+                                              itemWidgetBuilder: (
+                                                int index,
+                                                BranchModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                                return DropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected:
+                                                      isItemSelected,
+                                                  firstSpace: 10,
+                                                  fontSize: MediaQuery.of(
+                                                                  context)
+                                                              .orientation ==
+                                                          Orientation.portrait
+                                                      ? 13.sp
+                                                      : 12.sp,
+                                                );
+                                              },
+                                              onChanged: (BranchModel value) {
+                                                Global.branch = value;
+                                                BranchModel t;
+                                                t = BranchModel.fromJson(
+                                                    value.toJson());
+                                                if (t.isHeadquarter == true) {
+                                                  t.name = 'สำนักงานใหญ่';
+                                                }
+
+                                                Global.branchNotifier!.value =
+                                                    t;
+                                                setState(() {});
+                                              },
+                                              child: DropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: MediaQuery.of(context)
+                                                            .orientation ==
+                                                        Orientation.portrait
+                                                    ? 13.sp
+                                                    : 12.sp,
+                                                projectValueNotifier:
+                                                    Global.branchNotifier!,
+                                              ),
+                                            ),
+                                            if (Global.branch != null)
+                                              Positioned(
+                                                right: 5,
+                                                top: 5,
+                                                child: Center(
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100.0),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        ClipOval(
+                                                          child: SizedBox(
+                                                            width: 30.0,
+                                                            height: 30.0,
+                                                            child: Material(
+                                                              color: Colors
+                                                                  .transparent,
+                                                              child: InkWell(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    Global.branch =
+                                                                        null;
+                                                                    Global.branchNotifier!
+                                                                            .value =
+                                                                        BranchModel(
+                                                                      id: 0,
+                                                                      name:
+                                                                          'เลือก',
+                                                                    );
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                  child:
+                                                                      const Icon(
+                                                                    Icons.clear,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 14,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                if (Global.user?.userRole != 'Administrator')
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.store,
+                                        size: 14,
+                                        color: Colors.white70,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        Global.branch != null
+                                            ? 'สถานประกอบการ: ${Global.branch!.name}'
+                                            : '',
+                                        style: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                      .orientation ==
+                                                  Orientation.portrait
+                                              ? 13.sp
+                                              : 12.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    if (Global.user?.userRole != 'Administrator')
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.store,
-                            size: 14,
-                            color: Colors.white70,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            Global.branch != null
-                                ? 'สาขา: ${Global.branch!.name}'
-                                : '',
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).orientation ==
-                                      Orientation.portrait
-                                  ? 13.sp
-                                  : 12.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
+                        ),
+                      ],
+                    ),
+            ),
+            // Collapse/Expand Button - Positioned at top-right
+            Positioned(
+              top: 0,
+              right: 4,
+              child: RawMaterialButton(
+                onPressed: () {
+                  setState(() {
+                    _isCollapsed = !_isCollapsed;
+                  });
+                  // Save the new state to local storage
+                  _saveCollapseState(_isCollapsed);
+                },
+                elevation: 2.0,
+                fillColor: Colors.white,
+                constraints: const BoxConstraints(minWidth: 0.0),
+                padding: const EdgeInsets.all(6.0),
+                shape: const CircleBorder(),
+                child: Icon(
+                  _isCollapsed ? Icons.expand_more : Icons.expand_less,
+                  size: 16.sp,
                 ),
               ),
             ),

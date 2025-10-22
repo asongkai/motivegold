@@ -285,7 +285,8 @@ class Global {
           Global.cardExpiryFullDate = lastDayOfMonth;
 
           // Optionally, you can format and store it as a string
-          String fullDateString = DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
+          String fullDateString =
+              DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
           // Store this fullDateString wherever you need it for your API calls
 
           motivePrint('Converted $mmyy to full date: $fullDateString');
@@ -419,7 +420,8 @@ class Global {
     return taxRate / getUnitWeightValue(productId);
   }
 
-  static double getSellPriceTotal(double weight, double commission, int productId) {
+  static double getSellPriceTotal(
+      double weight, double commission, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
@@ -449,14 +451,16 @@ class Global {
         getUnitWeightValue(productId);
   }
 
-  static double getSellPriceUsePrice(double weight, double price, int productId) {
+  static double getSellPriceUsePrice(
+      double weight, double price, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
     return price * weight / getUnitWeightValue(productId);
   }
 
-  static double getBuyPrice(double weight, dynamic goldDataModel, int productId) {
+  static double getBuyPrice(
+      double weight, dynamic goldDataModel, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
@@ -465,7 +469,8 @@ class Global {
         getUnitWeightValue(productId);
   }
 
-  static double getBuyPriceUsePrice(double weight, double price, int productId) {
+  static double getBuyPriceUsePrice(
+      double weight, double price, int productId) {
     if (goldDataModel == null) {
       return 0;
     }
@@ -476,7 +481,9 @@ class Global {
     if (goldDataModel == null) {
       return 0;
     }
-    return toNumber(goldDataModel!.theng!.buy!) * weight / getUnitWeightValue(productId);
+    return toNumber(goldDataModel!.theng!.buy!) *
+        weight /
+        getUnitWeightValue(productId);
   }
 
   static double getSellThengPrice(double weight, int productId) {
@@ -599,7 +606,8 @@ class Global {
     return subTotal + weightTotal;
   }
 
-  static double getOrderGrantTotalAmountApi(double subTotal, double? discount, double addPrice) {
+  static double getOrderGrantTotalAmountApi(
+      double subTotal, double? discount, double addPrice) {
     discount ??= 0;
     return subTotal - discount + addPrice;
   }
@@ -717,11 +725,13 @@ class Global {
             : '${format(-amount)} บาท';
   }
 
-  static dynamic payToCustomerOrShopWholeSale(dynamic orders, double discount, double addPrice) {
+  static dynamic payToCustomerOrShopWholeSale(
+      dynamic orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
-    double amount = payToCustomerOrShopValueWholeSale(orders, discount, addPrice);
+    double amount =
+        payToCustomerOrShopValueWholeSale(orders, discount, addPrice);
     return amount > 0
         ? '${format(amount)} บาท'
         : amount == 0
@@ -844,7 +854,8 @@ class Global {
             : 'เราจ่ายเงินให้กับโบรกเกอร์ ${formatter.format(-amount)} บาท';
   }
 
-  static double getPaymentTotal(List<OrderModel>? orders, double discount, double addPrice) {
+  static double getPaymentTotal(
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -868,7 +879,8 @@ class Global {
     return amount < 0 ? -amount : amount;
   }
 
-  static double getPaymentTotalB(List<OrderModel>? orders, double discount, double addPrice) {
+  static double getPaymentTotalB(
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }
@@ -905,7 +917,8 @@ class Global {
     return amount;
   }
 
-  static double getPaymentTotalWholeSale(List<OrderModel>? orders, double discount, double addPrice) {
+  static double getPaymentTotalWholeSale(
+      List<OrderModel>? orders, double discount, double addPrice) {
     if (orders!.isEmpty) {
       return 0;
     }

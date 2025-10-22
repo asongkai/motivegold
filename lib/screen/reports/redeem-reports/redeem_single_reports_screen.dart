@@ -37,8 +37,7 @@ class RedeemSingleReportScreen extends StatefulWidget {
       _RedeemSingleReportScreenState();
 }
 
-class _RedeemSingleReportScreenState
-    extends State<RedeemSingleReportScreen> {
+class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
   bool loading = false;
   List<RedeemModel>? orders = [];
   List<RedeemModel?>? filterList = [];
@@ -135,15 +134,29 @@ class _RedeemSingleReportScreenState
     }
 
     if (fromDateCtrl.text.isNotEmpty) {
-      fromDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+      // Check if it's already in yyyy-MM-dd format (from date picker)
+      if (fromDateCtrl.text.contains('-') && fromDateCtrl.text.length == 10) {
+        // Date picker format: yyyy-MM-dd, parse directly
+        fromDate = DateTime.parse(fromDateCtrl.text);
+      } else {
+        // Old format: just day number
+        fromDate = Global.convertDate(
+            '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+      }
     } else {
       fromDate = null;
     }
 
     if (toDateCtrl.text.isNotEmpty) {
-      toDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+      // Check if it's already in yyyy-MM-dd format (from date picker)
+      if (toDateCtrl.text.contains('-') && toDateCtrl.text.length == 10) {
+        // Date picker format: yyyy-MM-dd, parse directly
+        toDate = DateTime.parse(toDateCtrl.text);
+      } else {
+        // Old format: just day number
+        toDate = Global.convertDate(
+            '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
+      }
     } else {
       toDate = null;
     }
@@ -185,8 +198,10 @@ class _RedeemSingleReportScreenState
             bValue = b?.redeemId ?? '';
             break;
           case 2: // Customer Name
-            aValue = '${a?.customer?.firstName ?? ''} ${a?.customer?.lastName ?? ''}';
-            bValue = '${b?.customer?.firstName ?? ''} ${b?.customer?.lastName ?? ''}';
+            aValue =
+                '${a?.customer?.firstName ?? ''} ${a?.customer?.lastName ?? ''}';
+            bValue =
+                '${b?.customer?.firstName ?? ''} ${b?.customer?.lastName ?? ''}';
             break;
           case 3: // Tax Number
             aValue = Global.company?.taxNumber ?? '';
@@ -205,11 +220,17 @@ class _RedeemSingleReportScreenState
         }
 
         if (aValue is String && bValue is String) {
-          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+          return ascending
+              ? aValue.compareTo(bValue)
+              : bValue.compareTo(aValue);
         } else if (aValue is num && bValue is num) {
-          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+          return ascending
+              ? aValue.compareTo(bValue)
+              : bValue.compareTo(aValue);
         } else if (aValue is DateTime && bValue is DateTime) {
-          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+          return ascending
+              ? aValue.compareTo(bValue)
+              : bValue.compareTo(aValue);
         }
         return 0;
       });
@@ -261,7 +282,8 @@ class _RedeemSingleReportScreenState
           children: [
             _buildFilterSection(),
             Expanded(
-              child: loading ? const LoadingProgress() : _buildEnhancedDataTable(),
+              child:
+                  loading ? const LoadingProgress() : _buildEnhancedDataTable(),
             ),
           ],
         ),
@@ -293,7 +315,8 @@ class _RedeemSingleReportScreenState
                 daily[i].referenceNo = 'รวมใบกำกับภาษีประจำวัน';
                 dailyList.add(daily[i]);
               } else {
-                var checkExisting = dailyList.where((e) => e.createdDate == indexDay).toList();
+                var checkExisting =
+                    dailyList.where((e) => e.createdDate == indexDay).toList();
                 if (checkExisting.isEmpty) {
                   dailyList.add(RedeemModel(
                       redeemId: 'ไม่มียอดไถ่ถอน',
@@ -317,7 +340,8 @@ class _RedeemSingleReportScreenState
               orders: filterList!.reversed.toList(),
               daily: value == 4 ? dailyList.toList() : [],
               type: value,
-              date: '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+              date:
+                  '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
             ),
           ),
         );
@@ -327,21 +351,24 @@ class _RedeemSingleReportScreenState
           value: 1,
           child: ListTile(
             leading: Icon(Icons.print, size: 16.sp),
-            title: Text('เรียงเลขที่ตั๋วสัญญาขายฝาก', style: TextStyle(fontSize: 14.sp)),
+            title: Text('เรียงเลขที่ตั๋วสัญญาขายฝาก',
+                style: TextStyle(fontSize: 14.sp)),
           ),
         ),
         PopupMenuItem(
           value: 2,
           child: ListTile(
             leading: Icon(Icons.print, size: 16.sp),
-            title: Text('เรียงเลขที่เอกสาร(รายตั๋ว)', style: TextStyle(fontSize: 14.sp)),
+            title: Text('เรียงเลขที่เอกสาร(รายตั๋ว)',
+                style: TextStyle(fontSize: 14.sp)),
           ),
         ),
         PopupMenuItem(
           value: 3,
           child: ListTile(
             leading: Icon(Icons.print, size: 16.sp),
-            title: Text('เรียงเลขที่เอกสาร(สรุปยอด)', style: TextStyle(fontSize: 14.sp)),
+            title: Text('เรียงเลขที่เอกสาร(สรุปยอด)',
+                style: TextStyle(fontSize: 14.sp)),
           ),
         ),
         PopupMenuItem(
@@ -364,9 +391,14 @@ class _RedeemSingleReportScreenState
           children: [
             const Icon(Icons.print_rounded, size: 20, color: Colors.white),
             const SizedBox(width: 6),
-            Text('พิมพ์', style: TextStyle(fontSize: 14.sp, color: Colors.white, fontWeight: FontWeight.w500)),
+            Text('พิมพ์',
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500)),
             const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down_outlined, color: Colors.white, size: 16.sp),
+            Icon(Icons.arrow_drop_down_outlined,
+                color: Colors.white, size: 16.sp),
           ],
         ),
       ),
@@ -405,23 +437,33 @@ class _RedeemSingleReportScreenState
                       color: Colors.indigo.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.filter_alt_rounded, color: Colors.indigo[600], size: 20),
+                    child: Icon(Icons.filter_alt_rounded,
+                        color: Colors.indigo[600], size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ตัวกรองข้อมูล', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
+                        Text('ตัวกรองข้อมูล',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2D3748))),
                         if (_hasActiveFilters())
-                          Text(_buildFilterSummary(), style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                          Text(_buildFilterSummary(),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
                   AnimatedRotation(
                     turns: isFilterExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey[600], size: 24),
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
+                        color: Colors.grey[600], size: 24),
                   ),
                 ],
               ),
@@ -434,112 +476,134 @@ class _RedeemSingleReportScreenState
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
               opacity: isFilterExpanded ? 1.0 : 0.0,
-              child: isFilterExpanded ? Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.5,
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: Column(
-                      children: [
-                        Container(width: double.infinity, height: 1, color: Colors.grey[200]),
-                        const SizedBox(height: 20),
+              child: isFilterExpanded
+                  ? Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: Column(
+                            children: [
+                              Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: Colors.grey[200]),
+                              const SizedBox(height: 20),
 
-                        // Date range row
-                        Row(
-                          children: [
-                            Expanded(child: _buildDateField(
-                              label: 'จากวันที่',
-                              icon: Icons.calendar_today,
-                              controller: fromDateCtrl,
-                              onClear: () {
-                                setState(() {
-                                  fromDateCtrl.text = "";
-                                });
-                              },
-                            )),
-                            const SizedBox(width: 16),
-                            Expanded(child: _buildDateField(
-                              label: 'ถึงวันที่',
-                              icon: Icons.calendar_today,
-                              controller: toDateCtrl,
-                              onClear: () {
-                                setState(() {
-                                  toDateCtrl.text = "";
-                                });
-                              },
-                            )),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Month and Year row
-                        Row(
-                          children: [
-                            Expanded(child: _buildDropdownField(
-                              label: 'เดือน',
-                              icon: Icons.calendar_month,
-                              children: Global.genMonth(),
-                              controller: monthCtrl,
-                              notifier: monthNotifier!,
-                            )),
-                            const SizedBox(width: 16),
-                            Expanded(child: _buildDropdownField(
-                              label: 'ปี',
-                              icon: Icons.date_range,
-                              children: Global.genYear(),
-                              controller: yearCtrl,
-                              notifier: yearNotifier!,
-                            )),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Action buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.indigo,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    elevation: 2,
-                                  ),
-                                  onPressed: search,
-                                  icon: const Icon(Icons.search_rounded, size: 20),
-                                  label: const Text('ค้นหา', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                              // Date range row
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'จากวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: fromDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                      });
+                                    },
+                                  )),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'ถึงวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: toDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        toDateCtrl.text = "";
+                                      });
+                                    },
+                                  )),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 3,
-                              child: SizedBox(
-                                height: 48,
-                                child: OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.red, width: 1.5),
-                                    foregroundColor: Colors.red,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  ),
-                                  onPressed: resetFilters,
-                                  icon: const Icon(Icons.clear_rounded, size: 20),
-                                  label: const Text('Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                              const SizedBox(height: 20),
+
+                              // Month and Year row
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildDropdownField(
+                                    label: 'เดือน',
+                                    icon: Icons.calendar_month,
+                                    children: Global.genMonth(),
+                                    controller: monthCtrl,
+                                    notifier: monthNotifier!,
+                                  )),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                      child: _buildDropdownField(
+                                    label: 'ปี',
+                                    icon: Icons.date_range,
+                                    children: Global.genYear(),
+                                    controller: yearCtrl,
+                                    notifier: yearNotifier!,
+                                  )),
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+
+                              // Action buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.indigo,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          elevation: 2,
+                                        ),
+                                        onPressed: search,
+                                        icon: const Icon(Icons.search_rounded,
+                                            size: 20),
+                                        label: const Text('ค้นหา',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: 3,
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: OutlinedButton.icon(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(
+                                              color: Colors.red, width: 1.5),
+                                          foregroundColor: Colors.red,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                        ),
+                                        onPressed: resetFilters,
+                                        icon: const Icon(Icons.clear_rounded,
+                                            size: 20),
+                                        label: const Text('Reset',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ) : const SizedBox(),
+                      ),
+                    )
+                  : const SizedBox(),
             ),
           ),
         ],
@@ -582,12 +646,16 @@ class _RedeemSingleReportScreenState
             ),
             child: Row(
               children: [
-                Icon(Icons.receipt_long_rounded, color: Colors.indigo[600], size: 20),
+                Icon(Icons.receipt_long_rounded,
+                    color: Colors.indigo[600], size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'รายงานภาษีขายตามสัญญาขายฝาก (${filterList!.length} รายการ)',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.indigo[700]),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.indigo[700]),
                   ),
                 ),
               ],
@@ -600,7 +668,8 @@ class _RedeemSingleReportScreenState
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width - 32, // Full width minus margins
+                  minWidth: MediaQuery.of(context).size.width -
+                      32, // Full width minus margins
                 ),
                 child: IntrinsicWidth(
                   child: Column(
@@ -619,12 +688,15 @@ class _RedeemSingleReportScreenState
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.tag, size: 14, color: Colors.grey[600]),
+                                    Icon(Icons.tag,
+                                        size: 14, color: Colors.grey[600]),
                                     const SizedBox(width: 2),
                                     const Flexible(
                                       child: Text(
                                         'ลำดับ',
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -640,18 +712,23 @@ class _RedeemSingleReportScreenState
                                     onTap: () => _sortData(0, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.calendar_today,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'วัน/เดือน/ปี',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 11),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 0)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -669,18 +746,23 @@ class _RedeemSingleReportScreenState
                                     onTap: () => _sortData(1, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.receipt_rounded,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'เลขที่ใบสำคัญรับเงิน',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 1)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -698,18 +780,23 @@ class _RedeemSingleReportScreenState
                                     onTap: () => _sortData(2, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.person, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.person,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'ผู้ซื้อ',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 2)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -727,18 +814,23 @@ class _RedeemSingleReportScreenState
                                     onTap: () => _sortData(3, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.badge, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.badge,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'เลขประจำตัวผู้เสียภาษี',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 9),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 3)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -754,12 +846,15 @@ class _RedeemSingleReportScreenState
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.category, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.category,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'รายการสินค้า',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -777,19 +872,24 @@ class _RedeemSingleReportScreenState
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(Icons.scale_rounded, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.scale_rounded,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'น้ำหนัก (กรัม)',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
                                         if (sortColumnIndex == 4)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -808,19 +908,24 @@ class _RedeemSingleReportScreenState
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(Icons.monetization_on_rounded, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.monetization_on_rounded,
+                                            size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'จำนวนเงิน (บาท)',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
                                         if (sortColumnIndex == 5)
                                           Icon(
-                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                                            isAscending
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -845,8 +950,13 @@ class _RedeemSingleReportScreenState
                                 return Container(
                                   height: 64,
                                   decoration: BoxDecoration(
-                                    color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
-                                    border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 0.5)),
+                                    color: index % 2 == 0
+                                        ? Colors.grey[50]
+                                        : Colors.white,
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey[200]!,
+                                            width: 0.5)),
                                   ),
                                   child: IntrinsicHeight(
                                     child: Row(
@@ -856,10 +966,13 @@ class _RedeemSingleReportScreenState
                                           width: 60,
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color:
+                                                  Colors.grey.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
@@ -878,8 +991,10 @@ class _RedeemSingleReportScreenState
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.dateOnly(item!.redeemDate.toString()),
-                                              style: const TextStyle(fontSize: 11),
+                                              Global.dateOnly(
+                                                  item!.redeemDate.toString()),
+                                              style:
+                                                  const TextStyle(fontSize: 11),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -890,10 +1005,15 @@ class _RedeemSingleReportScreenState
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.blue
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 item.redeemId ?? '',
@@ -919,17 +1039,26 @@ class _RedeemSingleReportScreenState
                                                   width: 20,
                                                   height: 20,
                                                   decoration: BoxDecoration(
-                                                    color: Colors.green.withOpacity(0.2),
-                                                    borderRadius: BorderRadius.circular(4),
+                                                    color: Colors.green
+                                                        .withOpacity(0.2),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4),
                                                   ),
-                                                  child: Icon(Icons.person, size: 12, color: Colors.green[600]),
+                                                  child: Icon(Icons.person,
+                                                      size: 12,
+                                                      color: Colors.green[600]),
                                                 ),
                                                 const SizedBox(width: 6),
                                                 Expanded(
                                                   child: Text(
                                                     '${item.customer?.firstName ?? ''} ${item.customer?.lastName ?? ''}',
-                                                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
-                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 11),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     maxLines: 1,
                                                   ),
                                                 ),
@@ -960,10 +1089,15 @@ class _RedeemSingleReportScreenState
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 2),
                                               decoration: BoxDecoration(
-                                                color: Colors.purple.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.purple
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 'ทองคำรูปพรรณ 96.5%',
@@ -1002,7 +1136,8 @@ class _RedeemSingleReportScreenState
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.paymentAmount ?? 0),
+                                              Global.format(
+                                                  item.paymentAmount ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1023,13 +1158,18 @@ class _RedeemSingleReportScreenState
                                 height: 64,
                                 decoration: BoxDecoration(
                                   color: Colors.indigo[50],
-                                  border: Border(top: BorderSide(color: Colors.indigo[200]!, width: 2)),
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.indigo[200]!,
+                                          width: 2)),
                                 ),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
                                       // Empty cells for alignment
-                                      Container(width: 60, padding: const EdgeInsets.all(8)),
+                                      Container(
+                                          width: 60,
+                                          padding: const EdgeInsets.all(8)),
                                       Expanded(flex: 1, child: Container()),
                                       Expanded(flex: 3, child: Container()),
                                       Expanded(flex: 3, child: Container()),
@@ -1056,7 +1196,8 @@ class _RedeemSingleReportScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(getWeightTotal(filterList as dynamic)),
+                                            Global.format(getWeightTotal(
+                                                filterList as dynamic)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
@@ -1073,7 +1214,8 @@ class _RedeemSingleReportScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(getPaymentAmountTotal(filterList as dynamic)),
+                                            Global.format(getPaymentAmountTotal(
+                                                filterList as dynamic)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
@@ -1116,7 +1258,11 @@ class _RedeemSingleReportScreenState
           children: [
             Icon(icon, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700])),
           ],
         ),
         const SizedBox(height: 8),
@@ -1129,10 +1275,10 @@ class _RedeemSingleReportScreenState
               prefixIcon: Icon(Icons.calendar_today, size: 18),
               suffixIcon: controller.text.isNotEmpty
                   ? GestureDetector(
-                  onTap: onClear,
-                  child: const Icon(Icons.clear, size: 18))
+                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
                   : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
               hintText: label,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -1154,7 +1300,8 @@ class _RedeemSingleReportScreenState
                 builder: (_) => SfDatePickerDialog(
                   initialDate: DateTime.now(),
                   onDateSelected: (date) {
-                    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(date);
                     setState(() {
                       controller.text = formattedDate;
                     });
@@ -1182,7 +1329,11 @@ class _RedeemSingleReportScreenState
           children: [
             Icon(icon, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700])),
           ],
         ),
         const SizedBox(height: 8),
@@ -1197,7 +1348,8 @@ class _RedeemSingleReportScreenState
             selectedItemBackgroundColor: Colors.transparent,
             emptyListMessage: 'ไม่มีข้อมูล',
             showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (int index, dynamic project, {bool isItemSelected = false}) {
+            itemWidgetBuilder: (int index, dynamic project,
+                {bool isItemSelected = false}) {
               return DropDownItemWidget(
                 project: project,
                 isItemSelected: isItemSelected,
@@ -1231,7 +1383,8 @@ class _RedeemSingleReportScreenState
   String _buildFilterSummary() {
     List<String> filters = [];
     if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
-      filters.add('ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
+      filters.add(
+          'ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
     }
     if (monthCtrl.text.isNotEmpty) {
       filters.add('เดือน: ${monthCtrl.text}');
@@ -1253,8 +1406,10 @@ class _RedeemSingleReportScreenState
     toDateCtrl.text = "";
     fromDate = null;
     toDate = null;
-    productNotifier = ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    productNotifier =
+        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(
+        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     search();
     setState(() {});
   }
@@ -1266,8 +1421,8 @@ class _RedeemSingleReportScreenState
       DateTime? monthDate = fromDate!.add(Duration(days: i));
       var dateList = filterList
           ?.where((element) =>
-      Global.dateOnly(element!.createdDate.toString()) ==
-          Global.dateOnly(monthDate.toString()))
+              Global.dateOnly(element!.createdDate.toString()) ==
+              Global.dateOnly(monthDate.toString()))
           .toList();
       motivePrint(dateList?.length);
       if (dateList!.isNotEmpty) {
@@ -1281,7 +1436,8 @@ class _RedeemSingleReportScreenState
           redemptionValue: getRedemptionValueTotal(dateList),
           depositAmount: getDepositAmountTotal(dateList),
           taxBase: taxBaseTotal(dateList),
-          taxAmount: taxAmountTotal(dateList),);
+          taxAmount: taxAmountTotal(dateList),
+        );
         orderList.add(order);
       }
     }

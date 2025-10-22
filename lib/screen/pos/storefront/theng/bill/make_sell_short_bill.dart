@@ -28,7 +28,7 @@ Future<Uint8List> makeSellThengShortBill(Invoice invoice, {int option = 1}) asyn
 
     widgets.add(
       await header(invoice.order, 'ใบเสร็จรับเงิน / ใบกำกับภาษีอย่างย่อ',
-          versionText: versionText, showPosId: true),
+          versionText: versionText, showPosId: true, full: false),
     );
     widgets.add(
       docNo(invoice.order),
@@ -505,41 +505,6 @@ Future<Uint8List> makeSellThengShortBill(Invoice invoice, {int option = 1}) asyn
         ),
       ]),
     ));
-
-    // widgets.add(
-    //   Padding(
-    //       padding: const EdgeInsets.only(top: 0.0),
-    //       child: Row(children: [
-    //         Expanded(
-    //           flex: 8,
-    //           child: Container(),
-    //         ),
-    //         SizedBox(width: 5),
-    //         Expanded(
-    //           flex: 3,
-    //           child: Container(
-    //             height: 65,
-    //             child: Column(
-    //               children: [
-    //                 SizedBox(height: 15),
-    //                 Text('                                ',
-    //                     style: const TextStyle(fontSize: 12)),
-    //                 Text('ผู้ซื้อ / ผู้จ่ายเงิน / ผู้รับทอง',
-    //                     style: TextStyle(
-    //                         fontSize: 12, fontWeight: FontWeight.bold)),
-    //                 Spacer(),
-    //                 Text('${Global.company?.name} (${Global.branch?.name})',
-    //                     style: const TextStyle(fontSize: 12)),
-    //                 Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
-    //                     style: TextStyle(
-    //                         fontSize: 12, fontWeight: FontWeight.bold)),
-    //                 SizedBox(height: 5),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ])),
-    // );
 
     return widgets;
   }

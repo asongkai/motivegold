@@ -97,7 +97,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
   loadDefaultPayment() async {
     int orderTypeId = 0;
     if (Global.currentOrderType == 1) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 2;
       } else {
         orderTypeId = 1;
@@ -105,7 +109,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (Global.currentOrderType == 2) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 33;
       } else {
         orderTypeId = 3;
@@ -113,7 +121,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (Global.currentOrderType == 3) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 44;
       } else {
         orderTypeId = 4;
@@ -121,7 +133,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (Global.currentOrderType == 4) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 9;
       } else {
         orderTypeId = 8;
@@ -129,7 +145,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (Global.currentOrderType == 5) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 5;
       } else {
         orderTypeId = 6;
@@ -137,7 +157,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (Global.currentOrderType == 6) {
-      if (Global.payToCustomerOrShopValue(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)) < 0) {
+      if (Global.payToCustomerOrShopValue(
+              Global.orders,
+              Global.toNumber(discountCtrl.text),
+              Global.toNumber(addPriceCtrl.text)) <
+          0) {
         orderTypeId = 10;
       } else {
         orderTypeId = 11;
@@ -179,11 +203,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
           child: Global.orders.isEmpty
               ? const ModernEmptyState()
               : _fadeAnimation != null
-              ? FadeTransition(
-            opacity: _fadeAnimation!,
-            child: _buildContent(),
-          )
-              : _buildContent(),
+                  ? FadeTransition(
+                      opacity: _fadeAnimation!,
+                      child: _buildContent(),
+                    )
+                  : _buildContent(),
         ),
       ),
       persistentFooterButtons: [
@@ -314,169 +338,169 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
       ),
       child: Global.customer == null
           ? Row(
-        children: [
-          Expanded(flex: 5, child: Container()),
-          Expanded(
-            flex: 1,
-            child: Column(
               children: [
-                KclButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const CustomerScreen(
-                              selected: true,
-                              type: "WS",
-                            ),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      setState(() {});
-                    });
-                  },
-                  text: 'ค้นหา',
-                  icon: Icons.search,
-                  fullWidth: true,
-                  color: const Color(0xFF059669),
+                Expanded(flex: 5, child: Container()),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CustomerScreen(
+                                            selected: true,
+                                            type: "WS",
+                                          ),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'ค้นหา',
+                        icon: Icons.search,
+                        fullWidth: true,
+                        color: const Color(0xFF059669),
+                      ),
+                      const SizedBox(height: 8),
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddCustomerScreen(),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'เพิ่ม',
+                        fullWidth: true,
+                        icon: Icons.add,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                KclButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const AddCustomerScreen(),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      setState(() {});
-                    });
-                  },
-                  text: 'เพิ่ม',
-                  fullWidth: true,
-                  icon: Icons.add,
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${getCustomerName(Global.customer!)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                              color: const Color(0xFF1F2937),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "${Global.customer!.phoneNumber}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer!.email}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer!.address}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${getIdTitleCustomer(Global.customer)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CustomerScreen(
+                                                selected: true,
+                                                type: "WS",
+                                              ),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'ค้นหา',
+                            icon: Icons.search,
+                            fullWidth: true,
+                            color: const Color(0xFF059669),
+                          ),
+                          const SizedBox(height: 8),
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddCustomerScreen(),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'เพิ่ม',
+                            fullWidth: true,
+                            icon: Icons.add,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),
-          ),
-        ],
-      )
-          : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${getCustomerName(Global.customer!)}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.sp,
-                        color: const Color(0xFF1F2937),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "${Global.customer!.phoneNumber}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6B7280),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${Global.customer!.email}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6B7280),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${Global.customer!.address}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF374151),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${getIdTitleCustomer(Global.customer)}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF374151),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${Global.customer?.customerType == 'company' ? Global.customer?.taxNumber : Global.customer?.idCard}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF374151),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    KclButton(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const CustomerScreen(
-                                  selected: true,
-                                  type: "WS",
-                                ),
-                                fullscreenDialog: true))
-                            .whenComplete(() {
-                          setState(() {});
-                        });
-                      },
-                      text: 'ค้นหา',
-                      icon: Icons.search,
-                      fullWidth: true,
-                      color: const Color(0xFF059669),
-                    ),
-                    const SizedBox(height: 8),
-                    KclButton(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const AddCustomerScreen(),
-                                fullscreenDialog: true))
-                            .whenComplete(() {
-                          setState(() {});
-                        });
-                      },
-                      text: 'เพิ่ม',
-                      fullWidth: true,
-                      icon: Icons.add,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -580,8 +604,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
               inputType: TextInputType.phone,
               inputFormat: [ThousandsFormatter(allowFraction: true)],
               onChanged: (value) {
-                Global.discount =
-                value.isNotEmpty ? Global.toNumber(value) : 0;
+                Global.discount = value.isNotEmpty ? Global.toNumber(value) : 0;
                 setState(() {});
               }),
           const SizedBox(height: 16),
@@ -597,12 +620,13 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                 PriceBreakdown(
                   title: 'จำนวนเงินที่ต้องชำระ'.tr(),
                   price:
-                  '${Global.format(Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
+                      '${Global.format(Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))} บาท',
                 ),
                 PriceBreakdown(
-                  title: '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
+                  title:
+                      '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))}',
                   price:
-                  '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
+                      '${Global.payToCustomerOrShopWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))}',
                 ),
               ],
             ),
@@ -662,7 +686,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: const Color(0xFF0F766E),
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -681,7 +706,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                   const SizedBox(width: 8),
                   Text(
                     'เพิ่ม',
-                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                    style:
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                   )
                 ],
               ),
@@ -1058,7 +1084,8 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                 for (int j = 0; j < order.details!.length; j++)
                   TableRow(
                     decoration: BoxDecoration(
-                      color: j % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
+                      color:
+                          j % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
                     ),
                     children: [
                       paddedTextBigL('${j + 1}',
@@ -1066,13 +1093,19 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                           align: TextAlign.center),
                       paddedTextBigL(order.details![j].productName,
                           style: TextStyle(fontSize: 16.sp)),
-                      paddedTextBigL(order.orderTypeId == 4 || order.orderTypeId == 44 || order.orderTypeId == 10 || order.orderTypeId == 11 ? Global.format4(order.details![j].weight!) : Global.format(order.details![j].weight!),
+                      paddedTextBigL(
+                          order.orderTypeId == 4 ||
+                                  order.orderTypeId == 44 ||
+                                  order.orderTypeId == 10 ||
+                                  order.orderTypeId == 11
+                              ? Global.format4(order.details![j].weight!)
+                              : Global.format(order.details![j].weight!),
                           align: TextAlign.right,
                           style: TextStyle(fontSize: 16.sp)),
                       paddedTextBigL(
                           Global.format(order.orderTypeId == 5
-                              ? order.details![j].priceExcludeTax!
-                              : order.details![j].priceIncludeTax!) +
+                                  ? order.details![j].priceExcludeTax!
+                                  : order.details![j].priceIncludeTax!) +
                               '  บาท',
                           align: TextAlign.right,
                           style: TextStyle(
@@ -1088,53 +1121,53 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                                 onTap: () {
                                   if (order.orderTypeId == 5) {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditRefillGoldStockScreen(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditRefillGoldStockScreen(
+                                                      index: index,
+                                                      j: j,
+                                                    ),
+                                                fullscreenDialog: true))
                                         .whenComplete(() {
                                       setState(() {});
                                     });
                                   } else if (order.orderTypeId == 6) {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditSellUsedGoldScreen(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditSellUsedGoldScreen(
+                                                      index: index,
+                                                      j: j,
+                                                    ),
+                                                fullscreenDialog: true))
                                         .whenComplete(() {
                                       setState(() {});
                                     });
                                   } else if (order.orderTypeId == 10) {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditRefillThengGoldStockScreen(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditRefillThengGoldStockScreen(
+                                                      index: index,
+                                                      j: j,
+                                                    ),
+                                                fullscreenDialog: true))
                                         .whenComplete(() {
                                       setState(() {});
                                     });
                                   } else if (order.orderTypeId == 11) {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EditSellUsedThengGoldScreen(
-                                                  index: index,
-                                                  j: j,
-                                                ),
-                                            fullscreenDialog: true))
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditSellUsedThengGoldScreen(
+                                                      index: index,
+                                                      j: j,
+                                                    ),
+                                                fullscreenDialog: true))
                                         .whenComplete(() {
                                       setState(() {});
                                     });
@@ -1179,8 +1212,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
   void _handleSaveOrder() async {
     if (Global.customer == null) {
       if (mounted) {
-        Alert.warning(
-            context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
+        Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
             action: () {});
         return;
       }
@@ -1188,22 +1220,24 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
 
     if (Global.paymentList!.isEmpty) {
       if (mounted) {
-        Alert.warning(context, 'Warning'.tr(),
-            'กรุณาเพิ่มการชำระเงินก่อน', 'OK'.tr(),
+        Alert.warning(
+            context, 'Warning'.tr(), 'กรุณาเพิ่มการชำระเงินก่อน', 'OK'.tr(),
             action: () {});
         return;
       }
     }
-    var amount = Global.payToCustomerOrShopValueWholeSale(
-        Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
+    var amount = Global.payToCustomerOrShopValueWholeSale(Global.orders,
+        Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text));
 
     // motivePrint(amount);
     // motivePrint(getPaymentTotal());
     // motivePrint(Global.toNumber(Global.format(
     //     Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text)))));
     if (getPaymentTotal() >
-        Global.toNumber(Global.format(
-            Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
+        Global.toNumber(Global.format(Global.getPaymentTotalWholeSale(
+            Global.orders,
+            Global.toNumber(discountCtrl.text),
+            Global.toNumber(addPriceCtrl.text))))) {
       if (mounted) {
         Alert.warning(
             context,
@@ -1218,8 +1252,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     }
 
     if (getPaymentTotal() <
-        Global.toNumber(Global.format(
-            Global.getPaymentTotalWholeSale(Global.orders, Global.toNumber(discountCtrl.text), Global.toNumber(addPriceCtrl.text))))) {
+        Global.toNumber(Global.format(Global.getPaymentTotalWholeSale(
+            Global.orders,
+            Global.toNumber(discountCtrl.text),
+            Global.toNumber(addPriceCtrl.text))))) {
       if (mounted) {
         Alert.warning(
             context,
@@ -1246,10 +1282,10 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
         Global.orders[i].details![j].id = 0;
         Global.orders[i].details![j].orderId = Global.orders[i].id;
         Global.orders[i].details![j].unitCost =
-        Global.orders[i].orderTypeId == 6
-            ? Global.orders[i].details![j].priceIncludeTax!
-            : Global.orders[i].details![j].priceExcludeTax! /
-            Global.orders[i].details![j].weight!;
+            Global.orders[i].orderTypeId == 6
+                ? Global.orders[i].details![j].priceIncludeTax!
+                : Global.orders[i].details![j].priceExcludeTax! /
+                    Global.orders[i].details![j].weight!;
         Global.orders[i].details![j].createdDate = DateTime.now();
         Global.orders[i].details![j].updatedDate = DateTime.now();
       }
@@ -1257,61 +1293,56 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
 
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          final ProgressDialog pr = ProgressDialog(context,
-              type: ProgressDialogType.normal,
-              isDismissible: true,
-              showLogs: true);
-          await pr.show();
-          pr.update(message: 'processing'.tr());
-          try {
-            if (Global.posOrder != null) {
-              await reserveOrder(Global.posOrder!);
-            }
-            var pair = await ApiServices.post(
-                '/order/gen-pair/${Global.orders.first.orderTypeId}',
-                Global.requestObj(null));
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        if (Global.posOrder != null) {
+          await reserveOrder(Global.posOrder!);
+        }
+        var pair = await ApiServices.post(
+            '/order/gen-pair/${Global.orders.first.orderTypeId}',
+            Global.requestObj(null));
 
-            if (pair?.status == "success") {
-              await postPayment(pair?.data);
-              await postOrder(pair?.data);
-              Global.orderIds =
-                  Global.orders.map((e) => e.orderId).toList();
-              Global.pairId = pair?.data;
-              await pr.hide();
-              if (mounted) {
-                Global.orders.clear();
-                Global.discount = 0;
-                Global.addPrice = 0;
-                Global.customer = null;
-                Global.posOrder = null;
-                Global.paymentList?.clear();
-                Global.refillAttach = null;
-                Global.sellUsedAttach = null;
-                writeCart();
-                setState(() {});
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                        const WholeSalePrintBillScreen()));
-              }
-            } else {
-              if (mounted) {
-                Alert.warning(context, 'Warning'.tr(),
-                    'Unable to generate pairing ID', 'OK'.tr(),
-                    action: () {});
-              }
-            }
-          } catch (e) {
-            await pr.hide();
-            if (mounted) {
-              Alert.warning(
-                  context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                  action: () {});
-            }
-            return;
+        if (pair?.status == "success") {
+          await postPayment(pair?.data);
+          await postOrder(pair?.data);
+          Global.orderIds = Global.orders.map((e) => e.orderId).toList();
+          Global.pairId = pair?.data;
+          await pr.hide();
+          if (mounted) {
+            Global.orders.clear();
+            Global.discount = 0;
+            Global.addPrice = 0;
+            Global.customer = null;
+            Global.posOrder = null;
+            Global.paymentList?.clear();
+            Global.refillAttach = null;
+            Global.sellUsedAttach = null;
+            writeCart();
+            setState(() {});
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const WholeSalePrintBillScreen()));
           }
-        });
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(),
+                'Unable to generate pairing ID', 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+              action: () {});
+        }
+        return;
+      }
+    });
   }
 
   Future postPayment(int pairId) async {
@@ -1357,7 +1388,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
     await Future.forEach<OrderModel>(Global.orders, (e) async {
       e.pairId = pairId;
       var result =
-      await ApiServices.post('/order/create', Global.requestObj(e));
+          await ApiServices.post('/order/create', Global.requestObj(e));
       motivePrint(result?.toJson());
       if (result?.status == "success") {
         var order = orderModelFromJson(jsonEncode(result?.data));
@@ -1365,7 +1396,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
         await Future.forEach<OrderDetailModel>(e.details!, (f) async {
           f.orderId = id;
           var detail =
-          await ApiServices.post('/orderdetail', Global.requestObj(f));
+              await ApiServices.post('/orderdetail', Global.requestObj(f));
           if (detail?.status == "success") {
             motivePrint("Order completed");
           }
@@ -1401,11 +1432,11 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
   void removePayment(int i) async {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          Global.paymentList!.removeAt(i);
-          Future.delayed(const Duration(milliseconds: 500), () async {
-            setState(() {});
-          });
-        });
+      Global.paymentList!.removeAt(i);
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        setState(() {});
+      });
+    });
   }
 
   void editPayment(int i) async {
@@ -1542,79 +1573,79 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                         onPressed: () async {
                           if (Global.currentPaymentMethod == "CR") {
                             if (Global.cardNameCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardNumberCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
 
-                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
                             if (Global.selectedBank == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.selectedAccount == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate: DateTime.parse(
-                                    Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate: Global.cardExpireDateCtrl.text
-                                    .isNotEmpty
-                                    ? DateTime.parse(
-                                    Global.cardExpireDateCtrl.text)
-                                    : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: Global.paymentAttachment != null
-                                    ? Global.imageToBase64(
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
+                                DateTime.parse(Global.paymentDateCtrl.text),
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate: Global
+                                    .cardExpireDateCtrl.text.isNotEmpty
+                                ? DateTime.parse(Global.cardExpireDateCtrl.text)
+                                : null,
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: Global.paymentAttachment != null
+                                ? Global.imageToBase64(
                                     Global.paymentAttachment!)
-                                    : null,
-                              );
-
-                              Global.paymentList?[i] = payment;
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                                : null,
                           );
+
+                          Global.paymentList?[i] = payment;
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          //   },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1686,7 +1717,7 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
 
   Future<void> reserveOrder(OrderModel order) async {
     var result =
-    await ApiServices.post('/order/reserve', Global.requestObj(order));
+        await ApiServices.post('/order/reserve', Global.requestObj(order));
     motivePrint(result?.toJson());
     if (result?.status == "success") {
       motivePrint("Reverse completed");
@@ -1824,83 +1855,82 @@ class _WholeSaleCheckOutScreenState extends State<WholeSaleCheckOutScreen>
                           shadowColor: const Color(0xFF0F766E).withOpacity(0.3),
                         ),
                         onPressed: () async {
-
                           if (Global.currentPaymentMethod == "CR") {
                             if (Global.cardNameCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardNumberCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
 
-                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
                             if (Global.selectedBank == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.selectedAccount == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
 
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate: DateTime.parse(
-                                    Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate: Global.cardExpireDateCtrl.text
-                                    .isNotEmpty
-                                    ? DateTime.parse(
-                                    Global.cardExpireDateCtrl.text)
-                                    : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: Global.paymentAttachment != null
-                                    ? Global.imageToBase64(
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
+                                DateTime.parse(Global.paymentDateCtrl.text),
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate: Global
+                                    .cardExpireDateCtrl.text.isNotEmpty
+                                ? DateTime.parse(Global.cardExpireDateCtrl.text)
+                                : null,
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: Global.paymentAttachment != null
+                                ? Global.imageToBase64(
                                     Global.paymentAttachment!)
-                                    : null,
-                              );
-
-                              Global.paymentList?.add(payment);
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                                : null,
                           );
+
+                          Global.paymentList?.add(payment);
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          //   },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -2087,13 +2117,13 @@ class PaymentCard extends StatelessWidget {
               boxShadow: [
                 isSelected!
                     ? BoxShadow(
-                  color: kShadowColor,
-                  offset: Offset(
-                    getProportionateScreenWidth(2),
-                    getProportionateScreenWidth(4),
-                  ),
-                  blurRadius: 80,
-                )
+                        color: kShadowColor,
+                        offset: Offset(
+                          getProportionateScreenWidth(2),
+                          getProportionateScreenWidth(4),
+                        ),
+                        blurRadius: 80,
+                      )
                     : const BoxShadow(color: Colors.transparent),
               ],
             ),
@@ -2112,17 +2142,17 @@ class PaymentCard extends StatelessWidget {
                   ),
                   child: image != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.asset(image!,
-                        fit: BoxFit.cover, width: 1000.0),
-                  )
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(image!,
+                              fit: BoxFit.cover, width: 1000.0),
+                        )
                       : ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        "assets/images/no_image.png",
-                        fit: BoxFit.cover,
-                        width: 1000.0,
-                      )),
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            "assets/images/no_image.png",
+                            fit: BoxFit.cover,
+                            width: 1000.0,
+                          )),
                 ),
                 SizedBox(
                   width: getProportionateScreenWidth(8),

@@ -482,7 +482,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                       children: [
                         Spacer(),
                         SizedBox(height: 5),
-                        Text('${Global.company?.name} (${Global.branch?.name})',
+                        Text('${Global.branch?.name}',
                             textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 12)),
                         Text('ผู้ซื้อ / ผู้รับทอง / ผู้บันทึกรายการ',

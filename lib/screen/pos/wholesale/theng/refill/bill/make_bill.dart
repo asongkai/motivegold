@@ -573,7 +573,7 @@ Future<Uint8List> makeRefillThengBill(Invoice invoice, {int option = 1}) async {
                         style: TextStyle(
                             fontSize: 10, fontWeight: FontWeight.bold)),
                     Spacer(),
-                    Text('${Global.company?.name} (${Global.branch?.name})',
+                    Text('${Global.branch?.name}',
                         style: const TextStyle(fontSize: 10)),
                     Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
                         style: TextStyle(

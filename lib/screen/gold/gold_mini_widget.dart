@@ -140,7 +140,7 @@ class GoldMiniWidgetState extends State<GoldMiniWidget> {
   }
 
   getIcon() {
-    double diff = Global.goldDataModel!.different ?? 0;
+    double diff = Global.goldDataModel?.different ?? 0;
     return diff > 0
         ? Image.asset(
             'assets/icons/up-arrow.png',
@@ -155,12 +155,12 @@ class GoldMiniWidgetState extends State<GoldMiniWidget> {
   }
 
   getColor() {
-    double diff = Global.goldDataModel!.different ?? 0;
+    double diff = Global.goldDataModel?.different ?? 0;
     return diff > 0 ? Colors.green : Colors.redAccent;
   }
 
   getSign() {
-    double diff = Global.goldDataModel!.different ?? 0;
+    double diff = Global.goldDataModel?.different ?? 0;
     return diff > 0 ? "+" : "";
   }
 }

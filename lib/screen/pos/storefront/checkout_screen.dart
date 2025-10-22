@@ -1836,40 +1836,40 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                               return;
                             }
                           }
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate:
-                                    DateTime.parse(Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate:
-                                    Global.cardExpireDateCtrl.text.isNotEmpty
-                                        ? DateTime.parse(Global.convertToFullDate(
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
+                                DateTime.parse(Global.paymentDateCtrl.text),
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate:
+                                Global.cardExpireDateCtrl.text.isNotEmpty
+                                    ? DateTime.parse(Global.convertToFullDate(
                                         Global.cardExpireDateCtrl.text)!)
-                                        : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: getPaymentAttachment(),
-                              );
-
-                              Global.paymentList?[i] = payment;
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                                    : null,
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: getPaymentAttachment(),
                           );
+
+                          Global.paymentList?[i] = payment;
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          //   },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -2129,40 +2129,40 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                             }
                           }
 
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate:
-                                    DateTime.parse(Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate: Global
-                                        .cardExpireDateCtrl.text.isNotEmpty
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
+                                DateTime.parse(Global.paymentDateCtrl.text),
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate:
+                                Global.cardExpireDateCtrl.text.isNotEmpty
                                     ? DateTime.parse(Global.convertToFullDate(
                                         Global.cardExpireDateCtrl.text)!)
                                     : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: getPaymentAttachment(),
-                              );
-
-                              Global.paymentList?.add(payment);
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: getPaymentAttachment(),
                           );
+
+                          Global.paymentList?.add(payment);
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          // },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -2323,14 +2323,8 @@ class _CheckOutScreenState extends State<CheckOutScreen>
     // มูลค่า KYC (Amount-based KYC scenarios for non-used gold)
     if (!hasUsedGold) {
       if (amount <= getMaxKycValue()) {
-        // น้อยกว่าหรือเท่ากับ Limit KYC: Only warn, don't block
-        if (customerNotIdentified) {
-          return ValidationResult(
-              isValid: true,
-              isBlocked: false,
-              message:
-                  'คำเตือน: จำนวนเงิน ${Global.format(amount < 0 ? -amount : amount)} บาท แนะนำให้สำแดงตน');
-        }
+        // น้อยกว่าหรือเท่ากับ Limit KYC: No warning, allow to proceed
+        // No action needed - user can save without warning
       } else {
         // มากกว่า Limit KYC: Warn + block if customer not identified
         if (customerNotIdentified) {

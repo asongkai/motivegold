@@ -107,7 +107,10 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
     // depositAmountCtrl.text = Global.format(50500);
     // weightGramCtrl.text = Global.format(15.16);
     Global.appBarColor = rfBgColor;
-    selectedProduct = Global.productList.where((e) => e.type == 'NEW').cast<ProductModel?>().firstOrNull;
+    selectedProduct = Global.productList
+        .where((e) => e.type == 'NEW')
+        .cast<ProductModel?>()
+        .firstOrNull;
     // motivePrint(selectedProduct?.toJson());
     redeemValueChanged();
     getCart();
@@ -232,12 +235,15 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                       posHeaderText(
                           context, stmBgColor, 'ธุรกรรมไถ่ถอน - ขายฝาก'),
                       if (selectedProduct != null)
+                        Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: GoldMiniWidget(
+                            product: selectedProduct!,
+                          ),
+                        ),
                       Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: GoldMiniWidget(product: selectedProduct!,),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16),
                         child: SizedBox(
                           child: Row(
                             children: [
@@ -266,7 +272,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16),
                         child: SizedBox(
                           child: Row(
                             children: [
@@ -317,7 +324,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16),
                         child: SizedBox(
                           child: Row(
                             children: [
@@ -370,7 +378,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16),
                         child: SizedBox(
                           child: Row(
                             children: [
@@ -425,7 +434,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                       ),
                       if (widget.vatOption == 'Include')
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16),
                           child: SizedBox(
                             child: Row(
                               children: [
@@ -479,7 +489,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                           ),
                         ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16),
                         child: SizedBox(
                           child: Row(
                             children: [
@@ -764,7 +775,8 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   void gramChanged() {
     if (weightGramCtrl.text.isNotEmpty) {
       weightBahtCtrl.text = Global.format(
-          (Global.toNumber(weightGramCtrl.text) / getUnitWeightValue(selectedProduct?.id)));
+          (Global.toNumber(weightGramCtrl.text) /
+              getUnitWeightValue(selectedProduct?.id)));
     } else {
       weightBahtCtrl.text = "";
     }
@@ -772,7 +784,9 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   }
 
   void depositAmountChanged() {
-    if (widget.vatOption == 'Include' && benefitTotalCtrl.text.isNotEmpty && depositAmountCtrl.text.isNotEmpty) {
+    if (widget.vatOption == 'Include' &&
+        benefitTotalCtrl.text.isNotEmpty &&
+        depositAmountCtrl.text.isNotEmpty) {
       redeemValueCtrl.text = Global.format(
           Global.toNumber(depositAmountCtrl.text) +
               (Global.toNumber(benefitTotalCtrl.text) * 100 / 107));
@@ -789,7 +803,9 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
   }
 
   void benefitTotalChanged() {
-    if (widget.vatOption == 'Include' && benefitTotalCtrl.text.isNotEmpty && depositAmountCtrl.text.isNotEmpty) {
+    if (widget.vatOption == 'Include' &&
+        benefitTotalCtrl.text.isNotEmpty &&
+        depositAmountCtrl.text.isNotEmpty) {
       redeemValueCtrl.text = Global.format(
           Global.toNumber(depositAmountCtrl.text) +
               (Global.toNumber(benefitTotalCtrl.text) * 100 / 107));

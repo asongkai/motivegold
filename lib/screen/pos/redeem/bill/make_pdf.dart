@@ -15,7 +15,7 @@ import 'package:printing/printing.dart';
 
 Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
     {int option = 1}) async {
-  motivePrint(invoice.order?.toJson());
+  // motivePrint(invoice.order?.toJson());
 
   // Apply same font pattern as makeRefillThengBill
   var myTheme = ThemeData.withFont(
@@ -439,13 +439,15 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
               children: [
                 Text('                                ',
                     style: const TextStyle(fontSize: 10)),
-                Text('${getCustomerName(invoice.customer)})',
+                Text('${getCustomerName(invoice.customer)}',
+                    textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 10)),
                 Text('ผู้ไถ่ถอนและรับคืนหลักประกัน',
                     style:
                         TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                 Spacer(),
-                Text('${Global.company?.name} (${Global.branch?.name})',
+                Text('${Global.branch?.name}',
+                    textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 10)),
                 Text('ผู้รับไถ่ถอนและคืนหลักประกัน',
                     style:

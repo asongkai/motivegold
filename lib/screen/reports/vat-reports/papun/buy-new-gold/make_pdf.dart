@@ -53,6 +53,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
   //     )
   // ));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       'รายงานภาษีมูลค่าเพิ่ม : รายงานภาษีซื้อทองคำรูปพรรณใหม่ 96.5%',
@@ -300,7 +301,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                         color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.orange600
                     ),
                     align: TextAlign.right),
-                paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceDiff ?? 0),
+                paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.taxBase ?? 0),
                     style: TextStyle(fontSize: 10, color: PdfColors.purple600),
                     align: TextAlign.right),
                 // paddedTextSmall(Global.format(orders[i]!.taxBase ?? 0),
@@ -376,9 +377,9 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                     ),
                     align: TextAlign.right),
                 paddedTextSmall(list[i].status == "2" ? "0.00" :
-                list[i].priceDiff == null
+                list[i].taxBase == null
                         ? '0.00'
-                        : Global.format(list[i].priceDiff ?? 0),
+                        : Global.format(list[i].taxBase ?? 0),
                     style: TextStyle(fontSize: 10, color: PdfColors.purple600),
                     align: TextAlign.right),
                 // paddedTextSmall(
@@ -423,7 +424,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-              // if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 2) paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',
@@ -457,7 +458,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                       color: PdfColors.orange700
                   ),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceDiffTotal(orders)),
+              paddedTextSmall(Global.format(taxBaseTotal(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,

@@ -26,7 +26,7 @@ Future<Uint8List> makeBill(Invoice invoice, {int option = 1}) async {
 
     widgets.add(
       await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี',
-          versionText: versionText),
+          versionText: versionText, full: true),
     );
     widgets.add(
       docNo(invoice.order),
@@ -558,7 +558,7 @@ Future<Uint8List> makeBill(Invoice invoice, {int option = 1}) async {
                   Text('ผู้ซื้อ/ผู้จ่ายเงิน/ผู้รับทอง',
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   Spacer(),
-                  Text('${Global.company?.name} (${Global.branch?.name})', textAlign: TextAlign.center,
+                  Text('${Global.branch?.name}', textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 11)),
                   Text('ผู้ขาย/ผู้รับเงิน/ผู้ส่งมอบทอง',
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),

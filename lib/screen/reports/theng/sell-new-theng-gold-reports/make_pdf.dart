@@ -62,6 +62,7 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
   //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
   //         child: getHeaderText(type))));
   // widgets.add(height());
+  widgets.add(reportsCompanyTitle());
   widgets.add(Center(
     child: Text(
       ' รายงานขายทองคำแท่ง',
