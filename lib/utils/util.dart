@@ -1111,11 +1111,6 @@ Color colorType(OrderModel list) {
 }
 
 String dataTypeRedeem(RedeemModel list) {
-  // Check if cancelled first
-  if (list.redeemStatus == 'CANCEL') {
-    return "ยกเลิกเอกสาร";
-  }
-
   switch (list.redeemTypeId) {
     case 1:
       return "ไถ่ถอน - ขายฝาก";
@@ -1125,11 +1120,6 @@ String dataTypeRedeem(RedeemModel list) {
 }
 
 Color colorTypeRedeem(RedeemModel list) {
-  // Check if cancelled first
-  if (list.redeemStatus == 'CANCEL') {
-    return Colors.red;
-  }
-
   switch (list.redeemTypeId) {
     case 1:
       return stmBgColor;
