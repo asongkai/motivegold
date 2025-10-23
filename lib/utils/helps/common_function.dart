@@ -265,22 +265,24 @@ double taxBaseTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.taxBase ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.taxBase ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double taxAmountTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.taxAmount ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.taxAmount ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double priceExcludeTaxTotal(List<dynamic> orders) {
@@ -313,22 +315,19 @@ double getWeightTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += getWeight(orders[i]!);
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = getWeight(order!);
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getWeightBahtTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += getWeightBaht(orders[i]!);
-  }
-  return amount;
+  return orders.fold<double>(0.0, (sum, order) => sum + getWeightBaht(order!));
 }
 
 double getWeightTotalBU(List<dynamic> orders) {
@@ -439,25 +438,19 @@ double getPriceExcludeTaxHeadTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    for (int j = 0; j < orders[i].details.length; j++) {
-      amount += orders[i]!.details[j].priceExcludeTax ?? 0;
-    }
-  }
-  return amount;
+  return orders.fold<double>(0.0, (sum, order) {
+    if (order?.details == null) return sum;
+    return sum + order.details.fold<double>(0.0, (detailSum, detail) =>
+      detailSum + (detail?.priceExcludeTax ?? 0));
+  });
 }
 
 double getPriceExcludeTaxDetailTotal(dynamic order) {
   if (order.id == null || order.details == null || order.details!.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int j = 0; j < order.details!.length; j++) {
-    amount += order.details![j].priceExcludeTax ?? 0;
-  }
-
-  return amount;
+  return order.details!.fold<double>(0.0, (sum, detail) =>
+    sum + (detail?.priceExcludeTax ?? 0));
 }
 
 double getCommissionDetailTotal(dynamic order) {
@@ -569,110 +562,105 @@ int getQtyTotalB(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.qty ?? 0;
-  }
-  return amount.toInt();
+  return orders.fold<double>(0.0, (sum, order) => sum + (order?.qty ?? 0)).toInt();
 }
 
 double getRedeemWeightTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.weight ?? 0;
-  }
-  return amount;
+  return orders.fold<double>(0.0, (sum, order) => sum + (order?.weight ?? 0));
 }
 
 double getRedeemWeightBahtTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.weightBath ?? 0;
-  }
-  return amount;
+  return orders.fold<double>(0.0, (sum, order) => sum + (order?.weightBath ?? 0));
 }
 
 double getTaxBaseTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.taxBase ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.taxBase ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getTaxAmountTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.taxAmount ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.taxAmount ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getDepositAmountTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.depositAmount ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.depositAmount ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getRedemptionValueTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.redemptionValue ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.redemptionValue ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getRedemptionVatTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.redemptionVat ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.redemptionVat ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getBenefitAmountTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.benefitAmount ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.benefitAmount ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 double getPaymentAmountTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int i = 0; i < orders.length; i++) {
-    amount += orders[i]!.paymentAmount ?? 0;
-  }
-  return amount;
+  // Round each value to 2 decimals before summing to fix precision errors in stored data
+  return orders.fold<double>(0.0, (sum, order) {
+    double value = order?.paymentAmount ?? 0;
+    double rounded = (value * 100).round() / 100;
+    return sum + rounded;
+  });
 }
 
 /// END Redeem

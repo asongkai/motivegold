@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:intl/intl.dart';
 import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
@@ -38,6 +39,31 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
       docNoRedeem(invoice.order),
     );
     widgets.add(height(h: 5));
+
+// Create a sorted copy of the details list
+    final sortedDetails = List.from(invoice.order.details!)
+      ..sort((a, b) {
+        // Handle null values - put them at the end
+        if (a.referenceNo == null && b.referenceNo == null) return 0;
+        if (a.referenceNo == null) return 1;
+        if (b.referenceNo == null) return -1;
+
+        // Try to parse as numbers first
+        final aNum = int.tryParse(a.referenceNo!);
+        final bNum = int.tryParse(b.referenceNo!);
+
+        // If both are numbers, compare numerically
+        if (aNum != null && bNum != null) {
+          return aNum.compareTo(bNum);
+        }
+
+        // If one is a number and one is not, put numbers first
+        if (aNum != null && bNum == null) return -1;
+        if (aNum == null && bNum != null) return 1;
+
+        // If both are strings, compare alphabetically
+        return a.referenceNo!.compareTo(b.referenceNo!);
+      });
 
     // Apply border pattern similar to makeRefillThengBill
     widgets.add(Container(
@@ -83,7 +109,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                 paddedText('ฐานภาษี\n(บาท)', align: TextAlign.center),
                 paddedText('ภาษีมูลค่าเพิ่ม\n(บาท)', align: TextAlign.center),
               ]),
-          for (int i = 0; i < invoice.order.details!.length; i++)
+          for (int i = 0; i < sortedDetails.length; i++)
             TableRow(
               decoration: const BoxDecoration(
                 border: Border(
@@ -93,29 +119,25 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                 ),
               ),
               children: [
-                paddedText('${i + 1}'),
-                paddedText(invoice.order.details![i].referenceNo ?? ''),
+                paddedText('${i + 1}', align: TextAlign.center),
+                paddedText(sortedDetails[i].referenceNo ?? ''),
                 paddedText('ทองคำรูปพรรณ 96.5%'),
-                paddedText(
-                    '${Global.format(invoice.order.details![i].weight ?? 0)}',
+                paddedText(formatWith2Decimals(sortedDetails[i].weight ?? 0),
+                    align: TextAlign.center),
+                paddedText('${Global.formatInt(sortedDetails[i].qty ?? 0)}',
                     align: TextAlign.center),
                 paddedText(
-                    '${Global.formatInt(invoice.order.details![i].qty ?? 0)}',
-                    align: TextAlign.center),
-                paddedText(
-                    '${Global.format(invoice.order.details![i].redemptionVat ?? 0)}',
+                    formatWith2Decimals(sortedDetails[i].redemptionVat ?? 0),
                     align: TextAlign.right),
                 paddedText(
-                    '${Global.format(invoice.order.details![i].redemptionValue ?? 0)}',
+                    formatWith2Decimals(sortedDetails[i].redemptionValue ?? 0),
                     align: TextAlign.right),
                 paddedText(
-                    '${Global.format(invoice.order.details![i].depositAmount ?? 0)}',
+                    formatWith2Decimals(sortedDetails[i].depositAmount ?? 0),
                     align: TextAlign.right),
-                paddedText(
-                    '${Global.format(invoice.order.details![i].taxBase ?? 0)}',
+                paddedText(formatWith2Decimals(sortedDetails[i].taxBase ?? 0),
                     align: TextAlign.right),
-                paddedText(
-                    '${Global.format(invoice.order.details![i].taxAmount ?? 0)}',
+                paddedText(formatWith2Decimals(sortedDetails[i].taxAmount ?? 0),
                     align: TextAlign.right),
               ],
             ),
@@ -150,26 +172,30 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                 paddedText(''),
                 paddedText('รวม',
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.format(getRedeemWeightTotal(invoice.items)),
+                paddedText(
+                    formatWith2Decimals(getRedeemWeightTotal(sortedDetails)),
                     align: TextAlign.center,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.formatInt(getQtyTotalB(invoice.items)),
+                paddedText(Global.formatInt(getQtyTotalB(sortedDetails)),
                     align: TextAlign.center,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.format(getRedemptionVatTotal(invoice.items)),
+                paddedText(
+                    formatWith2Decimals(getRedemptionVatTotal(sortedDetails)),
                     align: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 paddedText(
-                    Global.format(getRedemptionValueTotal(invoice.items)),
+                    formatWith2Decimals(getRedemptionValueTotal(sortedDetails)),
                     align: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.format(getDepositAmountTotal(invoice.items)),
+                paddedText(
+                    formatWith2Decimals(getDepositAmountTotal(sortedDetails)),
                     align: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.format(getTaxBaseTotal(invoice.items)),
+                paddedText(formatWith2Decimals(getTaxBaseTotal(sortedDetails)),
                     align: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold)),
-                paddedText(Global.format(getTaxAmountTotal(invoice.items)),
+                paddedText(
+                    formatWith2Decimals(getTaxAmountTotal(sortedDetails)),
                     align: TextAlign.right,
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ])
@@ -223,7 +249,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                                     Expanded(
                                         flex: 6,
                                         child: Text(
-                                            '${Global.format(invoice.order.benefitAmount ?? 0)} บาท',
+                                            '${formatWith2Decimals(invoice.order.benefitAmount ?? 0)} บาท',
                                             textAlign: TextAlign.left,
                                             style: const TextStyle(
                                                 fontSize: 10,
@@ -243,7 +269,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                                     Expanded(
                                         flex: 6,
                                         child: Text(
-                                            '${Global.format(invoice.order.depositAmount ?? 0)} บาท',
+                                            '${formatWith2Decimals(invoice.order.depositAmount ?? 0)} บาท',
                                             textAlign: TextAlign.left,
                                             style: const TextStyle(
                                                 fontSize: 10,
@@ -263,7 +289,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                                     Expanded(
                                         flex: 6,
                                         child: Text(
-                                            '${Global.format(invoice.order.paymentAmount ?? 0)} บาท',
+                                            '${formatWith2Decimals((invoice.order.redeemStatus == 'CANCEL' || invoice.order.status == 2) ? 0 : (invoice.order.paymentAmount ?? 0))} บาท',
                                             textAlign: TextAlign.left,
                                             style: const TextStyle(
                                                 fontSize: 10,
@@ -288,7 +314,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                                 Expanded(
                                     flex: 6,
                                     child: Text(
-                                        '${(invoice.order.vatOption == 'Include') ? Global.format(invoice.order.redemptionVat ?? 0) : Global.format(invoice.order.redemptionValue ?? 0)} บาท',
+                                        '${(invoice.order.vatOption == 'Include') ? formatWith2Decimals(invoice.order.redemptionVat ?? 0) : formatWith2Decimals(invoice.order.redemptionValue ?? 0)} บาท',
                                         textAlign: TextAlign.left,
                                         style: const TextStyle(
                                             fontSize: 10,
@@ -392,7 +418,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                           Expanded(
                             flex: 6,
                             child: Text(
-                                '${Global.format(invoice.order.paymentAmount)} บาท',
+                                '${formatWith2Decimals((invoice.order.redeemStatus == 'CANCEL' || invoice.order.status == 2) ? 0 : (invoice.order.paymentAmount ?? 0))} บาท',
                                 textAlign: TextAlign.left,
                                 style: const TextStyle(
                                     fontSize: 10, color: PdfColors.blue700)),
@@ -417,7 +443,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                             Expanded(
                                 flex: 6,
                                 child: Text(
-                                    "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    "${formatWith2Decimals((invoice.order.redeemStatus == 'CANCEL' || invoice.order.status == 2) ? 0 : (invoice.payments![i].amount ?? 0))} บาท",
                                     textAlign: TextAlign.left,
                                     style: const TextStyle(
                                         fontSize: 10,
@@ -526,3 +552,9 @@ Widget paddedText(final String text,
         style: style,
       ),
     );
+
+// Custom format function that always shows exactly 2 decimal places
+String formatWith2Decimals(dynamic value) {
+  final formatter = NumberFormat("#,##0.00", "en_US");
+  return formatter.format(value ?? 0);
+}

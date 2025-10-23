@@ -348,35 +348,62 @@ Widget docNoRefill(OrderModel order) {
 }
 
 Widget docNoRedeem(RedeemModel order) {
-  return Column(
+  return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
-                style: const TextStyle(fontSize: 11)),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('ที่อยู่ : ${order.customer?.address} ',
-                style: const TextStyle(fontSize: 11)),
-            Text('เลขที่ : ${order.redeemId}',
-                style: const TextStyle(fontSize: 11)),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('เลขประจำตัวผู้เสียภาษี : ${order.customer?.taxNumber}',
-                style: const TextStyle(fontSize: 11)),
-            Text('วันที่ : ${Global.formatDateNT(order.redeemDate.toString())}',
-                style: const TextStyle(fontSize: 11)),
-          ],
-        ),
+        Expanded(
+            flex: 7,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                      'ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
+                      style: const TextStyle(fontSize: 11)),
+                  Text('ที่อยู่ : ${order.customer?.address} ',
+                      style: const TextStyle(fontSize: 11)),
+                  Text('เลขประจำตัวผู้เสียภาษี : ${order.customer?.taxNumber}',
+                      style: const TextStyle(fontSize: 11)),
+                ])),
+        if (order.status == "2" || order.redeemStatus == 'CANCEL')
+          Container(
+            width: 100,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: PdfColors.black,
+                width: 1.0,
+              ),
+              color: PdfColors.white,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 0.0,
+              ),
+              child: Text(
+                'ยกเลิก',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: PdfColors.red,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        Expanded(
+            flex: 4,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('เลขที่ : ${order.redeemId}',
+                      style: const TextStyle(fontSize: 11)),
+                  Text(
+                      'วันที่ : ${Global.formatDateNT(order.redeemDate.toString())}',
+                      style: const TextStyle(fontSize: 11)),
+                ])),
       ]);
 }
 

@@ -300,33 +300,33 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
         }
         List<RedeemModel> dailyList = [];
         if (value == 4) {
-          List<RedeemModel> daily = genDailyList(filterList!.reversed.toList());
-          if (daily.isEmpty) {
+          dailyList = genDailyList(filterList!.reversed.toList());
+          if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
           }
 
-          int days = Global.daysBetween(fromDate!, toDate!);
+          // int days = Global.daysBetween(fromDate!, toDate!);
 
-          for (int j = 0; j <= days; j++) {
-            var indexDay = fromDate?.add(Duration(days: j));
-            for (int i = 0; i < daily.length; i++) {
-              if (daily[i].createdDate == indexDay) {
-                daily[i].referenceNo = 'รวมใบกำกับภาษีประจำวัน';
-                dailyList.add(daily[i]);
-              } else {
-                var checkExisting =
-                    dailyList.where((e) => e.createdDate == indexDay).toList();
-                if (checkExisting.isEmpty) {
-                  dailyList.add(RedeemModel(
-                      redeemId: 'ไม่มียอดไถ่ถอน',
-                      redeemDate: indexDay,
-                      referenceNo: '',
-                      customer: daily[i].customer));
-                }
-              }
-            }
-          }
+          // for (int j = 0; j <= days; j++) {
+          //   var indexDay = fromDate?.add(Duration(days: j));
+          //   for (int i = 0; i < daily.length; i++) {
+          //     if (daily[i].createdDate == indexDay) {
+          //       daily[i].referenceNo = 'รวมใบกำกับภาษีประจำวัน';
+          //       dailyList.add(daily[i]);
+          //     } else {
+          //       var checkExisting =
+          //           dailyList.where((e) => e.createdDate == indexDay).toList();
+          //       if (checkExisting.isEmpty) {
+          //         dailyList.add(RedeemModel(
+          //             redeemId: 'ไม่มียอดไถ่ถอน',
+          //             redeemDate: indexDay,
+          //             referenceNo: '',
+          //             customer: daily[i].customer));
+          //       }
+          //     }
+          //   }
+          // }
         }
 
         if (value == 4 && dailyList.isEmpty) {
@@ -1414,17 +1414,17 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
     setState(() {});
   }
 
-  List<RedeemModel> genDailyList(List<RedeemModel?>? filterList) {
+  List<RedeemModel> genDailyList2(List<RedeemModel?>? filterList) {
     List<RedeemModel> orderList = [];
     int days = Global.daysBetween(fromDate!, toDate!);
     for (int i = 0; i <= days; i++) {
       DateTime? monthDate = fromDate!.add(Duration(days: i));
       var dateList = filterList
           ?.where((element) =>
-              Global.dateOnly(element!.createdDate.toString()) ==
+              Global.dateOnly(element!.redeemDate.toString()) ==
               Global.dateOnly(monthDate.toString()))
           .toList();
-      motivePrint(dateList?.length);
+      // motivePrint(dateList?.length);
       if (dateList!.isNotEmpty) {
         var order = RedeemModel(
           redeemId: '${dateList.first?.redeemId} - ${dateList.last?.redeemId}',
@@ -1437,8 +1437,86 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
           depositAmount: getDepositAmountTotal(dateList),
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
+          status: dateList.any((element) => element!.status == 2) ? 2 : 1,
+          redeemStatus:
+              dateList.any((element) => element!.redeemStatus == "CANCEL")
+                  ? "CANCEL"
+                  : "",
         );
         orderList.add(order);
+      }
+    }
+    return orderList;
+  }
+
+  List<RedeemModel> genDailyList(List<RedeemModel?>? filterList, {int? value}) {
+    List<RedeemModel> orderList = [];
+
+    int days = Global.daysBetween(fromDate!, toDate!);
+
+    for (int i = 0; i <= days; i++) {
+      DateTime monthDate = fromDate!.add(Duration(days: i));
+
+      // Get all orders for this specific date
+      var dateList = filterList
+          ?.where((element) =>
+              element != null &&
+              Global.dateOnly(element.redeemDate.toString()) ==
+                  Global.dateOnly(monthDate.toString()))
+          .cast<RedeemModel>() // Cast to non-nullable RedeemModel
+          .toList();
+
+      if (dateList != null && dateList.isNotEmpty) {
+        // Sort by redeemId to get correct first and last
+        dateList.sort((a, b) {
+          final redeemIdA = a.redeemId ?? '';
+          final redeemIdB = b.redeemId ?? '';
+          return redeemIdA.compareTo(redeemIdB);
+        });
+
+        // Create order ID from first and last order
+        String combinedOrderId = dateList.length == 1
+            ? dateList.first.redeemId!
+            : '${dateList.first.redeemId} - ${dateList.last.redeemId}';
+
+        var order = RedeemModel(
+          redeemId:
+              combinedOrderId, //'${dateList.first.redeemId} - ${dateList.last.redeemId}',
+          redeemDate: dateList.first.redeemDate,
+          referenceNo: 'รวมใบกำกับภาษีประจำวัน',
+          createdDate: monthDate,
+          customerId: 0,
+          weight: getWeightTotal(dateList),
+          redemptionVat: getRedemptionVatTotal(dateList),
+          redemptionValue: getRedemptionValueTotal(dateList),
+          depositAmount: getDepositAmountTotal(dateList),
+          taxBase: taxBaseTotal(dateList),
+          taxAmount: taxAmountTotal(dateList),
+          status: dateList.any((element) => element.status == 2) ? 2 : 1,
+          redeemStatus:
+              dateList.any((element) => element.redeemStatus == "CANCEL")
+                  ? "CANCEL"
+                  : "",
+        );
+
+        orderList.add(order);
+      } else {
+        // Optional: Add "no sales" entry for days with no orders
+
+        var noSalesOrder = RedeemModel(
+          redeemId: 'ไม่มียอดไถ่ถอน',
+          redeemDate: monthDate,
+          createdDate: monthDate,
+          customerId: 0,
+          weight: 0.0,
+          redemptionVat: 0.0,
+          redemptionValue: 0.0,
+          depositAmount: 0.0,
+          taxBase: 0.0,
+          taxAmount: 0.0,
+        );
+
+        orderList.add(noSalesOrder);
       }
     }
     return orderList;

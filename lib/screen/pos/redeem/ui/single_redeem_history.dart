@@ -777,6 +777,49 @@ class _SingleRedeemHistoryScreenState extends State<SingleRedeemHistoryScreen> {
                                   ),
                                 ),
                               ),
+                              SizedBox(width: 8),
+                              if (order.redeemStatus != 'CANCEL')
+                                GestureDetector(
+                                  onTap: () => _cancelRedeem(order),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      border: Border.all(color: Colors.orange),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'ยกเลิก',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (order.redeemStatus == 'CANCEL')
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black12,
+                                      border: Border.all(color: Colors.black12),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'ถูกยกเลิก',
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                           SizedBox(height: 8),
@@ -848,15 +891,6 @@ class _SingleRedeemHistoryScreenState extends State<SingleRedeemHistoryScreen> {
                           color: Colors.green[700]!,
                           onTap: () => _handlePrint(order),
                         ),
-                        if (order.redeemStatus != 'CANCEL') ...[
-                          SizedBox(height: 8),
-                          _buildActionButton(
-                            icon: Icons.cancel,
-                            label: 'ยกเลิก',
-                            color: Colors.red[700]!,
-                            onTap: () => _cancelRedeem(order),
-                          ),
-                        ],
                       ],
                     ),
                   ],
