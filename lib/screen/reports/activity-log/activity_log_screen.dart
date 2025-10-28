@@ -8,6 +8,7 @@ import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
@@ -30,8 +31,8 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
   Screen? size;
 
   // Filter variables
-  DateTime? startDate;
-  DateTime? endDate;
+  final TextEditingController fromDateCtrl = TextEditingController();
+  final TextEditingController toDateCtrl = TextEditingController();
   String? selectedActionType;
   String? selectedScreenName;
   bool showFilters = false;
@@ -226,82 +227,30 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
           Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('วันเริ่มต้น',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    const SizedBox(height: 4),
-                    InkWell(
-                      onTap: () => _selectStartDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              startDate != null
-                                  ? DateFormat('dd/MM/yyyy').format(startDate!)
-                                  : 'เลือกวันที่',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: startDate != null
-                                    ? Colors.black87
-                                    : Colors.grey,
-                              ),
-                            ),
-                            const Icon(Icons.calendar_today,
-                                size: 16, color: Colors.grey),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                child: _buildDateField(
+                  label: 'จากวันที่',
+                  icon: Icons.calendar_today,
+                  controller: fromDateCtrl,
+                  onClear: () {
+                    setState(() {
+                      fromDateCtrl.text = "";
+                      toDateCtrl.text = "";
+                    });
+                  },
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('วันสิ้นสุด',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    const SizedBox(height: 4),
-                    InkWell(
-                      onTap: () => _selectEndDate(context),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              endDate != null
-                                  ? DateFormat('dd/MM/yyyy').format(endDate!)
-                                  : 'เลือกวันที่',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: endDate != null
-                                    ? Colors.black87
-                                    : Colors.grey,
-                              ),
-                            ),
-                            const Icon(Icons.calendar_today,
-                                size: 16, color: Colors.grey),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                child: _buildDateField(
+                  label: 'ถึงวันที่',
+                  icon: Icons.calendar_today,
+                  controller: toDateCtrl,
+                  onClear: () {
+                    setState(() {
+                      fromDateCtrl.text = "";
+                      toDateCtrl.text = "";
+                    });
+                  },
                 ),
               ),
             ],
@@ -312,80 +261,161 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ประเภทการกระทำ',
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedActionType,
-                    isExpanded: true,
-                    hint: const Text('เลือกประเภท'),
-                    items: actionTypes.map((String type) {
-                      return DropdownMenuItem<String>(
-                        value: type == 'ทั้งหมด' ? null : type,
-                        child: Text(type),
-                      );
-                    }).toList(),
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedActionType = value;
-                      });
-                    },
+              Row(
+                children: [
+                  Icon(Icons.category, size: 16, color: Colors.grey[600]),
+                  const SizedBox(width: 6),
+                  Text('ประเภทการกระทำ',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 48,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedActionType,
+                      isExpanded: true,
+                      hint: const Text('เลือกประเภท', style: TextStyle(fontSize: 14)),
+                      items: actionTypes.map((String type) {
+                        return DropdownMenuItem<String>(
+                          value: type == 'ทั้งหมด' ? null : type,
+                          child: Text(type, style: const TextStyle(fontSize: 14)),
+                        );
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedActionType = value;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Action Buttons
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      startDate = null;
-                      endDate = null;
-                      selectedActionType = null;
-                      selectedScreenName = null;
-                      filteredActivityList = activityList;
-                    });
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                flex: 4,
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
                     ),
+                    onPressed: applyFilters,
+                    icon: const Icon(Icons.search_rounded, size: 20),
+                    label: const Text('ค้นหา', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
-                  child: const Text('ล้างตัวกรอง'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    applyFilters();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                flex: 3,
+                child: SizedBox(
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.red, width: 1.5),
+                      foregroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    onPressed: () {
+                      setState(() {
+                        fromDateCtrl.text = "";
+                        toDateCtrl.text = "";
+                        selectedActionType = null;
+                        selectedScreenName = null;
+                      });
+                      loadActivities();
+                    },
+                    icon: const Icon(Icons.clear_rounded, size: 20),
+                    label: const Text('Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
-                  child: const Text('ค้นหา'),
                 ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDateField({
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+    required VoidCallback onClear,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 48,
+          child: TextField(
+            controller: controller,
+            style: const TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.calendar_today, size: 18),
+              suffixIcon: controller.text.isNotEmpty
+                  ? GestureDetector(
+                  onTap: onClear,
+                  child: const Icon(Icons.clear, size: 18))
+                  : null,
+              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              hintText: label,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.indigo[600]!),
+              ),
+            ),
+            readOnly: true,
+            onTap: () async {
+              showDialog(
+                context: context,
+                builder: (_) => SfDatePickerDialog(
+                  initialDate: DateTime.now(),
+                  onDateSelected: (date) {
+                    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+                    setState(() {
+                      controller.text = formattedDate;
+                    });
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -695,34 +725,6 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     );
   }
 
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: startDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != startDate) {
-      setState(() {
-        startDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: endDate ?? DateTime.now(),
-      firstDate: startDate ?? DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != endDate) {
-      setState(() {
-        endDate = picked;
-      });
-    }
-  }
-
   void applyFilters() async {
     setState(() {
       loading = true;
@@ -731,8 +733,12 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     try {
       // Build search request
       var searchData = {
-        'startDate': startDate?.toIso8601String(),
-        'endDate': endDate?.toIso8601String(),
+        'startDate': fromDateCtrl.text.isNotEmpty
+            ? DateTime.parse(fromDateCtrl.text).toIso8601String()
+            : null,
+        'endDate': toDateCtrl.text.isNotEmpty
+            ? DateTime.parse(toDateCtrl.text).toIso8601String()
+            : null,
         'actionType': selectedActionType,
         'screenName': selectedScreenName,
       };
@@ -778,8 +784,23 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.get('/activitylog');
-      motivePrint(result?.toJson());
+      // Use search endpoint with role-based filtering
+      var searchData = {
+        'startDate': null,
+        'endDate': null,
+        'actionType': null,
+        'screenName': null,
+      };
+
+      var request = jsonEncode({
+        'companyId': Global.company?.id ?? Global.user?.companyId,
+        'branchId': Global.branch?.id ?? Global.user?.branchId,
+        'userId': Global.user?.id,
+        'data': searchData,
+      });
+
+      var result = await ApiServices.post('/activitylog/search', request);
+
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ActivityLogModel> activities = activityLogListModelFromJson(data);
@@ -800,5 +821,4 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
       loading = false;
     });
   }
-
 }

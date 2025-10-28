@@ -8,6 +8,7 @@ import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart'
 import 'package:motivegold/screen/settings/branch/branch_list_screen.dart';
 import 'package:motivegold/screen/settings/company/company_list_screen.dart';
 import 'package:motivegold/screen/settings/master/defaultPayment/default_payment_screen.dart';
+import 'package:motivegold/screen/settings/master/defaultRedeemPayment/default_redeem_payment_screen.dart';
 import 'package:motivegold/screen/settings/master/defaultProduct/default_product_screen.dart';
 import 'package:motivegold/screen/settings/master/warehouse/location_list_screen.dart';
 import 'package:motivegold/screen/settings/master_data_screen.dart';
@@ -294,6 +295,30 @@ class _SettingScreenState extends State<SettingScreen> {
                       .titleMedium
                       ?.copyWith(color: Colors.grey.shade600),
                 ),
+                if (Global.user?.userRole == 'Administrator')
+                  SettingsItem(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const DefaultRedeemPaymentScreen()));
+                    },
+                    icons: Icons.payment_outlined,
+                    iconStyle: IconStyle(
+                        backgroundColor: Colors.teal[700]!
+                    ),
+                    title: 'จัดการค่าเริ่มต้น การชำระเงิน (ไถ่ถอน)',
+                    subtitle: "ตั้งค่าค่าเริ่มต้นการชำระเงินสำหรับไถ่ถอน",
+                    titleStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.grey.shade600),
+                    subtitleStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
                 if (Global.user?.userRole == 'Administrator')
                   SettingsItem(
                     onTap: () {

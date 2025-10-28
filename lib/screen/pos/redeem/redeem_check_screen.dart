@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/customer.dart';
+import 'package:motivegold/model/default/default_payment.dart';
+import 'package:motivegold/model/default/default_redeem_payment.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/redeem/redeem_detail.dart';
@@ -52,10 +54,13 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
   int? selectedOption = 0;
   bool loading = false;
 
+  DefaultRedeemPaymentModel? defaultPayment;
+
   @override
   void initState() {
     super.initState();
     _initializeAnimations();
+    loadDefaultPayment();
     Global.currentOrderType = 0;
     Global.discount = 0;
     Global.addPrice = 0;
@@ -91,6 +96,45 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
     super.dispose();
     Global.discount = 0;
     Global.addPrice = 0;
+  }
+
+  Future<void> loadDefaultPayment() async {
+    int redeemTypeId = 1; // Default redeem type ID (ไถ่ถอน)
+
+    var payment = await ApiServices.post(
+        '/defaultredeempayment/by-redeem-type/$redeemTypeId', Global.requestObj(null));
+
+    if (payment != null) {
+      motivePrint(payment.toJson());
+    }
+    if (payment?.status == "success") {
+      var data = DefaultRedeemPaymentModel.fromJson(payment?.data);
+      setState(() {
+        defaultPayment = data;
+      });
+    }
+  }
+
+  // Convert DefaultRedeemPaymentModel to DefaultPaymentModel for widget compatibility
+  DefaultPaymentModel? convertToDefaultPayment(DefaultRedeemPaymentModel? redeemPayment) {
+    if (redeemPayment == null) return null;
+    return DefaultPaymentModel(
+      id: redeemPayment.id,
+      companyId: redeemPayment.companyId,
+      branchId: redeemPayment.branchId,
+      orderTypeId: redeemPayment.redeemTypeId,
+      orderTypeCode: redeemPayment.redeemTypeCode,
+      paymentId: redeemPayment.paymentId,
+      paymentCode: redeemPayment.paymentCode,
+      bankName: redeemPayment.bankName,
+      bankId: redeemPayment.bankId,
+      accountName: redeemPayment.accountName,
+      accountNo: redeemPayment.accountNo,
+      createdBy: redeemPayment.createdBy,
+      createdDate: redeemPayment.createdDate,
+      updatedBy: redeemPayment.updatedBy,
+      updatedDate: redeemPayment.updatedDate,
+    );
   }
 
   @override
@@ -1541,6 +1585,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                         padding: const EdgeInsets.all(20),
                         child: PaymentMethodWidget(
                           index: i,
+                          payment: convertToDefaultPayment(defaultPayment),
                         ),
                       ),
                     ),
@@ -1830,7 +1875,9 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                     Flexible(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(20),
-                        child: const PaymentMethodWidget(),
+                        child: PaymentMethodWidget(
+                          payment: convertToDefaultPayment(defaultPayment),
+                        ),
                       ),
                     ),
 

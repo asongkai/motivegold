@@ -1236,6 +1236,9 @@ String getFullAddress() {
   }
 
   String address = "";
+  if (Global.branch?.address != null && Global.branch!.address!.isNotEmpty) {
+    address += 'เลขที่${Global.branch!.address} ';
+  }
   if (Global.branch?.building != null && Global.branch!.building!.isNotEmpty) {
     address += 'อาคาร${Global.branch!.building} ';
   }
@@ -1245,9 +1248,7 @@ String getFullAddress() {
   if (Global.branch?.floor != null && Global.branch!.floor!.isNotEmpty) {
     address += 'ชั้นที่${Global.branch!.floor} ';
   }
-  if (Global.branch?.address != null && Global.branch!.address!.isNotEmpty) {
-    address += 'เลขที่${Global.branch!.address} ';
-  }
+
   if (Global.branch?.village != null && Global.branch!.village!.isNotEmpty) {
     address += 'หมู่บ้าน${Global.branch!.village} ';
   }

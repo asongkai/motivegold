@@ -88,7 +88,6 @@ class _RedeemScreenState extends State<RedeemScreen> {
     super.initState();
     orderDateCtrl.text = Global.formatDateD(DateTime.now().toString());
 
-
     getRedeemCart();
     calTotal();
   }
@@ -842,6 +841,12 @@ class _RedeemScreenState extends State<RedeemScreen> {
                         // );
                         // setState(() {});
 
+                        if (Global.redeemSingleDetail!.isEmpty) {
+                          Alert.warning(
+                              context, 'คำเตือน', 'กรุณาเพิ่มรายการก่อน', 'OK');
+                          return;
+                        }
+
                         RedeemModel order = RedeemModel(
                           redeemId: '',
                           redeemDate: Global.convertDate(orderDateCtrl.text),
@@ -1142,10 +1147,13 @@ class _RedeemScreenState extends State<RedeemScreen> {
                     onPressed: () {
                       // Edit functionality
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditRedeemItemDialog(index: index, vatOption: order.vatOption ?? '',),
-                              fullscreenDialog: true))
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditRedeemItemDialog(
+                                        index: index,
+                                        vatOption: order.vatOption ?? '',
+                                      ),
+                                  fullscreenDialog: true))
                           .whenComplete(() {
                         setState(() {});
                       });

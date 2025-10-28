@@ -538,7 +538,7 @@ Future<Uint8List> makeBill(Invoice invoice, {int option = 1}) async {
                                     Expanded(
                                         flex: 2,
                                         child: Text(
-                                            "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                            invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                                 fontSize: 11, color: PdfColors.blue700)))

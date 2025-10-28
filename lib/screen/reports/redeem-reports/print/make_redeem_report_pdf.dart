@@ -57,9 +57,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           : (orders[i]!.customer != null
               ? '${getCustomerName(orders[i]!.customer!)}'
               : '');
-      orders[i]!.details![j].taxNumber = orders[i]!.customer?.taxNumber != ''
-          ? orders[i]!.customer?.taxNumber ?? ''
-          : orders[i]!.customer?.idCard ?? '';
+      // Remove tax ID for cancelled redeems
+      orders[i]!.details![j].taxNumber = orders[i]!.redeemStatus == 'CANCEL'
+          ? ''
+          : (orders[i]!.customer?.taxNumber != ''
+              ? orders[i]!.customer?.taxNumber ?? ''
+              : orders[i]!.customer?.idCard ?? '');
     }
     details.addAll(orders[i]!.details!);
   }
@@ -637,9 +640,11 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   // COLUMN 4: Tax / ID Number
                   paddedTextSmall(
                     isFirstRowForOrderId(orders[i]!.details!, j)
-                        ? (orders[i]?.customer?.taxNumber ?? '') != ''
-                            ? orders[i]!.customer!.taxNumber!
-                            : orders[i]?.customer?.idCard ?? ''
+                        ? (orders[i]!.redeemStatus == 'CANCEL'
+                            ? ''
+                            : ((orders[i]?.customer?.taxNumber ?? '') != ''
+                                ? orders[i]!.customer!.taxNumber!
+                                : orders[i]?.customer?.idCard ?? ''))
                         : '',
                     style: TextStyle(
                         fontSize: 11,
@@ -912,9 +917,11 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
                 // COLUMN 4: Tax / ID Number
                 paddedTextSmall(
-                  (orders[i]?.customer?.taxNumber ?? '') != ''
-                      ? orders[i]!.customer!.taxNumber!
-                      : orders[i]?.customer?.idCard ?? '',
+                  orders[i]!.redeemStatus == 'CANCEL'
+                      ? ''
+                      : ((orders[i]?.customer?.taxNumber ?? '') != ''
+                          ? orders[i]!.customer!.taxNumber!
+                          : orders[i]?.customer?.idCard ?? ''),
                   style: TextStyle(
                       fontSize: 11,
                       color: orders[i]!.status == 2 ? PdfColors.red900 : null),

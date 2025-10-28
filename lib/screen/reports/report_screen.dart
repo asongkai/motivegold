@@ -14,6 +14,7 @@ import 'package:motivegold/screen/reports/stock-movement-reports/stock_movement_
 import 'package:motivegold/screen/reports/stock-reports/stock_report_list_screen.dart';
 import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/buy_vat_report_screen.dart';
 import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/sell_vat_report_screen.dart';
+import 'package:motivegold/screen/reports/accounting-books/accounting_books_menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_history_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/used/sell_used_gold_history_screen.dart';
 import 'package:motivegold/utils/global.dart';
@@ -125,6 +126,29 @@ class _ReportScreenState extends State<ReportScreen> {
             SettingsGroup(
               settingsGroupTitle: "รายงาน",
               items: [
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const AccountingBooksMenuScreen()));
+                  },
+                  icons: Icons.book,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.blueGrey[600]!,
+                  ),
+                  title: 'สมุดบัญชี',
+                  subtitle: "สมุดบัญชีซื้อ-ขายทองคำรูปพรรณและทองคำแท่ง",
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
                 if (Global.company?.stock == 1)
                   SettingsItem(
                     onTap: () {

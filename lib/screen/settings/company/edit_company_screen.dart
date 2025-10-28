@@ -1058,6 +1058,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
 
     // Clean and validate the logo base64 string before sending
     String? cleanedLogo;
+    bool hasNewLogo = false;
     if (logo != null) {
       try {
         // Check if this is a new image (base64) or existing server image
@@ -1073,10 +1074,9 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
 
           // If successful, use the cleaned string
           cleanedLogo = base64String;
-        } else {
-          // This is the existing server image, don't send it again
-          cleanedLogo = null;
+          hasNewLogo = true;
         }
+        // If logo hasn't changed, don't include it in the request
       } catch (e) {
         print('Invalid base64 logo data: $e');
         // Set to null if invalid, or show an error to user
@@ -1086,7 +1086,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       }
     }
 
-    var object = Global.requestObj({
+    // Build request data - only include logo if it's a new one
+    Map<String, dynamic> requestData = {
       "id": id,
       "name": nameCtrl.text,
       "email": emailCtrl.text,
@@ -1096,7 +1097,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       "district": Global.amphureModel?.nameTh ?? widget.company.district ?? "",
       "province": Global.provinceModel?.nameTh ?? widget.company.province ?? "",
       "taxNumber": taxNumberCtrl.text,
-      "logo": cleanedLogo, // Use cleaned logo instead of raw logo
       "stock": nonStock ? 0 : 1,
       // New PP.01 fields
       "building": buildingCtrl.text,
@@ -1112,7 +1112,14 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       "tambonId": Global.tambonModel?.id ?? widget.company.tambonId,
       "amphureId": Global.amphureModel?.id ?? widget.company.amphureId,
       "provinceId": Global.provinceModel?.id ?? widget.company.provinceId,
-    });
+    };
+
+    // Only include logo field if there's a new logo to upload
+    if (hasNewLogo) {
+      requestData["logo"] = cleanedLogo;
+    }
+
+    var object = Global.requestObj(requestData);
 
     motivePrint(object);
 

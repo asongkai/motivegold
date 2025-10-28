@@ -472,7 +472,8 @@ class _CheckOutWholesaleSummaryHistoryScreenState
             ],
           ),
           const SizedBox(height: 16),
-          if (Global.paymentList!.isNotEmpty) _buildPaymentList(),
+          // Only show payment list if order is not cancelled
+          if (Global.paymentList!.isNotEmpty && orders.isNotEmpty && orders.first.orderStatus != 'CANCEL') _buildPaymentList(),
         ],
       ),
     );

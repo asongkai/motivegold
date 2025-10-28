@@ -2,6 +2,10 @@ import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/screen/pos/wholesale/paphun/refill/refill_gold_history_screen.dart';
+import 'package:motivegold/screen/reports/accounting-books/theng/buy-retail-theng/buy_retail_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/accounting-books/theng/refill-wholesale-theng/refill_wholesale_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/accounting-books/theng/sell-new-retail-theng/sell_new_retail_theng_report_screen.dart';
+import 'package:motivegold/screen/reports/accounting-books/theng/sell-wholesale-theng/sell_wholesale_theng_report_screen.dart';
 import 'package:motivegold/screen/reports/auth-history/auth_history_screen.dart';
 import 'package:motivegold/screen/reports/buy-new-gold-reports/buy_new_gold_reports.dart';
 import 'package:motivegold/screen/reports/buy-used-gold-gov-reports/buy_used_gold_gov_report_screen.dart';
@@ -65,11 +69,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                              const StockReportListScreen()));
+                                  const StockReportListScreen()));
                     },
                     icons: Icons.inventory, // Better for stock/inventory
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.green[600]!, // Green for stock reports
+                      backgroundColor:
+                          Colors.green[600]!, // Green for stock reports
                     ),
                     title: 'รายงานสต็อก',
                     titleStyle: Theme.of(context)
@@ -88,11 +93,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                              const StockMovementReportListScreen()));
+                                  const StockMovementReportListScreen()));
                     },
                     icons: Icons.trending_up, // Better for movement/trends
                     iconStyle: IconStyle(
-                      backgroundColor: Colors.orange[600]!, // Orange for movement
+                      backgroundColor:
+                          Colors.orange[600]!, // Orange for movement
                     ),
                     title: 'รายงานความเคลื่อนไหวสต๊อกสินค้า',
                     titleStyle: Theme.of(context)
@@ -111,7 +117,7 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const BuyUsedThengGoldReportScreen()));
+                                const BuyUsedThengGoldReportScreen()));
                   },
                   icons: Icons.shopping_cart, // Better for buying
                   iconStyle: IconStyle(
@@ -134,7 +140,7 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const SellThengReportScreen()));
+                                const SellThengReportScreen()));
                   },
                   icons: Icons.sell, // Better for selling
                   iconStyle: IconStyle(
@@ -157,11 +163,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const SellUsedThengGoldReportScreen()));
+                                const SellUsedThengGoldReportScreen()));
                   },
                   icons: Icons.sell, // Selling icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.deepOrange[600]!, // Deep orange for wholesale
+                    backgroundColor:
+                        Colors.deepOrange[600]!, // Deep orange for wholesale
                   ),
                   title: 'รายงานขายทองคำแท่ง (ร้านขายส่ง)',
                   titleStyle: Theme.of(context)
@@ -180,11 +187,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const BuyThengReportScreen()));
+                                const BuyThengReportScreen()));
                   },
                   icons: Icons.shopping_cart, // Buying icon
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.brown[600]!, // Brown for wholesale buying
+                    backgroundColor:
+                        Colors.brown[600]!, // Brown for wholesale buying
                   ),
                   title: 'รายงานซื้อทองคำแท่ง (ร้านขายส่ง)',
                   titleStyle: Theme.of(context)
@@ -203,11 +211,13 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const ThengMoneyMovementReportScreen()));
+                                const ThengMoneyMovementReportScreen()));
                   },
-                  icons: Icons.account_balance_wallet, // Better for financial flow
+                  icons:
+                      Icons.account_balance_wallet, // Better for financial flow
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.purple[600]!, // Purple for financial reports
+                    backgroundColor:
+                        Colors.purple[600]!, // Purple for financial reports
                   ),
                   title: 'รายงานเส้นทางการเงินทองคำแท่ง',
                   titleStyle: Theme.of(context)
@@ -226,11 +236,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const SellThengVatReportScreen()));
+                                const SellThengVatReportScreen()));
                   },
                   icons: Icons.receipt_long, // Better for tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.indigo[600]!, // Indigo for tax reports
+                    backgroundColor:
+                        Colors.indigo[600]!, // Indigo for tax reports
                   ),
                   title: 'รายงานภาษีขายทองคำแท่ง',
                   titleStyle: Theme.of(context)
@@ -249,11 +260,12 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const BuyThengVatReportScreen()));
+                                const BuyThengVatReportScreen()));
                   },
                   icons: Icons.receipt_long, // Tax reports
                   iconStyle: IconStyle(
-                    backgroundColor: Colors.indigo[600]!, // Same color for tax consistency
+                    backgroundColor:
+                        Colors.indigo[600]!, // Same color for tax consistency
                   ),
                   title: 'รายงานภาษีซื้อทองคำแท่ง',
                   titleStyle: Theme.of(context)
@@ -271,13 +283,102 @@ class _ThengReportMenuScreenState extends State<ThengReportMenuScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                            const TransferGoldHistoryScreen()));
+                                const TransferGoldHistoryScreen()));
                   },
-                  icons: Icons.transfer_within_a_station, // Better for transfers
+                  icons:
+                      Icons.transfer_within_a_station, // Better for transfers
                   iconStyle: IconStyle(
                     backgroundColor: Colors.blue[600]!, // Blue for transfers
                   ),
                   title: 'ประวัติการโอนทอง',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const BuyRetailThengReportScreen()));
+                  },
+                  icons: Icons.shopping_basket,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.deepPurple[600]!,
+                  ),
+                  title: 'สมุดบัญชีซื้อคำแท่ง(หน้าร้าน)',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SellNewRetailThengReportScreen()));
+                  },
+                  icons: Icons.storefront,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.green[600]!,
+                  ),
+                  title: 'สมุดบัญชีขายทองคำแท่ง(หน้าร้าน)',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const RefillWholesaleThengReportScreen()));
+                  },
+                  icons: Icons.add_shopping_cart,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.blue[600]!,
+                  ),
+                  title: 'สมุดบัญชีซื้อทองคำแท่ง(ร้านค้าส่ง)',
+                  titleStyle: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(color: Colors.grey.shade600),
+                  subtitleStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: Colors.grey.shade600),
+                ),
+                SettingsItem(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SellWholesaleThengReportScreen()));
+                  },
+                  icons: Icons.sell,
+                  iconStyle: IconStyle(
+                    backgroundColor: Colors.indigo[600]!,
+                  ),
+                  title: 'สมุดบัญชีขายทองคำแท่ง(ร้านค้าส่ง)',
                   titleStyle: Theme.of(context)
                       .textTheme
                       .titleLarge
