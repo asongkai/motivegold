@@ -321,6 +321,17 @@ class Global {
     }
   }
 
+  static formatTruncate(dynamic value, {bool option = false}) {
+    // Truncate to 2 decimal places without rounding
+    double numValue = value is String ? double.parse(value) : value.toDouble();
+    double truncated = (numValue * 100).truncateToDouble() / 100;
+
+    String number = formatterInt.format(truncated.truncate());
+    String decimal = (truncated - truncated.truncate()).toStringAsFixed(2).substring(2);
+
+    return '$number.$decimal';
+  }
+
   static format3(dynamic value, {bool option = false}) {
     String number = formatter3.format(value);
     var part = number.split('.');

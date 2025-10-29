@@ -50,21 +50,46 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   final pdf = Document(theme: myTheme);
   List<RedeemDetailModel> details = [];
   for (int i = 0; i < orders.length; i++) {
-    for (int j = 0; j < orders[i]!.details!.length; j++) {
-      orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
-      orders[i]!.details![j].customerName = orders[i]!.redeemStatus == 'CANCEL'
-          ? 'ยกเลิกเอกสาร'
-          : (orders[i]!.customer != null
-              ? '${getCustomerName(orders[i]!.customer!)}'
-              : '');
-      // Remove tax ID for cancelled redeems
-      orders[i]!.details![j].taxNumber = orders[i]!.redeemStatus == 'CANCEL'
-          ? ''
-          : (orders[i]!.customer?.taxNumber != ''
-              ? orders[i]!.customer?.taxNumber ?? ''
-              : orders[i]!.customer?.idCard ?? '');
+    // If order has no details, create a placeholder detail to show the order
+    if (orders[i]!.details == null || orders[i]!.details!.isEmpty) {
+      final placeholderDetail = RedeemDetailModel(
+        redeemId: orders[i]!.id,
+        redeemDate: orders[i]?.redeemDate,
+        customerName: orders[i]!.redeemStatus == 'CANCEL'
+            ? 'ยกเลิกเอกสาร'
+            : (orders[i]!.customer != null
+                ? '${getCustomerName(orders[i]!.customer!)}'
+                : ''),
+        taxNumber: orders[i]!.redeemStatus == 'CANCEL'
+            ? ''
+            : (orders[i]!.customer?.taxNumber != ''
+                ? orders[i]!.customer?.taxNumber ?? ''
+                : orders[i]!.customer?.idCard ?? ''),
+        referenceNo: '', // No reference number for empty details
+        redemptionVat: 0,
+        redemptionValue: 0,
+        depositAmount: 0,
+        taxBase: 0,
+        taxAmount: 0,
+      );
+      details.add(placeholderDetail);
+    } else {
+      for (int j = 0; j < orders[i]!.details!.length; j++) {
+        orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
+        orders[i]!.details![j].customerName = orders[i]!.redeemStatus == 'CANCEL'
+            ? 'ยกเลิกเอกสาร'
+            : (orders[i]!.customer != null
+                ? '${getCustomerName(orders[i]!.customer!)}'
+                : '');
+        // Remove tax ID for cancelled redeems
+        orders[i]!.details![j].taxNumber = orders[i]!.redeemStatus == 'CANCEL'
+            ? ''
+            : (orders[i]!.customer?.taxNumber != ''
+                ? orders[i]!.customer?.taxNumber ?? ''
+                : orders[i]!.customer?.idCard ?? '');
+      }
+      details.addAll(orders[i]!.details!);
     }
-    details.addAll(orders[i]!.details!);
   }
 
   // Improved sorting that handles both numeric and alphanumeric references
@@ -91,38 +116,37 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
     return a.referenceNo!.compareTo(b.referenceNo!);
   });
 
-  List<Widget> widgets = [];
-  widgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-                Global.branch!.isHeadquarter == true
-                    ? '${Global.company!.name} (สำนักงานใหญ่)'
-                    : '${Global.company!.name}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            // reportsCompanyTitle(),
+  Widget buildHeader() {
+    return Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                  Global.branch!.isHeadquarter == true
+                      ? '${Global.company!.name} (สำนักงานใหญ่)'
+                      : '${Global.company!.name}',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              // reportsCompanyTitle(),
 
-            Text(
-                'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} โทรศัพท์/Phone : ${Global.branch?.phone}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Text(
-                'รายงานภาษีมูลค่าเพิ่มจากการไถ่ถอนตามสัญญาขายฝาก (${getOrderTypeTitle(type)})',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Text('รายงานภาษีขาย',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ],
-    ),
-  );
-  widgets.add(height());
-  widgets.add(Column(
+              Text(
+                  'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} โทรศัพท์/Phone : ${Global.branch?.phone}',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Text(
+                  'รายงานภาษีมูลค่าเพิ่มจากการไถ่ถอนตามสัญญาขายฝาก (${getOrderTypeTitle(type)})',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Text('รายงานภาษีขาย',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ],
+      ),
+      height(),
+      Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -172,11 +196,15 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 style: const TextStyle()),
           ],
         ),
-      ]));
-  widgets.add(height());
+      ]),
+      height(),
+    ]);
+  }
+
+  List<Widget> dataRows = [];
 
   if (type == 1) {
-    widgets.add(Container(
+    dataRows.add(Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
@@ -491,7 +519,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   }
 
   if (type == 2) {
-    widgets.add(Container(
+    dataRows.add(Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
@@ -593,7 +621,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
           // Data Rows
           for (int i = 0; i < orders.length; i++)
-            for (int j = 0; j < orders[i]!.details!.length; j++)
+            // If order has no details, show one row with order info and zeros
+            if (orders[i]!.details == null || orders[i]!.details!.isEmpty)
               TableRow(
                 decoration: BoxDecoration(
                     color: orders[i]!.status == 2
@@ -602,9 +631,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 children: [
                   // COLUMN 1: Date
                   paddedTextSmall(
-                    isFirstRowForOrderId(orders[i]!.details!, j)
-                        ? Global.dateOnly(orders[i]!.redeemDate.toString())
-                        : '',
+                    Global.dateOnly(orders[i]!.redeemDate.toString()),
                     style: TextStyle(
                         fontSize: 11,
                         color:
@@ -614,9 +641,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
                   // COLUMN 2: Redeem ID
                   paddedTextSmall(
-                    isFirstRowForOrderId(orders[i]!.details!, j)
-                        ? orders[i]!.redeemId ?? ''
-                        : '',
+                    orders[i]!.redeemId ?? '',
                     style: TextStyle(
                         fontSize: 11,
                         color:
@@ -626,11 +651,9 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
                   // COLUMN 3: Customer Name
                   paddedTextSmall(
-                    isFirstRowForOrderId(orders[i]!.details!, j)
-                        ? (orders[i]!.redeemStatus == 'CANCEL'
-                            ? 'ยกเลิกเอกสาร'
-                            : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}')
-                        : '',
+                    orders[i]!.redeemStatus == 'CANCEL'
+                        ? 'ยกเลิกเอกสาร'
+                        : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
                     style: TextStyle(
                         fontSize: 11,
                         color:
@@ -639,22 +662,20 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
                   // COLUMN 4: Tax / ID Number
                   paddedTextSmall(
-                    isFirstRowForOrderId(orders[i]!.details!, j)
-                        ? (orders[i]!.redeemStatus == 'CANCEL'
-                            ? ''
-                            : ((orders[i]?.customer?.taxNumber ?? '') != ''
-                                ? orders[i]!.customer!.taxNumber!
-                                : orders[i]?.customer?.idCard ?? ''))
-                        : '',
+                    orders[i]!.redeemStatus == 'CANCEL'
+                        ? ''
+                        : ((orders[i]?.customer?.taxNumber ?? '') != ''
+                            ? orders[i]!.customer!.taxNumber!
+                            : orders[i]?.customer?.idCard ?? ''),
                     style: TextStyle(
                         fontSize: 11,
                         color:
                             orders[i]!.status == 2 ? PdfColors.red900 : null),
                   ),
 
-                  // COLUMN 5: Reference No
+                  // COLUMN 5: Reference No - empty for orders with no details
                   paddedTextSmall(
-                    orders[i]!.details![j].referenceNo ?? '',
+                    '',
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -663,9 +684,9 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                     align: TextAlign.center,
                   ),
 
-                  // COLUMN 6: VAT
+                  // COLUMN 6-10: All zeros for orders with no details
                   paddedTextSmall(
-                    Global.format(orders[i]!.details![j].redemptionVat ?? 0),
+                    Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -673,10 +694,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                             : PdfColors.green600),
                     align: TextAlign.right,
                   ),
-
-                  // COLUMN 7: Redemption Value
                   paddedTextSmall(
-                    Global.format(orders[i]!.details![j].redemptionValue ?? 0),
+                    Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -684,10 +703,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                             : PdfColors.blue600),
                     align: TextAlign.right,
                   ),
-
-                  // COLUMN 8: Deposit Amount
                   paddedTextSmall(
-                    Global.format(orders[i]!.details![j].depositAmount ?? 0),
+                    Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -695,10 +712,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                             : PdfColors.orange600),
                     align: TextAlign.right,
                   ),
-
-                  // COLUMN 9: Tax Base
                   paddedTextSmall(
-                    Global.format(orders[i]!.details![j].taxBase ?? 0),
+                    Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -706,10 +721,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                             : PdfColors.teal600),
                     align: TextAlign.right,
                   ),
-
-                  // COLUMN 10: Tax Amount
                   paddedTextSmall(
-                    Global.format(orders[i]!.details![j].taxAmount ?? 0),
+                    Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
                         color: orders[i]!.status == 2
@@ -718,7 +731,135 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                     align: TextAlign.right,
                   ),
                 ],
-              ),
+              )
+            else
+              // If order has details, loop through them
+              for (int j = 0; j < orders[i]!.details!.length; j++)
+                TableRow(
+                  decoration: BoxDecoration(
+                      color: orders[i]!.status == 2
+                          ? PdfColors.red100
+                          : PdfColors.white),
+                  children: [
+                    // COLUMN 1: Date
+                    paddedTextSmall(
+                      isFirstRowForOrderId(orders[i]!.details!, j)
+                          ? Global.dateOnly(orders[i]!.redeemDate.toString())
+                          : '',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
+                      align: TextAlign.center,
+                    ),
+
+                    // COLUMN 2: Redeem ID
+                    paddedTextSmall(
+                      isFirstRowForOrderId(orders[i]!.details!, j)
+                          ? orders[i]!.redeemId ?? ''
+                          : '',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
+                      align: TextAlign.center,
+                    ),
+
+                    // COLUMN 3: Customer Name
+                    paddedTextSmall(
+                      isFirstRowForOrderId(orders[i]!.details!, j)
+                          ? (orders[i]!.redeemStatus == 'CANCEL'
+                              ? 'ยกเลิกเอกสาร'
+                              : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}')
+                          : '',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
+                    ),
+
+                    // COLUMN 4: Tax / ID Number
+                    paddedTextSmall(
+                      isFirstRowForOrderId(orders[i]!.details!, j)
+                          ? (orders[i]!.redeemStatus == 'CANCEL'
+                              ? ''
+                              : ((orders[i]?.customer?.taxNumber ?? '') != ''
+                                  ? orders[i]!.customer!.taxNumber!
+                                  : orders[i]?.customer?.idCard ?? ''))
+                          : '',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
+                    ),
+
+                    // COLUMN 5: Reference No
+                    paddedTextSmall(
+                      orders[i]!.details![j].referenceNo ?? '',
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.purple600),
+                      align: TextAlign.center,
+                    ),
+
+                    // COLUMN 6: VAT
+                    paddedTextSmall(
+                      Global.format(orders[i]!.details![j].redemptionVat ?? 0),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.green600),
+                      align: TextAlign.right,
+                    ),
+
+                    // COLUMN 7: Redemption Value
+                    paddedTextSmall(
+                      Global.format(orders[i]!.details![j].redemptionValue ?? 0),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.blue600),
+                      align: TextAlign.right,
+                    ),
+
+                    // COLUMN 8: Deposit Amount
+                    paddedTextSmall(
+                      Global.format(orders[i]!.details![j].depositAmount ?? 0),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.orange600),
+                      align: TextAlign.right,
+                    ),
+
+                    // COLUMN 9: Tax Base
+                    paddedTextSmall(
+                      Global.format(orders[i]!.details![j].taxBase ?? 0),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.teal600),
+                      align: TextAlign.right,
+                    ),
+
+                    // COLUMN 10: Tax Amount
+                    paddedTextSmall(
+                      Global.format(orders[i]!.details![j].taxAmount ?? 0),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: orders[i]!.status == 2
+                              ? PdfColors.red900
+                              : PdfColors.red600),
+                      align: TextAlign.right,
+                    ),
+                  ],
+                ),
 
           // Summary Row
           TableRow(
@@ -779,7 +920,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   }
 
   if (type == 3) {
-    widgets.add(Container(
+    dataRows.add(Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
@@ -1058,7 +1199,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   }
 
   if (type == 4) {
-    widgets.add(Container(
+    dataRows.add(Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
@@ -1272,7 +1413,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
         PdfPageFormat.a4.width, // width becomes height
       ),
       orientation: PageOrientation.landscape,
-      build: (context) => widgets,
+      header: (context) => buildHeader(),
+      build: (context) => dataRows,
       footer: (context) {
         return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -19,26 +19,32 @@ Future<Uint8List> makeNewGoldReportPdf(
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
-  widgets.add(reportsCompanyTitle());
-  widgets.add(Center(
-    child: Text(
-      'รายงานขายทองรูปพรรณใหม่ 96.5%',
-      style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
-    ),
-  ));
-  widgets.add(Center(
-    child: Text(
-      'ระหว่างวันที่ : $date',
-      style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-    ),
-  ));
-  widgets.add(height());
-  widgets.add(reportsHeader());
-  widgets.add(height(h: 2));
+  Widget buildHeader() {
+    return Column(
+      children: [
+        reportsCompanyTitle(),
+        Center(
+          child: Text(
+            'รายงานขายทองรูปพรรณใหม่ 96.5%',
+            style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+          ),
+        ),
+        Center(
+          child: Text(
+            'ระหว่างวันที่ : $date',
+            style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+          ),
+        ),
+        height(),
+        reportsHeader(),
+        height(h: 2),
+      ],
+    );
+  }
 
+  List<Widget> dataRows = [];
   // Apply modern design pattern
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -334,7 +340,8 @@ Future<Uint8List> makeNewGoldReportPdf(
           PdfPageFormat.a4.width,  // width becomes height
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

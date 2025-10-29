@@ -1391,17 +1391,72 @@ String getCustomerBillAddressLine2(CustomerModel customer) {
   String address = "";
 
   // Line 2: ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์, เบอร์โทร
-  // Note: Customer model may not have tambon/amphure/province navigation
-  // So we'll just show postal code and phone number if available
+  // Apply proper prefixes based on provinceId (Bangkok = 1)
+
+  // Get location names from Global lists
+  String? tambonName;
+  String? amphureName;
+  String? provinceName;
+
+  if (customer.tambonId != null) {
+    final tambon = Global.tambonList.firstWhere(
+      (t) => t.id == customer.tambonId,
+      orElse: () => TambonModel(id: 0, nameTh: '', nameEn: '', amphureId: 0),
+    );
+    if (tambon.id != 0) tambonName = tambon.nameTh;
+  }
+
+  if (customer.amphureId != null) {
+    final amphure = Global.amphureList.firstWhere(
+      (a) => a.id == customer.amphureId,
+      orElse: () => AmphureModel(id: 0, nameTh: '', nameEn: '', provinceId: 0),
+    );
+    if (amphure.id != 0) amphureName = amphure.nameTh;
+  }
+
+  if (customer.provinceId != null) {
+    final province = Global.provinceList.firstWhere(
+      (p) => p.id == customer.provinceId,
+      orElse: () => ProvinceModel(id: 0, nameTh: '', nameEn: ''),
+    );
+    if (province.id != 0) provinceName = province.nameTh;
+  }
+
+  // Build address with proper prefixes
+  if (customer.provinceId == 1) {
+    // Bangkok: แขวง + เขต (amphure already has "เขต" prefix from database)
+    if (tambonName != null && tambonName.isNotEmpty) {
+      address += 'แขวง$tambonName ';
+    }
+    if (amphureName != null && amphureName.isNotEmpty) {
+      // Check if "เขต" prefix already exists in the name
+      if (amphureName.startsWith('เขต')) {
+        address += '$amphureName ';
+      } else {
+        address += 'เขต$amphureName ';
+      }
+    }
+    if (provinceName != null && provinceName.isNotEmpty) {
+      address += '$provinceName ';
+    }
+  } else {
+    // Other provinces: ตำบล + อำเภอ + จังหวัด
+    if (tambonName != null && tambonName.isNotEmpty) {
+      address += 'ตำบล$tambonName ';
+    }
+    if (amphureName != null && amphureName.isNotEmpty) {
+      address += 'อำเภอ$amphureName ';
+    }
+    if (provinceName != null && provinceName.isNotEmpty) {
+      address += 'จังหวัด$provinceName ';
+    }
+  }
 
   if (customer.postalCode != null && customer.postalCode!.isNotEmpty) {
-    address += '${customer.postalCode}';
+    address += '${customer.postalCode} ';
   }
 
   if (customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty) {
-    if (address.isNotEmpty) {
-      address += ' ';
-    }
     address += 'โทร ${customer.phoneNumber}';
   }
 

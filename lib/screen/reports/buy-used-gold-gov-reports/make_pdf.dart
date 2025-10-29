@@ -19,36 +19,38 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
+  Widget buildHeader() {
+    return Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('บัญชีสำหรับผู้ทำการค้าของเก่า (ประเภททองรูปพรรณและทองคำแท่ง)',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Text(
+                  'สถานประกอบอาชีพ : ${Global.company?.name} (${Global.branch!.name})',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Text(
+                  'ที่อยู่ : ${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              Text('ใบอนุญาตเลขที่ : ${Global.branch?.oldGoldLicenseNumber}',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ],
+      ),
+      height(),
+    ]);
+  }
 
-  widgets.add(
-    Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('บัญชีสำหรับผู้ทำการค้าของเก่า (ประเภททองรูปพรรณและทองคำแท่ง)',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Text(
-                'สถานประกอบอาชีพ : ${Global.company?.name} (${Global.branch!.name})',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Text(
-                'ที่อยู่ : ${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            Text('ใบอนุญาตเลขที่ : ${Global.branch?.oldGoldLicenseNumber}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ],
-    ),
-  );
-  widgets.add(height());
+  List<Widget> dataRows = [];
 
   // Apply modern design pattern
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -336,7 +338,8 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         PdfPageFormat.a4.width,  // width becomes height
       ),
       orientation: PageOrientation.landscape,
-      build: (context) => widgets,
+      header: (context) => buildHeader(),
+      build: (context) => dataRows,
       footer: (context) {
         return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

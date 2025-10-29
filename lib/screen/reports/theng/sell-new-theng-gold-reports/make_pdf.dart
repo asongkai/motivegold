@@ -48,42 +48,36 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
-
-  // widgets.add(height());
-  // widgets.add(Align(
-  //     alignment: Alignment.topRight,
-  //     child: Container(
-  //         decoration: BoxDecoration(
-  //           color: PdfColor.fromHex('#26c6da'),
-  //           // Or whatever pink shade you prefer
-  //           borderRadius: BorderRadius.circular(0), // Optional: rounded corners
-  //         ),
-  //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-  //         child: getHeaderText(type))));
-  // widgets.add(height());
-  widgets.add(reportsCompanyTitle());
-  widgets.add(Center(
-    child: Text(
-      ' รายงานขายทองคำแท่ง',
-      style: TextStyle(
-          decoration: TextDecoration.none,
-          fontSize: 20,
-          fontWeight: FontWeight.bold),
-    ),
-  ));
-  widgets.add(Center(
-    child: Text(
-            'ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+  Widget buildHeader() {
+    return Column(
+      children: [
+        reportsCompanyTitle(),
+        Center(
+          child: Text(
+            ' รายงานขายทองคำแท่ง',
+            style: TextStyle(
+                decoration: TextDecoration.none,
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
           ),
-  ));
-  widgets.add(height());
-  widgets.add(reportsHeader());
-  widgets.add(height(h: 2));
+        ),
+        Center(
+          child: Text(
+                  'ระหว่างวันที่ : $date',
+                  style:
+                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                ),
+        ),
+        height(),
+        reportsHeader(),
+        height(h: 2),
+      ],
+    );
+  }
+
+  List<Widget> dataRows = [];
   // Apply modern design pattern
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -468,15 +462,6 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
     ),
   ));
 
-  widgets.add(height());
-
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(''),
-    ],
-  ));
-
   pdf.addPage(
     MultiPage(
         margin: const EdgeInsets.all(20),
@@ -485,7 +470,8 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
           PdfPageFormat.a4.width, // width becomes height
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

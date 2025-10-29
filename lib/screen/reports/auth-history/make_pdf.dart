@@ -24,22 +24,27 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
   // var font = Font.ttf(data);
 
   // motivePrint(authLogListModelToJson(invoice));
-  List<Widget> widgets = [];
+  Widget buildHeader() {
+    return Column(children: [
+      Center(
+        child: Column(children: [
+          Text('${Global.company?.name} (${Global.branch!.name})',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          Text(
+              '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          Text(
+              'เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber} โทร ${Global.company?.phone}',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        ])),
+      height(),
+      divider(),
+    ]);
+  }
 
-  widgets.add(Center(
-      child: Column(children: [
-    Text('${Global.company?.name} (${Global.branch!.name})',
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-    Text(
-        '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}',
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-    Text(
-        'เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber} โทร ${Global.company?.phone}',
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-  ])));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(Table(
+  List<Widget> dataRows = [];
+
+  dataRows.add(Table(
     border: TableBorder.all(color: PdfColors.grey500),
     children: [
       ...invoice.map((e) => TableRow(
@@ -84,10 +89,11 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
           )),
     ],
   ));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(height());
-  widgets.add(Row(
+
+  dataRows.add(height());
+  dataRows.add(divider());
+  dataRows.add(height());
+  dataRows.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       paddedText('ผู้ตรวจสอบ/Authorize',
@@ -96,7 +102,7 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
           style: TextStyle(fontWeight: FontWeight.bold)),
     ],
   ));
-  widgets.add(Row(
+  dataRows.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Expanded(
@@ -114,8 +120,8 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
       ),
     ],
   ));
-  widgets.add(height());
-  widgets.add(Row(
+  dataRows.add(height());
+  dataRows.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text('('),
@@ -137,8 +143,8 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
       Text(')'),
     ],
   ));
-  widgets.add(height());
-  widgets.add(Row(
+  dataRows.add(height());
+  dataRows.add(Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text('วันที่ : ${DateTime.now()}'),
@@ -146,16 +152,16 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
       Text('วันที่ : ${DateTime.now()}')
     ],
   ));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(height());
-  widgets.add(Center(
+  dataRows.add(height());
+  dataRows.add(divider());
+  dataRows.add(height());
+  dataRows.add(Center(
       child: Text(
     "ตราประทับ",
     style: const TextStyle(fontSize: 30),
   )));
-  widgets.add(height(h: 100));
-  widgets.add(divider());
+  dataRows.add(height(h: 100));
+  dataRows.add(divider());
 
   pdf.addPage(
     MultiPage(
@@ -166,7 +172,8 @@ Future<Uint8List> makeAuthLogPdf(List<AuthLogModel> invoice) async {
           PdfPageFormat.a4.width,  // width becomes height
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

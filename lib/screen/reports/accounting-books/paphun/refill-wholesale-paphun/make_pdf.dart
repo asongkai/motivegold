@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/model/order.dart';
-import 'package:motivegold/screen/reports/accounting-books/paphun/sell-used-wholesale-paphun/make_pdf.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
@@ -33,6 +32,11 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
     }
   }
 
+  // Sort by orderId for type == 1
+  if (type == 1) {
+    list.sort((a, b) => a.orderId.compareTo(b.orderId));
+  }
+
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
@@ -40,211 +44,216 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
-
-  widgets.add(reportsCompanyTitle());
-  widgets.add(Center(
-    child: Text(
-      'สมุดบัญชีซื้อทองรูปพรรณใหม่',
-      style: TextStyle(
-          decoration: TextDecoration.none,
-          fontSize: 20,
-          fontWeight: FontWeight.bold),
-    ),
-  ));
-  // widgets.add(Center(
-  //   child: Text(
-  //     'ประจำวันที่ : $date',
-  //     style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-  //   ),
-  // ));
-  widgets.add(Center(
-    child: type == 3
-        ? Text(
-            'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-          )
-        : Text(
-            'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+  // Header widget - will be repeated on every page
+  Widget buildHeader() {
+    return Column(children: [
+      reportsCompanyTitle(),
+      Center(
+        child: Text(
+          'สมุดบัญชีซื้อทองรูปพรรณใหม่',
+          style: TextStyle(
+              decoration: TextDecoration.none,
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+      Center(
+        child: type == 3
+            ? Text(
+                'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
+                style: const TextStyle(
+                    decoration: TextDecoration.none, fontSize: 18),
+              )
+            : Text(
+                'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
+                style: const TextStyle(
+                    decoration: TextDecoration.none, fontSize: 18),
+              ),
+      ),
+      height(),
+      reportsHeader(),
+      height(h: 2),
+      // Merged header row (เดบิต/เครดิต)
+      Container(
+        height: 30,
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          border: Border(
+            top: BorderSide(color: PdfColors.white, width: 0.5),
+            left: BorderSide(color: PdfColors.white, width: 0.5),
+            right: BorderSide(color: PdfColors.white, width: 0.5),
+            bottom: BorderSide(color: PdfColors.white, width: 0.5),
           ),
-  ));
-  widgets.add(height());
-  widgets.add(reportsHeader());
-  widgets.add(height(h: 2));
-
-  widgets.add(Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey200, width: 0.8),
-    ),
-    child: Column(
-        children: [
-        // Merged header row (เดบิต/เครดิต)
-        Container(
-          height: 30,
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            border: Border(
-              bottom: BorderSide(color: PdfColors.white, width: 0.5),
-            ),
-          ),
-          child: Row(
-            children: [
+        ),
+        child: Row(
+          children: [
+            Expanded(flex: 3, child: Container()), // เลขประจำตัว
+            Expanded(flex: 2, child: Container()), // วันที่
+            if (type == 1)
               Expanded(flex: 2, child: Container()), // ชื่อผู้ขาย
-              Expanded(flex: 3, child: Container()), // เลขประจำตัว
-              // วันที่
-              if (type == 1)
-                Expanded(flex: 2, child: Container()), // รายการสินค้า
 
-              // DEBIT section - spans 2 columns (ซื้อทองคำรูปพรรณใหม่ + ภาษีซื้อ)
-              Expanded(
-                flex: 4,
+            // DEBIT section - spans 2 columns (ซื้อทองคำรูปพรรณใหม่ + ภาษีซื้อ)
+            Expanded(
+              flex: 4,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(color: PdfColors.white, width: 0.5),
+                    right: BorderSide(color: PdfColors.white, width: 0.5),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'เดบิต',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // CREDIT section - spans 1 column (เงินสด/ธนาคาร)
+            Expanded(
+              flex: 2,
+              child: Container(
+                child: Center(
+                  child: Text(
+                    'เครดิต',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // Column names row
+      Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          border: Border(
+            top: BorderSide(color: PdfColors.white, width: 0.5),
+            bottom: BorderSide(color: PdfColors.white, width: 0.5),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+                flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: PdfColors.white, width: 0.5),
-                      right: BorderSide(color: PdfColors.white, width: 0.5),
-                    ),
-                  ),
+                      border: Border(
+                          left: BorderSide(color: PdfColors.white, width: 0.5),
+                          right: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
-                    child: Text(
-                      'เดบิต',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // CREDIT section - spans 1 column (เงินสด/ธนาคาร)
-              Expanded(
+                      child: Text('เลขที่ใบรับทอง',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+            Expanded(
                 flex: 2,
                 child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left: BorderSide(color: PdfColors.white, width: 0.5),
+                          right: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
-                    child: Text(
-                      'เครดิต',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                      child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+            if (type == 1)
+              Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border(
+                            left: BorderSide(
+                                color: PdfColors.white, width: 0.5),
+                            right: BorderSide(
+                                color: PdfColors.white, width: 0.5))),
+                    child: Center(
+                        child: Text('ชื่อผู้ขาย',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: PdfColors.white))),
+                  )),
+            Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left: BorderSide(color: PdfColors.white, width: 0.5),
+                          right: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
+                  child: Center(
+                      child: Text('ซื้อทองคำรูปพรรณใหม่\nจำนวนเงิน(บาท)',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+            Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left: BorderSide(color: PdfColors.white, width: 0.5),
+                          right: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
+                  child: Center(
+                      child: Text('ภาษีซื้อ\nจำนวนเงิน(บาท)',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+            Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
+                  child: Center(
+                      child: Text('เงินสด/ธนาคาร\nจำนวนเงิน(บาท)',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+          ],
         ),
+      ),
+    ]);
+  }
 
-        // Column names row
-        Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            border: Border(
-              top: BorderSide(color: PdfColors.white, width: 0.5),
-              bottom: BorderSide(color: PdfColors.white, width: 0.5),
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.white, width: 0.5))),
-                    child: Center(
-                        child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: PdfColors.white))),
-                  )),
-              Expanded(
-                  flex: 3,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.white, width: 0.5))),
-                    child: Center(
-                        child: Text('เลขที่ใบรับทอง',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: PdfColors.white))),
-                  )),
-              if (type == 1)
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text('ชื่อผู้ขาย',
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-              Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.white, width: 0.5))),
-                    child: Center(
-                        child: Text('ซื้อทองคำรูปพรรณใหม่\nจำนวนเงิน(บาท)',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: PdfColors.white))),
-                  )),
-              Expanded(
-                  flex: 2,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.white, width: 0.5))),
-                    child: Center(
-                        child: Text('ภาษีซื้อ\nจำนวนเงิน(บาท)',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: PdfColors.white))),
-                  )),
-              Expanded(
-                  flex: 2,
-                  child: Container(
-                    child: Center(
-                        child: Text('เงินสด/ธนาคาร\nจำนวนเงิน(บาท)',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: PdfColors.white))),
-                  )),
-            ],
-          ),
-        ),
+  // Data rows - will be in the build section
+  List<Widget> dataRows = [];
 
-        // Data rows
-        if (type == 1 || type == 2 || type == 3)
-          for (int i = 0; i < list.length; i++)
+  if (type == 1 || type == 2 || type == 3) {
+    for (int i = 0; i < list.length; i++) {
+      dataRows.add(
             Container(
               height: 18,
               decoration: BoxDecoration(
@@ -259,6 +268,21 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
               ),
               child: Row(
                 children: [
+                  Expanded(
+                      flex: 3,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                                right: BorderSide(
+                                    color: PdfColors.grey200, width: 0.5))),
+                        child: paddedTextSmall(list[i].orderId,
+                            align: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: list[i].status == "2"
+                                    ? PdfColors.red900
+                                    : PdfColors.red900)),
+                      )),
                   Expanded(
                       flex: 2,
                       child: Container(
@@ -277,21 +301,6 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                                 color: list[i].status == "2"
                                     ? PdfColors.red900
                                     : null)),
-                      )),
-                  Expanded(
-                      flex: 3,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border(
-                                right: BorderSide(
-                                    color: PdfColors.grey200, width: 0.5))),
-                        child: paddedTextSmall(list[i].orderId,
-                            align: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: list[i].status == "2"
-                                    ? PdfColors.red900
-                                    : PdfColors.red900)),
                       )),
                   if (type == 1)
                     Expanded(
@@ -364,9 +373,12 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                 ],
               ),
             ),
+          );
+    }
+  }
 
-        // Total row
-        Container(
+  // Total row
+  dataRows.add(Container(
           height: 18,
           decoration: BoxDecoration(
             color: PdfColors.blue50,
@@ -380,7 +392,7 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
           child: Row(
             children: [
               Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border(
@@ -390,7 +402,7 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                   )),
               if (type == 1)
                 Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
@@ -399,7 +411,7 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                       child: Container(),
                     )),
               Expanded(
-                  flex: type == 1 ? 2 : 3,
+                  flex: type == 1 ? 2 : 2,
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border(
@@ -421,8 +433,8 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                                 color: PdfColors.grey200, width: 0.5))),
                     child: paddedTextSmall(
                         type == 1
-                            ? Global.format(getPurchaseAmountTotal(orders))
-                            : Global.format(getPurchaseAmountTotalB(list)),
+                            ? Global.formatTruncate(getPurchaseAmountTotal(orders))
+                            : Global.formatTruncate(getPurchaseAmountTotalB(list)),
                         align: TextAlign.right,
                         style: TextStyle(
                             fontSize: 11,
@@ -438,8 +450,8 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                                 color: PdfColors.grey200, width: 0.5))),
                     child: paddedTextSmall(
                         type == 1
-                            ? Global.format(getVatAmountTotal(orders))
-                            : Global.format(getVatAmountTotalB(list)),
+                            ? Global.formatTruncate(getVatAmountTotal(orders))
+                            : Global.formatTruncate(getVatAmountTotalB(list)),
                         align: TextAlign.right,
                         style: TextStyle(
                             fontSize: 11,
@@ -451,8 +463,8 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                   child: Container(
                     child: paddedTextSmall(
                         type == 1
-                            ? Global.format(getCashBankTotal(orders))
-                            : Global.format(getCashBankTotalB(list)),
+                            ? Global.formatTruncate(getCashBankTotal(orders))
+                            : Global.formatTruncate(getCashBankTotalB(list)),
                         align: TextAlign.right,
                         style: TextStyle(
                             fontSize: 11,
@@ -461,12 +473,7 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                   )),
             ],
           ),
-        ),
-      ],
-    ),
-  ));
-
-  widgets.add(height());
+        ));
 
   pdf.addPage(
     MultiPage(
@@ -476,7 +483,8 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
           PdfPageFormat.a4.width,
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

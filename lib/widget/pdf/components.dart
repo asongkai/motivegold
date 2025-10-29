@@ -1311,13 +1311,7 @@ Widget reportsHeader() => Column(children: [
               children: [
                 Text("ที่อยู่ : "),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(getBillAddressLine1()),
-                      Text(getBillAddressLine2()),
-                    ],
-                  ),
+                  child: Text(getFullAddress()),
                 ),
               ],
             ),

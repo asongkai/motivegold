@@ -1225,6 +1225,7 @@ class _SellNewRetailThengReportScreenState
         );
 
         var order = OrderModel(
+            id: 0, // Dummy id for aggregated order
             orderId: combinedOrderId,
             orderDate: monthList.first.orderDate,
             createdDate: monthDate, // First day of the month

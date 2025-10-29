@@ -45,49 +45,50 @@ Future<Uint8List> makeStockCardReportPdf(
   unitCostLineTotal = movement?.unitCostBalance ?? 0;
   priceLineTotal = movement?.priceBalance ?? 0;
 
-  List<Widget> widgets = [];
+  Widget buildHeader() {
+    return Column(children: [
+      Center(
+        child: Text(
+          'รายงานความเคลื่อนไหวสต๊อกสินค้า',
+          style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+        ),
+      ),
+      Divider(
+        height: 1,
+        borderStyle: BorderStyle.dashed,
+      ),
+      SizedBox(height: 10),
+      SizedBox(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('สินค้า: ${product?.name}'),
+              Text('คลังสินค้า: ${warehouse?.name}'),
+              Text('ระหว่างวันที่: $date'),
+            ])),
+      Container(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("ชื่อผู้ประกอบการ ${Global.branch!.name}"),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("ชื่อสถานประกอบการ ${Global.company?.name}"),
+          Text('ลําดับเลขที่สาขา ${Global.branch?.branchId}'),
+        ],
+      ),
+      Container(height: 10),
+    ]);
+  }
 
-  // Keep the original header format
-  widgets.add(Center(
-    child: Text(
-      'รายงานความเคลื่อนไหวสต๊อกสินค้า',
-      style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
-    ),
-  ));
-  widgets.add(Divider(
-    height: 1,
-    borderStyle: BorderStyle.dashed,
-  ));
-  widgets.add(SizedBox(height: 10));
-  widgets.add(SizedBox(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('สินค้า: ${product?.name}'),
-            Text('คลังสินค้า: ${warehouse?.name}'),
-            Text('ระหว่างวันที่: $date'),
-          ])));
-
-  widgets.add(Container(height: 10));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text("ชื่อผู้ประกอบการ ${Global.branch!.name}"),
-    ],
-  ));
-
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text("ชื่อสถานประกอบการ ${Global.company?.name}"),
-      Text('ลําดับเลขที่สาขา ${Global.branch?.branchId}'),
-    ],
-  ));
-  widgets.add(Container(height: 10));
+  List<Widget> dataRows = [];
 
   // Apply the modern design pattern from makeStockMovementReportPdf
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -313,7 +314,8 @@ Future<Uint8List> makeStockCardReportPdf(
         PdfPageFormat.a4.width,  // width becomes height
       ),
       orientation: PageOrientation.landscape,
-      build: (context) => widgets,
+      header: (context) => buildHeader(),
+      build: (context) => dataRows,
     ),
   );
   return pdf.save();

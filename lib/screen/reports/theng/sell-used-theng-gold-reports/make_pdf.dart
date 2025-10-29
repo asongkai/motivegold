@@ -20,45 +20,39 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
-  // widgets.add(height());
-  // widgets.add(Align(
-  //     alignment: Alignment.topRight,
-  //     child: Container(
-  //         decoration: BoxDecoration(
-  //           color: PdfColor.fromHex('#6d4c41'), // Or whatever pink shade you prefer
-  //           borderRadius: BorderRadius.circular(0), // Optional: rounded corners
-  //         ),
-  //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-  //         child: getHeaderText(type)
-  //     )
-  // ));
-  // widgets.add(height());
-  widgets.add(reportsCompanyTitle());
-  widgets.add(Center(
-    child: Text(
-      'รายงานขายทองคำแท่งเก่า',
-      style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
-    ),
-  ));
-  widgets.add(Center(
-    child: type == 2
-        ? Text(
-            'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-          )
-        : Text(
-            'ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+  Widget buildHeader() {
+    return Column(
+      children: [
+        reportsCompanyTitle(),
+        Center(
+          child: Text(
+            'รายงานขายทองคำแท่งเก่า',
+            style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
           ),
-  ));
-  widgets.add(height());
-  widgets.add(reportsHeader());
-  widgets.add(height(h: 2));
+        ),
+        Center(
+          child: type == 2
+              ? Text(
+                  'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
+                  style:
+                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                )
+              : Text(
+                  'ระหว่างวันที่ : $date',
+                  style:
+                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                ),
+        ),
+        height(),
+        reportsHeader(),
+        height(h: 2),
+      ],
+    );
+  }
+
+  List<Widget> dataRows = [];
   // Apply modern design pattern
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -310,7 +304,8 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
           PdfPageFormat.a4.width, // width becomes height
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

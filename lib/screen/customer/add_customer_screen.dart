@@ -680,10 +680,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                           Global.formatDateThai(ocrResult["en_dob"]);
                       nationality = "Thai";
                       postalCodeCtrl.text = ocrResult["postal_code"];
-                      addressCtrl.text =
-                          ocrResult["address"].toString().split("ต.")[0];
-                      Global.addressCtrl.text =
-                          ocrResult["address"].toString().split("ต.")[0];
+
+                      addressCtrl.text = Global.provinceModel?.id == 1
+                          ? ocrResult["address"].toString().split("แขวง")[0]
+                          : ocrResult["address"].toString().split("ต.")[0];
+                      Global.addressCtrl.text = Global.provinceModel?.id == 1
+                          ? ocrResult["address"].toString().split("แขวง")[0]
+                          : ocrResult["address"].toString().split("ต.")[0];
                     }
 
                     setState(() {});

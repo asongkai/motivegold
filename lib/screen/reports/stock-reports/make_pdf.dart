@@ -16,46 +16,49 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
+  Widget buildHeader() {
+    return Column(children: [
+      Center(
+        child: Column(children: [
+          Text('${Global.company?.name}'),
+          Text('(${Global.branch!.name})'),
+          Text(
+              '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
+          Text('เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
+          Text('TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
+          Text('POS Reg. No : '),
+        ])),
+      height(),
+      divider(),
+      Center(
+        child: Text(
+          'รายงานสต็อก',
+          style: const TextStyle(
+              decoration: TextDecoration.none, fontSize: 20),
+        ),
+      ),
+      height(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("ชื่อผู้ประกอบการ ${Global.branch!.name}"),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("ชื่อสถานประกอบการ ${Global.company!.name}"),
+          Text('ลําดับเลขที่สาขา ${Global.branch!.branchId}'),
+        ],
+      ),
+      height(),
+    ]);
+  }
 
-  // Original header (unchanged)
-  widgets.add(Center(
-      child: Column(children: [
-        Text('${Global.company?.name}'),
-        Text('(${Global.branch!.name})'),
-        Text(
-            '${Global.company?.address}, ${Global.company?.village}, ${Global.company?.district}, ${Global.company?.province}'),
-        Text('เลขประจําตัวผู้เสียภาษี : ${Global.company?.taxNumber}'),
-        Text('TAX : INVOICE [ABB]/RECEIPT VAT INCLUDED)'),
-        Text('POS Reg. No : '),
-      ])));
-  widgets.add(height());
-  widgets.add(divider());
-  widgets.add(Center(
-    child: Text(
-      'รายงานสต็อก',
-      style: const TextStyle(
-          decoration: TextDecoration.none, fontSize: 20),
-    ),
-  ));
-  widgets.add(height());
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text("ชื่อผู้ประกอบการ ${Global.branch!.name}"),
-    ],
-  ));
-  widgets.add(Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text("ชื่อสถานประกอบการ ${Global.company!.name}"),
-      Text('ลําดับเลขที่สาขา ${Global.branch!.branchId}'),
-    ],
-  ));
-  widgets.add(height());
+  List<Widget> dataRows = [];
 
   // Mobile-inspired clean table design
-  widgets.add(Container(
+  dataRows.add(Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
@@ -211,7 +214,8 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
         PdfPageFormat.a4.width,  // width becomes height
       ),
       orientation: PageOrientation.landscape,
-      build: (context) => widgets,
+      header: (context) => buildHeader(),
+      build: (context) => dataRows,
     ),
   );
   return pdf.save();

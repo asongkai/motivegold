@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:motivegold/model/order.dart';
-import 'package:motivegold/screen/reports/accounting-books/theng/sell-wholesale-theng/make_pdf.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
@@ -33,6 +32,11 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
     }
   }
 
+  // Sort by orderId for type == 1
+  if (type == 1) {
+    list.sort((a, b) => a.orderId.compareTo(b.orderId));
+  }
+
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
@@ -40,48 +44,36 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
   );
   final pdf = Document(theme: myTheme);
 
-  List<Widget> widgets = [];
-
-  widgets.add(reportsCompanyTitle());
-  widgets.add(Center(
-    child: Text(
-      'สมุดบัญชีซื้อทองคำแท่งจากร้านค้าส่ง',
-      style: TextStyle(
-          decoration: TextDecoration.none,
-          fontSize: 20,
-          fontWeight: FontWeight.bold),
-    ),
-  ));
-  // widgets.add(Center(
-  //   child: Text(
-  //     'ระหว่างวันที่ : $date',
-  //     style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-  //   ),
-  // ));
-  widgets.add(Center(
-    child: type == 3
-        ? Text(
-            'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-          )
-        : Text(
-            'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-            style:
-                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
-          ),
-  ));
-  widgets.add(height());
-  widgets.add(reportsHeader());
-  widgets.add(height(h: 2));
-
-  widgets.add(Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey200, width: 0.8),
-    ),
-    child: Column(
-      children: [
-        // Merged header row (เดบิต/เครดิต)
+  // Header widget - will be repeated on every page
+  Widget buildHeader() {
+    return Column(children: [
+      reportsCompanyTitle(),
+      Center(
+        child: Text(
+          'สมุดบัญชีซื้อทองคำแท่งจากร้านค้าส่ง',
+          style: TextStyle(
+              decoration: TextDecoration.none,
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
+        ),
+      ),
+      Center(
+        child: type == 3
+            ? Text(
+                'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
+                style: const TextStyle(
+                    decoration: TextDecoration.none, fontSize: 18),
+              )
+            : Text(
+                'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
+                style: const TextStyle(
+                    decoration: TextDecoration.none, fontSize: 18),
+              ),
+      ),
+      height(),
+      reportsHeader(),
+      height(h: 2),
+      // Merged header row (เดบิต/เครดิต)
       Container(
         height: 30,
         decoration: BoxDecoration(
@@ -95,8 +87,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         ),
         child: Row(
           children: [
-            Expanded(flex: 2, child: Container()), // เลขที่
             Expanded(flex: 3, child: Container()), // วันที่
+            Expanded(flex: 2, child: Container()), // เลขที่
             if (type == 1) Expanded(flex: 2, child: Container()), // ชื่อผู้ขาย
 
             // DEBIT section - spans 3 columns (ซื้อทองคำแท่ง + ต้นทุนค่าบล็อก/ค่าบรรจุภัณฑ์ + ภาษีซื้อ)
@@ -160,22 +152,6 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         child: Row(
           children: [
             Expanded(
-                flex: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          left:
-                              BorderSide(color: PdfColors.white, width: 0.5),
-                          right: BorderSide(
-                              color: PdfColors.white, width: 0.5))),
-                  child: Center(
-                      child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
-                          style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: PdfColors.white))),
-                )),
-            Expanded(
                 flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
@@ -187,6 +163,22 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   child: Center(
                       child: Text('เลขที่ใบรับทอง',
                           textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white))),
+                )),
+            Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left:
+                              BorderSide(color: PdfColors.white, width: 0.5),
+                          right: BorderSide(
+                              color: PdfColors.white, width: 0.5))),
+                  child: Center(
+                      child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
                           style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -279,10 +271,15 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
           ],
         ),
       ),
+    ]);
+  }
 
-      // Data rows
-      if (type == 1 || type == 2 || type == 3)
-        for (int i = 0; i < list.length; i++)
+  // Data rows - will be in the build section
+  List<Widget> dataRows = [];
+
+  if (type == 1 || type == 2 || type == 3) {
+    for (int i = 0; i < list.length; i++) {
+      dataRows.add(
           Container(
             height: 18,
             decoration: BoxDecoration(
@@ -296,6 +293,21 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
             ),
             child: Row(
               children: [
+                Expanded(
+                    flex: 3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: PdfColors.grey200, width: 0.5))),
+                      child: paddedTextSmall(list[i].orderId,
+                          align: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: list[i].status == "2"
+                                  ? PdfColors.red900
+                                  : PdfColors.red900)),
+                    )),
                 Expanded(
                     flex: 2,
                     child: Container(
@@ -314,21 +326,6 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                               color: list[i].status == "2"
                                   ? PdfColors.red900
                                   : null)),
-                    )),
-                Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              right: BorderSide(
-                                  color: PdfColors.grey200, width: 0.5))),
-                      child: paddedTextSmall(list[i].orderId,
-                          align: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: list[i].status == "2"
-                                  ? PdfColors.red900
-                                  : PdfColors.red900)),
                     )),
                 if (type == 1)
                   Expanded(
@@ -418,10 +415,12 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     )),
               ],
             ),
-          ),
+          ));
+    }
+  }
 
-      // Total row
-      Container(
+  // Total row
+  dataRows.add(Container(
         height: 18,
         decoration: BoxDecoration(
           color: PdfColors.blue50,
@@ -435,7 +434,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         child: Row(
           children: [
             Expanded(
-                flex: 2,
+                flex: 3,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
@@ -445,7 +444,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 )),
             if (type == 1)
               Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border(
@@ -454,7 +453,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(),
                   )),
             Expanded(
-                flex: type == 1 ? 2 : 3,
+                flex: type == 1 ? 2 : 2,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
@@ -476,8 +475,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                               color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
-                          ? Global.format(getGoldValueTotal(orders))
-                          : Global.format(getGoldValueTotalB(list)),
+                          ? Global.formatTruncate(getGoldValueTotal(orders))
+                          : Global.formatTruncate(getGoldValueTotalB(list)),
                       align: TextAlign.right,
                       style: TextStyle(
                           fontSize: 11,
@@ -493,8 +492,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                               color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
-                          ? Global.format(getCommissionPackageTotal(orders))
-                          : Global.format(getCommissionPackageTotalB(list)),
+                          ? Global.formatTruncate(getCommissionPackageTotal(orders))
+                          : Global.formatTruncate(getCommissionPackageTotalB(list)),
                       align: TextAlign.right,
                       style: TextStyle(
                           fontSize: 11,
@@ -510,8 +509,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                               color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
-                          ? Global.format(getVatAmountTotal(orders))
-                          : Global.format(getVatAmountTotalB(list)),
+                          ? Global.formatTruncate(getVatAmountTotal(orders))
+                          : Global.formatTruncate(getVatAmountTotalB(list)),
                       align: TextAlign.right,
                       style: TextStyle(
                           fontSize: 11,
@@ -523,8 +522,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   child: paddedTextSmall(
                       type == 1
-                          ? Global.format(getCashBankTotal(orders))
-                          : Global.format(getCashBankTotalB(list)),
+                          ? Global.formatTruncate(getCashBankTotal(orders))
+                          : Global.formatTruncate(getCashBankTotalB(list)),
                       align: TextAlign.right,
                       style: TextStyle(
                           fontSize: 11,
@@ -533,11 +532,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 )),
           ],
         ),
-      ),
-    ],
-  )));
-
-  widgets.add(height());
+      ));
 
   pdf.addPage(
     MultiPage(
@@ -547,7 +542,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
           PdfPageFormat.a4.width,
         ),
         orientation: PageOrientation.landscape,
-        build: (context) => widgets,
+        header: (context) => buildHeader(),
+        build: (context) => dataRows,
         footer: (context) {
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
