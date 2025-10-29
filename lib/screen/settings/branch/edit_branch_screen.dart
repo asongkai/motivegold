@@ -131,6 +131,23 @@ class _EditBranchScreenState extends State<EditBranchScreen> {
               .where((element) => element.id == Global.user!.companyId)
               .first;
           companyCtrl.text = selectedCompany!.name;
+        } else if (Global.user!.userType == 'ADMIN') {
+          // Initialize companyNotifier for ADMIN users
+          // Find the company associated with this branch
+          selectedCompany = companies!
+              .where((element) => element.id == widget.branch.companyId)
+              .firstOrNull;
+          if (selectedCompany != null) {
+            companyCtrl.text = selectedCompany!.name;
+            companyNotifier = ValueNotifier<CompanyModel>(selectedCompany!);
+          } else {
+            // If no company found, initialize with first company or placeholder
+            companyNotifier = ValueNotifier<CompanyModel>(
+              companies!.isNotEmpty
+                ? companies!.first
+                : CompanyModel(id: 0, name: 'เลือกบริษัท')
+            );
+          }
         }
       } else {
         companies = [];

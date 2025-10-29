@@ -161,7 +161,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
       );
 
   iconDashboard(
-      String title, Image iconData, Color background, dynamic route) =>
+      String title, dynamic iconData, Color background, dynamic route) =>
       GestureDetector(
         onTap: () {
           if (route != null) {
@@ -190,12 +190,13 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
                     color: background,
                     shape: BoxShape.circle,
                   ),
-                  child: iconData
-                // Icon(
-                //   iconData,
-                //   color: Colors.white,
-                //   size: 18.sp,
-                // )
+                  child: iconData is Image
+                    ? iconData
+                    : Icon(
+                      iconData,
+                      color: Colors.white,
+                      size: 18.sp,
+                    )
               ),
               const SizedBox(height: 8),
               Text(
@@ -273,15 +274,15 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
             children: [
               iconDashboard(
                 'ซื้อขายทองแท่ง \n(จับคู่) ',
-                Image.asset('assets/icons/gold/sell-gold-tang.png'),
+                Image.asset('assets/icons/menu_icons/theng_matching.png', height: 110,),
                 kPrimaryTosca,
                 const ThengSaleMatchingMenuScreen(title: 'Matching'),
               ),
               Stack(
                 children: [
-                  itemDashboard(
+                  iconDashboard(
                     'รายการที่รอดำเนินการ',
-                    Icons.pending_actions,
+                    Image.asset('assets/icons/menu_icons/pending.png', height: 110,),
                     Colors.red,
                     const MatchingPendingScreen(),
                   ),
@@ -317,7 +318,7 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
               ),
               iconDashboard(
                 'ซื้อขายทองแท่ง \n(ซื้อ-ขายจริง) ',
-                Image.asset('assets/icons/gold/buy-gold-tang.png'),
+                Image.asset('assets/icons/menu_icons/theng_storefront.png', height: 110,),
                 primer,
                 const ThengSaleMenuScreen(title: 'Real'),
               ),

@@ -75,18 +75,22 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
   widgets.add(reportsHeader());
   widgets.add(height(h: 2));
 
-  widgets.add(Column(
-    children: [
-      // Merged header row (เดบิต/เครดิต)
+  widgets.add(Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: PdfColors.grey200, width: 0.8),
+    ),
+    child: Column(
+      children: [
+        // Merged header row (เดบิต/เครดิต)
       Container(
         height: 30,
         decoration: BoxDecoration(
           color: PdfColors.blue600,
           border: Border(
-            top: BorderSide(color: PdfColors.grey700, width: 0.5),
-            left: BorderSide(color: PdfColors.grey700, width: 0.5),
-            right: BorderSide(color: PdfColors.grey700, width: 0.5),
-            bottom: BorderSide(color: PdfColors.grey700, width: 0.5),
+            top: BorderSide(color: PdfColors.white, width: 0.5),
+            left: BorderSide(color: PdfColors.white, width: 0.5),
+            right: BorderSide(color: PdfColors.white, width: 0.5),
+            bottom: BorderSide(color: PdfColors.white, width: 0.5),
           ),
         ),
         child: Row(
@@ -101,8 +105,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
-                    left: BorderSide(color: PdfColors.grey700, width: 0.5),
-                    right: BorderSide(color: PdfColors.grey700, width: 0.5),
+                    left: BorderSide(color: PdfColors.white, width: 0.5),
+                    right: BorderSide(color: PdfColors.white, width: 0.5),
                   ),
                 ),
                 child: Center(
@@ -124,7 +128,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
-                    left: BorderSide(color: PdfColors.grey700, width: 0.5),
+                    left: BorderSide(color: PdfColors.white, width: 0.5),
                   ),
                 ),
                 child: Center(
@@ -149,7 +153,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         decoration: BoxDecoration(
           color: PdfColors.blue600,
           border: Border(
-            bottom: BorderSide(color: PdfColors.grey700, width: 0.5),
+            top: BorderSide(color: PdfColors.white, width: 0.5),
+            bottom: BorderSide(color: PdfColors.white, width: 0.5),
           ),
         ),
         child: Row(
@@ -160,9 +165,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
+                              BorderSide(color: PdfColors.white, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
                           style: TextStyle(
@@ -176,9 +181,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
+                              BorderSide(color: PdfColors.white, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text('เลขที่ใบรับทอง',
                           textAlign: TextAlign.center,
@@ -194,9 +199,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     decoration: BoxDecoration(
                         border: Border(
                             left: BorderSide(
-                                color: PdfColors.grey700, width: 0.5),
+                                color: PdfColors.white, width: 0.5),
                             right: BorderSide(
-                                color: PdfColors.grey700, width: 0.5))),
+                                color: PdfColors.white, width: 0.5))),
                     child: Center(
                         child: Text('ชื่อผู้ขาย',
                             style: TextStyle(
@@ -210,9 +215,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
+                              BorderSide(color: PdfColors.white, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text('ซื้อทองคำแท่ง\nจำนวนเงิน(บาท)',
                           textAlign: TextAlign.center,
@@ -227,9 +232,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
+                              BorderSide(color: PdfColors.white, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text(
                           'ต้นทุนค่าบล็อก/ค่าบรรจุภัณฑ์\nจำนวนเงิน(บาท)',
@@ -245,9 +250,9 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
+                              BorderSide(color: PdfColors.white, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text('ภาษีซื้อ\nจำนวนเงิน(บาท)',
                           textAlign: TextAlign.center,
@@ -262,7 +267,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   decoration: BoxDecoration(
                       border: Border(
                           left: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.white, width: 0.5))),
                   child: Center(
                       child: Text('เงินสด/ธนาคาร\nจำนวนเงิน(บาท)',
                           textAlign: TextAlign.center,
@@ -283,9 +288,10 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
             decoration: BoxDecoration(
               color: list[i].status == "2" ? PdfColors.red100 : PdfColors.white,
               border: Border(
-                left: BorderSide(color: PdfColors.grey700, width: 0.5),
-                right: BorderSide(color: PdfColors.grey700, width: 0.5),
-                bottom: BorderSide(color: PdfColors.grey700, width: 0.5),
+                top: BorderSide(color: PdfColors.grey200, width: 0.5),
+                left: BorderSide(color: PdfColors.grey200, width: 0.8),
+                right: BorderSide(color: PdfColors.grey200, width: 0.8),
+                bottom: BorderSide(color: PdfColors.grey200, width: 0.8),
               ),
             ),
             child: Row(
@@ -295,10 +301,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5),
                               right: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
+                                  color: PdfColors.grey200, width: 0.5))),
                       child: paddedTextSmall(
                           type == 3
                               ? Global.formatDateMFT(
@@ -316,10 +320,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5),
                               right: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
+                                  color: PdfColors.grey200, width: 0.5))),
                       child: paddedTextSmall(list[i].orderId,
                           align: TextAlign.center,
                           style: TextStyle(
@@ -334,10 +336,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border(
-                                left: BorderSide(
-                                    color: PdfColors.grey700, width: 0.5),
                                 right: BorderSide(
-                                    color: PdfColors.grey700, width: 0.5))),
+                                    color: PdfColors.grey200, width: 0.5))),
                         child: paddedTextSmall(
                             list[i].status == "2"
                                 ? "ยกเลิกเอกสาร"
@@ -353,10 +353,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5),
                               right: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
+                                  color: PdfColors.grey200, width: 0.5))),
                       child: paddedTextSmall(
                           list[i].status == "2"
                               ? "0.00"
@@ -373,10 +371,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5),
                               right: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
+                                  color: PdfColors.grey200, width: 0.5))),
                       child: paddedTextSmall(
                           list[i].status == "2"
                               ? "0.00"
@@ -393,10 +389,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                     child: Container(
                       decoration: BoxDecoration(
                           border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5),
                               right: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
+                                  color: PdfColors.grey200, width: 0.5))),
                       child: paddedTextSmall(
                           list[i].status == "2"
                               ? "0.00"
@@ -411,10 +405,6 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 Expanded(
                     flex: 2,
                     child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.grey700, width: 0.5))),
                       child: paddedTextSmall(
                           list[i].status == "2"
                               ? "0.00"
@@ -436,10 +426,10 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         decoration: BoxDecoration(
           color: PdfColors.blue50,
           border: Border(
-            left: BorderSide(color: PdfColors.grey700, width: 0.5),
-            right: BorderSide(color: PdfColors.grey700, width: 0.5),
-            bottom: BorderSide(color: PdfColors.grey700, width: 0.5),
-            top: BorderSide(color: PdfColors.blue200, width: 0.5),
+            top: BorderSide(color: PdfColors.grey200, width: 0.5),
+            left: BorderSide(color: PdfColors.grey200, width: 0.8),
+            right: BorderSide(color: PdfColors.grey200, width: 0.8),
+            bottom: BorderSide(color: PdfColors.grey200, width: 0.8),
           ),
         ),
         child: Row(
@@ -449,10 +439,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.grey200, width: 0.5))),
                   child: Container(),
                 )),
             if (type == 1)
@@ -461,10 +449,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border(
-                            left: BorderSide(
-                                color: PdfColors.grey700, width: 0.5),
                             right: BorderSide(
-                                color: PdfColors.grey700, width: 0.5))),
+                                color: PdfColors.grey200, width: 0.5))),
                     child: Container(),
                   )),
             Expanded(
@@ -472,10 +458,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall('รวมท้ังหมด',
                       align: TextAlign.right,
                       style: TextStyle(
@@ -488,10 +472,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
                           ? Global.format(getGoldValueTotal(orders))
@@ -507,10 +489,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
                           ? Global.format(getCommissionPackageTotal(orders))
@@ -526,10 +506,8 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
                 child: Container(
                   decoration: BoxDecoration(
                       border: Border(
-                          left:
-                              BorderSide(color: PdfColors.grey700, width: 0.5),
                           right: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
+                              color: PdfColors.grey200, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
                           ? Global.format(getVatAmountTotal(orders))
@@ -543,10 +521,6 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
             Expanded(
                 flex: 2,
                 child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          left: BorderSide(
-                              color: PdfColors.grey700, width: 0.5))),
                   child: paddedTextSmall(
                       type == 1
                           ? Global.format(getCashBankTotal(orders))
@@ -561,7 +535,7 @@ Future<Uint8List> makeRefillWholesaleThengReportPdf(List<OrderModel?> orders,
         ),
       ),
     ],
-  ));
+  )));
 
   widgets.add(height());
 

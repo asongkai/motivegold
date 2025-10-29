@@ -754,7 +754,7 @@ Widget buildTextFieldBig(
     bool isPassword = false,
     double fontSize = 40.00,
     Color? bgColor,
-      String? hintText,
+    String? hintText,
     enabled = true}) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 8.0),
@@ -1157,8 +1157,8 @@ sumBuyThengTotal(int productId) {
       Global.buyThengWeightTotal += Global.buyThengOrderDetail![i].weight!;
     }
   }
-  Global.buyThengTax = Global.taxAmount(
-      Global.taxBase(Global.buyThengSubTotal, Global.buyThengWeightTotal, productId));
+  Global.buyThengTax = Global.taxAmount(Global.taxBase(
+      Global.buyThengSubTotal, Global.buyThengWeightTotal, productId));
   Global.buyThengTotal = Global.buyThengSubTotal + Global.buyThengTax;
 }
 
@@ -1175,8 +1175,8 @@ sumSellThengTotal(int productId) {
       Global.sellThengWeightTotal += Global.sellThengOrderDetail![i].weight!;
     }
   }
-  Global.sellThengTax = Global.taxAmount(
-      Global.taxBase(Global.sellThengSubTotal, Global.sellThengWeightTotal, productId));
+  Global.sellThengTax = Global.taxAmount(Global.taxBase(
+      Global.sellThengSubTotal, Global.sellThengWeightTotal, productId));
   Global.sellThengTotal = Global.sellThengSubTotal + Global.sellThengTax;
 }
 
@@ -1195,7 +1195,9 @@ sumBuyThengTotalBroker(int productId) {
     }
   }
   Global.buyThengTaxBroker = Global.taxAmount(Global.taxBase(
-      Global.buyThengSubTotalBroker, Global.buyThengWeightTotalBroker, productId));
+      Global.buyThengSubTotalBroker,
+      Global.buyThengWeightTotalBroker,
+      productId));
   Global.buyThengTotalBroker =
       Global.buyThengSubTotalBroker + Global.buyThengTaxBroker;
 }
@@ -1215,7 +1217,9 @@ sumSellThengTotalBroker(int productId) {
     }
   }
   Global.sellThengTaxBroker = Global.taxAmount(Global.taxBase(
-      Global.sellThengSubTotalBroker, Global.sellThengWeightTotalBroker, productId));
+      Global.sellThengSubTotalBroker,
+      Global.sellThengWeightTotalBroker,
+      productId));
   Global.sellThengTotalBroker =
       Global.sellThengSubTotalBroker + Global.sellThengTaxBroker;
 }
@@ -1235,7 +1239,9 @@ sumBuyThengTotalMatching(int productId) {
     }
   }
   Global.buyThengTaxMatching = Global.taxAmount(Global.taxBase(
-      Global.buyThengSubTotalMatching, Global.buyThengWeightTotalMatching, productId));
+      Global.buyThengSubTotalMatching,
+      Global.buyThengWeightTotalMatching,
+      productId));
   Global.buyThengTotalMatching =
       Global.buyThengSubTotalMatching + Global.buyThengTaxMatching;
 }
@@ -1255,7 +1261,9 @@ sumSellThengTotalMatching(int productId) {
     }
   }
   Global.sellThengTaxMatching = Global.taxAmount(Global.taxBase(
-      Global.sellThengSubTotalMatching, Global.sellThengWeightTotalMatching, productId));
+      Global.sellThengSubTotalMatching,
+      Global.sellThengWeightTotalMatching,
+      productId));
   Global.sellThengTotalMatching =
       Global.sellThengSubTotalMatching + Global.sellThengTaxMatching;
 }
@@ -1282,6 +1290,122 @@ getIdTitle(ProductTypeModel? selectedType) {
   return selectedType?.code == 'company'
       ? 'เลขบัตรประจำตัวภาษี'
       : 'เลขบัตรประจำตัวประชาชน';
+}
+
+/// Get branch address for bills/reports - Line 1: Building details
+String getBillAddressLine1() {
+  if (Global.branch == null) {
+    return "";
+  }
+
+  String address = "";
+
+  // Line 1: เลขที่, อาคาร, เลขที่ห้อง, ชั้นที่, หมู่บ้าน, ตรอก/ซอย, ถนน
+  if (Global.branch?.address != null && Global.branch!.address!.isNotEmpty) {
+    address += 'เลขที่ ${Global.branch!.address}';
+  }
+  if (Global.branch?.building != null && Global.branch!.building!.isNotEmpty) {
+    address += ' อาคาร${Global.branch!.building}';
+  }
+  if (Global.branch?.room != null && Global.branch!.room!.isNotEmpty) {
+    address += ' เลขที่ห้อง${Global.branch!.room}';
+  }
+  if (Global.branch?.floor != null && Global.branch!.floor!.isNotEmpty) {
+    address += ' ชั้นที่${Global.branch!.floor}';
+  }
+  if (Global.branch?.village != null && Global.branch!.village!.isNotEmpty) {
+    address += ' หมู่บ้าน${Global.branch!.village}';
+  }
+  if (Global.branch?.villageNo != null &&
+      Global.branch!.villageNo!.isNotEmpty) {
+    address += ' หมู่ที่${Global.branch!.villageNo}';
+  }
+  if (Global.branch?.alley != null && Global.branch!.alley!.isNotEmpty) {
+    address += ' ตรอก/ซอย${Global.branch!.alley}';
+  }
+  if (Global.branch?.road != null && Global.branch!.road!.isNotEmpty) {
+    address += ' ถนน${Global.branch!.road}';
+  }
+
+  return address.trim();
+}
+
+/// Get branch address for bills/reports - Line 2: District details
+String getBillAddressLine2() {
+  if (Global.branch == null) {
+    return "";
+  }
+
+  String address = "";
+
+  // Line 2: ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์
+  // Special handling for Bangkok (provinceId == 1)
+  if (Global.branch?.provinceId == 1) {
+    if (Global.branch?.tambonNavigation != null) {
+      address += 'แขวง${Global.branch!.tambonNavigation?.nameTh}';
+    }
+    if (Global.branch?.amphureNavigation != null) {
+      address += ' ${Global.branch!.amphureNavigation?.nameTh}';
+    }
+    if (Global.branch?.provinceNavigation != null) {
+      address += ' ${Global.branch!.provinceNavigation?.nameTh}';
+    }
+  } else {
+    if (Global.branch?.tambonNavigation != null) {
+      address += 'ตำบล${Global.branch!.tambonNavigation?.nameTh}';
+    }
+    if (Global.branch?.amphureNavigation != null) {
+      address += ' อำเภอ${Global.branch!.amphureNavigation?.nameTh}';
+    }
+    if (Global.branch?.provinceNavigation != null) {
+      address += ' จังหวัด${Global.branch!.provinceNavigation?.nameTh}';
+    }
+  }
+
+  if (Global.branch?.postalCode != null &&
+      Global.branch!.postalCode!.isNotEmpty) {
+    address += ' ${Global.branch!.postalCode}';
+  }
+
+  return address.trim();
+}
+
+/// Get customer address for bills/reports - Line 1: Address only
+String getCustomerBillAddressLine1(CustomerModel customer) {
+  if (customer.defaultWalkIn == 1 ||
+      customer.address == null ||
+      customer.address!.isEmpty) {
+    return '';
+  }
+  return customer.address!;
+}
+
+/// Get customer address for bills/reports - Line 2: District, phone
+String getCustomerBillAddressLine2(CustomerModel customer) {
+  if (customer.defaultWalkIn == 1 ||
+      customer.address == null ||
+      customer.address!.isEmpty) {
+    return '';
+  }
+
+  String address = "";
+
+  // Line 2: ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์, เบอร์โทร
+  // Note: Customer model may not have tambon/amphure/province navigation
+  // So we'll just show postal code and phone number if available
+
+  if (customer.postalCode != null && customer.postalCode!.isNotEmpty) {
+    address += '${customer.postalCode}';
+  }
+
+  if (customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty) {
+    if (address.isNotEmpty) {
+      address += ' ';
+    }
+    address += 'โทร ${customer.phoneNumber}';
+  }
+
+  return address.trim();
 }
 
 getIdTitleName(String? selectedType) {

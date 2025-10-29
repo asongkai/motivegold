@@ -92,40 +92,38 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.store, // Better for storefront sales
+                imagePath: 'assets/icons/menu_icons/paphun_storefront.png',
                 label: 'ซื้อขายทองรูป\nพรรณหน้าร้าน',
-                color: Colors.amber[600]!, // Gold color for gold jewelry
+                color: Colors.amber[600]!,
                 pageBuilder: (_) =>
-                const PosMenuScreen(title: 'ซื้อขายทองรูปพรรณหน้าร้าน'),
+                    const PosMenuScreen(title: 'ซื้อขายทองรูปพรรณหน้าร้าน'),
               ),
               MenuItemData(
-                icon: Icons.business, // Better for wholesale business
+                imagePath: 'assets/icons/menu_icons/paphun_wholesale.png',
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองรูปพรรณ)',
-                color: Colors.orange[700]!, // Orange for wholesale
-                pageBuilder: (_) =>
-                const WholeSalePaphunMenuScreen(
+                color: Colors.orange[700]!,
+                pageBuilder: (_) => const WholeSalePaphunMenuScreen(
                     title: 'ซื้อขายทองกับร้านขายส่ง(ทองรูปพรรณ)'),
               ),
               MenuItemData(
-                icon: Icons.transfer_within_a_station, // Better for transfers
+                imagePath: 'assets/icons/menu_icons/transfer_paphun.png',
                 label: 'โอนทอง',
-                color: Colors.blue[600]!, // Blue for transfers/movement
+                color: Colors.blue[600]!,
                 pageBuilder: (_) => const TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.assessment, // Better for reports/analytics
+                imagePath: 'assets/icons/menu_icons/reports.png',
                 label: 'รายงาน\nทองรูปพรรณ',
-                color: Colors.green[600]!, // Green for reports/analytics
+                color: Colors.green[600]!,
                 pageBuilder: (_) => PaphunReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.history, // Better for transaction history
+                imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.grey[600]!, // Grey for history
-                pageBuilder: (_) =>
-                    HistoryScreen(
-                      productType: orderTypes()[0],
-                    ),
+                color: Colors.grey[600]!,
+                pageBuilder: (_) => HistoryScreen(
+                  productType: orderTypes()[0],
+                ),
               ),
             ]),
 
@@ -136,27 +134,27 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.security, // Better for pawn/security services
+                imagePath: 'assets/icons/menu_icons/pawn.png',
                 label: 'ขายฝาก',
-                color: Colors.purple[600]!, // Purple for pawn services
+                color: Colors.purple[600]!,
                 pageBuilder: (_) => const PawnMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.gavel, // Auction/lost items
+                imagePath: 'assets/icons/menu_icons/lost_items.png',
                 label: 'ของหลุด',
-                color: Colors.red[600]!, // Red for lost/auction items
+                color: Colors.red[600]!,
                 pageBuilder: null,
               ),
               MenuItemData(
-                icon: Icons.assessment, // Reports
+                imagePath: 'assets/icons/menu_icons/reports.png',
                 label: 'รายงาน\nขายฝาก',
-                color: Colors.green[600]!, // Green for reports
+                color: Colors.green[600]!,
                 pageBuilder: (_) => PawnReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.history, // Transaction history
+                imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.grey[600]!, // Grey for history
+                color: Colors.grey[600]!,
                 pageBuilder: (_) => SingleRedeemHistoryScreen(
                   productType: redeemTypes()[0],
                 ),
@@ -170,38 +168,37 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.diamond, // Gold bars - diamond represents precious items
+                imagePath: 'assets/icons/menu_icons/theng_storefront.png',
                 label: 'ซื้อขายทองแท่ง\nหน้าร้าน',
-                color: Colors.amber[700]!, // Gold/amber for gold bars
+                color: Colors.amber[700]!,
                 pageBuilder: (_) => const ThengSaleMenuScreen(title: 'Real'),
               ),
               MenuItemData(
-                icon: Icons.business, // Wholesale business
+                imagePath: 'assets/icons/menu_icons/theng_wholesale.png',
                 label: 'ซื้อขายทองกับร้าน\nขายส่ง(ทองแท่ง)',
-                color: Colors.orange[700]!, // Orange for wholesale
+                color: Colors.orange[700]!,
                 pageBuilder: (_) =>
-                const WholeSaleThengMenuScreen(title: 'POS'),
+                    const WholeSaleThengMenuScreen(title: 'POS'),
               ),
               MenuItemData(
-                icon: Icons.transfer_within_a_station, // Transfer
+                imagePath: 'assets/icons/menu_icons/transfer_theng.png',
                 label: 'โอนทอง',
-                color: Colors.blue[600]!, // Blue for transfers
+                color: Colors.blue[600]!,
                 pageBuilder: (_) => TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.assessment, // Reports
+                imagePath: 'assets/icons/menu_icons/reports.png',
                 label: 'รายงาน\nทองคำแท่ง',
-                color: Colors.green[600]!, // Green for reports
+                color: Colors.green[600]!,
                 pageBuilder: (_) => ThengReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.history, // History
+                imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.grey[600]!, // Grey for history
-                pageBuilder: (_) =>
-                    HistoryScreen(
-                      productType: orderTypes()[4],
-                    ),
+                color: Colors.grey[600]!,
+                pageBuilder: (_) => HistoryScreen(
+                  productType: orderTypes()[4],
+                ),
               ),
             ]),
 
@@ -212,40 +209,38 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             _buildMenuGrid([
               MenuItemData(
-                icon: Icons.link, // Better for matching/pairing
+                imagePath: 'assets/icons/menu_icons/theng_matching.png',
                 label: 'ซื้อขายทองแท่ง\n(จับคู่)',
-                color: Colors.indigo[600]!, // Indigo for matching services
+                color: Colors.indigo[600]!,
                 pageBuilder: (_) =>
-                const ThengSaleMatchingMenuScreen(title: 'Matching'),
+                    const ThengSaleMatchingMenuScreen(title: 'Matching'),
               ),
               MenuItemData(
-                icon: Icons.pending, // Pending actions
+                imagePath: 'assets/icons/menu_icons/pending.png',
                 label: 'รายการที่รอ\nดำเนินการ',
-                color: Colors.orange[500]!, // Orange for pending/waiting
-                pageBuilder: (_) =>
-                const MatchingPendingScreen(),
+                color: Colors.orange[500]!,
+                pageBuilder: (_) => const MatchingPendingScreen(),
               ),
               MenuItemData(
-                icon: Icons.handshake, // Better for broker relations
+                imagePath: 'assets/icons/menu_icons/broker.png',
                 label: 'ซื้อขายทองแท่ง\nกับโบรกเกอร์',
-                color: Colors.brown[600]!, // Brown for broker business
+                color: Colors.brown[600]!,
                 pageBuilder: (_) =>
-                const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
+                    const ThengBrokerMenuScreen(title: 'ทองคำแท่งกับโบรกเกอร์'),
               ),
               MenuItemData(
-                icon: Icons.assessment, // Reports
+                imagePath: 'assets/icons/menu_icons/reports.png',
                 label: 'รายงานทอง\nคำแท่ง(จับคู่)',
-                color: Colors.green[600]!, // Green for reports
+                color: Colors.green[600]!,
                 pageBuilder: (_) => ThengMatchingReportMenuScreen(),
               ),
               MenuItemData(
-                icon: Icons.history, // History
+                imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
-                color: Colors.grey[600]!, // Grey for history
-                pageBuilder: (_) =>
-                    HistoryScreen(
-                      productType: orderTypes()[2],
-                    ),
+                color: Colors.grey[600]!,
+                pageBuilder: (_) => HistoryScreen(
+                  productType: orderTypes()[2],
+                ),
               ),
             ]),
           ],
@@ -271,7 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
         for (int i = 0; i < items.length; i += 4)
           Padding(
             padding: EdgeInsets.only(bottom: i + 4 < items.length ? 12 : 0),
-            child: IntrinsicHeight( // This is the key change!
+            child: IntrinsicHeight(
+              // This is the key change!
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 // Stretch children to fill vertical space
@@ -328,19 +324,28 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Icon Container
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: item.color,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Icon(
-                item.icon,
-                color: Colors.white,
-                size: 24.sp,
-              ),
-            ),
+            item.imagePath != null
+                ? Image.asset(
+                    item.imagePath!,
+                    width: 160,
+                    height: 160,
+                    fit: BoxFit.contain,
+                  )
+                : SizedBox(
+                    width: 160,
+                    height: 160,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: item.color,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Icon(
+                        item.icon,
+                        color: Colors.white,
+                        size: 24.sp,
+                      ),
+                    ),
+                  ),
             SizedBox(height: 12), // Add some space
             // Text widget with flexible height
             Text(
@@ -362,15 +367,18 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class MenuItemData {
-  final IconData icon;
+  final IconData? icon;
+  final String? imagePath; // Path to custom image asset
   final String label;
   final Color color;
   final Widget Function(BuildContext)? pageBuilder; // Dynamic screen builder
 
   MenuItemData({
-    required this.icon,
+    this.icon,
+    this.imagePath,
     required this.label,
     required this.color,
     required this.pageBuilder,
-  });
+  }) : assert(icon != null || imagePath != null,
+            'Either icon or imagePath must be provided');
 }

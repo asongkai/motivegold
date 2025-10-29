@@ -110,6 +110,7 @@ flutter:
     - assets/locale/
     - assets/icons/
     - assets/icons/gold/
+    - assets/icons/menu_icons/
     - assets/fonts/PrintAble4U/
     - assets/fonts/thai/
 #    - assets/tessdata/

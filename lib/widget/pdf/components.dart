@@ -11,7 +11,6 @@ import 'package:motivegold/utils/util.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:quiver/pattern.dart';
 import 'package:sizer/sizer.dart';
 
 Widget divider() {
@@ -64,8 +63,10 @@ Future<Widget> header(OrderModel order, String? title,
                   Text(getCompanyName(full: full),
                       style:
                           TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                  Text('${getFullAddress()}',
-                      style: const TextStyle(fontSize: 11)),
+                  Text(getBillAddressLine1(),
+                      style: const TextStyle(fontSize: 10)),
+                  Text(getBillAddressLine2(),
+                      style: const TextStyle(fontSize: 10)),
                   Text('โทรศัพท์ : ${Global.branch?.phone}',
                       style: const TextStyle(fontSize: 11)),
                   Text(
@@ -173,9 +174,10 @@ Future<Widget> headerRedeem(RedeemModel order, String? title,
             flex: 6,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('${getCompanyName(full: true)}',
+              Text(getCompanyName(full: true),
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              Text('${getFullAddress()}', style: const TextStyle(fontSize: 11)),
+              Text(getBillAddressLine1(), style: const TextStyle(fontSize: 10)),
+              Text(getBillAddressLine2(), style: const TextStyle(fontSize: 10)),
               Text('โทรศัพท์ : ${Global.branch?.phone}',
                   style: const TextStyle(fontSize: 11)),
               Text(
@@ -433,16 +435,35 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 11)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                        'ที่อยู่ : ${getCustomerDisplayAddress(customer).isNotEmpty ? '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}' : ''}',
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ],
-                  ),
+                  if (getCustomerBillAddressLine1(customer).isNotEmpty)
+                    TableRow(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ที่อยู่ : ',
+                                style: const TextStyle(fontSize: 11)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    getCustomerBillAddressLine1(customer),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                                  if (getCustomerBillAddressLine2(customer)
+                                      .isNotEmpty)
+                                    Text(
+                                      getCustomerBillAddressLine2(customer),
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
               if (shouldShowWorkId(customer))
@@ -559,16 +580,35 @@ Widget buyerSellerInfoRedeem(
                           style: const TextStyle(fontSize: 11)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                        'ที่อยู่ : ${getCustomerDisplayAddress(customer).isNotEmpty ? '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}' : ''}',
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ],
-                  ),
+                  if (getCustomerBillAddressLine1(customer).isNotEmpty)
+                    TableRow(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ที่อยู่ : ',
+                                style: const TextStyle(fontSize: 11)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    getCustomerBillAddressLine1(customer),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                                  if (getCustomerBillAddressLine2(customer)
+                                      .isNotEmpty)
+                                    Text(
+                                      getCustomerBillAddressLine2(customer),
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   if (shouldShowWorkId(customer))
                     TableRow(
                       children: [
@@ -668,16 +708,35 @@ Widget buyerSellerInfoRefill(
                           style: const TextStyle(fontSize: 11)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                        'ที่อยู่ : ${getCustomerDisplayAddress(customer).isNotEmpty ? '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}' : ''}',
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ],
-                  ),
+                  if (getCustomerBillAddressLine1(customer).isNotEmpty)
+                    TableRow(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ที่อยู่ : ',
+                                style: const TextStyle(fontSize: 11)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    getCustomerBillAddressLine1(customer),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                                  if (getCustomerBillAddressLine2(customer)
+                                      .isNotEmpty)
+                                    Text(
+                                      getCustomerBillAddressLine2(customer),
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -788,16 +847,35 @@ Widget buyerSellerInfoSellUsedWholeSale(
                           style: const TextStyle(fontSize: 11)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                        'ที่อยู่ : ${getCustomerDisplayAddress(customer).isNotEmpty ? '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}' : ''}',
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ],
-                  ),
+                  if (getCustomerBillAddressLine1(customer).isNotEmpty)
+                    TableRow(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ที่อยู่ : ',
+                                style: const TextStyle(fontSize: 11)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    getCustomerBillAddressLine1(customer),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                                  if (getCustomerBillAddressLine2(customer)
+                                      .isNotEmpty)
+                                    Text(
+                                      getCustomerBillAddressLine2(customer),
+                                      style: const TextStyle(fontSize: 11),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -908,16 +986,35 @@ Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
                           style: const TextStyle(fontSize: 12)),
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      Text(
-                        'ที่อยู่ : ${getCustomerDisplayAddress(customer).isNotEmpty ? '${customer.address} รหัสไปรษณีย์: ${customer.postalCode}    โทร: ${customer.phoneNumber}' : ''}',
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
+                  if (getCustomerBillAddressLine1(customer).isNotEmpty)
+                    TableRow(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ที่อยู่ : ',
+                                style: const TextStyle(fontSize: 12)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    getCustomerBillAddressLine1(customer),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  if (getCustomerBillAddressLine2(customer)
+                                      .isNotEmpty)
+                                    Text(
+                                      getCustomerBillAddressLine2(customer),
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -1209,7 +1306,21 @@ Widget reportsHeader() => Column(children: [
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text("ที่อยู่ : ${getFullAddress()}"),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("ที่อยู่ : "),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(getBillAddressLine1()),
+                      Text(getBillAddressLine2()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           Expanded(
             child: Text(
@@ -1224,7 +1335,7 @@ Widget reportsCompanyTitle() => Center(
       child: Text(
         Global.branch!.isHeadquarter == true
             ? '${Global.company!.name} (สำนักงานใหญ่)'
-            : '${Global.company!.name}',
+            : Global.company!.name,
         style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
       ),
     );

@@ -135,7 +135,7 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
       );
 
   iconDashboard(
-      String title, Image iconData, Color background, dynamic route) =>
+      String title, dynamic iconData, Color background, dynamic route) =>
       GestureDetector(
         onTap: () {
           if (route != null) {
@@ -164,12 +164,13 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
                     color: background,
                     shape: BoxShape.circle,
                   ),
-                  child: iconData
-                // Icon(
-                //   iconData,
-                //   color: Colors.white,
-                //   size: 18.sp,
-                // )
+                  child: iconData is Image
+                    ? iconData
+                    : Icon(
+                      iconData,
+                      color: Colors.white,
+                      size: 18.sp,
+                    )
               ),
               const SizedBox(height: 8),
               Text(
@@ -198,19 +199,19 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
             children: [
               iconDashboard(
                 'ไถ่ถอน',
-                Image.asset('assets/icons/gold/gold.png', height: 110,),
+                Image.asset('assets/icons/menu_icons/redeem.png', height: 110,),
                 stmBgColor,
                 const RedeemMenuScreen(),
               ),
               iconDashboard(
                 'ออกตั๋วขายฝาก\nไถ่ถอน',
-                Image.asset('assets/icons/gold/sell-gold-tang.png'),
+                Image.asset('assets/icons/menu_icons/pawn_ticket.png', height: 110,),
                 stmBgColor,
                 null,
               ),
               iconDashboard(
                 'ขายฝาก รับดอกเบี้ย\nเพิ่มต้น-ลดต้น ไถ่ถอน',
-                Image.asset('assets/icons/gold/gold-sub-dealer.png'),
+                Image.asset('assets/icons/menu_icons/pawn.png', height: 110,),
                 stmBgColor,
                 null,
               ),
