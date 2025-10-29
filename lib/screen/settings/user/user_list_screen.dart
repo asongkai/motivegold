@@ -616,7 +616,9 @@ class _UserListScreenState extends State<UserListScreen>
       await pr.show();
       pr.update(message: 'processing'.tr());
       try {
-        var result = await ApiServices.delete('/user', id);
+        var result = await ApiServices.delete('/user', id, queryParams: {
+          'adminUserId': Global.user?.id,
+        });
         await pr.hide();
         if (result?.status == "success") {
           list!.removeAt(i);

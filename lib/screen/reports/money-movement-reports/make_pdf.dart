@@ -50,6 +50,174 @@ Future<Uint8List> makeMoneyMovementReportPdf(
       height(),
       reportsHeader(),
       height(h: 2),
+      // Table column headers
+      Container(
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(11),
+            topRight: Radius.circular(11),
+          ),
+        ),
+        padding: const EdgeInsets.all(4),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Text('ลำดับ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('เลขที่ใบกํากับภาษี',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ชื่อผู้ซื้อ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('วันที่',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('นน.ทองรูปพรรณ \n96.5% ขายออก (กรัม)',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('นน.ทองรูปพรรณเก่า \n96.5% รับซื้อ (กรัม)',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('จำนวนเงินสุทธิ \n(บาท)',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองเก่า',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ร้านทองรับเงิน/\nร้านทองจ่ายเงิน',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ยอดรับเงิน',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ยอดจ่ายเงิน',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ร้านทองรับ\n(จ่าย)เงินสุทธิ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('ร้านทองเพิ่ม/\nลดให้',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('เงินสดรับ\n(จ่าย)',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('เงินโอน/\nฝากธนาคาร',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('บัตรเครดิต',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text('อื่นๆ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+          ],
+        ),
+      ),
     ]);
   }
 
@@ -71,122 +239,6 @@ Future<Uint8List> makeMoneyMovementReportPdf(
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
       children: [
-        // Clean header row with rounded top corners
-        TableRow(
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-              ),
-            ),
-            verticalAlignment: TableCellVerticalAlignment.middle,
-            children: [
-              paddedTextSmall('ลำดับ',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white), align: TextAlign.center),
-              paddedTextSmall('เลขที่ใบกํากับภาษี',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white), align: TextAlign.center),
-              paddedTextSmall('ชื่อผู้ซื้อ',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white), align: TextAlign.center),
-              paddedTextSmall('วันที่',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white), align: TextAlign.center),
-              // paddedTextSmall('เวลา',
-              //     style: TextStyle(
-              //         fontSize: 9,
-              //         fontWeight: FontWeight.bold,
-              //         color: PdfColors.white)),
-              paddedTextSmall('นน.ทองรูปพรรณ \n96.5% ขายออก (กรัม)',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('นน.ทองรูปพรรณเก่า \n96.5% รับซื้อ (กรัม)',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('จำนวนเงินสุทธิ \n(บาท)',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall(
-                  'เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองเก่า',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('ร้านทองรับเงิน/\nร้านทองจ่ายเงิน',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('ยอดรับเงิน',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('ยอดจ่ายเงิน',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('ร้านทองรับ\n(จ่าย)เงินสุทธิ',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('ร้านทองเพิ่ม/\nลดให้',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('เงินสดรับ\n(จ่าย)',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('เงินโอน/\nฝากธนาคาร',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('บัตรเครดิต',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-              paddedTextSmall('อื่นๆ',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-            ]),
         // Data rows with color coding
         for (int i = 0; i < orders!.length; i++)
           TableRow(

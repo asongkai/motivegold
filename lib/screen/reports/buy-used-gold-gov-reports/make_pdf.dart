@@ -44,6 +44,155 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         ],
       ),
       height(),
+      Container(
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(11),
+            topRight: Radius.circular(11),
+          ),
+        ),
+        padding: EdgeInsets.all(4),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 10,
+              child: Text('ลำดับ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 30,
+              child: Text('เลขที่ลำดับ\nตรงกับสิ่งของ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 30,
+              child: Text('ประเภท',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('ลักษณะ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('ตำหนิ\nรูปพรรณ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('ขนาด',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('น้ำหนักหรือ\nจำนวน',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('หน่วย',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 60,
+              child: Text('รับซื้อของจาก',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 40,
+              child: Text('วัน/เดือน/ปี\nที่รับซื้อ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 30,
+              child: Text('ราคารับซื้อ\n(บาท)',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('จำหน่ายให้แก่ใคร',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('ราคาจำหน่าย\n(บาท)',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('วัน/เดือน/ปี\nที่จำหน่าย',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+            Expanded(
+              flex: 20,
+              child: Text('หมายเหตุ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white)),
+            ),
+          ],
+        ),
+      ),
     ]);
   }
 
@@ -82,138 +231,6 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         14: const FixedColumnWidth(20)
       },
       children: [
-        // Clean header row with rounded top corners
-        TableRow(
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-              ),
-            ),
-            children: [
-              paddedTextSmall('ลำดับ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('เลขที่ลำดับ\nตรงกับสิ่งของ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ประเภท',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ลักษณะ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ตำหนิ\nรูปพรรณ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ขนาด',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('น้ำหนักหรือ\nจำนวน',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-              paddedTextSmall('หน่วย',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('รับซื้อของจาก',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('วัน/เดือน/ปี\nที่รับซื้อ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ราคารับซื้อ\n(บาท)',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-              paddedTextSmall('จำหน่ายให้แก่ใคร',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('ราคาจำหน่าย\n(บาท)',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-              paddedTextSmall('วัน/เดือน/ปี\nที่จำหน่าย',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-              paddedTextSmall('หมายเหตุ',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.center
-              ),
-            ]
-        ),
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
           TableRow(

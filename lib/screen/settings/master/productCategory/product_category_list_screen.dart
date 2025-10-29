@@ -239,7 +239,11 @@ class _ProductCategoryListScreenState extends State<ProductCategoryListScreen> {
       await pr.show();
       pr.update(message: 'processing'.tr());
       try {
-        var result = await ApiServices.delete('/productcategory', id);
+        var result = await ApiServices.delete('/productcategory', id, queryParams: {
+          'userId': Global.user?.id,
+          'companyId': Global.company?.id ?? Global.user?.companyId,
+          'branchId': Global.branch?.id ?? Global.user?.branchId,
+        });
         await pr.hide();
         if (result?.status == "success") {
           list!.removeAt(i);

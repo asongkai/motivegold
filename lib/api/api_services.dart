@@ -73,9 +73,26 @@ class ApiServices {
     return null;
   }
 
-  static Future<Response>? delete(String url, dynamic data) {
+  static Future<Response>? delete(String url, dynamic data, {Map<String, dynamic>? queryParams}) {
     try {
-      return http.delete(Uri.parse('${Constants.BACKEND_URL}$url/$data'), headers: headers).then((response) {
+      // Build URI with query parameters
+      String baseUrl = '${Constants.BACKEND_URL}$url/$data';
+      Uri uri;
+
+      if (queryParams != null && queryParams.isNotEmpty) {
+        // Convert all query param values to strings and filter out nulls
+        Map<String, String> stringParams = {};
+        queryParams.forEach((key, value) {
+          if (value != null) {
+            stringParams[key] = value.toString();
+          }
+        });
+        uri = Uri.parse(baseUrl).replace(queryParameters: stringParams);
+      } else {
+        uri = Uri.parse(baseUrl);
+      }
+
+      return http.delete(uri, headers: headers).then((response) {
         // print(response.body);
         if (response.statusCode == 200) {
           // print(response.body);

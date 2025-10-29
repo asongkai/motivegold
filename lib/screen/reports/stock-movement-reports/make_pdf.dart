@@ -68,6 +68,107 @@ Future<Uint8List> makeStockMovementReportPdf(
         ],
       ),
       Container(height: 10),
+      // Table column headers with blue background and rounded top corners
+      Container(
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(11),
+            topRight: Radius.circular(11),
+          ),
+        ),
+        child: Table(
+          border: TableBorder(
+            top: BorderSide.none,
+            bottom: BorderSide.none,
+            left: BorderSide.none,
+            right: BorderSide.none,
+          ),
+          columnWidths: const {
+            0: FractionColumnWidth(0.12),
+            1: FractionColumnWidth(0.12),
+            2: FractionColumnWidth(0.12),
+            3: FractionColumnWidth(0.12),
+            4: FractionColumnWidth(0.12),
+            5: FractionColumnWidth(0.12),
+            6: FractionColumnWidth(0.12),
+            7: FractionColumnWidth(0.12),
+            8: FractionColumnWidth(0.12),
+          },
+          children: [
+            TableRow(
+              children: [
+                paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('วัน/เดือน/ปี',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('สินค้า',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('คลังสินค้า',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('ประเภท\nการเคลื่อนไหว',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('ประเภท\nเอกสาร',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    )
+                ),
+                paddedTextSmall('น้ำหนักรวม',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    ),
+                    align: TextAlign.right
+                ),
+                paddedTextSmall('ราคา\nต่อหน่วย',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    ),
+                    align: TextAlign.right
+                ),
+                paddedTextSmall('ราคารวม',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white
+                    ),
+                    align: TextAlign.right
+                ),
+              ]
+            ),
+          ],
+        ),
+      ),
     ]);
   }
 
@@ -89,84 +190,6 @@ Future<Uint8List> makeStockMovementReportPdf(
         verticalInside: BorderSide.none,
       ),
       children: [
-        // Clean header row with rounded top corners and smaller fonts
-        TableRow(
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-              ),
-            ),
-            children: [
-              paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('วัน/เดือน/ปี',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('สินค้า',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('คลังสินค้า',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('ประเภท\nการเคลื่อนไหว',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('ประเภท\nเอกสาร',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextSmall('น้ำหนักรวม',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-              paddedTextSmall('ราคา\nต่อหน่วย',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-              paddedTextSmall('ราคารวม',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  ),
-                  align: TextAlign.right
-              ),
-            ]
-        ),
         // Clean data rows with color coding for movement type and numbers
         ...list.map((e) {
           final movementColor = getMovementTypeColor(e.type);

@@ -52,6 +52,27 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
         ],
       ),
       height(),
+      height(h: 2),
+      // Table column headers
+      Container(
+        decoration: BoxDecoration(
+          color: PdfColors.blue600,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(11),
+            topRight: Radius.circular(11),
+          ),
+        ),
+        padding: const EdgeInsets.all(4),
+        child: Row(
+          children: [
+            Expanded(flex: 2, child: Text('สินค้า', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
+            Expanded(flex: 3, child: Text('คลังสินค้า', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
+            Expanded(flex: 2, child: Text('น้ำหนักรวม', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
+            Expanded(flex: 2, child: Text('ราคาต่อหน่วย', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
+            Expanded(flex: 3, child: Text('ราคารวม', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
+          ],
+        ),
+      ),
     ]);
   }
 
@@ -81,56 +102,6 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
         4: const FlexColumnWidth(3)
       },
       children: [
-        // Clean header row with rounded top corners
-        TableRow(
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
-              ),
-            ),
-            children: [
-              paddedTextBigXL('สินค้า',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextBigXL('คลังสินค้า',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextBigXL('น้ำหนักรวม',
-                  align: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextBigXL('ราคาต่อ\nหน่วย',
-                  align: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-              paddedTextBigXL('ราคารวม',
-                  align: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white
-                  )
-              ),
-            ]
-        ),
         // Clean white data rows
         ...list.map((e) => TableRow(
           decoration: const BoxDecoration(),

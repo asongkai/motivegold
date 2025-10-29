@@ -1370,61 +1370,60 @@ String getBillAddressLine2() {
   return address.trim();
 }
 
-/// Get customer address for bills/reports - Line 1: Address only
+/// Get customer address for bills/reports - Line 1: Street address only (no district details)
 String getCustomerBillAddressLine1(CustomerModel customer) {
   if (customer.defaultWalkIn == 1 ||
       customer.address == null ||
       customer.address!.isEmpty) {
     return '';
   }
-  return customer.address!;
+
+  String address = customer.address!;
+
+  // For legacy data: If address contains location keywords, extract only the street part
+  // Location part will be moved to line 2
+  if (address.contains('ตำบล') || address.contains('แขวง') ||
+      address.contains('อำเภอ') || address.contains('เขต') ||
+      address.contains('จังหวัด')) {
+
+    // Find the first occurrence of location keywords
+    int locationStart = -1;
+    final keywords = ['ตำบล', 'แขวง', 'อำเภอ', 'เขต', 'จังหวัด'];
+
+    for (var keyword in keywords) {
+      int index = address.indexOf(keyword);
+      if (index != -1 && (locationStart == -1 || index < locationStart)) {
+        locationStart = index;
+      }
+    }
+
+    if (locationStart > 0) {
+      // Return only the street address part (before location keywords)
+      address = address.substring(0, locationStart).trim();
+    }
+  }
+
+  return address;
 }
 
-/// Get customer address for bills/reports - Line 2: District, phone
+/// Get customer address for bills/reports - Line 2: District, phone, tax ID
 String getCustomerBillAddressLine2(CustomerModel customer) {
-  if (customer.defaultWalkIn == 1 ||
-      customer.address == null ||
-      customer.address!.isEmpty) {
+  if (customer.defaultWalkIn == 1) {
     return '';
   }
 
   String address = "";
 
   // Line 2: ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์, เบอร์โทร
-  // Apply proper prefixes based on provinceId (Bangkok = 1)
+  // Use location names from API (already populated in CustomerDto)
 
-  // Get location names from Global lists
-  String? tambonName;
-  String? amphureName;
-  String? provinceName;
+  String? tambonName = customer.tambonName;
+  String? amphureName = customer.amphureName;
+  String? provinceName = customer.provinceName;
 
-  if (customer.tambonId != null) {
-    final tambon = Global.tambonList.firstWhere(
-      (t) => t.id == customer.tambonId,
-      orElse: () => TambonModel(id: 0, nameTh: '', nameEn: '', amphureId: 0),
-    );
-    if (tambon.id != 0) tambonName = tambon.nameTh;
-  }
-
-  if (customer.amphureId != null) {
-    final amphure = Global.amphureList.firstWhere(
-      (a) => a.id == customer.amphureId,
-      orElse: () => AmphureModel(id: 0, nameTh: '', nameEn: '', provinceId: 0),
-    );
-    if (amphure.id != 0) amphureName = amphure.nameTh;
-  }
-
-  if (customer.provinceId != null) {
-    final province = Global.provinceList.firstWhere(
-      (p) => p.id == customer.provinceId,
-      orElse: () => ProvinceModel(id: 0, nameTh: '', nameEn: ''),
-    );
-    if (province.id != 0) provinceName = province.nameTh;
-  }
-
-  // Build address with proper prefixes
+  // Build location with proper Thai prefixes
   if (customer.provinceId == 1) {
-    // Bangkok: แขวง + เขต (amphure already has "เขต" prefix from database)
+    // Bangkok: แขวง + เขต
     if (tambonName != null && tambonName.isNotEmpty) {
       address += 'แขวง$tambonName ';
     }
@@ -1459,6 +1458,9 @@ String getCustomerBillAddressLine2(CustomerModel customer) {
   if (customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty) {
     address += 'โทร ${customer.phoneNumber}';
   }
+
+  // Note: Tax ID/Citizen ID is NOT included in address line 2
+  // It's already shown in a separate line below the address
 
   return address.trim();
 }

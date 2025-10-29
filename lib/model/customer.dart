@@ -29,8 +29,11 @@ class CustomerModel {
   String? address;
   String? village;
   int? tambonId;
+  String? tambonName;
   int? amphureId;
+  String? amphureName;
   int? provinceId;
+  String? provinceName;
   String? nationality;
   String? postalCode;
   String? photoUrl;
@@ -61,8 +64,11 @@ class CustomerModel {
     this.address,
     this.village,
     this.tambonId,
+    this.tambonName,
     this.amphureId,
+    this.amphureName,
     this.provinceId,
+    this.provinceName,
     this.nationality,
     this.postalCode,
     this.photoUrl,
@@ -94,8 +100,11 @@ class CustomerModel {
         address: json["address"],
         village: json["village"],
         tambonId: json["tambonId"],
+        tambonName: json["tambonName"],
         amphureId: json["amphureId"],
+        amphureName: json["amphureName"],
         provinceId: json["provinceId"],
+        provinceName: json["provinceName"],
         nationality: json["nationality"],
         postalCode: json["postalCode"],
         photoUrl: json["photoUrl"],
@@ -131,8 +140,11 @@ class CustomerModel {
         "address": address,
         "village": village,
         "tambonId": tambonId,
+        "tambonName": tambonName,
         "amphureId": amphureId,
+        "amphureName": amphureName,
         "provinceId": provinceId,
+        "provinceName": provinceName,
         "nationality": nationality,
         "postalCode": postalCode,
         "photoUrl": photoUrl,

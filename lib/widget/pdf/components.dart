@@ -356,18 +356,49 @@ Widget docNoRedeem(RedeemModel order) {
       children: [
         Expanded(
             flex: 7,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                      'ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
-                      style: const TextStyle(fontSize: 11)),
-                  Text('ที่อยู่ : ${order.customer?.address} ',
-                      style: const TextStyle(fontSize: 11)),
-                  Text('เลขประจำตัวผู้เสียภาษี : ${order.customer?.taxNumber}',
-                      style: const TextStyle(fontSize: 11)),
-                ])),
+            child: Table(
+              columnWidths: const {
+                0: FixedColumnWidth(50),
+                1: FlexColumnWidth(),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    Text('ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
+                        style: const TextStyle(fontSize: 11)),
+                  ],
+                ),
+                if (getCustomerBillAddressLine1(order.customer!).isNotEmpty)
+                  TableRow(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('ที่อยู่ : ',
+                              style: const TextStyle(fontSize: 11)),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  getCustomerBillAddressLine1(order.customer!),
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                                if (getCustomerBillAddressLine2(order.customer!)
+                                    .isNotEmpty)
+                                  Text(
+                                    getCustomerBillAddressLine2(order.customer!),
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+              ],
+            )),
         if (order.status == "2" || order.redeemStatus == 'CANCEL')
           Container(
             width: 100,

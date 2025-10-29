@@ -627,7 +627,9 @@ class _BranchListScreenState extends State<BranchListScreen>
     pr.update(message: 'processing'.tr());
 
     try {
-      var result = await ApiServices.delete('/branch', id);
+      var result = await ApiServices.delete('/branch', id, queryParams: {
+        'userId': Global.user?.id,
+      });
       await pr.hide();
 
       if (result?.status == "success") {

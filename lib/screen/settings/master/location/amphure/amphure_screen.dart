@@ -286,7 +286,11 @@ class _AmphureScreenState extends State<AmphureScreen> {
           await pr.show();
           pr.update(message: 'processing'.tr());
           try {
-            var result = await ApiServices.delete('/location/amphure', id);
+            var result = await ApiServices.delete('/location/amphure', id, queryParams: {
+              'userId': Global.user?.id,
+              'companyId': Global.company?.id ?? Global.user?.companyId,
+              'branchId': Global.branch?.id ?? Global.user?.branchId,
+            });
             motivePrint(result?.data);
             await pr.hide();
             if (result?.status == "success") {

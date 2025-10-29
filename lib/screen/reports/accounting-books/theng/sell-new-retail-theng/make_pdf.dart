@@ -73,40 +73,80 @@ Future<Uint8List> makeSellNewRetailThengReportPdf(List<OrderModel?> orders,
       height(),
       reportsHeader(),
       height(h: 2),
-      // Merged header row (เดบิต/เครดิต)
+      // Header with rowspan effect
       Container(
-            height: 30,
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              border: Border(
-                top: BorderSide(color: PdfColors.white, width: 0.5),
-                left: BorderSide(color: PdfColors.white, width: 0.5),
-                right: BorderSide(color: PdfColors.white, width: 0.5),
-                bottom: BorderSide(color: PdfColors.white, width: 0.5),
-              ),
+          height: 70,
+          decoration: BoxDecoration(
+            color: PdfColors.blue600,
+            border: Border(
+              left: BorderSide(color: PdfColors.white, width: 0.5),
+              top: BorderSide(color: PdfColors.white, width: 0.5),
+              bottom: BorderSide(color: PdfColors.white, width: 0.5),
             ),
-            child: Row(
-              children: [
-                Expanded(flex: 3, child: Container()), // วันที่
-                Expanded(flex: 2, child: Container()), // เลขที่
-                if (type == 1)
-                  Expanded(flex: 2, child: Container()), // ชื่อผู้ซื้อ
-
-                // DEBIT section - spans 1 column (เงินสด/ธนาคาร)
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Column 1: เลขที่ใบกํากับภาษี (spans 2 rows)
+              Expanded(
+                flex: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: PdfColors.white, width: 0.5),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'เลขที่ใบกํากับภาษี',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Column 2: วัน/เดือน/ปี (spans 2 rows)
+              Expanded(
+                flex: 2,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: PdfColors.white, width: 0.5),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Column 3: ชื่อผู้ซื้อ (spans 2 rows) - only for type 1
+              if (type == 1)
                 Expanded(
                   flex: 2,
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        left: BorderSide(color: PdfColors.white, width: 0.5),
                         right: BorderSide(color: PdfColors.white, width: 0.5),
                       ),
                     ),
                     child: Center(
                       child: Text(
-                        'เดบิต',
+                        'ชื่อผู้ซื้อ',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: PdfColors.white,
                         ),
@@ -114,164 +154,161 @@ Future<Uint8List> makeSellNewRetailThengReportPdf(List<OrderModel?> orders,
                     ),
                   ),
                 ),
-
-                // CREDIT section - spans 3 columns (ขายทองคำแท่ง + ต้นทุน + ภาษีขาย)
-                Expanded(
-                  flex: 6,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(color: PdfColors.white, width: 0.5),
+              // เดบิต section (2 levels)
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: [
+                    // Top level: เดบิต
+                    Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right:
+                              BorderSide(color: PdfColors.white, width: 0.5),
+                          bottom:
+                              BorderSide(color: PdfColors.white, width: 0.5),
+                        ),
                       ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'เครดิต',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white,
+                      child: Center(
+                        child: Text(
+                          'เดบิต',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Column names row
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
-              border: Border(
-                top: BorderSide(color: PdfColors.white, width: 0.5),
-                bottom: BorderSide(color: PdfColors.white, width: 0.5),
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5),
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text('เลขที่ใบกํากับภาษี',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5),
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text(type == 3 ? 'เดือน' : 'วัน/เดือน/ปี',
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-                if (type == 1)
-                  Expanded(
-                      flex: 2,
+                    // Bottom level: Sub-column
+                    Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                            border: Border(
-                                left: BorderSide(
-                                    color: PdfColors.white, width: 0.5),
-                                right: BorderSide(
-                                    color: PdfColors.white, width: 0.5))),
+                          border: Border(
+                            right: BorderSide(
+                                color: PdfColors.white, width: 0.5),
+                          ),
+                        ),
                         child: Center(
-                            child: Text('ชื่อผู้ซื้อ',
-                                style: TextStyle(
+                          child: Text(
+                            'เงินสด/ธนาคาร\nจำนวนเงิน(บาท)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // เครดิต section (2 levels)
+              Expanded(
+                flex: 6,
+                child: Column(
+                  children: [
+                    // Top level: เครดิต
+                    Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right:
+                              BorderSide(color: PdfColors.white, width: 0.5),
+                          bottom:
+                              BorderSide(color: PdfColors.white, width: 0.5),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'เครดิต',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Bottom level: Sub-columns
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                      color: PdfColors.white, width: 0.5),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'ขายทองคำแท่ง\nจำนวนเงิน(บาท)',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: PdfColors.white))),
-                      )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5),
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text('เงินสด/ธนาคาร\nจำนวนเงิน(บาท)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5),
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text('ขายทองคำแท่ง\nจำนวนเงิน(บาท)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5),
-                              right: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text(
-                              'ต้นทุนค่าบล็อก/ค่าบรรจุภัณฑ์\nจำนวนเงิน(บาท)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              left: BorderSide(
-                                  color: PdfColors.white, width: 0.5))),
-                      child: Center(
-                          child: Text('ภาษีขาย\nจำนวนเงิน(บาท)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: PdfColors.white))),
-                    )),
-              ],
-            ),
+                                    color: PdfColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                      color: PdfColors.white, width: 0.5),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'ต้นทุนค่าบล็อก/ค่าบรรจุภัณฑ์\nจำนวนเงิน(บาท)',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: PdfColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(
+                                      color: PdfColors.white, width: 0.5),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'ภาษีขาย\nจำนวนเงิน(บาท)',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: PdfColors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
     ]);
   }
 

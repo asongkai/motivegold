@@ -289,7 +289,11 @@ class _TambonScreenState extends State<TambonScreen> {
       await pr.show();
       pr.update(message: 'processing'.tr());
       try {
-        var result = await ApiServices.delete('/location/tambon', id);
+        var result = await ApiServices.delete('/location/tambon', id, queryParams: {
+          'userId': Global.user?.id,
+          'companyId': Global.company?.id ?? Global.user?.companyId,
+          'branchId': Global.branch?.id ?? Global.user?.branchId,
+        });
         motivePrint(result?.data);
         await pr.hide();
         if (result?.status == "success") {

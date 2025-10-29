@@ -495,7 +495,11 @@ class _TransferGoldHistoryScreenState extends State<TransferGoldHistoryScreen> {
     await pr.show();
     pr.update(message: 'processing'.tr());
     try {
-      var result = await ApiServices.delete('/product', id);
+      var result = await ApiServices.delete('/product', id, queryParams: {
+        'userId': Global.user?.id,
+        'companyId': Global.company?.id ?? Global.user?.companyId,
+        'branchId': Global.branch?.id ?? Global.user?.branchId,
+      });
       await pr.hide();
       if (result?.status == "success") {
         list!.removeAt(i);

@@ -545,7 +545,11 @@ class _CompanyListScreenState extends State<CompanyListScreen>
     pr.update(message: 'processing'.tr());
 
     try {
-      var result = await ApiServices.delete('/company', id);
+      var result = await ApiServices.delete('/company', id, queryParams: {
+        'userId': Global.user?.id,
+        'companyId': Global.company?.id ?? Global.user?.companyId,
+        'branchId': Global.branch?.id ?? Global.user?.branchId,
+      });
       await pr.hide();
 
       if (result?.status == "success") {

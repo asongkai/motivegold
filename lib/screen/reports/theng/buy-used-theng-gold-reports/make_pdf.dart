@@ -76,6 +76,135 @@ Future<Uint8List> makeBuyUsedThengGoldReportPdf(List<OrderModel?> orders,
         height(),
         reportsHeader(),
         height(h: 2),
+        // Table column headers
+        Container(
+          decoration: BoxDecoration(
+            color: PdfColors.blue600,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(11),
+              topRight: Radius.circular(11),
+            ),
+          ),
+          padding: const EdgeInsets.all(4),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'ลําดับ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      type == 4 ? 'เดือน' : 'วันที่',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'เลขที่ใบสำคัญจ่าย',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  if (type == 1)
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        'ชื่อผู้ขาย',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white,
+                        ),
+                      ),
+                    ),
+                  if (type == 1)
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        'เลขประจำตัวผู้เสียภาษี',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white,
+                        ),
+                      ),
+                    ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'รายการสินค้า',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'น้ำหนักรวม\n(บาท)',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'น้ำหนักรวม\n(กรัม)',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      'จำนวนเงิน (บาท)',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -97,75 +226,6 @@ Future<Uint8List> makeBuyUsedThengGoldReportPdf(List<OrderModel?> orders,
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
       children: [
-        // Clean header row with rounded top corners
-        TableRow(
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(11),
-              topRight: Radius.circular(11),
-            ),
-          ),
-          verticalAlignment: TableCellVerticalAlignment.middle,
-          children: [
-            paddedTextSmall('ลําดับ',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            paddedTextSmall(type == 4 ? 'เดือน' : 'วันที่',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            paddedTextSmall('เลขที่ใบสำคัญจ่าย',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            if (type == 1)
-              paddedTextSmall('ชื่อผู้ขาย',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-            if (type == 1)
-              paddedTextSmall('เลขประจำตัวผู้เสียภาษี',
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
-                  align: TextAlign.center),
-            paddedTextSmall('รายการสินค้า',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            paddedTextSmall('น้ำหนักรวม\n(บาท)',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            paddedTextSmall('น้ำหนักรวม\n(กรัม)',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-            paddedTextSmall('จำนวนเงิน (บาท)',
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: PdfColors.white),
-                align: TextAlign.center),
-          ],
-        ),
         // Data rows with color coding for type 1
         if (type == 1)
           for (int i = 0; i < orders.length; i++)
