@@ -17,7 +17,7 @@ Widget _buildCheckbox(bool? isChecked) {
     height: 15,
     decoration: BoxDecoration(
       border: Border.all(
-        color: PdfColors.black, 
+        color: PdfColors.black,
         width: 1,
       ),
     ),
@@ -76,11 +76,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
     } else {
       for (int j = 0; j < orders[i]!.details!.length; j++) {
         orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
-        orders[i]!.details![j].customerName = orders[i]!.redeemStatus == 'CANCEL'
-            ? 'ยกเลิกเอกสาร'
-            : (orders[i]!.customer != null
-                ? '${getCustomerName(orders[i]!.customer!)}'
-                : '');
+        orders[i]!.details![j].customerName =
+            orders[i]!.redeemStatus == 'CANCEL'
+                ? 'ยกเลิกเอกสาร'
+                : (orders[i]!.customer != null
+                    ? '${getCustomerName(orders[i]!.customer!)}'
+                    : '');
         // Remove tax ID for cancelled redeems
         orders[i]!.details![j].taxNumber = orders[i]!.redeemStatus == 'CANCEL'
             ? ''
@@ -147,79 +148,216 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       height(),
       Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(Global.branch!.isHeadquarter == true
-                ? "ชื่อสถานประกอบการ : ${Global.company!.name} "
-                : "ชื่อสถานประกอบการ : ${Global.branch!.name}"),
-            SizedBox(width: 30),
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(Global.branch!.isHeadquarter == true
+                    ? "ชื่อสถานประกอบการ : ${Global.company!.name} "
+                    : "ชื่อสถานประกอบการ : ${Global.branch!.name}"),
+                SizedBox(width: 30),
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Custom checkbox using a container
-                      _buildCheckbox(
-                          Global.branch!.isHeadquarter == true ? true : false),
-                      SizedBox(width: 5),
-                      Text('สำนักงานใหญ่'),
+                      Row(
+                        children: [
+                          // Custom checkbox using a container
+                          _buildCheckbox(Global.branch!.isHeadquarter == true
+                              ? true
+                              : false),
+                          SizedBox(width: 5),
+                          Text('สำนักงานใหญ่'),
+                        ],
+                      ),
+                      SizedBox(width: 20),
+                      Row(
+                        children: [
+                          _buildCheckbox(Global.branch!.isHeadquarter == false
+                              ? true
+                              : false),
+                          SizedBox(width: 5),
+                          Text('สาขา'),
+                          SizedBox(width: 10),
+                          Text('${Global.branch!.branchId}'),
+                        ],
+                      ),
                     ],
                   ),
-                  SizedBox(width: 20),
-                  Row(
-                    children: [
-                      _buildCheckbox(
-                          Global.branch!.isHeadquarter == false ? true : false),
-                      SizedBox(width: 5),
-                      Text('สาขา'),
-                      SizedBox(width: 10),
-                      Text('${Global.branch!.branchId}'),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                Text('สำหรับ : $date', style: const TextStyle()),
+              ],
             ),
-            Text('สำหรับ : $date', style: const TextStyle()),
-          ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('ที่อยู่ : ${getFullAddress()}',
+                    style:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                Text('ลำดับเลขที่สาขา : ${Global.branch?.branchId}',
+                    style: const TextStyle()),
+              ],
+            ),
+          ]),
+      height(h: 2),
+      Table(
+        border: TableBorder(
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
+          horizontalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('ที่อยู่ : ${getFullAddress()}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
-            Text('ลำดับเลขที่สาขา : ${Global.branch?.branchId}',
-                style: const TextStyle()),
-          ],
-        ),
-      ]),
-      height(),
-      Container(
-        decoration: BoxDecoration(
-          color: PdfColors.blue600,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(11),
-            topRight: Radius.circular(11),
+        columnWidths: type == 4
+            ? {
+                0: const FixedColumnWidth(25),
+                1: const FixedColumnWidth(50),
+                2: const FixedColumnWidth(30),
+                3: const FixedColumnWidth(30),
+                4: const FixedColumnWidth(30),
+                5: const FixedColumnWidth(25),
+                6: const FixedColumnWidth(25),
+                7: const FixedColumnWidth(25),
+              }
+            : {
+                0: const FixedColumnWidth(30),
+                1: const FixedColumnWidth(30),
+                2: const FixedColumnWidth(30),
+                3: const FixedColumnWidth(30),
+                4: const FixedColumnWidth(30),
+                5: const FixedColumnWidth(30),
+                6: const FixedColumnWidth(30),
+                7: const FixedColumnWidth(30),
+                8: const FixedColumnWidth(25),
+                9: const FixedColumnWidth(25),
+              },
+        children: [
+          TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue600,
+            ),
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            children: type == 4
+                ? [
+                    paddedTextSmall('วัน/เดือน/ปี',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('เลขที่ใบกำกับภาษี',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('รายการ',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                  ]
+                : [
+                    paddedTextSmall('วัน/เดือน/ปี',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall(
+                        type == 1 ? 'เลขที่ตั๋ว' : 'เลขที่ใบกำกับภาษี',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall(type == 1 ? 'เลขที่ใบกำกับภาษี' : 'ลูกค้า',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall(
+                        type == 1 ? 'ลูกค้า' : 'เลขประจำตัว\nผู้เสียภาษี',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall(
+                        type == 1 ? 'เลขประจำตัว\nผู้เสียภาษี' : 'เลขที่ตั๋ว',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                    paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: PdfColors.white),
+                        align: TextAlign.center),
+                  ],
           ),
-        ),
-        child: Row(
-          children: [
-            Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text('วัน/เดือน/ปี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.center))),
-            Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text(type == 1 ? 'เลขที่ตั๋ว' : 'เลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.center))),
-            Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text(type == 1 ? 'เลขที่ใบกำกับภาษี' : (type == 4 ? 'รายการ' : 'ลูกค้า'), style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.center))),
-            if (type != 4) Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text(type == 1 ? 'ลูกค้า' : 'เลขประจำตัว\nผู้เสียภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.center))),
-            if (type != 4) Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text(type == 1 ? 'เลขประจำตัว\nผู้เสียภาษี' : 'เลขที่ตั๋ว', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.center))),
-            Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.right))),
-            Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text('ราคาตาม\nจำนวนสินไถ่', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.right))),
-            if (type != 4) Expanded(flex: 30, child: Padding(padding: EdgeInsets.all(4), child: Text('ราคาขายฝาก\nที่กำหนดใน\nสัญญา', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.right))),
-            Expanded(flex: 25, child: Padding(padding: EdgeInsets.all(4), child: Text('ฐานภาษี\nมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.right))),
-            Expanded(flex: 25, child: Padding(padding: EdgeInsets.all(4), child: Text('ภาษี\nมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), textAlign: TextAlign.right))),
-          ],
-        ),
+        ],
       ),
     ]);
   }
@@ -229,7 +367,6 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   if (type == 1) {
     dataRows.add(Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
       ),
       child: Table(
@@ -474,7 +611,6 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   if (type == 2) {
     dataRows.add(Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
       ),
       child: Table(
@@ -697,7 +833,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
 
                     // COLUMN 7: Redemption Value
                     paddedTextSmall(
-                      Global.format(orders[i]!.details![j].redemptionValue ?? 0),
+                      Global.format(
+                          orders[i]!.details![j].redemptionValue ?? 0),
                       style: TextStyle(
                           fontSize: 11,
                           color: orders[i]!.status == 2
@@ -802,7 +939,6 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   if (type == 3) {
     dataRows.add(Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
       ),
       child: Table(
@@ -1008,7 +1144,6 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   if (type == 4) {
     dataRows.add(Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: PdfColors.grey300, width: 1),
       ),
       child: Table(

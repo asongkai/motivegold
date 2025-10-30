@@ -1420,8 +1420,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
           priceExcludeTax: priceExcludeTaxTotal(dateList),
-          commissionAmount: commissionHeadTotal(dateList),
-          packageAmount: packageHeadTotal(dateList),
+          commissionAmount: dateList.fold<double>(0.0, (sum, order) => sum + (order.commissionAmount ?? 0)),
+          packageAmount: dateList.fold<double>(0.0, (sum, order) => sum + (order.packageAmount ?? 0)),
         );
 
         orderList.add(order);
@@ -1492,8 +1492,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           taxBase: taxBaseTotal(monthList),
           taxAmount: taxAmountTotal(monthList),
           priceExcludeTax: priceExcludeTaxTotal(monthList),
-          commissionAmount: commissionHeadTotal(monthList),
-          packageAmount: packageHeadTotal(monthList),
+          commissionAmount: monthList.fold<double>(0.0, (sum, order) => sum + (order.commissionAmount ?? 0)),
+          packageAmount: monthList.fold<double>(0.0, (sum, order) => sum + (order.packageAmount ?? 0)),
         );
 
         orderList.add(order);

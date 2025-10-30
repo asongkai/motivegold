@@ -54,24 +54,28 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
       height(),
       height(h: 2),
       // Table column headers
-      Container(
-        decoration: BoxDecoration(
-          color: PdfColors.blue600,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(11),
-            topRight: Radius.circular(11),
+      Table(
+        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+        columnWidths: {
+          0: const FixedColumnWidth(150),
+          1: const FixedColumnWidth(200),
+          2: const FixedColumnWidth(120),
+          3: const FixedColumnWidth(120),
+          4: const FixedColumnWidth(150),
+        },
+        children: [
+          TableRow(
+            decoration: const BoxDecoration(color: PdfColors.blue600),
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              paddedTextBigXL('สินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextBigXL('คลังสินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextBigXL('น้ำหนักรวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextBigXL('ราคาต่อหน่วย', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextBigXL('ราคารวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+            ],
           ),
-        ),
-        padding: const EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Expanded(flex: 2, child: Text('สินค้า', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 3, child: Text('คลังสินค้า', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('น้ำหนักรวม', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('ราคาต่อหน่วย', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 3, child: Text('ราคารวม', textAlign: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white))),
-          ],
-        ),
+        ],
       ),
     ]);
   }
@@ -80,26 +84,15 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
 
   // Mobile-inspired clean table design
   dataRows.add(Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: PdfColors.grey300, width: 1),
-    ),
     child: Table(
-      border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
-        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide.none,
-      ),
+      border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       columnWidths: {
-        0: const FlexColumnWidth(2),
-        1: const FlexColumnWidth(3),
-        2: const FlexColumnWidth(2),
-        3: const FlexColumnWidth(2),
-        4: const FlexColumnWidth(3)
+        0: const FixedColumnWidth(150),
+        1: const FixedColumnWidth(200),
+        2: const FixedColumnWidth(120),
+        3: const FixedColumnWidth(120),
+        4: const FixedColumnWidth(150),
       },
       children: [
         // Clean white data rows

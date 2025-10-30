@@ -57,183 +57,223 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
           child: type == 2
               ? Text(
                   'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 )
               : Text(
                   'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 ),
         ),
         height(),
         reportsHeader(),
         height(h: 2),
         // Table column headers
-        Container(
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+        Table(
+          border: TableBorder(
+            top: BorderSide(color: PdfColors.grey200, width: 0.5),
+            bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+            left: BorderSide(color: PdfColors.grey200, width: 0.5),
+            right: BorderSide(color: PdfColors.grey200, width: 0.5),
+            horizontalInside: BorderSide.none,
+            verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          ),
+          columnWidths: type == 1
+              ? {
+                  0: const FixedColumnWidth(25),
+                  1: const FixedColumnWidth(70),
+                  2: const FixedColumnWidth(45),
+                  3: const FixedColumnWidth(75),
+                  4: const FixedColumnWidth(60),
+                  5: const FixedColumnWidth(50),
+                  6: const FixedColumnWidth(45),
+                  7: const FixedColumnWidth(70),
+                  8: const FixedColumnWidth(55),
+                  9: const FixedColumnWidth(60),
+                  10: const FixedColumnWidth(65),
+                  11: const FixedColumnWidth(60),
+                  12: const FixedColumnWidth(65),
+                }
+              : {
+                  0: const FixedColumnWidth(30),
+                  1: const FixedColumnWidth(55),
+                  2: const FixedColumnWidth(70),
+                  3: const FixedColumnWidth(80),
+                  4: const FixedColumnWidth(55),
+                  5: const FixedColumnWidth(50),
+                  6: const FixedColumnWidth(75),
+                  7: const FixedColumnWidth(60),
+                  8: const FixedColumnWidth(65),
+                  9: const FixedColumnWidth(70),
+                  10: const FixedColumnWidth(65),
+                  11: const FixedColumnWidth(75),
+                },
+          children: [
+            TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+              ),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              children: type == 1
+                  ? [
+                      paddedTextSmall('ลําดับ',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('เลขที่\nใบกํากับภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('วันที่',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ชื่อผู้ซื้อ',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('น้ำหนักรวม\n(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('น้ำหนักรวม\n(กรัม)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall(
+                          'ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ค่าบล็อกทอง',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ค่าบรรจุภัณฑ์',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('รวมมูลค่าฐานภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                    ]
+                  : [
+                      paddedTextSmall('ลําดับ',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall(type == 4 ? 'เดือน' : 'วันที่',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('เลขที่\nใบกํากับภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('รายการสินค้า',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('น้ำหนักรวม\n(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('น้ำหนักรวม\n(กรัม)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall(
+                          'ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ค่าบล็อกทอง',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ค่าบรรจุภัณฑ์',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('รวมมูลค่าฐานภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                    ],
             ),
-          ),
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Text('ลําดับ',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              if (type == 2 || type == 3 || type == 4)
-                Expanded(
-                  flex: 2,
-                  child: Text(type == 4 ? 'เดือน' : 'วันที่',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 1)
-                Expanded(
-                  flex: 2,
-                  child: Text('เลขที่\nใบกํากับภาษี',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 1)
-                Expanded(
-                  flex: 2,
-                  child: Text('วันที่',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 1)
-                Expanded(
-                  flex: 3,
-                  child: Text('ชื่อผู้ซื้อ',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 1)
-                Expanded(
-                  flex: 2,
-                  child: Text('เลขประจําตัว\nผู้เสียภาษี',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 2 || type == 3 || type == 4)
-                Expanded(
-                  flex: 2,
-                  child: Text('เลขที่\nใบกํากับภาษี',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              if (type == 2 || type == 3 || type == 4)
-                Expanded(
-                  flex: 2,
-                  child: Text('รายการสินค้า',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      textAlign: TextAlign.center),
-                ),
-              Expanded(
-                flex: 2,
-                child: Text('น้ำหนักรวม\n(บาท)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('น้ำหนักรวม\n(กรัม)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('ค่าบล็อกทอง',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('ค่าบรรจุภัณฑ์',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('รวมมูลค่าฐานภาษี',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('ภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-              Expanded(
-                flex: 2,
-                child: Text('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    textAlign: TextAlign.center),
-              ),
-            ],
-          ),
+          ],
         ),
       ],
     );
@@ -245,7 +285,6 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
   // Apply modern design pattern
   dataRows.add(Container(
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
     ),
     child: Table(
@@ -257,6 +296,36 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
+      columnWidths: type == 1
+          ? {
+              0: const FixedColumnWidth(25),
+              1: const FixedColumnWidth(70),
+              2: const FixedColumnWidth(45),
+              3: const FixedColumnWidth(75),
+              4: const FixedColumnWidth(60),
+              5: const FixedColumnWidth(50),
+              6: const FixedColumnWidth(45),
+              7: const FixedColumnWidth(70),
+              8: const FixedColumnWidth(55),
+              9: const FixedColumnWidth(60),
+              10: const FixedColumnWidth(65),
+              11: const FixedColumnWidth(60),
+              12: const FixedColumnWidth(65),
+            }
+          : {
+              0: const FixedColumnWidth(30),
+              1: const FixedColumnWidth(55),
+              2: const FixedColumnWidth(70),
+              3: const FixedColumnWidth(80),
+              4: const FixedColumnWidth(55),
+              5: const FixedColumnWidth(50),
+              6: const FixedColumnWidth(75),
+              7: const FixedColumnWidth(60),
+              8: const FixedColumnWidth(65),
+              9: const FixedColumnWidth(70),
+              10: const FixedColumnWidth(65),
+              11: const FixedColumnWidth(75),
+            },
       children: [
         // Data rows with color coding for type 1
         if (type == 1)
@@ -539,6 +608,7 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                       : PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
+                    align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]?.status == "2"
@@ -546,6 +616,7 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                             : null)),
                 paddedTextSmall(
                     Global.formatDateMFT(orders[i]!.orderDate.toString()),
+                    align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]?.status == "2"

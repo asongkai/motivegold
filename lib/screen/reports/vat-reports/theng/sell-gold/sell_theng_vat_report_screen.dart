@@ -1545,9 +1545,9 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(dateList),
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
-          priceExcludeTax: getPriceExcludeTaxHeadTotal(dateList),
-          commissionAmount: commissionHeadTotal(dateList),
-          packageAmount: packageHeadTotal(dateList),
+          priceExcludeTax: dateList.fold<double>(0.0, (sum, order) => sum + (order.priceExcludeTax ?? 0)),
+          commissionAmount: dateList.fold<double>(0.0, (sum, order) => sum + (order.commissionAmount ?? 0)),
+          packageAmount: dateList.fold<double>(0.0, (sum, order) => sum + (order.packageAmount ?? 0)),
         );
 
         orderList.add(order);
@@ -1618,9 +1618,9 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(monthList),
           taxBase: taxBaseTotal(monthList),
           taxAmount: taxAmountTotal(monthList),
-          priceExcludeTax: getPriceExcludeTaxHeadTotal(monthList),
-          commissionAmount: commissionHeadTotal(monthList),
-          packageAmount: packageHeadTotal(monthList),
+          priceExcludeTax: monthList.fold<double>(0.0, (sum, order) => sum + (order.priceExcludeTax ?? 0)),
+          commissionAmount: monthList.fold<double>(0.0, (sum, order) => sum + (order.commissionAmount ?? 0)),
+          packageAmount: monthList.fold<double>(0.0, (sum, order) => sum + (order.packageAmount ?? 0)),
         );
 
         orderList.add(order);

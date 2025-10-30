@@ -1404,7 +1404,7 @@ String getFullAddress() {
       address += 'แขวง${Global.branch!.tambonNavigation?.nameTh} ';
     }
     if (Global.branch?.amphureNavigation != null) {
-      address += '${Global.branch!.amphureNavigation?.nameTh} ';
+      address += 'เขต${Global.branch!.amphureNavigation?.nameTh} ';
     }
     if (Global.branch?.provinceNavigation != null) {
       address += '${Global.branch!.provinceNavigation?.nameTh} ';

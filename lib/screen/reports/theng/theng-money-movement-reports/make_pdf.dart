@@ -51,36 +51,52 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
       reportsHeader(),
       height(h: 2),
       // Table column headers
-      Container(
-        decoration: BoxDecoration(
-          color: PdfColors.blue600,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(11),
-            topRight: Radius.circular(11),
+      Table(
+        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+        columnWidths: {
+          0: const FixedColumnWidth(25),
+          1: const FixedColumnWidth(60),
+          2: const FixedColumnWidth(70),
+          3: const FixedColumnWidth(45),
+          4: const FixedColumnWidth(55),
+          5: const FixedColumnWidth(55),
+          6: const FixedColumnWidth(60),
+          7: const FixedColumnWidth(65),
+          8: const FixedColumnWidth(65),
+          9: const FixedColumnWidth(50),
+          10: const FixedColumnWidth(50),
+          11: const FixedColumnWidth(60),
+          12: const FixedColumnWidth(60),
+          13: const FixedColumnWidth(50),
+          14: const FixedColumnWidth(60),
+          15: const FixedColumnWidth(50),
+          16: const FixedColumnWidth(40),
+        },
+        children: [
+          TableRow(
+            decoration: const BoxDecoration(color: PdfColors.blue600),
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              paddedTextSmall('ลำดับ', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('เลขที่ใบกํากับภาษี', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ชื่อลูกค้า', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('วันที่', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('นน.ทองคำแท่ง\nขายออก (กรัม)', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('นน.ทองคำแท่ง\nรับซื้อ (กรัม)', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('จำนวนเงินสุทธิ \n(บาท)', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองแท่ง', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ร้านทองรับเงิน/\nร้านทองจ่ายเงิน', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ยอดรับเงิน', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ยอดจ่ายเงิน', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ร้านทองรับ\n(จ่าย)เงินสุทธิ', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('ร้านทองเพิ่ม/\nลดให้', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('เงินสดรับ\n(จ่าย)', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('เงินโอน/\nฝากธนาคาร', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('บัตรเครดิต', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextSmall('อื่นๆ', align: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white)),
+            ],
           ),
-        ),
-        padding: const EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Expanded(flex: 1, child: Text('ลำดับ', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('เลขที่ใบกํากับภาษี', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('ชื่อลูกค้า', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('วันที่', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('นน.ทองคำแท่ง\nขายออก (กรัม)', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('นน.ทองคำแท่ง\nรับซื้อ (กรัม)', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('จำนวนเงินสุทธิ \n(บาท)', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองแท่ง', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('ร้านทองรับเงิน/\nร้านทองจ่ายเงิน', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('ยอดรับเงิน', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('ยอดจ่ายเงิน', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('ร้านทองรับ\n(จ่าย)เงินสุทธิ', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('ร้านทองเพิ่ม/\nลดให้', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('เงินสดรับ\n(จ่าย)', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 2, child: Text('เงินโอน/\nฝากธนาคาร', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('บัตรเครดิต', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            Expanded(flex: 1, child: Text('อื่นๆ', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.white))),
-          ],
-        ),
+        ],
       ),
     ]);
   }
@@ -89,19 +105,27 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
 
   // Apply modern design pattern
   dataRows.add(Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: PdfColors.grey300, width: 1),
-    ),
     child: Table(
-      border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
-        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-      ),
+      border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+      columnWidths: {
+        0: const FixedColumnWidth(25),
+        1: const FixedColumnWidth(60),
+        2: const FixedColumnWidth(70),
+        3: const FixedColumnWidth(45),
+        4: const FixedColumnWidth(55),
+        5: const FixedColumnWidth(55),
+        6: const FixedColumnWidth(60),
+        7: const FixedColumnWidth(65),
+        8: const FixedColumnWidth(65),
+        9: const FixedColumnWidth(50),
+        10: const FixedColumnWidth(50),
+        11: const FixedColumnWidth(60),
+        12: const FixedColumnWidth(60),
+        13: const FixedColumnWidth(50),
+        14: const FixedColumnWidth(60),
+        15: const FixedColumnWidth(50),
+        16: const FixedColumnWidth(40),
+      },
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders!.length; i++)

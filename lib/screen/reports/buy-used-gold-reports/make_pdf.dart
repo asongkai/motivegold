@@ -46,92 +46,94 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
         height(),
         reportsHeader(),
         height(h: 2),
-        Container(
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(11),
-              topRight: Radius.circular(11),
+        Table(
+          border: TableBorder(
+            top: BorderSide(color: PdfColors.grey200, width: 0.5),
+            bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+            left: BorderSide(color: PdfColors.grey200, width: 0.5),
+            right: BorderSide(color: PdfColors.grey200, width: 0.5),
+            horizontalInside: BorderSide.none,
+            verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          ),
+          columnWidths: type == 1
+              ? {
+                  0: FixedColumnWidth(40),
+                  1: FixedColumnWidth(60),
+                  2: FixedColumnWidth(80),
+                  3: FixedColumnWidth(100),
+                  4: FixedColumnWidth(80),
+                  5: FixedColumnWidth(100),
+                  6: FixedColumnWidth(60),
+                  7: FixedColumnWidth(80),
+                }
+              : {
+                  0: FixedColumnWidth(50),
+                  1: FixedColumnWidth(80),
+                  2: FixedColumnWidth(100),
+                  3: FixedColumnWidth(150),
+                  4: FixedColumnWidth(80),
+                  5: FixedColumnWidth(100),
+                },
+          children: [
+            TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+              ),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                paddedTextSmall('ลำดับ',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall(type == 4 ? 'เดือน' : 'วันที่',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขท่ีใบสําคัญ\nรับเงิน',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                if (type == 1)
+                  paddedTextSmall('ผู้ขาย',
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white),
+                      align: TextAlign.center),
+                if (type == 1)
+                  paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white),
+                      align: TextAlign.center),
+                paddedTextSmall('รายการสินค้า',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('น้ําหนัก\n(กรัม)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('จํานวนเงิน\n(บาท)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+              ],
             ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall('ลำดับ',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall(type == 4 ? 'เดือน' : 'วันที่',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall('เลขท่ีใบสําคัญ\nรับเงิน',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-              if (type == 1)
-                Expanded(
-                  flex: 1,
-                  child: paddedTextSmall('ผู้ขาย',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      align: TextAlign.center),
-                ),
-              if (type == 1)
-                Expanded(
-                  flex: 1,
-                  child: paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: PdfColors.white),
-                      align: TextAlign.center),
-                ),
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall('รายการสินค้า',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall('น้ําหนัก\n(กรัม)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-              Expanded(
-                flex: 1,
-                child: paddedTextSmall('จํานวนเงิน\n(บาท)',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.white),
-                    align: TextAlign.center),
-              ),
-            ],
-          ),
+          ],
         ),
       ],
     );
@@ -139,20 +141,35 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
 
   List<Widget> dataRows = [];
   // Apply modern design pattern
-  dataRows.add(Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: PdfColors.grey300, width: 1),
-    ),
-    child: Table(
+  dataRows.add(
+    Table(
       border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
+        top: BorderSide(color: PdfColors.grey200, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+        left: BorderSide(color: PdfColors.grey200, width: 0.5),
+        right: BorderSide(color: PdfColors.grey200, width: 0.5),
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
+      columnWidths: type == 1
+          ? {
+              0: FixedColumnWidth(40),
+              1: FixedColumnWidth(60),
+              2: FixedColumnWidth(80),
+              3: FixedColumnWidth(100),
+              4: FixedColumnWidth(80),
+              5: FixedColumnWidth(100),
+              6: FixedColumnWidth(60),
+              7: FixedColumnWidth(80),
+            }
+          : {
+              0: FixedColumnWidth(50),
+              1: FixedColumnWidth(80),
+              2: FixedColumnWidth(100),
+              3: FixedColumnWidth(150),
+              4: FixedColumnWidth(80),
+              5: FixedColumnWidth(100),
+            },
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
@@ -268,7 +285,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
             ]),
       ],
     ),
-  ));
+  );
 
   pdf.addPage(
     MultiPage(

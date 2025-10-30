@@ -1345,7 +1345,7 @@ String getBillAddressLine2() {
       address += 'แขวง${Global.branch!.tambonNavigation?.nameTh}';
     }
     if (Global.branch?.amphureNavigation != null) {
-      address += ' ${Global.branch!.amphureNavigation?.nameTh}';
+      address += ' เขต${Global.branch!.amphureNavigation?.nameTh}';
     }
     if (Global.branch?.provinceNavigation != null) {
       address += ' ${Global.branch!.provinceNavigation?.nameTh}';
@@ -1382,10 +1382,11 @@ String getCustomerBillAddressLine1(CustomerModel customer) {
 
   // For legacy data: If address contains location keywords, extract only the street part
   // Location part will be moved to line 2
-  if (address.contains('ตำบล') || address.contains('แขวง') ||
-      address.contains('อำเภอ') || address.contains('เขต') ||
+  if (address.contains('ตำบล') ||
+      address.contains('แขวง') ||
+      address.contains('อำเภอ') ||
+      address.contains('เขต') ||
       address.contains('จังหวัด')) {
-
     // Find the first occurrence of location keywords
     int locationStart = -1;
     final keywords = ['ตำบล', 'แขวง', 'อำเภอ', 'เขต', 'จังหวัด'];

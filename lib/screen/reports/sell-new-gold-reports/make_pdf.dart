@@ -39,31 +39,51 @@ Future<Uint8List> makeNewGoldReportPdf(
         reportsHeader(),
         height(h: 2),
         // Table column headers (repeat on every page)
-        Container(
-          decoration: BoxDecoration(
-            color: PdfColors.blue600,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(11),
-              topRight: Radius.circular(11),
+        Table(
+          border: TableBorder(
+            top: BorderSide(color: PdfColors.grey200, width: 0.5),
+            bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+            left: BorderSide(color: PdfColors.grey200, width: 0.5),
+            right: BorderSide(color: PdfColors.grey200, width: 0.5),
+            horizontalInside: BorderSide.none,
+            verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          ),
+          columnWidths: {
+            0: FixedColumnWidth(30),
+            1: FixedColumnWidth(60),
+            2: FixedColumnWidth(50),
+            3: FixedColumnWidth(80),
+            4: FixedColumnWidth(60),
+            5: FixedColumnWidth(50),
+            6: FixedColumnWidth(70),
+            7: FixedColumnWidth(70),
+            8: FixedColumnWidth(70),
+            9: FixedColumnWidth(70),
+            10: FixedColumnWidth(50),
+            11: FixedColumnWidth(70),
+          },
+          children: [
+            TableRow(
+              decoration: BoxDecoration(
+                color: PdfColors.blue600,
+              ),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              children: [
+                paddedTextSmall('ลำดับ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('เลขที่ใบกํากับภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('วันที่', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ชื่อผู้ซื้อ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('น้ําหนักรวม\n(กรัม)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ยอดขายรวม\nภาษีมูลค่าเพิม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('มูลค่าฐานภาษี\nยกเว้น\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ผลต่าง\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ฐานภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+              ],
             ),
-          ),
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            children: [
-              Expanded(flex: 1, child: Text('ลำดับ', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 2, child: Text('เลขที่ใบกํากับภาษี', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 2, child: Text('วันที่', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('ชื่อผู้ซื้อ', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 2, child: Text('เลขประจําตัว\nผู้เสียภาษี', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 2, child: Text('น้ําหนักรวม\n(กรัม)', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('ยอดขายรวม\nภาษีมูลค่าเพิม\nจำนวนเงิน (บาท)', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('มูลค่าฐานภาษี\nยกเว้น\nจำนวนเงิน (บาท)', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('ผลต่าง\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('ฐานภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 2, child: Text('ภาษี\nมูลค่าเพิ่ม', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-              Expanded(flex: 3, child: Text('ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white))),
-            ],
-          ),
+          ],
         ),
       ],
     );
@@ -71,20 +91,30 @@ Future<Uint8List> makeNewGoldReportPdf(
 
   List<Widget> dataRows = [];
   // Apply modern design pattern
-  dataRows.add(Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: PdfColors.grey300, width: 1),
-    ),
-    child: Table(
+  dataRows.add(
+    Table(
       border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
+        top: BorderSide(color: PdfColors.grey200, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+        left: BorderSide(color: PdfColors.grey200, width: 0.5),
+        right: BorderSide(color: PdfColors.grey200, width: 0.5),
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
+      columnWidths: {
+        0: FixedColumnWidth(30),
+        1: FixedColumnWidth(60),
+        2: FixedColumnWidth(50),
+        3: FixedColumnWidth(80),
+        4: FixedColumnWidth(60),
+        5: FixedColumnWidth(50),
+        6: FixedColumnWidth(70),
+        7: FixedColumnWidth(70),
+        8: FixedColumnWidth(70),
+        9: FixedColumnWidth(70),
+        10: FixedColumnWidth(50),
+        11: FixedColumnWidth(70),
+      },
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
@@ -246,7 +276,7 @@ Future<Uint8List> makeNewGoldReportPdf(
         ),
       ],
     ),
-  ));
+  );
 
   pdf.addPage(
     MultiPage(

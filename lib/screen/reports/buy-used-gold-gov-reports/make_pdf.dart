@@ -44,154 +44,132 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         ],
       ),
       height(),
-      Container(
-        decoration: BoxDecoration(
-          color: PdfColors.blue600,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(11),
-            topRight: Radius.circular(11),
+      Table(
+        border: TableBorder(
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
+          horizontalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+        ),
+        columnWidths: {
+          0: const FixedColumnWidth(25),
+          1: const FixedColumnWidth(50),
+          2: const FixedColumnWidth(50),
+          3: const FixedColumnWidth(35),
+          4: const FixedColumnWidth(35),
+          5: const FixedColumnWidth(30),
+          6: const FixedColumnWidth(40),
+          7: const FixedColumnWidth(30),
+          8: const FixedColumnWidth(85),
+          9: const FixedColumnWidth(55),
+          10: const FixedColumnWidth(50),
+          11: const FixedColumnWidth(40),
+          12: const FixedColumnWidth(45),
+          13: const FixedColumnWidth(55),
+          14: const FixedColumnWidth(35)
+        },
+        children: [
+          TableRow(
+            decoration: BoxDecoration(
+              color: PdfColors.blue600,
+            ),
+            verticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              paddedTextSmall('ลำดับ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('เลขที่ลำดับ\nตรงกับสิ่งของ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ประเภท',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ลักษณะ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ตำหนิ\nรูปพรรณ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ขนาด',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('น้ำหนักหรือ\nจำนวน',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.right),
+              paddedTextSmall('หน่วย',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('รับซื้อของจาก',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('วัน/เดือน/ปี\nที่รับซื้อ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ราคารับซื้อ\n(บาท)',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.right),
+              paddedTextSmall('จำหน่ายให้แก่ใคร',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('ราคาจำหน่าย\n(บาท)',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.right),
+              paddedTextSmall('วัน/เดือน/ปี\nที่จำหน่าย',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+              paddedTextSmall('หมายเหตุ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.white),
+                  align: TextAlign.center),
+            ],
           ),
-        ),
-        padding: EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 10,
-              child: Text('ลำดับ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 30,
-              child: Text('เลขที่ลำดับ\nตรงกับสิ่งของ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 30,
-              child: Text('ประเภท',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('ลักษณะ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('ตำหนิ\nรูปพรรณ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('ขนาด',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('น้ำหนักหรือ\nจำนวน',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('หน่วย',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 60,
-              child: Text('รับซื้อของจาก',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 40,
-              child: Text('วัน/เดือน/ปี\nที่รับซื้อ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 30,
-              child: Text('ราคารับซื้อ\n(บาท)',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('จำหน่ายให้แก่ใคร',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('ราคาจำหน่าย\n(บาท)',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('วัน/เดือน/ปี\nที่จำหน่าย',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-            Expanded(
-              flex: 20,
-              child: Text('หมายเหตุ',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
-            ),
-          ],
-        ),
+        ],
       ),
     ]);
   }
@@ -201,7 +179,6 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
   // Apply modern design pattern
   dataRows.add(Container(
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
       border: Border.all(color: PdfColors.grey300, width: 1),
     ),
     child: Table(
@@ -214,21 +191,21 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         verticalInside: BorderSide.none,
       ),
       columnWidths: {
-        0: const FixedColumnWidth(10),
-        1: const FixedColumnWidth(30),
-        2: const FixedColumnWidth(30),
-        3: const FixedColumnWidth(20),
-        4: const FixedColumnWidth(20),
-        5: const FixedColumnWidth(20),
-        6: const FixedColumnWidth(20),
-        7: const FixedColumnWidth(20),
-        8: const FixedColumnWidth(60),
-        9: const FixedColumnWidth(40),
-        10: const FixedColumnWidth(30),
-        11: const FixedColumnWidth(20),
-        12: const FixedColumnWidth(20),
-        13: const FixedColumnWidth(20),
-        14: const FixedColumnWidth(20)
+        0: const FixedColumnWidth(25),
+        1: const FixedColumnWidth(50),
+        2: const FixedColumnWidth(50),
+        3: const FixedColumnWidth(35),
+        4: const FixedColumnWidth(35),
+        5: const FixedColumnWidth(30),
+        6: const FixedColumnWidth(40),
+        7: const FixedColumnWidth(30),
+        8: const FixedColumnWidth(85),
+        9: const FixedColumnWidth(55),
+        10: const FixedColumnWidth(50),
+        11: const FixedColumnWidth(40),
+        12: const FixedColumnWidth(45),
+        13: const FixedColumnWidth(55),
+        14: const FixedColumnWidth(35)
       },
       children: [
         // Data rows with color coding
