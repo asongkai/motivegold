@@ -447,7 +447,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             ? PdfColors.red900
                             : PdfColors.blue600),
                     align: TextAlign.right),
-                paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceExcludeTax ?? 0),
+                paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceIncludeTax ?? 0),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -455,7 +455,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             : PdfColors.green600),
                     align: TextAlign.right),
                 paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-                Global.format(orders[i]!.commissionAmount ?? 0),
+                Global.format(getCommissionDetailTotal(orders[i]!)),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -463,7 +463,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             : PdfColors.orange600),
                     align: TextAlign.right),
                 paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-                Global.format(orders[i]!.packageAmount ?? 0),
+                Global.format(getPackagePriceDetailTotal(orders[i]!)),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -471,7 +471,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             : PdfColors.purple600),
                     align: TextAlign.right),
                 paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-                Global.format((orders[i]!.commissionAmount ?? 0) + (orders[i]!.packageAmount ?? 0)),
+                Global.format(getCommissionDetailTotal(orders[i]!) + getPackagePriceDetailTotal(orders[i]!)),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -479,7 +479,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             : PdfColors.teal600),
                     align: TextAlign.right),
                 paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-                Global.format(((orders[i]!.commissionAmount ?? 0) + (orders[i]!.packageAmount ?? 0)) * getVatValue()),
+                Global.format((getCommissionDetailTotal(orders[i]!) + getPackagePriceDetailTotal(orders[i]!)) * getVatValue()),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -487,7 +487,12 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                             : PdfColors.red600),
                     align: TextAlign.right),
                 paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-                Global.format(orders[i]!.priceIncludeTax ?? 0),
+                Global.format((orders[i]!.priceIncludeTax ?? 0) +
+                        (getCommissionDetailTotal(orders[i]!) +
+                            getPackagePriceDetailTotal(orders[i]!)) +
+                        ((getCommissionDetailTotal(orders[i]!) +
+                                getPackagePriceDetailTotal(orders[i]!)) *
+                            getVatValue())),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -976,7 +981,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('หมายเหตุ : นําหนักจะเป็นนําหนักในหน่วยของทอง 96.5%'),
+                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5%'),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

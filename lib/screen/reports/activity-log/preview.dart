@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:motivegold/model/auth_log.dart';
+import 'package:motivegold/model/activity_log.dart';
+import 'package:motivegold/screen/reports/activity-log/make_pdf.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:printing/printing.dart';
 
-import 'make_pdf.dart';
+class PreviewActivityLogPage extends StatelessWidget {
+  final List<ActivityLogModel> activities;
+  final String dateRange;
 
-
-class PreviewAuthHistoryPage extends StatelessWidget {
-  final List<AuthLogModel> invoice;
-  final String filterInfo;
-
-  const PreviewAuthHistoryPage({
+  const PreviewActivityLogPage({
     super.key,
-    required this.invoice,
-    this.filterInfo = '',
+    required this.activities,
+    required this.dateRange,
   });
 
   @override
@@ -32,7 +30,7 @@ class PreviewAuthHistoryPage extends StatelessWidget {
         ),
       ),
       body: PdfPreview(
-        build: (context) => makeAuthLogPdf(invoice, filterInfo),
+        build: (context) => makeActivityLogPdf(activities, dateRange),
       ),
     );
   }

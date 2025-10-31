@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:motivegold/model/auth_log.dart';
+import 'package:motivegold/model/activity_log.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -8,8 +8,8 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:motivegold/utils/global.dart';
 
-Future<Uint8List> makeAuthLogPdf(
-    List<AuthLogModel> authLogs, String filterInfo) async {
+Future<Uint8List> makeActivityLogPdf(
+    List<ActivityLogModel> activities, String dateRange) async {
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
@@ -23,17 +23,17 @@ Future<Uint8List> makeAuthLogPdf(
         reportsCompanyTitle(),
         Center(
           child: Text(
-            'ประวัติการเข้าใช้ระบบ',
+            'รายงานกิจกรรมย้อนหลัง',
             style: TextStyle(
                 decoration: TextDecoration.none,
                 fontSize: 20,
                 fontWeight: FontWeight.bold),
           ),
         ),
-        if (filterInfo.isNotEmpty)
+        if (dateRange.isNotEmpty)
           Center(
             child: Text(
-              filterInfo,
+              dateRange,
               style: const TextStyle(
                   decoration: TextDecoration.none, fontSize: 18),
             ),
@@ -45,12 +45,12 @@ Future<Uint8List> makeAuthLogPdf(
         Table(
           border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
           columnWidths: {
-            0: const FixedColumnWidth(60),  // วันที่
-            1: const FixedColumnWidth(40),  // เวลา
-            2: const FixedColumnWidth(50),  // ประเภท
-            3: const FixedColumnWidth(60),  // User ID
-            4: const FixedColumnWidth(80),  // Username
-            5: const FixedColumnWidth(180), // รายละเอียดอุปกรณ์
+            0: const FixedColumnWidth(50), // วันที่
+            1: const FixedColumnWidth(40), // เวลา
+            2: const FixedColumnWidth(70), // ผู้ใช้
+            3: const FixedColumnWidth(60), // ลักษณะ
+            4: const FixedColumnWidth(200), // รายละเอียด
+            5: const FixedColumnWidth(50), // ผลลัพธ์
           },
           children: [
             TableRow(
@@ -69,25 +69,25 @@ Future<Uint8List> makeAuthLogPdf(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: PdfColors.white)),
-                paddedText('ประเภท',
+                paddedText('ผู้ใช้',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: PdfColors.white)),
-                paddedText('User ID',
+                paddedText('ลักษณะ',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: PdfColors.white)),
-                paddedText('Username',
+                paddedText('รายละเอียด',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: PdfColors.white)),
-                paddedText('รายละเอียดอุปกรณ์',
+                paddedText('ผลลัพธ์',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
@@ -104,56 +104,70 @@ Future<Uint8List> makeAuthLogPdf(
   // Create list for data rows
   List<Widget> dataRows = [];
 
-  for (int i = 0; i < authLogs.length; i++) {
-    dataRows.add(Container(
-      child: Table(
-        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
-        columnWidths: {
-          0: const FixedColumnWidth(60),  // วันที่
-          1: const FixedColumnWidth(40),  // เวลา
-          2: const FixedColumnWidth(50),  // ประเภท
-          3: const FixedColumnWidth(60),  // User ID
-          4: const FixedColumnWidth(80),  // Username
-          5: const FixedColumnWidth(180), // รายละเอียดอุปกรณ์
-        },
-        children: [
+  // Build data table
+  dataRows.add(Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: PdfColors.grey300, width: 1),
+    ),
+    child: Table(
+      border: TableBorder(
+        top: BorderSide.none,
+        bottom: BorderSide.none,
+        left: BorderSide.none,
+        right: BorderSide.none,
+        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+      ),
+      columnWidths: {
+        0: const FixedColumnWidth(50), // วันที่
+        1: const FixedColumnWidth(40), // เวลา
+        2: const FixedColumnWidth(70), // ผู้ใช้
+        3: const FixedColumnWidth(60), // ลักษณะ
+        4: const FixedColumnWidth(200), // รายละเอียด
+        5: const FixedColumnWidth(50), // ผลลัพธ์
+      },
+      children: [
+        // Data rows
+        for (int i = 0; i < activities.length; i++)
           TableRow(
             verticalAlignment: TableCellVerticalAlignment.middle,
+            decoration: const BoxDecoration(color: PdfColors.white),
             children: [
               paddedText(
-                  authLogs[i].date != null
-                      ? Global.formatDateDD(authLogs[i].date.toString())
+                  activities[i].actionDate != null
+                      ? Global.dateOnly(activities[i].actionDate.toString())
                       : '',
                   style: const TextStyle(fontSize: 10),
                   align: TextAlign.center),
               paddedText(
-                  authLogs[i].date != null
-                      ? Global.timeOnly(authLogs[i].date.toString())
+                  activities[i].actionDate != null
+                      ? Global.timeOnly(activities[i].actionDate.toString())
                       : '',
                   style: const TextStyle(fontSize: 10),
                   align: TextAlign.center),
-              paddedText(authLogs[i].type?.toUpperCase() ?? '',
-                  style: const TextStyle(fontSize: 10),
-                  align: TextAlign.center),
-              paddedText('${authLogs[i].user?.id ?? ''}',
-                  style: const TextStyle(fontSize: 10),
-                  align: TextAlign.center),
-              paddedText(authLogs[i].user?.username ?? '',
-                  style: const TextStyle(fontSize: 10),
-                  align: TextAlign.left),
               paddedText(
-                  authLogs[i].deviceDetail != null &&
-                          authLogs[i].deviceDetail!.isNotEmpty
-                      ? authLogs[i].deviceDetail!
-                      : '-',
-                  style: const TextStyle(fontSize: 8),
+                  activities[i].userDisplayName ?? activities[i].userId ?? '',
+                  style: const TextStyle(fontSize: 10),
                   align: TextAlign.left),
+              paddedText(activities[i].actionType ?? '',
+                  style: const TextStyle(fontSize: 10),
+                  align: TextAlign.center),
+              paddedText(
+                  '${activities[i].screenName ?? ''}\n${activities[i].description ?? ''}',
+                  style: const TextStyle(fontSize: 9),
+                  align: TextAlign.left),
+              paddedText(activities[i].result ?? '',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: activities[i].result == 'SUCCESS'
+                          ? PdfColors.green700
+                          : PdfColors.red700),
+                  align: TextAlign.center),
             ],
           ),
-        ],
-      ),
-    ));
-  }
+      ],
+    ),
+  ));
 
   pdf.addPage(
     MultiPage(
@@ -177,5 +191,6 @@ Future<Uint8List> makeAuthLogPdf(
       },
     ),
   );
+
   return pdf.save();
 }

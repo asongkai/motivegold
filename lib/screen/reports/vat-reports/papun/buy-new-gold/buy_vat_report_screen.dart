@@ -24,8 +24,22 @@ import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
+
+// Simple class for Thai month
+class ThaiMonth {
+  final int value;
+  final String name;
+
+  ThaiMonth(this.value, this.name);
+
+  @override
+  String toString() => name;
+
+  Map<String, dynamic> toJson() => {'value': value, 'name': name};
+}
 
 class BuyVatReportScreen extends StatefulWidget {
   const BuyVatReportScreen({super.key});
@@ -48,8 +62,6 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
 
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
-  ValueNotifier<dynamic>? fromDateNotifier;
-  ValueNotifier<dynamic>? toDateNotifier;
   DateTime? fromDate;
   DateTime? toDate;
 
@@ -60,9 +72,30 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
   ValueNotifier<dynamic>? productNotifier;
   ValueNotifier<dynamic>? warehouseNotifier;
 
+  late List<ThaiMonth> thaiMonths;
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize Thai months list
+    thaiMonths = [
+      ThaiMonth(1, 'มกราคม'),
+      ThaiMonth(2, 'กุมภาพันธ์'),
+      ThaiMonth(3, 'มีนาคม'),
+      ThaiMonth(4, 'เมษายน'),
+      ThaiMonth(5, 'พฤษภาคม'),
+      ThaiMonth(6, 'มิถุนายน'),
+      ThaiMonth(7, 'กรกฎาคม'),
+      ThaiMonth(8, 'สิงหาคม'),
+      ThaiMonth(9, 'กันยายน'),
+      ThaiMonth(10, 'ตุลาคม'),
+      ThaiMonth(11, 'พฤศจิกายน'),
+      ThaiMonth(12, 'ธันวาคม'),
+    ];
+
+    yearNotifier = ValueNotifier<dynamic>(null);
+    monthNotifier = ValueNotifier<dynamic>(null);
     resetFilter();
     loadProducts();
     search();
@@ -101,7 +134,18 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
   }
 
   Future<void> search() async {
-    makeSearchDate();
+    // Parse dates from text controllers
+    if (fromDateCtrl.text.isNotEmpty) {
+      fromDate = DateTime.parse(fromDateCtrl.text);
+    } else {
+      fromDate = null;
+    }
+
+    if (toDateCtrl.text.isNotEmpty) {
+      toDate = DateTime.parse(toDateCtrl.text);
+    } else {
+      toDate = null;
+    }
 
     setState(() {
       loading = true;
@@ -111,12 +155,12 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
       var result = await ApiServices.post(
           '/order/all/type/5',
           Global.reportRequestObj({
-            "year": yearCtrl.text == "" ? null : yearCtrl.text,
-            "month": monthCtrl.text == "" ? null : monthCtrl.text,
+            "year": yearCtrl.text == "" ? 0 : yearCtrl.text,
+            "month": monthCtrl.text == "" ? 0 : monthCtrl.text,
             "productId": selectedProduct?.id,
             "warehouseId": selectedWarehouse?.id,
-            "fromDate": fromDate.toString(),
-            "toDate": toDate.toString(),
+            "fromDate": fromDate?.toString(),
+            "toDate": toDate?.toString(),
           }));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -202,15 +246,28 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
           }
+
+          // Set default dates to current month if not set
+          DateTime printFromDate;
+          DateTime printToDate;
+          if (fromDate == null || toDate == null) {
+            DateTime now = DateTime.now();
+            printFromDate = DateTime(now.year, now.month, 1);
+            printToDate = DateTime(now.year, now.month + 1, 0);
+          } else {
+            printFromDate = fromDate!;
+            printToDate = toDate!;
+          }
+
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => PreviewBuyVatReportPage(
                 orders: filterList!.reversed.toList(),
                 type: 1,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: printFromDate,
+                toDate: printToDate,
                 date:
-                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                    '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
               ),
             ),
           );
@@ -408,57 +465,89 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                               ),
                               const SizedBox(height: 16),
 
-                              // Second row - To Date, Month, Year
+                              // Second row - Month and Year
                               Row(
                                 children: [
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'จากวันที่',
-                                          icon: Icons.calendar_today,
-                                          notifier: fromDateNotifier!,
-                                          items: Global.genMonthDays(),
-                                          onChanged: (dynamic value) {
-                                            fromDateCtrl.text =
-                                                value.toString();
-                                            fromDateNotifier!.value = value;
-                                            search();
-                                          })),
+                                  Expanded(child: _buildCompactDropdownField<ThaiMonth>(
+                                      label: 'เดือน',
+                                      icon: Icons.calendar_month,
+                                      notifier: monthNotifier!,
+                                      items: thaiMonths,
+                                      onChanged: (ThaiMonth value) {
+                                        setState(() {
+                                          monthCtrl.text = value.value.toString();
+                                          monthNotifier!.value = value;
+
+                                          // Set date range to selected month
+                                          int year = yearCtrl.text.isEmpty
+                                              ? DateTime.now().year
+                                              : int.parse(yearCtrl.text);
+                                          DateTime firstDay = DateTime(year, value.value, 1);
+                                          DateTime lastDay = DateTime(year, value.value + 1, 0);
+
+                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
+                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
+                                        });
+                                        search();
+                                      }
+                                  )),
                                   const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'ถึงวันที่',
-                                          icon: Icons.calendar_today,
-                                          notifier: toDateNotifier!,
-                                          items: Global.genMonthDays(),
-                                          onChanged: (dynamic value) {
-                                            toDateCtrl.text = value.toString();
-                                            toDateNotifier!.value = value;
-                                            search();
-                                          })),
+                                  Expanded(child: _buildCompactDropdownField<int>(
+                                      label: 'ปี',
+                                      icon: Icons.date_range,
+                                      notifier: yearNotifier!,
+                                      items: Global.genYear(),
+                                      onChanged: (int value) {
+                                        setState(() {
+                                          yearCtrl.text = value.toString();
+                                          yearNotifier!.value = value;
+
+                                          // Set date range to selected year
+                                          DateTime firstDay = DateTime(value, 1, 1);
+                                          DateTime lastDay = DateTime(value, 12, 31);
+
+                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
+                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
+
+                                          // Clear month selection when year changes
+                                          monthCtrl.text = "";
+                                          monthNotifier!.value = null;
+                                        });
+                                        search();
+                                      }
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Third row - Date range
+                              Row(
+                                children: [
+                                  Expanded(child: _buildDateField(
+                                    label: 'จากวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: fromDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                        filterList = orders;
+                                      });
+                                    },
+                                  )),
                                   const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'เดือน',
-                                          icon: Icons.calendar_month,
-                                          notifier: monthNotifier!,
-                                          items: Global.genMonth(),
-                                          onChanged: (dynamic value) {
-                                            monthCtrl.text = value.toString();
-                                            monthNotifier!.value = value;
-                                            search();
-                                          })),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'ปี',
-                                          icon: Icons.date_range,
-                                          notifier: yearNotifier!,
-                                          items: Global.genYear(),
-                                          onChanged: (dynamic value) {
-                                            yearCtrl.text = value.toString();
-                                            yearNotifier!.value = value;
-                                            search();
-                                          })),
+                                  Expanded(child: _buildDateField(
+                                    label: 'ถึงวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: toDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                        filterList = orders;
+                                      });
+                                    },
+                                  )),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -1309,6 +1398,77 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
     );
   }
 
+  Widget _buildDateField({
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+    required VoidCallback onClear,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 14, color: Colors.grey[600]),
+            const SizedBox(width: 4),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700])),
+          ],
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 42,
+          child: TextField(
+            controller: controller,
+            style: TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.calendar_today, size: 18),
+              suffixIcon: controller.text.isNotEmpty
+                  ? GestureDetector(
+                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
+                  : null,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              hintText: label,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.indigo[600]!),
+              ),
+            ),
+            readOnly: true,
+            onTap: () async {
+              showDialog(
+                context: context,
+                builder: (_) => SfDatePickerDialog(
+                  initialDate: DateTime.now(),
+                  onDateSelected: (date) {
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(date);
+                    setState(() {
+                      controller.text = formattedDate;
+                    });
+                    search();
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildCompactDropdownField<T>({
     required String label,
     required IconData icon,
@@ -1371,14 +1531,16 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
     if (selectedWarehouse != null && selectedWarehouse!.id != 0) {
       filters.add('คลัง: ${selectedWarehouse!.name}');
     }
-    if (monthCtrl.text.isNotEmpty) {
-      filters.add('เดือน: ${monthCtrl.text}');
+    if (monthNotifier?.value != null && monthNotifier?.value is ThaiMonth) {
+      ThaiMonth month = monthNotifier!.value as ThaiMonth;
+      filters.add('เดือน: ${month.name}');
     }
     if (yearCtrl.text.isNotEmpty) {
       filters.add('ปี: ${yearCtrl.text}');
     }
     if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
-      filters.add('วันที่: ${fromDateCtrl.text} - ${toDateCtrl.text}');
+      filters.add(
+          'ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
     }
     return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
   }
@@ -1500,63 +1662,19 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
     return orderList;
   }
 
-  makeSearchDate() {
-    int month = 0;
-    int year = 0;
-
-    if (monthCtrl.text.isEmpty) {
-      month = DateTime.now().month;
-    } else {
-      month = Global.toNumber(monthCtrl.text).toInt();
-    }
-
-    if (yearCtrl.text.isEmpty) {
-      year = DateTime.now().year;
-    } else {
-      year = Global.toNumber(yearCtrl.text).toInt();
-    }
-
-    if (fromDateCtrl.text.isNotEmpty) {
-      fromDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      fromDate = null;
-    }
-
-    if (toDateCtrl.text.isNotEmpty) {
-      toDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      toDate = null;
-    }
-
-    if (fromDate == null && toDate == null) {
-      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
-        fromDate = DateTime(year, 1, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!)
-            .add(months: 12, days: -1)
-            .dateTime;
-      } else {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      }
-    }
-  }
-
   void resetFilter() {
-    yearNotifier = ValueNotifier<dynamic>("");
-    monthNotifier = ValueNotifier<dynamic>("");
-    fromDateNotifier = ValueNotifier<dynamic>("");
-    toDateNotifier = ValueNotifier<dynamic>("");
+    yearNotifier?.value = null;
+    monthNotifier?.value = null;
     yearCtrl.text = "";
     monthCtrl.text = "";
-    fromDateCtrl.text = "";
-    toDateCtrl.text = "";
-    fromDate = null;
-    toDate = null;
+
+    // Set default dates to current month
+    DateTime now = DateTime.now();
+    fromDate = DateTime(now.year, now.month, 1);
+    toDate = DateTime(now.year, now.month + 1, 0);
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(fromDate!);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(toDate!);
+
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(

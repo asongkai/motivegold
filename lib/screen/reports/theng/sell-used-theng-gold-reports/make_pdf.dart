@@ -280,7 +280,7 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('* น้ําหนักจะเป็นน้ําหนักในหน่วยของทอง 96.5%'),
+                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5%'),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

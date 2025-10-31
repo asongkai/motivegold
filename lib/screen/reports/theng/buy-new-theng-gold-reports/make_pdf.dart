@@ -45,7 +45,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
         reportsCompanyTitle(),
         Center(
           child: Text(
-            'รายงานภาษีซื้อทองคำแท่ง',
+            'รายงานซื้อทองคำแท่ง',
             style: TextStyle(
                 decoration: TextDecoration.none,
                 fontSize: 20,
@@ -56,13 +56,13 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
           child: type == 2
               ? Text(
                   'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 )
               : Text(
                   'เดือนภาษี : ${Global.formatDateMFT(fromDate.toString())} ปี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 ),
         ),
         height(),
@@ -117,81 +117,158 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
               children: type == 1
                   ? [
                       paddedTextSmall('ลําดับ',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('เลขที่\nใบกํากับภาษี',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('วันที่',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ชื่อผู้ซื้อ',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('น้ำหนักรวม\n(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('น้ำหนักรวม\n(กรัม)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
-                      paddedTextSmall('ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                      paddedTextSmall(
+                          'ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ค่าบล็อกทอง',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ค่าบรรจุภัณฑ์',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('รวมมูลค่าฐานภาษี',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                     ]
                   : [
                       paddedTextSmall('ลําดับ',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('วันที่',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('เลขที่\nใบกํากับภาษี',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('รายการสินค้า',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('น้ำหนักรวม\n(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('น้ำหนักรวม\n(กรัม)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
-                      paddedTextSmall('ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                      paddedTextSmall(
+                          'ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ค่าบล็อกทอง',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ค่าบรรจุภัณฑ์',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('รวมมูลค่าฐานภาษี',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
                           align: TextAlign.center),
                     ],
             ),
@@ -319,7 +396,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? "0.00"
-                        : Global.format(orders[i]!.priceIncludeTax ?? 0),
+                        : Global.format(orders[i]!.priceExcludeTax ?? 0),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -372,12 +449,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? "0.00"
-                        : Global.format((orders[i]!.priceIncludeTax ?? 0) +
-                            (getCommissionDetailTotal(orders[i]) +
-                                getPackagePriceDetailTotal(orders[i])) +
-                            ((getCommissionDetailTotal(orders[i]) +
-                                    getPackagePriceDetailTotal(orders[i])) *
-                                getVatValue())),
+                        : Global.format((orders[i]!.priceIncludeTax ?? 0)),
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
@@ -505,7 +577,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('หมายเหตุ : นําหนักจะเป็นนําหนักในหน่วยของทอง 96.5%'),
+                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5%'),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

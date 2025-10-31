@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:motivegold/model/activity_log.dart';
+import 'package:motivegold/screen/reports/activity-log/preview.dart';
+import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
@@ -84,6 +86,8 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                       _buildFilterButton(),
                       const SizedBox(width: 8),
                       _buildSearchButton(),
+                      const SizedBox(width: 8),
+                      _buildPrintButton(),
                     ],
                   ),
                 ),
@@ -115,6 +119,58 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                             },
                           ),
                         ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPrintButton() {
+    return GestureDetector(
+      onTap: () {
+        if (filteredActivityList == null || filteredActivityList!.isEmpty) {
+          Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูลให้พิมพ์', 'OK', action: () {});
+          return;
+        }
+
+        String dateRange = '';
+        if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
+          dateRange = 'ระหว่างวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}';
+        }
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PreviewActivityLogPage(
+              activities: filteredActivityList!,
+              dateRange: dateRange,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.print,
+              size: 20,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'พิมพ์',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),

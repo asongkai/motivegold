@@ -459,13 +459,16 @@ double getCommissionDetailTotal(dynamic order) {
   }
   double amount = 0;
   for (int j = 0; j < order.details!.length; j++) {
-    // amount += order.details![j].commission ?? 0;
-    if (order.details![j].vatOption == 'Include') {
-      amount += order.details![j].commission! * 100 / 107;
-    }
+    double commission = order.details![j].commission ?? 0;
+    if (commission == 0) continue; // Skip if commission is 0 or null
 
-    if (order.details![j].vatOption == 'Exclude') {
-      amount += order.details![j].commission!;
+    String? vatOption = order.details![j].vatOption;
+
+    if (vatOption == 'Include') {
+      amount += commission * 100 / 107;
+    } else {
+      // Treat 'Exclude' or null as no VAT
+      amount += commission;
     }
   }
 
@@ -479,13 +482,16 @@ double packageHeadTotal(List<dynamic> orders) {
   double amount = 0;
   for (int i = 0; i < orders.length; i++) {
     for (int j = 0; j < orders[i].details.length; j++) {
-      // amount += orders[i]!.details[j].packagePrice ?? 0;
-      if (orders[i]!.details![j].vatOption == 'Include') {
-        amount += orders[i]!.details![j].packagePrice! * 100 / 107;
-      }
+      double packagePrice = orders[i]!.details![j].packagePrice ?? 0;
+      if (packagePrice == 0) continue;
 
-      if (orders[i]!.details![j].vatOption == 'Exclude') {
-        amount += orders[i]!.details![j].packagePrice!;
+      String? vatOption = orders[i]!.details![j].vatOption;
+
+      if (vatOption == 'Include') {
+        amount += packagePrice * 100 / 107;
+      } else {
+        // Treat 'Exclude' or null as no VAT
+        amount += packagePrice;
       }
     }
   }
@@ -498,13 +504,16 @@ double getPackagePriceDetailTotal(dynamic order) {
   }
   double amount = 0;
   for (int j = 0; j < order.details!.length; j++) {
-    // amount += order.details![j].packagePrice ?? 0;
-    if (order.details![j].vatOption == 'Include') {
-      amount += order.details![j].packagePrice! * 100 / 107;
-    }
+    double packagePrice = order.details![j].packagePrice ?? 0;
+    if (packagePrice == 0) continue; // Skip if packagePrice is 0 or null
 
-    if (order.details![j].vatOption == 'Exclude') {
-      amount += order.details![j].packagePrice!;
+    String? vatOption = order.details![j].vatOption;
+
+    if (vatOption == 'Include') {
+      amount += packagePrice * 100 / 107;
+    } else {
+      // Treat 'Exclude' or null as no VAT
+      amount += packagePrice;
     }
   }
 
@@ -514,12 +523,16 @@ double getPackagePriceDetailTotal(dynamic order) {
 getPackageNoVat(OrderModel order) {
   double vat = 0;
   for (int i = 0; i < order.details!.length; i++) {
-    if (order.details![i].vatOption == 'Include') {
-      vat += order.details![i].packagePrice! * 100 / 107;
-    }
+    double packagePrice = order.details![i].packagePrice ?? 0;
+    if (packagePrice == 0) continue;
 
-    if (order.details![i].vatOption == 'Exclude') {
-      vat += order.details![i].packagePrice!;
+    String? vatOption = order.details![i].vatOption;
+
+    if (vatOption == 'Include') {
+      vat += packagePrice * 100 / 107;
+    } else {
+      // Treat 'Exclude' or null as no VAT
+      vat += packagePrice;
     }
   }
   return vat;
@@ -528,12 +541,16 @@ getPackageNoVat(OrderModel order) {
 getCommissionNoVat(OrderModel order) {
   double vat = 0;
   for (int i = 0; i < order.details!.length; i++) {
-    if (order.details![i].vatOption == 'Include') {
-      vat += order.details![i].commission! * 100 / 107;
-    }
+    double commission = order.details![i].commission ?? 0;
+    if (commission == 0) continue;
 
-    if (order.details![i].vatOption == 'Exclude') {
-      vat += order.details![i].commission!;
+    String? vatOption = order.details![i].vatOption;
+
+    if (vatOption == 'Include') {
+      vat += commission * 100 / 107;
+    } else {
+      // Treat 'Exclude' or null as no VAT
+      vat += commission;
     }
   }
   return vat;
