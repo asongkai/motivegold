@@ -1,4 +1,12 @@
 import 'package:motivegold/utils/util.dart';
 
-// Change dev environment
-var env = ENV.PRO;
+// Environment configuration
+// Change this value to switch environments:
+// - ENV.DEV: Development (localhost)
+// - ENV.UAT: UAT/Staging
+// - ENV.PRO: Production
+var env = const String.fromEnvironment('ENV', defaultValue: 'PRO') == 'DEV'
+    ? ENV.DEV
+    : const String.fromEnvironment('ENV') == 'UAT'
+    ? ENV.UAT
+    : ENV.PRO;

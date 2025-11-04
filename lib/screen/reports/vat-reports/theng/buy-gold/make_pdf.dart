@@ -620,7 +620,7 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall(
                   type == 1
                       ? Global.format(getWeightBahtTotal(orders))
-                      : Global.format(getWeightTotalBaht(orders)),
+                      : Global.format(getWeightTotalBahtTheng(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -635,7 +635,10 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.blue700),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceIncludeTaxTotal(orders)),
+              paddedTextSmall(
+                  type == 1
+                      ? Global.format(priceExcludeTaxTotal(orders))
+                      : Global.format(getPriceExcludeTaxTotalType2(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -781,12 +784,12 @@ double getTotalSellingPriceIncludingVat(List<OrderModel?> orders) {
   for (int i = 0; i < orders.length; i++) {
     if (orders[i] != null) {
       double priceIncludeTax = orders[i]!.priceIncludeTax ?? 0;
-      double commission = getCommissionDetailTotal(orders[i]!);
-      double packagePrice = getPackagePriceDetailTotal(orders[i]!);
-      double taxBase = commission + packagePrice;
-      double vatAmount = taxBase * getVatValue();
+      // double commission = getCommissionDetailTotal(orders[i]!);
+      // double packagePrice = getPackagePriceDetailTotal(orders[i]!);
+      // double taxBase = commission + packagePrice;
+      // double vatAmount = taxBase * getVatValue();
 
-      total += priceIncludeTax + taxBase + vatAmount;
+      total += priceIncludeTax; // + taxBase + vatAmount;
     }
   }
   return total;
@@ -844,14 +847,19 @@ double getTotalSellingPriceIncludingVatType2(dynamic list) {
   double total = 0;
   for (int i = 0; i < list.length; i++) {
     // Skip "no sales" records
-    if (list[i].orderId != 'ไม่มียอดขาย') {
-      double priceIncludeTax = list[i].priceIncludeTax ?? 0;
-      double commission = list[i].commissionAmount ?? 0;
-      double packagePrice = list[i].packageAmount ?? 0;
-      double taxBase = commission + packagePrice;
-      double vatAmount = taxBase * getVatValue();
+    if (list[i].orderId != 'ไม่มียอดซื้อ') {
+      total += list[i].priceIncludeTax ?? 0;
+    }
+  }
+  return total;
+}
 
-      total += priceIncludeTax + taxBase + vatAmount;
+double getPriceExcludeTaxTotalType2(dynamic list) {
+  double total = 0;
+  for (int i = 0; i < list.length; i++) {
+    // Skip "no sales" records
+    if (list[i].orderId != 'ไม่มียอดซื้อ') {
+      total += list[i].priceExcludeTax ?? 0;
     }
   }
   return total;

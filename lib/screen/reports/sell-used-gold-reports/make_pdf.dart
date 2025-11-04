@@ -26,7 +26,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
         reportsCompanyTitle(),
         Center(
           child: Text(
-            'รายงานขายทองรูปพรรณเก่า 96.5%',
+            'รายงานภาษีขายทองคำรูปพรรณเก่า 96.5%',
             style:
                 const TextStyle(decoration: TextDecoration.none, fontSize: 20),
           ),

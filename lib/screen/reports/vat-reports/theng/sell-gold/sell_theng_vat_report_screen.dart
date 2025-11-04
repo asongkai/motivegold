@@ -164,7 +164,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
             "fromDate": fromDate?.toString(),
             "toDate": toDate?.toString(),
           }));
-      motivePrint(result?.toJson());
+      // motivePrint(result?.toJson());
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<OrderModel> products = orderListModelFromJson(data);
@@ -246,15 +246,18 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
       onSelected: (int value) async {
         if (value == 1) {
           if (fromDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK',
+                action: () {});
             return;
           }
           if (toDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK',
+                action: () {});
             return;
           }
           if (filterList!.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK',
+                action: () {});
             return;
           }
           Navigator.of(context).push(
@@ -273,16 +276,20 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
 
         if (value == 2 || value == 3) {
           if (fromDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK',
+                action: () {});
             return;
           }
           if (toDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK',
+                action: () {});
             return;
           }
-          List<OrderModel> dailyList = genDailyList(filterList!.reversed.toList());
+          List<OrderModel> dailyList =
+              genDailyList(filterList!.reversed.toList());
           if (dailyList.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK',
+                action: () {});
             return;
           }
           Navigator.of(context).push(
@@ -301,17 +308,21 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
 
         if (value == 4) {
           if (fromDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK',
+                action: () {});
             return;
           }
           if (toDateCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK',
+                action: () {});
             return;
           }
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
+          List<OrderModel> monthlyList =
+              genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK', action: () {});
+            Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK',
+                action: () {});
             return;
           }
           Navigator.of(context).push(
@@ -505,54 +516,68 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
                               // Second row - Month and Year
                               Row(
                                 children: [
-                                  Expanded(child: _buildCompactDropdownField<ThaiMonth>(
-                                      label: 'เดือน',
-                                      icon: Icons.calendar_month,
-                                      notifier: monthNotifier!,
-                                      items: thaiMonths,
-                                      onChanged: (ThaiMonth value) {
-                                        setState(() {
-                                          monthCtrl.text = value.value.toString();
-                                          monthNotifier!.value = value;
+                                  Expanded(
+                                      child: _buildCompactDropdownField<
+                                              ThaiMonth>(
+                                          label: 'เดือน',
+                                          icon: Icons.calendar_month,
+                                          notifier: monthNotifier!,
+                                          items: thaiMonths,
+                                          onChanged: (ThaiMonth value) {
+                                            setState(() {
+                                              monthCtrl.text =
+                                                  value.value.toString();
+                                              monthNotifier!.value = value;
 
-                                          // Set date range to selected month
-                                          int year = yearCtrl.text.isEmpty
-                                              ? DateTime.now().year
-                                              : int.parse(yearCtrl.text);
-                                          DateTime firstDay = DateTime(year, value.value, 1);
-                                          DateTime lastDay = DateTime(year, value.value + 1, 0);
+                                              // Set date range to selected month
+                                              int year = yearCtrl.text.isEmpty
+                                                  ? DateTime.now().year
+                                                  : int.parse(yearCtrl.text);
+                                              DateTime firstDay = DateTime(
+                                                  year, value.value, 1);
+                                              DateTime lastDay = DateTime(
+                                                  year, value.value + 1, 0);
 
-                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
-                                        });
-                                        search();
-                                      }
-                                  )),
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+                                            });
+                                            search();
+                                          })),
                                   const SizedBox(width: 12),
-                                  Expanded(child: _buildCompactDropdownField<int>(
-                                      label: 'ปี',
-                                      icon: Icons.date_range,
-                                      notifier: yearNotifier!,
-                                      items: Global.genYear(),
-                                      onChanged: (int value) {
-                                        setState(() {
-                                          yearCtrl.text = value.toString();
-                                          yearNotifier!.value = value;
+                                  Expanded(
+                                      child: _buildCompactDropdownField<int>(
+                                          label: 'ปี',
+                                          icon: Icons.date_range,
+                                          notifier: yearNotifier!,
+                                          items: Global.genYear(),
+                                          onChanged: (int value) {
+                                            setState(() {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
 
-                                          // Set date range to selected year
-                                          DateTime firstDay = DateTime(value, 1, 1);
-                                          DateTime lastDay = DateTime(value, 12, 31);
+                                              // Set date range to selected year
+                                              DateTime firstDay =
+                                                  DateTime(value, 1, 1);
+                                              DateTime lastDay =
+                                                  DateTime(value, 12, 31);
 
-                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
 
-                                          // Clear month selection when year changes
-                                          monthCtrl.text = "";
-                                          monthNotifier!.value = null;
-                                        });
-                                        search();
-                                      }
-                                  )),
+                                              // Clear month selection when year changes
+                                              monthCtrl.text = "";
+                                              monthNotifier!.value = null;
+                                            });
+                                            search();
+                                          })),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -560,7 +585,8 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
                               // Third row - Date range
                               Row(
                                 children: [
-                                  Expanded(child: _buildDateField(
+                                  Expanded(
+                                      child: _buildDateField(
                                     label: 'จากวันที่',
                                     icon: Icons.calendar_today,
                                     controller: fromDateCtrl,
@@ -573,7 +599,8 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
                                     },
                                   )),
                                   const SizedBox(width: 12),
-                                  Expanded(child: _buildDateField(
+                                  Expanded(
+                                      child: _buildDateField(
                                     label: 'ถึงวันที่',
                                     icon: Icons.calendar_today,
                                     controller: toDateCtrl,
@@ -1708,9 +1735,12 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(dateList),
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
-          priceExcludeTax: dateList.fold<double>(0.0, (sum, order) => sum + (order.priceExcludeTax ?? 0)),
-          commissionAmount: dateList.fold<double>(0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
-          packageAmount: dateList.fold<double>(0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
+          priceExcludeTax: dateList.fold<double>(
+              0.0, (sum, order) => sum + getPriceExcludeTaxDetailTotal(order)),
+          commissionAmount: dateList.fold<double>(
+              0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
+          packageAmount: dateList.fold<double>(
+              0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
         );
 
         orderList.add(order);
@@ -1756,8 +1786,8 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
       var monthList = filterList
           ?.where((element) =>
               element != null &&
-              element.createdDate?.year == monthDate.year &&
-              element.createdDate?.month == monthDate.month)
+              element.orderDate?.year == monthDate.year &&
+              element.orderDate?.month == monthDate.month)
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 
@@ -1774,6 +1804,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           // First day of the month
           customerId: 0,
           weight: getWeightTotal(monthList),
+          // weightBath: getWeightBahtTotal(monthList),
           weightBath: getWeightTotal(monthList) /
               getUnitWeightValue(monthList.first.details!.first.productId),
           priceIncludeTax: priceIncludeTaxTotal(monthList),
@@ -1781,9 +1812,12 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
           priceDiff: priceDiffTotal(monthList),
           taxBase: taxBaseTotal(monthList),
           taxAmount: taxAmountTotal(monthList),
-          priceExcludeTax: monthList.fold<double>(0.0, (sum, order) => sum + (order.priceExcludeTax ?? 0)),
-          commissionAmount: monthList.fold<double>(0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
-          packageAmount: monthList.fold<double>(0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
+          priceExcludeTax: monthList.fold<double>(
+              0.0, (sum, order) => sum + getPriceExcludeTaxDetailTotal(order)),
+          commissionAmount: monthList.fold<double>(
+              0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
+          packageAmount: monthList.fold<double>(
+              0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
         );
 
         orderList.add(order);

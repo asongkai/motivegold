@@ -318,8 +318,8 @@ double getWeightTotal(List<dynamic> orders) {
   // Round each value to 2 decimals before summing to fix precision errors in stored data
   return orders.fold<double>(0.0, (sum, order) {
     double value = getWeight(order!);
-    double rounded = (value * 100).round() / 100;
-    return sum + rounded;
+    // double rounded = (value * 100).round() / 100;
+    return sum + value;
   });
 }
 
@@ -440,8 +440,9 @@ double getPriceExcludeTaxHeadTotal(List<dynamic> orders) {
   }
   return orders.fold<double>(0.0, (sum, order) {
     if (order?.details == null) return sum;
-    return sum + order.details.fold<double>(0.0, (detailSum, detail) =>
-      detailSum + (detail?.priceExcludeTax ?? 0));
+    return sum +
+        order.details.fold<double>(0.0,
+            (detailSum, detail) => detailSum + (detail?.priceExcludeTax ?? 0));
   });
 }
 
@@ -449,30 +450,39 @@ double getPriceExcludeTaxDetailTotal(dynamic order) {
   if (order.id == null || order.details == null || order.details!.isEmpty) {
     return 0;
   }
-  return order.details!.fold<double>(0.0, (sum, detail) =>
-    sum + (detail?.priceExcludeTax ?? 0));
+
+  return order.details!.fold<double>(0.0, (double sum, dynamic detail) {
+    double price = detail.priceExcludeTax ?? 0;
+    // Round to 2 decimal places to match display format
+    price = (price * 100).round() / 100;
+    return sum + price;
+  });
 }
 
 double getCommissionDetailTotal(dynamic order) {
   if (order.id == null || order.details == null || order.details!.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int j = 0; j < order.details!.length; j++) {
-    double commission = order.details![j].commission ?? 0;
-    if (commission == 0) continue; // Skip if commission is 0 or null
 
-    String? vatOption = order.details![j].vatOption;
+  return order.details!.fold<double>(0.0, (double sum, dynamic detail) {
+    double commission = detail.commission ?? 0;
+    if (commission == 0) return sum; // Skip if commission is 0 or null
 
+    String? vatOption = detail.vatOption;
+
+    double calculatedCommission;
     if (vatOption == 'Include') {
-      amount += commission * 100 / 107;
+      calculatedCommission = commission * 100 / 107;
     } else {
       // Treat 'Exclude' or null as no VAT
-      amount += commission;
+      calculatedCommission = commission;
     }
-  }
 
-  return amount;
+    // Round to 2 decimal places to match display format
+    calculatedCommission = (calculatedCommission * 100).round() / 100;
+
+    return sum + calculatedCommission;
+  });
 }
 
 double packageHeadTotal(List<dynamic> orders) {
@@ -502,22 +512,26 @@ double getPackagePriceDetailTotal(dynamic order) {
   if (order.id == null || order.details == null || order.details!.isEmpty) {
     return 0;
   }
-  double amount = 0;
-  for (int j = 0; j < order.details!.length; j++) {
-    double packagePrice = order.details![j].packagePrice ?? 0;
-    if (packagePrice == 0) continue; // Skip if packagePrice is 0 or null
 
-    String? vatOption = order.details![j].vatOption;
+  return order.details!.fold<double>(0.0, (double sum, dynamic detail) {
+    double packagePrice = detail.packagePrice ?? 0;
+    if (packagePrice == 0) return sum; // Skip if packagePrice is 0 or null
 
+    String? vatOption = detail.vatOption;
+
+    double calculatedPrice;
     if (vatOption == 'Include') {
-      amount += packagePrice * 100 / 107;
+      calculatedPrice = packagePrice * 100 / 107;
     } else {
       // Treat 'Exclude' or null as no VAT
-      amount += packagePrice;
+      calculatedPrice = packagePrice;
     }
-  }
 
-  return amount;
+    // Round to 2 decimal places to match display format
+    calculatedPrice = (calculatedPrice * 100).round() / 100;
+
+    return sum + calculatedPrice;
+  });
 }
 
 getPackageNoVat(OrderModel order) {
@@ -579,7 +593,9 @@ int getQtyTotalB(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  return orders.fold<double>(0.0, (sum, order) => sum + (order?.qty ?? 0)).toInt();
+  return orders
+      .fold<double>(0.0, (sum, order) => sum + (order?.qty ?? 0))
+      .toInt();
 }
 
 double getRedeemWeightTotal(List<dynamic> orders) {
@@ -593,7 +609,8 @@ double getRedeemWeightBahtTotal(List<dynamic> orders) {
   if (orders.isEmpty) {
     return 0;
   }
-  return orders.fold<double>(0.0, (sum, order) => sum + (order?.weightBath ?? 0));
+  return orders.fold<double>(
+      0.0, (sum, order) => sum + (order?.weightBath ?? 0));
 }
 
 double getTaxBaseTotal(List<dynamic> orders) {

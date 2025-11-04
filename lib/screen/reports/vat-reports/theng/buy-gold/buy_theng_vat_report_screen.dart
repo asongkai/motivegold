@@ -47,7 +47,8 @@ class BuyThengVatReportScreen extends StatefulWidget {
   const BuyThengVatReportScreen({super.key});
 
   @override
-  State<BuyThengVatReportScreen> createState() => _BuyThengVatReportScreenState();
+  State<BuyThengVatReportScreen> createState() =>
+      _BuyThengVatReportScreenState();
 }
 
 class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
@@ -105,8 +106,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
 
   void loadProducts() async {
     try {
-      var result = await ApiServices.post(
-          '/product/type/BAR', Global.requestObj(null));
+      var result =
+          await ApiServices.post('/product/type/BAR', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -280,18 +281,35 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
           }
-          if (yearCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
-            return;
+
+          // Use the actual selected date range for the monthly summary
+          // This ensures the report only includes the months within the search criteria
+          DateTime printFromDate;
+          DateTime printToDate;
+          if (fromDate == null || toDate == null) {
+            // If no date range selected, default to current year
+            DateTime now = DateTime.now();
+            printFromDate = DateTime(now.year, 1, 1);
+            printToDate = DateTime(now.year, 12, 31);
+          } else {
+            printFromDate = fromDate!;
+            printToDate = toDate!;
           }
 
-          DateTime now = DateTime.now();
-          fromDate = DateTime(now.year, 1, 1);
-          toDate = DateTime(now.year, 12, 31);
+          // Temporarily set the date range for genMonthlyList to use
+          // genMonthlyList uses instance variables fromDate/toDate to determine month range
+          DateTime? savedFromDate = fromDate;
+          DateTime? savedToDate = toDate;
+          fromDate = printFromDate;
+          toDate = printToDate;
 
-          // await search();
+          List<OrderModel> monthlyList =
+              genMonthlyList(filterList!.reversed.toList());
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
+          // Restore original dates
+          fromDate = savedFromDate;
+          toDate = savedToDate;
+
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -301,10 +319,10 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
               builder: (context) => PreviewBuyThengVatReportPage(
                 orders: monthlyList,
                 type: 4,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: printFromDate,
+                toDate: printToDate,
                 date:
-                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                    '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
               ),
             ),
           );
@@ -315,7 +333,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           value: 1,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
+            title:
+                Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
@@ -470,54 +489,68 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                               // Second row - Month and Year
                               Row(
                                 children: [
-                                  Expanded(child: _buildCompactDropdownField<ThaiMonth>(
-                                      label: 'เดือน',
-                                      icon: Icons.calendar_month,
-                                      notifier: monthNotifier!,
-                                      items: thaiMonths,
-                                      onChanged: (ThaiMonth value) {
-                                        setState(() {
-                                          monthCtrl.text = value.value.toString();
-                                          monthNotifier!.value = value;
+                                  Expanded(
+                                      child: _buildCompactDropdownField<
+                                              ThaiMonth>(
+                                          label: 'เดือน',
+                                          icon: Icons.calendar_month,
+                                          notifier: monthNotifier!,
+                                          items: thaiMonths,
+                                          onChanged: (ThaiMonth value) {
+                                            setState(() {
+                                              monthCtrl.text =
+                                                  value.value.toString();
+                                              monthNotifier!.value = value;
 
-                                          // Set date range to selected month
-                                          int year = yearCtrl.text.isEmpty
-                                              ? DateTime.now().year
-                                              : int.parse(yearCtrl.text);
-                                          DateTime firstDay = DateTime(year, value.value, 1);
-                                          DateTime lastDay = DateTime(year, value.value + 1, 0);
+                                              // Set date range to selected month
+                                              int year = yearCtrl.text.isEmpty
+                                                  ? DateTime.now().year
+                                                  : int.parse(yearCtrl.text);
+                                              DateTime firstDay = DateTime(
+                                                  year, value.value, 1);
+                                              DateTime lastDay = DateTime(
+                                                  year, value.value + 1, 0);
 
-                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
-                                        });
-                                        search();
-                                      }
-                                  )),
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+                                            });
+                                            search();
+                                          })),
                                   const SizedBox(width: 12),
-                                  Expanded(child: _buildCompactDropdownField<int>(
-                                      label: 'ปี',
-                                      icon: Icons.date_range,
-                                      notifier: yearNotifier!,
-                                      items: Global.genYear(),
-                                      onChanged: (int value) {
-                                        setState(() {
-                                          yearCtrl.text = value.toString();
-                                          yearNotifier!.value = value;
+                                  Expanded(
+                                      child: _buildCompactDropdownField<int>(
+                                          label: 'ปี',
+                                          icon: Icons.date_range,
+                                          notifier: yearNotifier!,
+                                          items: Global.genYear(),
+                                          onChanged: (int value) {
+                                            setState(() {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
 
-                                          // Set date range to selected year
-                                          DateTime firstDay = DateTime(value, 1, 1);
-                                          DateTime lastDay = DateTime(value, 12, 31);
+                                              // Set date range to selected year
+                                              DateTime firstDay =
+                                                  DateTime(value, 1, 1);
+                                              DateTime lastDay =
+                                                  DateTime(value, 12, 31);
 
-                                          fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                          toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
 
-                                          // Clear month selection when year changes
-                                          monthCtrl.text = "";
-                                          monthNotifier!.value = null;
-                                        });
-                                        search();
-                                      }
-                                  )),
+                                              // Clear month selection when year changes
+                                              monthCtrl.text = "";
+                                              monthNotifier!.value = null;
+                                            });
+                                            search();
+                                          })),
                                 ],
                               ),
                               const SizedBox(height: 16),
@@ -525,7 +558,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                               // Third row - Date range
                               Row(
                                 children: [
-                                  Expanded(child: _buildDateField(
+                                  Expanded(
+                                      child: _buildDateField(
                                     label: 'จากวันที่',
                                     icon: Icons.calendar_today,
                                     controller: fromDateCtrl,
@@ -538,7 +572,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                     },
                                   )),
                                   const SizedBox(width: 12),
-                                  Expanded(child: _buildDateField(
+                                  Expanded(
+                                      child: _buildDateField(
                                     label: 'ถึงวันที่',
                                     icon: Icons.calendar_today,
                                     controller: toDateCtrl,
@@ -656,12 +691,16 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.timeline_rounded, color: Colors.indigo[600], size: 20),
+                Icon(Icons.timeline_rounded,
+                    color: Colors.indigo[600], size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'รายงานภาษีซื้อทองคำรูปพรรณใหม่ 96.5% (${filterList!.length} รายการ)',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.indigo[700]),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.indigo[700]),
                   ),
                 ),
               ],
@@ -674,7 +713,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width - 32, // Full width minus margins
+                  minWidth: MediaQuery.of(context).size.width -
+                      32, // Full width minus margins
                 ),
                 child: IntrinsicWidth(
                   child: Column(
@@ -693,12 +733,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.tag, size: 14, color: Colors.grey[600]),
+                                    Icon(Icons.tag,
+                                        size: 14, color: Colors.grey[600]),
                                     const SizedBox(width: 2),
                                     const Flexible(
                                       child: Text(
                                         'ลำดับ',
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -712,12 +755,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.calendar_today,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'วัน/เดือน/ปี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -732,12 +778,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.receipt_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'เลขที่ใบกํากับภาษี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -752,12 +801,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.store, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.store,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ผู้ขาย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -772,12 +824,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.badge, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.badge,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'เลขประจําตัวผู้เสียภาษี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -793,12 +848,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.scale_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.scale_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'น้ําหนัก',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -814,12 +872,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.category, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.category,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'หน่วย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -835,12 +896,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.monetization_on_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.monetization_on_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ยอดขายรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -857,12 +921,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.attach_money_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.attach_money_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'มูลค่ายกเว้น',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -879,12 +946,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.trending_up, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.trending_up,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ผลต่างรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -901,12 +971,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.calculate, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.calculate,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ฐานภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -923,12 +996,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.percent, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.percent,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -945,12 +1021,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.money_off, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.money_off,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -976,8 +1055,13 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                 return Container(
                                   height: 64,
                                   decoration: BoxDecoration(
-                                    color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
-                                    border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 0.5)),
+                                    color: index % 2 == 0
+                                        ? Colors.grey[50]
+                                        : Colors.white,
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey[200]!,
+                                            width: 0.5)),
                                   ),
                                   child: IntrinsicHeight(
                                     child: Row(
@@ -987,10 +1071,13 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           width: 60,
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color:
+                                                  Colors.grey.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
@@ -1009,8 +1096,10 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.dateOnly(item!.orderDate.toString()),
-                                              style: const TextStyle(fontSize: 11),
+                                              Global.dateOnly(
+                                                  item!.orderDate.toString()),
+                                              style:
+                                                  const TextStyle(fontSize: 11),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -1021,10 +1110,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.blue
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 item.orderId ?? '',
@@ -1045,10 +1139,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.orange.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.orange
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 'เงินสด',
@@ -1069,8 +1168,12 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.company != null ? Global.company!.taxNumber ?? '' : '',
-                                              style: const TextStyle(fontSize: 10),
+                                              Global.company != null
+                                                  ? Global.company!.taxNumber ??
+                                                      ''
+                                                  : '',
+                                              style:
+                                                  const TextStyle(fontSize: 10),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
@@ -1099,10 +1202,15 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 2),
                                               decoration: BoxDecoration(
-                                                color: Colors.purple.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.purple
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 'กรัม',
@@ -1123,7 +1231,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceIncludeTax ?? 0),
+                                              Global.format(
+                                                  item.priceIncludeTax ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1140,7 +1249,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.purchasePrice ?? 0),
+                                              Global.format(
+                                                  item.purchasePrice ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1157,7 +1267,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceDiff ?? 0),
+                                              Global.format(
+                                                  item.priceDiff ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1191,7 +1302,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxAmount ?? 0),
+                                              Global.format(
+                                                  item.taxAmount ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1208,7 +1320,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceExcludeTax ?? 0),
+                                              Global.format(
+                                                  item.priceExcludeTax ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1230,13 +1343,18 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                 height: 64,
                                 decoration: BoxDecoration(
                                   color: Colors.indigo[50],
-                                  border: Border(top: BorderSide(color: Colors.indigo[200]!, width: 2)),
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.indigo[200]!,
+                                          width: 2)),
                                 ),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
                                       // Empty for row number
-                                      Container(width: 60, padding: const EdgeInsets.all(8)),
+                                      Container(
+                                          width: 60,
+                                          padding: const EdgeInsets.all(8)),
                                       // Empty for date
                                       Expanded(flex: 1, child: Container()),
                                       // Empty for order ID
@@ -1266,7 +1384,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format4(getWeightTotal(filterList!)),
+                                            Global.format4(
+                                                getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1285,7 +1404,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceIncludeTaxTotal(filterList!)),
+                                            Global.format(priceIncludeTaxTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1302,7 +1422,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(purchasePriceTotal(filterList!)),
+                                            Global.format(purchasePriceTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1319,7 +1440,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceDiffTotal(filterList!)),
+                                            Global.format(
+                                                priceDiffTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1336,7 +1458,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(taxBaseTotal(filterList!)),
+                                            Global.format(
+                                                taxBaseTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1353,7 +1476,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(taxAmountTotal(filterList!)),
+                                            Global.format(
+                                                taxAmountTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1370,7 +1494,8 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceExcludeTaxTotal(filterList!)),
+                                            Global.format(priceExcludeTaxTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1557,9 +1682,9 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
       // Get all orders for this specific date
       var dateList = filterList
           ?.where((element) =>
-      element != null &&
-          Global.dateOnly(element.createdDate.toString()) ==
-              Global.dateOnly(monthDate.toString()))
+              element != null &&
+              Global.dateOnly(element.createdDate.toString()) ==
+                  Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 
@@ -1582,8 +1707,10 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           taxBase: taxBaseTotal(dateList),
           taxAmount: taxAmountTotal(dateList),
           priceExcludeTax: priceExcludeTaxTotal(dateList),
-          commissionAmount: dateList.fold<double>(0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
-          packageAmount: dateList.fold<double>(0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
+          commissionAmount: dateList.fold<double>(
+              0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
+          packageAmount: dateList.fold<double>(
+              0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
         );
 
         orderList.add(order);
@@ -1627,9 +1754,9 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
       // Get all orders for this specific month and year
       var monthList = filterList
           ?.where((element) =>
-      element != null &&
-          element.createdDate?.year == monthDate.year &&
-          element.createdDate?.month == monthDate.month)
+              element != null &&
+              element.orderDate?.year == monthDate.year &&
+              element.orderDate?.month == monthDate.month)
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 
@@ -1646,16 +1773,20 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
           // First day of the month
           customerId: 0,
           weight: getWeightTotal(monthList),
-          weightBath: getWeightTotal(monthList) /
-              getUnitWeightValue(monthList.first.details!.first.productId),
+          weightBath: getWeightBahtTotal(monthList),
+          // weightBath: getWeightTotal(monthList) /
+          //     getUnitWeightValue(monthList.first.details!.first.productId),
           priceIncludeTax: priceIncludeTaxTotal(monthList),
           purchasePrice: purchasePriceTotal(monthList),
           priceDiff: priceDiffTotal(monthList),
           taxBase: taxBaseTotal(monthList),
           taxAmount: taxAmountTotal(monthList),
-          priceExcludeTax: priceExcludeTaxTotal(monthList),
-          commissionAmount: monthList.fold<double>(0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
-          packageAmount: monthList.fold<double>(0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
+          priceExcludeTax: monthList.fold<double>(
+              0.0, (sum, order) => sum + getPriceExcludeTaxDetailTotal(order)),
+          commissionAmount: monthList.fold<double>(
+              0.0, (sum, order) => sum + getCommissionDetailTotal(order)),
+          packageAmount: monthList.fold<double>(
+              0.0, (sum, order) => sum + getPackagePriceDetailTotal(order)),
         );
 
         orderList.add(order);
