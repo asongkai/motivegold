@@ -137,7 +137,7 @@ class Constants {
     if (env == ENV.PRO) {
       return "http://203.154.2.96:5000";
     } else if (env == ENV.UAT) {
-      return "http://110.171.172.189:5000";
+      return "http://72.60.40.189:5000";
     } else {
       // Check if running on web
       if (kIsWeb) {

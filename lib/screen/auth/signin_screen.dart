@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:motivegold/screen/landing_screen.dart';
+import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -57,11 +58,16 @@ class _SignInTenState extends State<SignInTen> {
   // Load saved credentials if remember me was enabled
   Future<void> _loadSavedCredentials() async {
     try {
-      final savedRememberMe = await LocalStorage.sharedInstance.getBool(_rememberMeKey) ?? false;
+      final savedRememberMe =
+          await LocalStorage.sharedInstance.getBool(_rememberMeKey) ?? false;
 
       if (savedRememberMe) {
-        final savedUsername = await LocalStorage.sharedInstance.getString(_savedUsernameKey) ?? '';
-        final savedPassword = await LocalStorage.sharedInstance.getString(_savedPasswordKey) ?? '';
+        final savedUsername =
+            await LocalStorage.sharedInstance.getString(_savedUsernameKey) ??
+                '';
+        final savedPassword =
+            await LocalStorage.sharedInstance.getString(_savedPasswordKey) ??
+                '';
 
         setState(() {
           rememberMe = savedRememberMe;
@@ -80,8 +86,10 @@ class _SignInTenState extends State<SignInTen> {
       await LocalStorage.sharedInstance.setBool(_rememberMeKey, rememberMe);
 
       if (rememberMe) {
-        await LocalStorage.sharedInstance.setString(_savedUsernameKey, emailController.text);
-        await LocalStorage.sharedInstance.setString(_savedPasswordKey, passController.text);
+        await LocalStorage.sharedInstance
+            .setString(_savedUsernameKey, emailController.text);
+        await LocalStorage.sharedInstance
+            .setString(_savedPasswordKey, passController.text);
       } else {
         // Clear saved credentials if remember me is disabled
         await LocalStorage.sharedInstance.deleteValue(_savedUsernameKey);
@@ -94,7 +102,9 @@ class _SignInTenState extends State<SignInTen> {
 
   Future<void> _performLogin() async {
     if (emailController.text.isEmpty || passController.text.isEmpty) {
-      Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกข้อมูลให้ครบถ้วน', 'OK'.tr(), action: () {});
+      Alert.warning(
+          context, 'Warning'.tr(), 'กรุณากรอกข้อมูลให้ครบถ้วน', 'OK'.tr(),
+          action: () {});
       return;
     }
 
@@ -105,11 +115,11 @@ class _SignInTenState extends State<SignInTen> {
     });
 
     final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal,
-        isDismissible: true,
-        showLogs: true);
+        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
     await pr.show();
     pr.update(message: 'processing'.tr());
+
+    // motivePrint(env.name);
 
     try {
       var result = await ApiServices.post('/user/login', authObject);
@@ -142,7 +152,8 @@ class _SignInTenState extends State<SignInTen> {
     } catch (e) {
       await pr.hide();
       if (mounted) {
-        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(), action: () {});
+        Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+            action: () {});
       }
     }
   }
@@ -183,12 +194,12 @@ class _SignInTenState extends State<SignInTen> {
               // Logo section
               Container(
                 padding: EdgeInsets.symmetric(vertical: 40),
-                child:                   Column(
+                child: Column(
                   children: [
                     Image.asset(
                       'assets/images/logo.png',
                       height: 240, // Increased from 100
-                      width: 240,  // Increased from 100
+                      width: 240, // Increased from 100
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 24),
@@ -243,9 +254,7 @@ class _SignInTenState extends State<SignInTen> {
                       onSubmitted: (_) => _passwordFocusNode.requestFocus(),
                       isTablet: true,
                     ),
-
                     SizedBox(height: 24),
-
                     _buildTextField(
                       controller: passController,
                       focusNode: _passwordFocusNode,
@@ -256,13 +265,9 @@ class _SignInTenState extends State<SignInTen> {
                       onSubmitted: (_) => _performLogin(),
                       isTablet: true,
                     ),
-
                     SizedBox(height: 24),
-
                     _buildRememberMe(true),
-
                     SizedBox(height: 32),
-
                     _buildSignInButton(true),
                   ],
                 ),
@@ -436,21 +441,21 @@ class _SignInTenState extends State<SignInTen> {
         suffixIcon: controller.text.isEmpty
             ? null
             : Padding(
-          padding: EdgeInsets.all(16),
-          child: Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color.fromRGBO(44, 185, 176, 1),
-            ),
-            child: Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 16,
-            ),
-          ),
-        ),
+                padding: EdgeInsets.all(16),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color.fromRGBO(44, 185, 176, 1),
+                  ),
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -481,10 +486,10 @@ class _SignInTenState extends State<SignInTen> {
             ),
             child: rememberMe
                 ? Icon(
-              Icons.check,
-              color: Colors.white,
-              size: isTablet ? 16 : 14,
-            )
+                    Icons.check,
+                    color: Colors.white,
+                    size: isTablet ? 16 : 14,
+                  )
                 : null,
           ),
           SizedBox(width: 12),

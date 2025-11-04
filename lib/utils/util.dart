@@ -1372,9 +1372,22 @@ String getBillAddressLine2() {
 
 /// Get customer address for bills/reports - Line 1: Street address only (no district details)
 String getCustomerBillAddressLine1(CustomerModel customer) {
-  if (customer.defaultWalkIn == 1 ||
-      customer.address == null ||
-      customer.address!.isEmpty) {
+  if (customer.defaultWalkIn == 1) {
+    return '';
+  }
+
+  // If address field is empty but we have location data (province/amphure/tambon),
+  // return a marker to indicate address section should be shown
+  // The location details will be displayed in line 2
+  if (customer.address == null || customer.address!.isEmpty) {
+    bool hasLocationData = (customer.tambonName != null && customer.tambonName!.isNotEmpty) ||
+                          (customer.amphureName != null && customer.amphureName!.isNotEmpty) ||
+                          (customer.provinceName != null && customer.provinceName!.isNotEmpty);
+
+    if (hasLocationData) {
+      // Return a dash to indicate "address continues on next line"
+      return '-';
+    }
     return '';
   }
 
