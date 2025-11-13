@@ -132,4 +132,36 @@ class ApiServices {
       return null;
     }
   }
+
+  // Customer Reference Data API Methods
+
+  /// Get all nationalities
+  static Future<Response>? getNationalities() {
+    return post('/api/nationality/all', jsonEncode({}));
+  }
+
+  /// Get all occupations
+  static Future<Response>? getOccupations() {
+    return post('/occupation/all', jsonEncode({}));
+  }
+
+  /// Get occupations by category
+  static Future<Response>? getOccupationsByCategory(String category) {
+    return post('/occupation/byCategory', jsonEncode({'data': category}));
+  }
+
+  /// Get all title names
+  static Future<Response>? getTitleNames() {
+    return post('/titlename/all', jsonEncode({}));
+  }
+
+  /// Get title names by nationality
+  static Future<Response>? getTitleNamesByNationality(String nationality) {
+    return post('/titlename/byNationality', jsonEncode({'data': nationality}));
+  }
+
+  /// Get all card types
+  static Future<Response>? getCardTypes() {
+    return post('/api/cardtype/all', jsonEncode({}));
+  }
 }

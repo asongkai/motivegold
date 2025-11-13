@@ -50,6 +50,31 @@ class CustomerModel {
   String? passportId;
   String? branchCode;
   int? defaultWalkIn;
+  String? occupation;
+
+  // New fields from customer enhancement
+  String? titleName;
+  String? middleName;
+  String? building;
+  String? roomNo;
+  String? floor;
+  String? moo;
+  String? soi;
+  String? road;
+  String? cardType;
+  DateTime? idCardIssueDate;
+  DateTime? idCardExpiryDate;
+  DateTime? entryDate;
+  DateTime? exitDate;
+  String? attachments;
+  String? occupationCustom;
+
+  // Company customer specific fields
+  String? country;
+  String? establishmentName;
+  String? headquartersOrBranch;
+  DateTime? registrationDate;
+  String? businessType;
 
   CustomerModel({
     this.id,
@@ -85,6 +110,27 @@ class CustomerModel {
     this.passportId,
     this.branchCode,
     this.defaultWalkIn,
+    this.occupation,
+    this.titleName,
+    this.middleName,
+    this.building,
+    this.roomNo,
+    this.floor,
+    this.moo,
+    this.soi,
+    this.road,
+    this.cardType,
+    this.idCardIssueDate,
+    this.idCardExpiryDate,
+    this.entryDate,
+    this.exitDate,
+    this.attachments,
+    this.occupationCustom,
+    this.country,
+    this.establishmentName,
+    this.headquartersOrBranch,
+    this.registrationDate,
+    this.businessType,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
@@ -125,6 +171,37 @@ class CustomerModel {
             : DateTime.parse(json["updatedDate"]).toLocal(),
         branchCode: json["branchCode"],
         defaultWalkIn: json["defaultWalkIn"],
+        occupation: json["occupation"],
+        titleName: json["titleName"],
+        middleName: json["middleName"],
+        building: json["building"],
+        roomNo: json["roomNo"],
+        floor: json["floor"],
+        moo: json["moo"],
+        soi: json["soi"],
+        road: json["road"],
+        cardType: json["cardType"],
+        idCardIssueDate: json["idCardIssueDate"] == null
+            ? null
+            : DateTime.parse(json["idCardIssueDate"]).toLocal(),
+        idCardExpiryDate: json["idCardExpiryDate"] == null
+            ? null
+            : DateTime.parse(json["idCardExpiryDate"]).toLocal(),
+        entryDate: json["entryDate"] == null
+            ? null
+            : DateTime.parse(json["entryDate"]).toLocal(),
+        exitDate: json["exitDate"] == null
+            ? null
+            : DateTime.parse(json["exitDate"]).toLocal(),
+        attachments: json["attachments"],
+        occupationCustom: json["occupationCustom"],
+        country: json["country"],
+        establishmentName: json["establishmentName"],
+        headquartersOrBranch: json["headquartersOrBranch"],
+        registrationDate: json["registrationDate"] == null
+            ? null
+            : DateTime.parse(json["registrationDate"]).toLocal(),
+        businessType: json["businessType"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -161,6 +238,27 @@ class CustomerModel {
         "updatedDate": updatedDate?.toIso8601String(),
         "branchCode": branchCode,
         "defaultWalkIn": defaultWalkIn,
+        "occupation": occupation,
+        "titleName": titleName,
+        "middleName": middleName,
+        "building": building,
+        "roomNo": roomNo,
+        "floor": floor,
+        "moo": moo,
+        "soi": soi,
+        "road": road,
+        "cardType": cardType,
+        "idCardIssueDate": idCardIssueDate?.toIso8601String(),
+        "idCardExpiryDate": idCardExpiryDate?.toIso8601String(),
+        "entryDate": entryDate?.toIso8601String(),
+        "exitDate": exitDate?.toIso8601String(),
+        "attachments": attachments,
+        "occupationCustom": occupationCustom,
+        "country": country,
+        "establishmentName": establishmentName,
+        "headquartersOrBranch": headquartersOrBranch,
+        "registrationDate": registrationDate?.toIso8601String(),
+        "businessType": businessType,
       };
 
   @override
@@ -169,7 +267,7 @@ class CustomerModel {
   }
 
   @override
-  operator ==(o) => o is CustomerModel && o.id == id;
+  operator ==(Object other) => other is CustomerModel && other.id == id;
 
   @override
   int get hashCode =>
@@ -179,7 +277,6 @@ class CustomerModel {
       companyName.hashCode & idCard.hashCode ^
       taxNumber.hashCode;
 
-  @override
   bool filter(String query) {
     return firstName!.toLowerCase().contains(query.toLowerCase()) ||
         lastName!.toLowerCase().contains(query.toLowerCase()) ||

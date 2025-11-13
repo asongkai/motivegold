@@ -25,9 +25,9 @@ ENV _getEnvironment() {
     return ENV.PRO;
   }
 
-  // Auto-detect: debug mode = DEV, release mode = PRO
+  // Auto-detect: debug mode = UAT (for testing), release mode = PRO
   if (kDebugMode) {
-    return ENV.DEV;  // flutter run, flutter run -d chrome
+    return ENV.UAT;  // Changed from DEV to UAT for easier testing
   } else {
     return ENV.PRO;  // flutter build web, flutter build apk, etc.
   }

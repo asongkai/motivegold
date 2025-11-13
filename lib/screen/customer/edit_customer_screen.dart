@@ -5,7 +5,9 @@ import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
@@ -14,12 +16,13 @@ import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
-import 'package:motivegold/screen/customer/widget/card_reader_info.dart';
+import 'package:motivegold/model/nationality.dart';
+import 'package:motivegold/model/occupation.dart';
+import 'package:motivegold/model/title_name.dart';
+import 'package:motivegold/model/card_type.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
-import 'package:motivegold/utils/responsive_screen.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -28,13 +31,55 @@ import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/dropdown/GroupedDropdownWidget.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/customer/customer_summary_panel.dart';
+import 'package:motivegold/widget/customer/attachment_section.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:sizer/sizer.dart';
-import 'package:thai_idcard_reader_flutter/thai_idcard_reader_flutter.dart';
+
+// Thai ID Card formatter: x xxxx xxxxx xx x
+class ThaiIdCardFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text.replaceAll(' ', '');
+
+    // Limit to 13 digits
+    if (text.length > 13) {
+      return oldValue;
+    }
+
+    // Only allow digits
+    if (text.isNotEmpty && !RegExp(r'^[0-9]+$').hasMatch(text)) {
+      return oldValue;
+    }
+
+    // Format: x xxxx xxxxx xx x
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      // Add space after position 0, 4, 9, 11
+      if (i == 0 || i == 4 || i == 9 || i == 11) {
+        if (i < text.length - 1) {
+          buffer.write(' ');
+        }
+      }
+    }
+
+    final formattedText = buffer.toString();
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
+}
 
 class EditCustomerScreen extends StatefulWidget {
   const EditCustomerScreen({super.key, required this.c});
@@ -69,8 +114,31 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
   final TextEditingController taxNumberCtrl = TextEditingController();
   final TextEditingController postalCodeCtrl = TextEditingController();
 
+  // New controllers for enhanced customer fields
+  final TextEditingController middleNameCtrl = TextEditingController();
+  final TextEditingController buildingCtrl = TextEditingController();
+  final TextEditingController roomNoCtrl = TextEditingController();
+  final TextEditingController floorCtrl = TextEditingController();
+  final TextEditingController villageCtrl = TextEditingController();
+  final TextEditingController mooCtrl = TextEditingController();
+  final TextEditingController soiCtrl = TextEditingController();
+  final TextEditingController roadCtrl = TextEditingController();
+  final TextEditingController idCardIssueDateCtrl = TextEditingController();
+  final TextEditingController idCardExpiryDateCtrl = TextEditingController();
+  final TextEditingController entryDateCtrl = TextEditingController();
+  final TextEditingController exitDateCtrl = TextEditingController();
+  final TextEditingController occupationCustomCtrl = TextEditingController();
+
+  // Company customer specific controllers
+  final TextEditingController establishmentNameCtrl = TextEditingController();
+  final TextEditingController registrationDateCtrl = TextEditingController();
+
   final ImagePicker imagePicker = ImagePicker();
   List<File>? imageFiles = [];
+
+  // Document attachments and photo
+  List<PlatformFile> attachedDocuments = [];
+  File? customerPhoto;
 
   bool isSeller = false;
   bool isCustomer = false;
@@ -84,23 +152,33 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
   CustomerModel? selectedCustomer;
   String? nationality;
 
-  ThaiIDCard? _data;
-  String? _error;
-  UsbDevice? _device;
-  dynamic _card;
-  StreamSubscription? subscription;
-  final List _idCardType = [
-    ThaiIDType.cid,
-    ThaiIDType.photo,
-    ThaiIDType.nameTH,
-    ThaiIDType.nameEN,
-    ThaiIDType.gender,
-    ThaiIDType.birthdate,
-    ThaiIDType.address,
-    ThaiIDType.issueDate,
-    ThaiIDType.expireDate,
-  ];
-  List<String> selectedTypes = [];
+  // Reference data lists
+  List<NationalityModel> nationalities = [];
+  List<OccupationModel> occupations = [];
+  List<TitleNameModel> titleNames = [];
+  List<CardTypeModel> cardTypes = [];
+
+  // Selected values for dropdowns
+  TitleNameModel? selectedTitleName;
+  ValueNotifier<dynamic>? titleNameNotifier;
+
+  NationalityModel? selectedNationality;
+  ValueNotifier<dynamic>? nationalityNotifier;
+
+  OccupationModel? selectedOccupation;
+  ValueNotifier<dynamic>? occupationNotifier;
+
+  CardTypeModel? selectedCardType;
+  ValueNotifier<dynamic>? cardTypeNotifier;
+
+  // Company customer specific state
+  NationalityModel? selectedCountry;
+  ValueNotifier<dynamic>? countryNotifier;
+  String? headquartersOrBranch = 'headquarters'; // Default to headquarters
+  OccupationModel? selectedCompanyBusinessType;
+  ValueNotifier<dynamic>? companyBusinessTypeNotifier;
+
+  bool loadingReferenceData = false;
 
   @override
   void initState() {
@@ -149,9 +227,22 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     typeNotifier =
         ValueNotifier<ProductTypeModel>(selectedType ?? customerTypes()[1]);
 
+    // Initialize reference data notifiers
+    titleNameNotifier = ValueNotifier<TitleNameModel?>(null);
+    nationalityNotifier = ValueNotifier<NationalityModel?>(null);
+    occupationNotifier = ValueNotifier<OccupationModel?>(null);
+    cardTypeNotifier = ValueNotifier<CardTypeModel?>(null);
+
+    // Initialize company customer notifiers
+    countryNotifier = ValueNotifier<NationalityModel?>(null);
+    companyBusinessTypeNotifier = ValueNotifier<OccupationModel?>(null);
+
     // birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
     // Global.addressCtrl.text = "";
-    ThaiIdcardReaderFlutter.deviceHandlerStream.listen(_onUSB);
+
+    // Load reference data
+    loadReferenceData();
+
     init();
 
     // Start animations
@@ -167,7 +258,24 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
   void dispose() {
     _fadeController?.dispose();
     _slideController?.dispose();
-    subscription?.cancel();
+
+    // Dispose all new controllers
+    middleNameCtrl.dispose();
+    buildingCtrl.dispose();
+    roomNoCtrl.dispose();
+    floorCtrl.dispose();
+    villageCtrl.dispose();
+    mooCtrl.dispose();
+    soiCtrl.dispose();
+    roadCtrl.dispose();
+    idCardIssueDateCtrl.dispose();
+    idCardExpiryDateCtrl.dispose();
+    entryDateCtrl.dispose();
+    exitDateCtrl.dispose();
+    occupationCustomCtrl.dispose();
+    establishmentNameCtrl.dispose();
+    registrationDateCtrl.dispose();
+
     super.dispose();
   }
 
@@ -208,6 +316,33 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     birthDateCtrl.text =
     widget.c.doB != null ? Global.dateOnlyT(widget.c.doB.toString()) : '';
 
+    // Load new enhanced fields
+    middleNameCtrl.text = widget.c.middleName ?? '';
+    buildingCtrl.text = widget.c.building ?? '';
+    roomNoCtrl.text = widget.c.roomNo ?? '';
+    floorCtrl.text = widget.c.floor ?? '';
+    villageCtrl.text = widget.c.village ?? '';
+    mooCtrl.text = widget.c.moo ?? '';
+    soiCtrl.text = widget.c.soi ?? '';
+    roadCtrl.text = widget.c.road ?? '';
+    occupationCustomCtrl.text = widget.c.occupationCustom ?? '';
+
+    // Load company-specific fields
+    establishmentNameCtrl.text = widget.c.establishmentName ?? '';
+    headquartersOrBranch = widget.c.headquartersOrBranch ?? 'headquarters';
+
+    // Load dates
+    idCardIssueDateCtrl.text = widget.c.idCardIssueDate != null
+        ? Global.dateOnlyT(widget.c.idCardIssueDate.toString()) : '';
+    idCardExpiryDateCtrl.text = widget.c.idCardExpiryDate != null
+        ? Global.dateOnlyT(widget.c.idCardExpiryDate.toString()) : '';
+    entryDateCtrl.text = widget.c.entryDate != null
+        ? Global.dateOnlyT(widget.c.entryDate.toString()) : '';
+    exitDateCtrl.text = widget.c.exitDate != null
+        ? Global.dateOnlyT(widget.c.exitDate.toString()) : '';
+    registrationDateCtrl.text = widget.c.registrationDate != null
+        ? Global.dateOnlyT(widget.c.registrationDate.toString()) : '';
+
     // motivePrint(widget.c.toJson());
 
     try {
@@ -239,99 +374,140 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     });
   }
 
-  void _onUSB(usbEvent) {
-    try {
-      if (usbEvent.hasPermission) {
-        subscription =
-            ThaiIdcardReaderFlutter.cardHandlerStream.listen(_onData);
-      } else {
-        if (subscription == null) {
-          subscription?.cancel();
-          subscription = null;
-        }
-        _clear();
-      }
-      setState(() {
-        _device = usbEvent;
-      });
-    } catch (e) {
-      setState(() {
-        _error = "_onUSB $e";
-      });
-      Alert.error(context, 'OnUsb', "$e", 'OK', action: () {});
-    }
+  // Helper method to format Thai ID card number: x xxxx xxxxx xx x
+  String formatIdCard(String idCard) {
+    final text = idCard.replaceAll(' ', '');
+    if (text.length != 13) return idCard;
+
+    return '${text[0]} ${text.substring(1, 5)} ${text.substring(5, 10)} ${text.substring(10, 12)} ${text[12]}';
   }
 
-  void _onData(readerEvent) {
+  // Load all reference data for dropdowns
+  Future<void> loadReferenceData() async {
+    if (!mounted) return;
+
+    setState(() {
+      loadingReferenceData = true;
+    });
+
     try {
-      setState(() {
-        _card = readerEvent;
-      });
-      if (readerEvent.isReady) {
-        readCard(only: selectedTypes);
-      } else {
-        _clear();
-      }
-    } catch (e) {
-      setState(() {
-        _error = "_onData $e";
-      });
-      Alert.error(context, 'OnData', "$e", 'OK', action: () {});
-    }
-  }
-
-  readCard({List<String> only = const []}) async {
-    try {
-      var response = await ThaiIdcardReaderFlutter.read(only: only);
-      setState(() {
-        _data = response;
-      });
-
-      if (_data != null) {
-        idCardCtrl.text = _data!.cid!;
-        if (_data!.firstnameTH != null) {
-          firstNameCtrl.text = '${_data!.titleTH} ${_data!.firstnameTH}';
-          lastNameCtrl.text = '${_data?.lastnameTH!}';
-        } else {
-          firstNameCtrl.text = '${_data!.titleEN} ${_data!.firstnameEN}';
-          lastNameCtrl.text = '${_data?.lastnameEN!}';
-        }
-        emailAddressCtrl.text = "";
-        phoneCtrl.text = "";
-        var address0 = _data!.address ?? "";
-
-        if (address0.isNotEmpty) {
-          var sp1 = address0.split("ตำบล");
-          var sp2 = sp1[1].split("อำเภอ");
-          var sp3 = sp2[1].split("จังหวัด");
-
-          var address = sp1[0].trimLeft().trimRight();
-          var tambon = sp2[0].trimLeft().trimRight();
-          var ampher = sp3[0].trimLeft().trimRight();
-          var chunvat = sp3[1].trimLeft().trimRight();
-
-          Global.addressCtrl.text = address0;
-
-          int? chungVatId = filterChungVatByName(chunvat);
-          await loadAmphureByProvince(chungVatId);
-          int? ampherId = filterAmpheryName(ampher);
-          await loadTambonByAmphure(ampherId);
-          int? tambonId = filterTambonByName(tambon);
-          Alert.success(context, 'Success', 'ID Synced', 'OK', action: () {
-            setState(() {});
+      // Load Nationalities
+      var nationalitiesResult = await ApiServices.getNationalities();
+      if (nationalitiesResult?.status == "success" && nationalitiesResult?.data != null) {
+        var data = jsonEncode(nationalitiesResult!.data);
+        if (mounted) {
+          setState(() {
+            nationalities = nationalityListModelFromJson(data);
           });
         }
+      }
 
-        birthDateCtrl.text = Global.formatDateDD(_data!.birthdate!);
+      // Load Occupations
+      var occupationsResult = await ApiServices.getOccupations();
+      if (occupationsResult?.status == "success" && occupationsResult?.data != null) {
+        var data = jsonEncode(occupationsResult!.data);
+        if (mounted) {
+          setState(() {
+            occupations = occupationListModelFromJson(data);
+          });
+        }
       }
-      setState(() {});
+
+      // Load TitleNames
+      var titleNamesResult = await ApiServices.getTitleNames();
+      if (titleNamesResult?.status == "success" && titleNamesResult?.data != null) {
+        var data = jsonEncode(titleNamesResult!.data);
+        if (mounted) {
+          setState(() {
+            titleNames = titleNameListModelFromJson(data);
+          });
+        }
+      }
+
+      // Load CardTypes
+      var cardTypesResult = await ApiServices.getCardTypes();
+      if (cardTypesResult?.status == "success" && cardTypesResult?.data != null) {
+        var data = jsonEncode(cardTypesResult!.data);
+        if (mounted) {
+          setState(() {
+            cardTypes = cardTypeListModelFromJson(data);
+          });
+        }
+      }
     } catch (e) {
+      motivePrint('Error loading reference data: ${e.toString()}');
+    }
+
+    if (mounted) {
       setState(() {
-        _error = 'ERR readCard $e';
+        loadingReferenceData = false;
       });
-      if (mounted) {
-        Alert.warning(context, 'ERR readCard'.tr(), '$e', 'OK'.tr());
+    }
+  }
+
+  // Pick documents for attachment
+  Future<void> pickDocuments() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+        allowMultiple: true,
+      );
+
+      if (result != null) {
+        setState(() {
+          attachedDocuments.addAll(result.files);
+        });
       }
+    } catch (e) {
+      motivePrint('Error picking documents: ${e.toString()}');
+    }
+  }
+
+  // Remove attached document
+  void removeDocument(int index) {
+    setState(() {
+      attachedDocuments.removeAt(index);
+    });
+  }
+
+  // Pick customer photo from camera
+  Future<void> pickCustomerPhoto() async {
+    try {
+      final XFile? photo = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (photo != null) {
+        setState(() {
+          customerPhoto = File(photo.path);
+        });
+      }
+    } catch (e) {
+      motivePrint('Error picking photo: ${e.toString()}');
+    }
+  }
+
+  // Pick customer photo from gallery
+  Future<void> pickCustomerPhotoFromGallery() async {
+    try {
+      final XFile? photo = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (photo != null) {
+        setState(() {
+          customerPhoto = File(photo.path);
+        });
+      }
+    } catch (e) {
+      motivePrint('Error picking photo: ${e.toString()}');
     }
   }
 
@@ -343,12 +519,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     } catch (e) {
       return dt.split('').toString() + e.toString();
     }
-  }
-
-  _clear() {
-    setState(() {
-      _data = null;
-    });
   }
 
   Widget _buildModernCard({
@@ -372,6 +542,28 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       ),
       child: child,
     );
+  }
+
+  // Check if selected province is Bangkok
+  bool _isBangkok() {
+    if (Global.provinceModel == null) return false;
+    String provinceName = Global.provinceModel?.nameTh?.toLowerCase() ?? '';
+    return provinceName.contains('กรุงเทพ') || provinceName.contains('bangkok');
+  }
+
+  // Get label for Tambon based on province
+  String _getTambonLabel() {
+    return _isBangkok() ? 'เลือกแขวง' : 'เลือกตำบล';
+  }
+
+  // Get label for Amphure based on province
+  String _getAmphureLabel() {
+    return _isBangkok() ? 'เลือกเขต' : 'เลือกอำเภอ';
+  }
+
+  // Get label for Province (no prefix for Bangkok)
+  String _getProvinceLabel() {
+    return 'เลือกจังหวัด';
   }
 
   Widget buildTextFieldBig({
@@ -583,15 +775,21 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
             opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
             child: SlideTransition(
               position: _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left side - Form
+                      Expanded(
+                        flex: 2,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                         _buildModernCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -646,107 +844,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                         const SizedBox(
                           height: 10,
                         ),
-                        if (selectedType?.code == 'general')
-                          if (_device != null)
-                            _buildModernCard(
-                              child: UsbDeviceCard(
-                                device: _device,
-                              ),
-                            ),
-                        if (selectedType?.code == 'general')
-                          if (_card != null)
-                            _buildModernCard(
-                              child: Text(_card.toString(), style: const TextStyle(fontSize: 16)),
-                            ),
-                        if (selectedType?.code == 'general')
-                          if (_device == null || !_device!.isAttached) ...[
-                            _buildModernCard(
-                              color: Colors.orange[50],
-                              child: const EmptyHeader(
-                                text: 'เสียบเครื่องอ่านบัตรก่อน',
-                              ),
-                            ),
-                          ],
-                        if (selectedType?.code == 'general')
-                          if (_error != null)
-                            _buildModernCard(
-                              color: Colors.red[50],
-                              child: Text(_error.toString(), style: TextStyle(color: Colors.red[700], fontSize: 16)),
-                            ),
-                        if (selectedType?.code == 'general')
-                          if (_data == null &&
-                              (_device != null &&
-                                  _device!.hasPermission)) ...[
-                            _buildModernCard(
-                              color: Colors.blue[50],
-                              child: Column(
-                                children: [
-                                  const EmptyHeader(
-                                    icon: Icons.credit_card,
-                                    text: 'เสียบบัตรประชาชนได้เลย',
-                                  ),
-                                  const SizedBox(height: 16),
-                                  SizedBox(
-                                    height: 200,
-                                    child: Wrap(children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Checkbox(
-                                              value: selectedTypes.isEmpty,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  if (selectedTypes.isNotEmpty) {
-                                                    selectedTypes = [];
-                                                  }
-                                                });
-                                              }),
-                                          const Text('readAll'),
-                                        ],
-                                      ),
-                                      for (var ea in _idCardType)
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Checkbox(
-                                                value: selectedTypes.contains(ea),
-                                                onChanged: (val) {
-                                                  motivePrint(ea);
-                                                  setState(() {
-                                                    if (selectedTypes
-                                                        .contains(ea)) {
-                                                      selectedTypes.remove(ea);
-                                                    } else {
-                                                      selectedTypes.add(ea);
-                                                    }
-                                                  });
-                                                }),
-                                            Text('$ea'),
-                                          ],
-                                        ),
-                                    ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        if (selectedType?.code == 'general')
-                          const SizedBox(
-                            height: 10,
-                          ),
-                        if (selectedType?.code == 'general')
-                          if (_data != null)
-                            if (_data!.photo.isNotEmpty)
-                              _buildModernCard(
-                                child: Center(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.memory(
-                                      Uint8List.fromList(_data!.photo),
-                                    ),
-                                  ),
-                                ),
-                              ),
                         _buildModernCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -819,6 +916,79 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                   ),
                                 ],
                               ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              // Title Name Dropdown for Individual Customers
+                              if (selectedType?.code == 'general')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Text(
+                                              'คำนำหน้า',
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Colors.grey[800],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            SizedBox(
+                                              height: 70,
+                                              child: MiraiDropDownMenu<
+                                                  TitleNameModel>(
+                                                key: UniqueKey(),
+                                                children: titleNames,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor:
+                                                    true,
+                                                itemWidgetBuilder: (
+                                                  int index,
+                                                  TitleNameModel? project, {
+                                                  bool isItemSelected = false,
+                                                }) {
+                                                  return DropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected:
+                                                        isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (TitleNameModel value) {
+                                                  selectedTitleName = value;
+                                                  titleNameNotifier!.value =
+                                                      value;
+                                                  setState(() {});
+                                                },
+                                                child:
+                                                    DropDownObjectChildWidget(
+                                                  key: GlobalKey(),
+                                                  fontSize: 14.sp,
+                                                  projectValueNotifier:
+                                                      titleNameNotifier!,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1025,6 +1195,217 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                               const SizedBox(
                                 height: 10,
                               ),
+                              // Company customer additional fields
+                              // Country dropdown for company
+                              if (selectedType?.code == 'company')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Text(
+                                              'ประเทศ (Country)',
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Colors.grey[800],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            SizedBox(
+                                              height: 70,
+                                              child: MiraiDropDownMenu<NationalityModel>(
+                                                key: UniqueKey(),
+                                                children: nationalities,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor: Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor: true,
+                                                itemWidgetBuilder: (int index, NationalityModel? project, {bool isItemSelected = false}) {
+                                                  return DropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected: isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged: (NationalityModel value) {
+                                                  selectedCountry = value;
+                                                  countryNotifier!.value = value;
+                                                  setState(() {});
+                                                },
+                                                child: DropDownObjectChildWidget(
+                                                  key: GlobalKey(),
+                                                  fontSize: 14.sp,
+                                                  projectValueNotifier: countryNotifier!,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              // Establishment Name
+                              if (selectedType?.code == 'company')
+                                const SizedBox(height: 10),
+                              if (selectedType?.code == 'company')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            buildTextFieldBig(
+                                              labelText: 'ชื่อสถานประกอบการ',
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: establishmentNameCtrl,
+                                              prefixIcon: Icon(Icons.store, size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              // Headquarters or Branch radio buttons
+                              if (selectedType?.code == 'company')
+                                const SizedBox(height: 10),
+                              if (selectedType?.code == 'company')
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        'ประเภทสถานประกอบการ',
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey[800],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: RadioListTile<String>(
+                                              title: Text('สำนักงานใหญ่', style: TextStyle(fontSize: 13.sp)),
+                                              value: 'headquarters',
+                                              groupValue: headquartersOrBranch,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  headquartersOrBranch = value;
+                                                });
+                                              },
+                                              dense: true,
+                                              contentPadding: EdgeInsets.zero,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: RadioListTile<String>(
+                                              title: Text('สาขา', style: TextStyle(fontSize: 13.sp)),
+                                              value: 'branch',
+                                              groupValue: headquartersOrBranch,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  headquartersOrBranch = value;
+                                                });
+                                              },
+                                              dense: true,
+                                              contentPadding: EdgeInsets.zero,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              // Registration Date
+                              if (selectedType?.code == 'company')
+                                const SizedBox(height: 10),
+                              if (selectedType?.code == 'company')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                final DateTime? picked = await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(1900),
+                                                  lastDate: DateTime.now(),
+                                                );
+                                                if (picked != null) {
+                                                  setState(() {
+                                                    registrationDateCtrl.text = Global.formatDateT(picked.toString());
+                                                  });
+                                                }
+                                              },
+                                              child: AbsorbPointer(
+                                                child: buildTextFieldBig(
+                                                  labelText: 'วันที่จดทะเบียน',
+                                                  validator: null,
+                                                  inputType: TextInputType.text,
+                                                  controller: registrationDateCtrl,
+                                                  prefixIcon: Icon(Icons.calendar_today, size: 14.sp),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              // Business Type dropdown (from Occupations where customerType='company')
+                              if (selectedType?.code == 'company')
+                                const SizedBox(height: 10),
+                              if (selectedType?.code == 'company')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            GroupedDropdownWidget(
+                                              items: occupations.where((o) => o.customerType == 'company').toList(),
+                                              selectedItem: selectedCompanyBusinessType,
+                                              onChanged: (OccupationModel value) {
+                                                setState(() {
+                                                  selectedCompanyBusinessType = value;
+                                                  companyBusinessTypeNotifier!.value = value;
+                                                });
+                                              },
+                                              label: 'ประเภทธุรกิจ (Business Type)',
+                                              height: 50,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               Row(
                                 mainAxisAlignment:
                                 MainAxisAlignment.spaceBetween,
@@ -1078,6 +1459,453 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                   ),
                                 ],
                               ),
+                              // Middle Name field (for foreigners only)
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'ชื่อกลาง (Middle Name)',
+                                              validator: null,
+                                              inputType: TextInputType.text,
+                                              controller: middleNameCtrl,
+                                              prefixIcon: Icon(Icons.person,
+                                                  size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              // Card Type Dropdown (for foreigners only)
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Text(
+                                              'ประเภทบัตร (Card Type)',
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Colors.grey[800],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            SizedBox(
+                                              height: 70,
+                                              child: MiraiDropDownMenu<
+                                                  CardTypeModel>(
+                                                key: UniqueKey(),
+                                                children: cardTypes,
+                                                space: 4,
+                                                maxHeight: 360,
+                                                showSearchTextField: true,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
+                                                emptyListMessage: 'ไม่มีข้อมูล',
+                                                showSelectedItemBackgroundColor:
+                                                    true,
+                                                itemWidgetBuilder: (
+                                                  int index,
+                                                  CardTypeModel? project, {
+                                                  bool isItemSelected = false,
+                                                }) {
+                                                  return DropDownItemWidget(
+                                                    project: project,
+                                                    isItemSelected:
+                                                        isItemSelected,
+                                                    firstSpace: 10,
+                                                    fontSize: 14.sp,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (CardTypeModel value) {
+                                                  selectedCardType = value;
+                                                  cardTypeNotifier!.value =
+                                                      value;
+                                                  setState(() {});
+                                                },
+                                                child:
+                                                    DropDownObjectChildWidget(
+                                                  key: GlobalKey(),
+                                                  fontSize: 14.sp,
+                                                  projectValueNotifier:
+                                                      cardTypeNotifier!,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              // ID Card Issue Date and Expiry Date
+                              if (selectedType?.code == 'general')
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: TextField(
+                                            controller: idCardIssueDateCtrl,
+                                            style: TextStyle(fontSize: 14.sp),
+                                            decoration: InputDecoration(
+                                              prefixIcon: Icon(
+                                                  Icons.calendar_today,
+                                                  size: 14.sp),
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 16.0),
+                                              labelText: "วันที่ออกบัตร (Issue Date)",
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.teal,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    String formattedDate =
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(date);
+                                                    setState(() {
+                                                      idCardIssueDateCtrl.text =
+                                                          formattedDate;
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: TextField(
+                                            controller: idCardExpiryDateCtrl,
+                                            style: TextStyle(fontSize: 14.sp),
+                                            decoration: InputDecoration(
+                                              prefixIcon: Icon(
+                                                  Icons.calendar_today,
+                                                  size: 14.sp),
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 16.0),
+                                              labelText: "วันหมดอายุ (Expiry Date)",
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.teal,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    String formattedDate =
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(date);
+                                                    setState(() {
+                                                      idCardExpiryDateCtrl.text =
+                                                          formattedDate;
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedType?.code == 'general')
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              // Entry/Exit Dates (for foreigners only)
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: TextField(
+                                            controller: entryDateCtrl,
+                                            style: TextStyle(fontSize: 14.sp),
+                                            decoration: InputDecoration(
+                                              prefixIcon: Icon(
+                                                  Icons.flight_land,
+                                                  size: 14.sp),
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 16.0),
+                                              labelText: "วันที่เดินทางเข้า (Entry Date)",
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.teal,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    String formattedDate =
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(date);
+                                                    setState(() {
+                                                      entryDateCtrl.text =
+                                                          formattedDate;
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withValues(alpha: 0.03),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: TextField(
+                                            controller: exitDateCtrl,
+                                            style: TextStyle(fontSize: 14.sp),
+                                            decoration: InputDecoration(
+                                              prefixIcon: Icon(
+                                                  Icons.flight_takeoff,
+                                                  size: 14.sp),
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 20.0,
+                                                      horizontal: 16.0),
+                                              labelText: "วันที่เดินทางออก (Exit Date)",
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.teal,
+                                                    width: 2),
+                                              ),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    SfDatePickerDialog(
+                                                  initialDate: DateTime.now(),
+                                                  onDateSelected: (date) {
+                                                    String formattedDate =
+                                                        DateFormat('yyyy-MM-dd')
+                                                            .format(date);
+                                                    setState(() {
+                                                      exitDateCtrl.text =
+                                                          formattedDate;
+                                                    });
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedType?.code == 'general' &&
+                                  nationality == 'Foreigner')
+                                const SizedBox(
+                                  height: 10,
+                                ),
                               if (selectedType?.code == 'general')
                                 const SizedBox(
                                   height: 10,
@@ -1172,33 +2000,81 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                               const SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8.0),
-                                      child: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          buildTextFieldBig(
-                                            labelText: 'อาชีพ',
-                                            inputType: TextInputType.text,
-                                            controller: occupationCtrl,
-                                            prefixIcon: Icon(Icons.work_outline, size: 14.sp),
-                                          ),
-                                        ],
+                              // Occupation Grouped Dropdown
+                              if (selectedType?.code == 'general')
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            GroupedDropdownWidget(
+                                              items: occupations.where((o) => o.customerType == 'general').toList(),
+                                              selectedItem: selectedOccupation,
+                                              onChanged: (OccupationModel value) {
+                                                setState(() {
+                                                  selectedOccupation = value;
+                                                  occupationNotifier!.value = value;
+                                                  occupationCtrl.text = value.name ?? '';
+                                                });
+                                              },
+                                              label: 'อาชีพ (Occupation)',
+                                              height: 50,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                              const SizedBox(
+                                height: 10,
                               ),
+                              // Custom Occupation field (shows when custom option is selected)
+                              if (selectedType?.code == 'general' &&
+                                  (selectedOccupation?.name == 'ประสงค์ระบุเอง' ||
+                                  selectedOccupation?.name == 'อื่นๆ'))
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0, right: 8.0),
+                                        child: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            buildTextFieldBig(
+                                              labelText: 'ระบุอาชีพ (Specify Occupation)',
+                                              inputType: TextInputType.text,
+                                              controller: occupationCustomCtrl,
+                                              prefixIcon: Icon(Icons.edit,
+                                                  size: 14.sp),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedType?.code == 'general' &&
+                                  (selectedOccupation?.name == 'ประสงค์ระบุเอง' ||
+                                  selectedOccupation?.name == 'อื่นๆ'))
+                                const SizedBox(
+                                  height: 10,
+                                ),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -1325,6 +2201,139 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                 ),
                               ),
                               const SizedBox(height: 20),
+                              // Detailed Address Fields
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'อาคาร (Building)',
+                                            inputType: TextInputType.text,
+                                            controller: buildingCtrl,
+                                            prefixIcon: Icon(Icons.apartment,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'ห้องเลขที่ (Room No)',
+                                            inputType: TextInputType.text,
+                                            controller: roomNoCtrl,
+                                            prefixIcon: Icon(Icons.meeting_room,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'ชั้นที่ (Floor)',
+                                            inputType: TextInputType.text,
+                                            controller: floorCtrl,
+                                            prefixIcon: Icon(Icons.layers,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'หมู่ที่ (Moo)',
+                                            inputType: TextInputType.text,
+                                            controller: mooCtrl,
+                                            prefixIcon: Icon(Icons.home,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'ตรอก/ซอย (Soi)',
+                                            inputType: TextInputType.text,
+                                            controller: soiCtrl,
+                                            prefixIcon: Icon(Icons.signpost,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          buildTextFieldBig(
+                                            labelText: 'ถนน (Road)',
+                                            inputType: TextInputType.text,
+                                            controller: roadCtrl,
+                                            prefixIcon: Icon(Icons.route,
+                                                size: 14.sp),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1337,7 +2346,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                         CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'เลือกจังหวัด',
+                                            _getProvinceLabel(),
                                             style: TextStyle(
                                                 fontSize: 14.sp,
                                                 color: textColor),
@@ -1417,7 +2426,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                         CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'เลือกอำเภอ',
+                                            _getAmphureLabel(),
                                             style: TextStyle(
                                                 fontSize: 14.sp,
                                                 color: textColor),
@@ -1503,7 +2512,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                         CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'เลือกตำบล',
+                                            _getTambonLabel(),
                                             style: TextStyle(
                                                 fontSize: 14.sp,
                                                 color: textColor),
@@ -1630,15 +2639,180 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                        // Customer Photo Upload Section
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'รูปถ่ายลูกค้า',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              if (customerPhoto != null)
+                                Center(
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.file(
+                                          customerPhoto!,
+                                          width: 200,
+                                          height: 200,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              customerPhoto = null;
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: pickCustomerPhoto,
+                                      icon: const Icon(Icons.camera_alt),
+                                      label: const Text('ถ่ายรูป'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: pickCustomerPhotoFromGallery,
+                                      icon: const Icon(Icons.photo_library),
+                                      label: const Text('เลือกจากคลัง'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // KYC Attachment Sections
+                        const SizedBox(height: 20),
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'เอกสารแนบ KYC',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // 1. Occupation Documents
+                              AttachmentSection(
+                                title: 'อาชีพ - ไฟล์ภาพ / วันที่ Attachment',
+                                attachmentType: 'Occupation',
+                                customerId: widget.c.id,
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // 2. Risk Assessment Form
+                              AttachmentSection(
+                                title: 'แบบประเมินความเสี่ยงลูกค้า',
+                                attachmentType: 'RiskAssessment',
+                                customerId: widget.c.id,
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // 3. Customer Photo
+                              AttachmentSection(
+                                title: 'ภาพลูกค้า',
+                                attachmentType: 'Photo',
+                                customerId: widget.c.id,
+                              ),
+                            ],
+                          ),
+                        ),
+                            ], // End of Column children (left side form)
+                          ),
+                        ), // End of SingleChildScrollView (left side)
+                        ), // End of Expanded flex: 2 (left side)
+                        const SizedBox(width: 16),
+                        // Right side - Summary Panel
+                        Expanded(
+                          flex: 1,
+                          child: SingleChildScrollView(
+                            child: CustomerSummaryPanel(
+                              idCard: idCardCtrl.text,
+                              titleName: selectedTitleName?.name,
+                              firstName: firstNameCtrl.text,
+                              middleName: middleNameCtrl.text,
+                              lastName: lastNameCtrl.text,
+                              email: emailAddressCtrl.text,
+                              phone: phoneCtrl.text,
+                              dateOfBirth: widget.c.doB,
+                              issueDate: widget.c.idCardIssueDate,
+                              expiryDate: widget.c.idCardExpiryDate,
+                              building: buildingCtrl.text,
+                              roomNo: roomNoCtrl.text,
+                              floor: floorCtrl.text,
+                              address: addressCtrl.text,
+                              village: villageCtrl.text,
+                              moo: mooCtrl.text,
+                              soi: soiCtrl.text,
+                              road: roadCtrl.text,
+                              tambon: Global.tambonModel?.nameTh,
+                              amphure: Global.amphureModel?.nameTh,
+                              province: Global.provinceModel?.nameTh,
+                              postalCode: postalCodeCtrl.text,
+                              remark: remarkCtrl.text,
+                              occupation: selectedOccupation?.name,
+                            ),
+                          ),
+                        ), // End of Expanded flex: 1 (right side)
+                      ], // End of Row children
+                    ), // End of Row
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
       persistentFooterButtons: [
         Container(
           width: double.infinity,
@@ -1749,7 +2923,6 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       "postalCode": nationality == 'Foreigner' && selectedType?.code == 'general'
           ? ''
           : postalCodeCtrl.text,
-      "photoUrl": '',
       "branchCode": branchCodeCtrl.text,
       "idCard": selectedType?.code == "general" ? idCardCtrl.text : "",
       "taxNumber": selectedType?.code == "company"
@@ -1766,6 +2939,47 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
       "remark": remarkCtrl.text,
       "occupation": occupationCtrl.text,
+
+      // New enhanced fields
+      "titleName": selectedTitleName?.name ?? '',
+      "middleName": middleNameCtrl.text,
+      "building": buildingCtrl.text,
+      "roomNo": roomNoCtrl.text,
+      "floor": floorCtrl.text,
+      "village": villageCtrl.text,
+      "moo": mooCtrl.text,
+      "soi": soiCtrl.text,
+      "road": roadCtrl.text,
+      "cardType": selectedCardType?.nameTH ?? '',
+      "idCardIssueDate": idCardIssueDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(idCardIssueDateCtrl.text).toString(),
+      "idCardExpiryDate": idCardExpiryDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(idCardExpiryDateCtrl.text).toString(),
+      "entryDate": entryDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(entryDateCtrl.text).toString(),
+      "exitDate": exitDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(exitDateCtrl.text).toString(),
+      "occupationCustom": occupationCustomCtrl.text,
+      "attachments": jsonEncode(attachedDocuments.map((file) => {
+        "name": file.name,
+        "size": file.size,
+        "extension": file.extension,
+        "path": file.path ?? '',
+      }).toList()),
+      "photoUrl": customerPhoto?.path ?? '',
+
+      // Company-specific fields
+      "country": selectedCountry?.countryTH ?? '',
+      "establishmentName": establishmentNameCtrl.text,
+      "headquartersOrBranch": headquartersOrBranch ?? '',
+      "registrationDate": registrationDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(registrationDateCtrl.text).toString(),
+      "businessType": selectedCompanyBusinessType?.name ?? '',
     });
 
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
