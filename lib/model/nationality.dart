@@ -84,4 +84,14 @@ class NationalityModel {
 
   @override
   int get hashCode => id.hashCode ^ countryTH.hashCode ^ iso.hashCode;
+
+  // Getter for compatibility with DropDownItemWidget
+  String? get name => nationalityTH;
+
+  bool filter(String query) {
+    return nationalityTH!.toLowerCase().contains(query.toLowerCase()) ||
+           (nationalityEN?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+           (countryTH?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+           (countryEN?.toLowerCase().contains(query.toLowerCase()) ?? false);
+  }
 }

@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/dummy/dummy.dart';
@@ -17,50 +16,84 @@ import 'package:motivegold/model/location/amphure.dart';
 import 'package:motivegold/model/location/province.dart';
 import 'package:motivegold/model/location/tambon.dart';
 import 'package:motivegold/model/product_type.dart';
-import 'package:motivegold/model/title_name.dart';
-import 'package:motivegold/model/occupation.dart';
-import 'package:motivegold/model/card_type.dart';
 import 'package:motivegold/model/nationality.dart';
+import 'package:motivegold/model/occupation.dart';
+import 'package:motivegold/model/title_name.dart';
+import 'package:motivegold/model/card_type.dart';
 import 'package:motivegold/utils/alert.dart';
-import 'package:motivegold/utils/config.dart';
-import 'package:motivegold/utils/constants.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/motive.dart';
-import 'package:motivegold/utils/thai_id_formatter.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/LocationDropDownObjectChildWidget.dart';
+import 'package:motivegold/widget/dropdown/GroupedDropdownWidget.dart';
 import 'package:motivegold/widget/dropdown/grouped_title_dropdown.dart';
 import 'package:motivegold/widget/dropdown/grouped_occupation_dropdown.dart';
+import 'package:motivegold/widget/loading/loading_progress.dart';
+import 'package:motivegold/widget/customer/customer_summary_panel.dart';
+import 'package:motivegold/widget/customer/attachment_section.dart';
+import 'package:motivegold/model/customer_attachment.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:sizer/sizer.dart';
-import 'package:motivegold/widget/customer/download_helper_mobile.dart' if (dart.library.html) 'package:motivegold/widget/customer/download_helper_web.dart' as download_helper;
 
-// Helper class to store file with timestamp
-class FileWithTimestamp {
-  final PlatformFile file;
-  final DateTime addedDateTime;
+// Thai ID Card formatter: x xxxx xxxxx xx x
+class ThaiIdCardFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text.replaceAll(' ', '');
 
-  FileWithTimestamp(this.file, this.addedDateTime);
+    // Limit to 13 digits
+    if (text.length > 13) {
+      return oldValue;
+    }
+
+    // Only allow digits
+    if (text.isNotEmpty && !RegExp(r'^[0-9]+$').hasMatch(text)) {
+      return oldValue;
+    }
+
+    // Format: x xxxx xxxxx xx x
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      buffer.write(text[i]);
+      // Add space after position 0, 4, 9, 11
+      if (i == 0 || i == 4 || i == 9 || i == 11) {
+        if (i < text.length - 1) {
+          buffer.write(' ');
+        }
+      }
+    }
+
+    final formattedText = buffer.toString();
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
 }
 
-class AddCustomerScreen extends StatefulWidget {
-  const AddCustomerScreen({super.key});
+class EditCustomerScreen extends StatefulWidget {
+  const EditCustomerScreen({super.key, required this.c});
+
+  final CustomerModel c;
 
   @override
-  State<AddCustomerScreen> createState() => _AddCustomerScreenState();
+  State<EditCustomerScreen> createState() => _EditCustomerScreenState();
 }
 
-class _AddCustomerScreenState extends State<AddCustomerScreen>
+class _EditCustomerScreenState extends State<EditCustomerScreen>
     with TickerProviderStateMixin {
   AnimationController? _fadeController;
   AnimationController? _slideController;
@@ -84,33 +117,40 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   final TextEditingController taxNumberCtrl = TextEditingController();
   final TextEditingController postalCodeCtrl = TextEditingController();
 
-  // New controllers for additional fields
+  // New controllers for enhanced customer fields
   final TextEditingController middleNameCtrl = TextEditingController();
-  final TextEditingController issueDateCtrl = TextEditingController();
-  final TextEditingController expiryDateCtrl = TextEditingController();
-  final TextEditingController entryDateCtrl = TextEditingController();
-  final TextEditingController exitDateCtrl = TextEditingController();
-  final TextEditingController operatorNameCtrl = TextEditingController();
-  final TextEditingController businessNameCtrl = TextEditingController();
-  final TextEditingController registrationDateCtrl = TextEditingController();
-
-  // Address detail controllers
   final TextEditingController buildingCtrl = TextEditingController();
-  final TextEditingController roomNumberCtrl = TextEditingController();
+  final TextEditingController roomNoCtrl = TextEditingController();
   final TextEditingController floorCtrl = TextEditingController();
-  final TextEditingController houseNumberCtrl = TextEditingController();
   final TextEditingController villageCtrl = TextEditingController();
   final TextEditingController mooCtrl = TextEditingController();
   final TextEditingController soiCtrl = TextEditingController();
   final TextEditingController roadCtrl = TextEditingController();
+  final TextEditingController idCardIssueDateCtrl = TextEditingController();
+  final TextEditingController idCardExpiryDateCtrl = TextEditingController();
+  final TextEditingController entryDateCtrl = TextEditingController();
+  final TextEditingController exitDateCtrl = TextEditingController();
+  final TextEditingController occupationCustomCtrl = TextEditingController();
+
+  // Company customer specific controllers
+  final TextEditingController establishmentNameCtrl = TextEditingController();
+  final TextEditingController registrationDateCtrl = TextEditingController();
+  final TextEditingController houseNumberCtrl = TextEditingController();
+  final TextEditingController issueDateCtrl = TextEditingController();
+  final TextEditingController expiryDateCtrl = TextEditingController();
+  final TextEditingController businessNameCtrl = TextEditingController();
 
   final ImagePicker imagePicker = ImagePicker();
   List<File>? imageFiles = [];
 
+  // Document attachments and photo
+  List<PlatformFile> attachedDocuments = [];
+  File? customerPhoto;
+
   bool isSeller = false;
-  bool isCustomer = true; // Default to "ซื้อขายหน้าร้าน"
+  bool isCustomer = false;
   bool isBuyer = false;
-  String? selectedBusinessType = 'customer'; // Default to "ซื้อขายหน้าร้าน"
+  String? selectedBusinessType;
 
   ProductTypeModel? selectedType;
   ValueNotifier<dynamic>? typeNotifier;
@@ -119,46 +159,34 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   CustomerModel? selectedCustomer;
   String? nationality;
 
+  // Reference data lists
+  List<NationalityModel> nationalities = [];
+  List<OccupationModel> occupations = [];
   List<TitleNameModel> titleNames = [];
+  List<CardTypeModel> cardTypes = [];
+
+  // Selected values for dropdowns
   TitleNameModel? selectedTitleName;
   ValueNotifier<dynamic>? titleNameNotifier;
 
-  List<OccupationModel> occupations = [];
+  NationalityModel? selectedNationality;
+  ValueNotifier<dynamic>? nationalityNotifier;
+
   OccupationModel? selectedOccupation;
+  ValueNotifier<dynamic>? occupationNotifier;
+
+  CardTypeModel? selectedCardType;
+  ValueNotifier<dynamic>? cardTypeNotifier;
+
+  // Company customer specific state
+  NationalityModel? selectedCountry;
+  ValueNotifier<NationalityModel?>? countryNotifier;
+  String? headquartersOrBranch = 'headquarters'; // Default to headquarters (also used as companyOfficeType in forms)
+  OccupationModel? selectedCompanyBusinessType;
+  ValueNotifier<dynamic>? companyBusinessTypeNotifier;
   bool showCustomOccupationInput = false;
 
-  List<CardTypeModel> cardTypes = [];
-  CardTypeModel? selectedCardType;
-  ValueNotifier<CardTypeModel>? cardTypeNotifier;
-
-  List<NationalityModel> nationalities = [];
-  NationalityModel? selectedNationality;
-  ValueNotifier<NationalityModel>? nationalityNotifier;
-
-  NationalityModel? selectedCountryModel;
-  ValueNotifier<NationalityModel>? countryNotifier;
-
-  // Additional variables for new fields
-  String? selectedCountry;
-  String? companyOfficeType = 'head'; // 'head' or 'branch'
-
-  // KYC file attachments - changed to lists with timestamps
-  List<FileWithTimestamp> occupationFiles = [];
-  List<FileWithTimestamp> riskAssessmentFiles = [];
-  List<FileWithTimestamp> customerPhotoFiles = [];
-
-  // Selected file from dropdown for each section
-  FileWithTimestamp? selectedOccupationFile;
-  FileWithTimestamp? selectedRiskAssessmentFile;
-  FileWithTimestamp? selectedCustomerPhotoFile;
-
-  // Overlay entries and layer links for file dropdowns
-  OverlayEntry? _occupationFileOverlay;
-  OverlayEntry? _riskFileOverlay;
-  OverlayEntry? _photoFileOverlay;
-  final LayerLink _occupationFileLayerLink = LayerLink();
-  final LayerLink _riskFileLayerLink = LayerLink();
-  final LayerLink _photoFileLayerLink = LayerLink();
+  bool loadingReferenceData = false;
 
   @override
   void initState() {
@@ -190,41 +218,40 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       curve: Curves.easeOutCubic,
     ));
 
-    typeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[1]);
-    selectedType = customerTypes()[1];
-
-    nationality = 'Thai';
-    titleNameNotifier = ValueNotifier<TitleNameModel?>(null);
-
-    // Initialize CardType and Nationality notifiers with placeholder values
-    cardTypeNotifier = ValueNotifier<CardTypeModel>(
-      CardTypeModel(id: 0, nameTH: 'เลือกประเภทบัตร')
-    );
-    nationalityNotifier = ValueNotifier<NationalityModel>(
-      NationalityModel(id: 0, nationalityTH: 'เลือกสัญชาติ')
-    );
-    countryNotifier = ValueNotifier<NationalityModel>(
-      NationalityModel(id: 0, countryTH: 'เลือกประเทศ')
-    );
-
-    motivePrint('Current environment: $env');
-    motivePrint('Backend URL: ${Constants.BACKEND_URL}');
-    _loadTitleNames();
-    _loadOccupations();
-    _loadCardTypes();
-    _loadNationalities();
-
-    // birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
-    Global.addressCtrl.text = "";
-    Global.provinceModel = null;
-    Global.amphureModel = null;
-    Global.tambonModel = null;
+    // motivePrint(widget.c.toJson());
     Global.provinceNotifier = ValueNotifier<ProvinceModel>(
         ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
     Global.amphureNotifier =
         ValueNotifier<AmphureModel>(AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
     Global.tambonNotifier =
         ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    var type =
+    customerTypes().where((e) => e.code == widget.c.customerType).toList();
+    if (type.isNotEmpty) {
+      selectedType = type.first;
+    } else {
+      selectedType = customerTypes()[1];
+    }
+    typeNotifier =
+        ValueNotifier<ProductTypeModel>(selectedType ?? customerTypes()[1]);
+
+    // Initialize reference data notifiers
+    titleNameNotifier = ValueNotifier<TitleNameModel?>(null);
+    nationalityNotifier = ValueNotifier<NationalityModel?>(null);
+    occupationNotifier = ValueNotifier<OccupationModel?>(null);
+    cardTypeNotifier = ValueNotifier<CardTypeModel?>(null);
+
+    // Initialize company customer notifiers
+    countryNotifier = ValueNotifier<NationalityModel?>(null);
+    companyBusinessTypeNotifier = ValueNotifier<OccupationModel?>(null);
+
+    // birthDateCtrl.text = Global.dateOnlyT(DateTime.now().toString());
+    // Global.addressCtrl.text = "";
+
+    // Load reference data
+    loadReferenceData();
+
+    init();
 
     // Start animations
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -239,267 +266,340 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   void dispose() {
     _fadeController?.dispose();
     _slideController?.dispose();
-    // Clean up file dropdown overlays
-    _occupationFileOverlay?.remove();
-    _riskFileOverlay?.remove();
-    _photoFileOverlay?.remove();
+
+    // Dispose all new controllers
+    middleNameCtrl.dispose();
+    buildingCtrl.dispose();
+    roomNoCtrl.dispose();
+    floorCtrl.dispose();
+    villageCtrl.dispose();
+    mooCtrl.dispose();
+    soiCtrl.dispose();
+    roadCtrl.dispose();
+    idCardIssueDateCtrl.dispose();
+    idCardExpiryDateCtrl.dispose();
+    entryDateCtrl.dispose();
+    exitDateCtrl.dispose();
+    occupationCustomCtrl.dispose();
+    establishmentNameCtrl.dispose();
+    registrationDateCtrl.dispose();
+
     super.dispose();
   }
 
-  Future<void> _loadTitleNames() async {
-    try {
-      motivePrint('Loading title names...');
-      var titleNamesResult = await ApiServices.getTitleNames();
-      motivePrint('Title names result: ${titleNamesResult?.status}');
+  init() async {
+    setState(() {
+      loading = true;
+    });
 
-      if (titleNamesResult?.status == "success" && titleNamesResult?.data != null) {
-        var data = jsonEncode(titleNamesResult!.data);
-        motivePrint('Title names data length: ${titleNamesResult.data.length}');
+    isSeller = widget.c.isSeller == 1 ? true : false;
+    isBuyer = widget.c.isBuyer == 1 ? true : false;
+    isCustomer = widget.c.isCustomer == 1 ? true : false;
 
-        if (mounted) {
-          setState(() {
-            titleNames = titleNameListModelFromJson(data);
-            motivePrint('Title names loaded: ${titleNames.length} items');
-          });
-        }
-      } else {
-        motivePrint('Failed to load title names: status=${titleNamesResult?.status}, data=${titleNamesResult?.data}');
-      }
-    } catch (e, stackTrace) {
-      motivePrint('Error loading title names: $e');
-      motivePrint('Stack trace: $stackTrace');
+    // Set the selected business type based on existing data
+    if (isCustomer) {
+      selectedBusinessType = 'customer';
+    } else if (isBuyer) {
+      selectedBusinessType = 'buyer';
+    } else if (isSeller) {
+      selectedBusinessType = 'seller';
     }
+
+    nationality = widget.c.nationality ?? '';
+    idCardCtrl.text = widget.c.idCard ?? '';
+    companyNameCtrl.text = widget.c.companyName ?? '';
+    firstNameCtrl.text = widget.c.firstName ?? '';
+    lastNameCtrl.text = widget.c.lastName ?? '';
+    emailAddressCtrl.text = widget.c.email ?? '';
+    phoneCtrl.text = widget.c.phoneNumber ?? '';
+    addressCtrl.text = widget.c.address ?? '';
+    remarkCtrl.text = widget.c.remark ?? '';
+    workPermitCtrl.text = widget.c.workPermit ?? '';
+    passportNoCtrl.text = widget.c.passportId ?? '';
+    taxNumberCtrl.text = widget.c.taxNumber ?? '';
+    postalCodeCtrl.text = widget.c.postalCode ?? '';
+    Global.addressCtrl.text = widget.c.address ?? '';
+    branchCodeCtrl.text = widget.c.branchCode ?? '';
+
+    birthDateCtrl.text =
+    widget.c.doB != null ? Global.dateOnlyT(widget.c.doB.toString()) : '';
+
+    // Load new enhanced fields
+    middleNameCtrl.text = widget.c.middleName ?? '';
+    buildingCtrl.text = widget.c.building ?? '';
+    roomNoCtrl.text = widget.c.roomNo ?? '';
+    floorCtrl.text = widget.c.floor ?? '';
+    houseNumberCtrl.text = widget.c.address ?? '';
+    villageCtrl.text = widget.c.village ?? '';
+    mooCtrl.text = widget.c.moo ?? '';
+    soiCtrl.text = widget.c.soi ?? '';
+    roadCtrl.text = widget.c.road ?? '';
+    occupationCustomCtrl.text = widget.c.occupationCustom ?? '';
+
+    // Load company-specific fields
+    businessNameCtrl.text = widget.c.establishmentName ?? '';
+    establishmentNameCtrl.text = widget.c.establishmentName ?? '';
+    headquartersOrBranch = widget.c.headquartersOrBranch ?? 'headquarters';
+
+    // Load dates
+    idCardIssueDateCtrl.text = widget.c.idCardIssueDate != null
+        ? Global.dateOnlyT(widget.c.idCardIssueDate.toString()) : '';
+    idCardExpiryDateCtrl.text = widget.c.idCardExpiryDate != null
+        ? Global.dateOnlyT(widget.c.idCardExpiryDate.toString()) : '';
+    issueDateCtrl.text = widget.c.idCardIssueDate != null
+        ? Global.dateOnlyT(widget.c.idCardIssueDate.toString()) : '';
+    expiryDateCtrl.text = widget.c.idCardExpiryDate != null
+        ? Global.dateOnlyT(widget.c.idCardExpiryDate.toString()) : '';
+    entryDateCtrl.text = widget.c.entryDate != null
+        ? Global.dateOnlyT(widget.c.entryDate.toString()) : '';
+    exitDateCtrl.text = widget.c.exitDate != null
+        ? Global.dateOnlyT(widget.c.exitDate.toString()) : '';
+    registrationDateCtrl.text = widget.c.registrationDate != null
+        ? Global.dateOnlyT(widget.c.registrationDate.toString()) : '';
+
+    // motivePrint(widget.c.toJson());
+
+    try {
+      var province =
+      await ApiServices.post('/customer/province', Global.requestObj(null));
+      // motivePrint(province!.toJson());
+      if (province?.status == "success") {
+        var data = jsonEncode(province?.data);
+        List<ProvinceModel> products = provinceModelFromJson(data);
+        setState(() {
+          Global.provinceList = products;
+        });
+      } else {
+        Global.provinceList = [];
+      }
+
+      filterChungVatById(widget.c.provinceId ?? 0);
+      await loadAmphureByProvince(widget.c.provinceId ?? 0);
+      filterAmpheryId(widget.c.amphureId ?? 0);
+      await loadTambonByAmphure(widget.c.amphureId ?? 0);
+      filterTambonById(widget.c.tambonId ?? 0);
+      Future.delayed(const Duration(seconds: 3));
+      setState(() {});
+    } catch (e) {
+      motivePrint(e.toString());
+    }
+    setState(() {
+      loading = false;
+    });
   }
 
-  Future<void> _loadOccupations() async {
-    try {
-      motivePrint('Loading occupations...');
-      var occupationsResult = await ApiServices.getOccupations();
-      motivePrint('Occupations result: ${occupationsResult?.status}');
+  // Helper method to format Thai ID card number: x xxxx xxxxx xx x
+  String formatIdCard(String idCard) {
+    final text = idCard.replaceAll(' ', '');
+    if (text.length != 13) return idCard;
 
-      if (occupationsResult?.status == "success" && occupationsResult?.data != null) {
-        var data = jsonEncode(occupationsResult!.data);
-        motivePrint('Occupations data length: ${occupationsResult.data.length}');
-
-        if (mounted) {
-          setState(() {
-            occupations = occupationListModelFromJson(data);
-            motivePrint('Occupations loaded: ${occupations.length} items');
-
-            // Set default based on customer type
-            if (selectedType?.code == 'company') {
-              // For company: default to "นิติบุคคลทั่วไป"
-              selectedOccupation = occupations.firstWhere(
-                (occupation) => occupation.name == 'นิติบุคคลทั่วไป',
-                orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
-              );
-              showCustomOccupationInput = false;
-            } else {
-              // For general: default to "ประสงค์ระบุเอง"
-              selectedOccupation = occupations.firstWhere(
-                (occupation) => occupation.name == 'ประสงค์ระบุเอง',
-                orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
-              );
-              // Show custom input if "ประสงค์ระบุเอง" is selected
-              showCustomOccupationInput = selectedOccupation?.name == 'ประสงค์ระบุเอง';
-            }
-            motivePrint('Default occupation: ${selectedOccupation?.name}');
-          });
-        }
-      } else {
-        motivePrint('Failed to load occupations: status=${occupationsResult?.status}');
-      }
-    } catch (e, stackTrace) {
-      motivePrint('Error loading occupations: $e');
-      motivePrint('Stack trace: $stackTrace');
-    }
+    return '${text[0]} ${text.substring(1, 5)} ${text.substring(5, 10)} ${text.substring(10, 12)} ${text[12]}';
   }
 
-  Future<void> _loadCardTypes() async {
+  // Load all reference data for dropdowns
+  Future<void> loadReferenceData() async {
+    if (!mounted) return;
+
+    setState(() {
+      loadingReferenceData = true;
+    });
+
     try {
-      motivePrint('Loading card types...');
-      var cardTypesResult = await ApiServices.getCardTypes();
-      motivePrint('Card types result: ${cardTypesResult?.status}');
-
-      if (cardTypesResult?.status == "success" && cardTypesResult?.data != null) {
-        var data = jsonEncode(cardTypesResult!.data);
-        motivePrint('Card types data length: ${cardTypesResult.data.length}');
-
-        if (mounted) {
-          setState(() {
-            cardTypes = cardTypeListModelFromJson(data);
-            motivePrint('Card types loaded: ${cardTypes.length} items');
-          });
-        }
-      } else {
-        motivePrint('Failed to load card types: status=${cardTypesResult?.status}');
-      }
-    } catch (e, stackTrace) {
-      motivePrint('Error loading card types: $e');
-      motivePrint('Stack trace: $stackTrace');
-    }
-  }
-
-  Future<void> _loadNationalities() async {
-    try {
-      motivePrint('Loading nationalities...');
+      // Load Nationalities
       var nationalitiesResult = await ApiServices.getNationalities();
-      motivePrint('Nationalities result: ${nationalitiesResult?.status}');
-
       if (nationalitiesResult?.status == "success" && nationalitiesResult?.data != null) {
         var data = jsonEncode(nationalitiesResult!.data);
-        motivePrint('Nationalities data length: ${nationalitiesResult.data.length}');
-
         if (mounted) {
           setState(() {
             nationalities = nationalityListModelFromJson(data);
-            motivePrint('Nationalities loaded: ${nationalities.length} items');
           });
         }
-      } else {
-        motivePrint('Failed to load nationalities: status=${nationalitiesResult?.status}');
       }
-    } catch (e, stackTrace) {
-      motivePrint('Error loading nationalities: $e');
-      motivePrint('Stack trace: $stackTrace');
+
+      // Load Occupations
+      var occupationsResult = await ApiServices.getOccupations();
+      if (occupationsResult?.status == "success" && occupationsResult?.data != null) {
+        var data = jsonEncode(occupationsResult!.data);
+        if (mounted) {
+          setState(() {
+            occupations = occupationListModelFromJson(data);
+          });
+        }
+      }
+
+      // Load TitleNames
+      var titleNamesResult = await ApiServices.getTitleNames();
+      if (titleNamesResult?.status == "success" && titleNamesResult?.data != null) {
+        var data = jsonEncode(titleNamesResult!.data);
+        if (mounted) {
+          setState(() {
+            titleNames = titleNameListModelFromJson(data);
+          });
+        }
+      }
+
+      // Load CardTypes
+      var cardTypesResult = await ApiServices.getCardTypes();
+      if (cardTypesResult?.status == "success" && cardTypesResult?.data != null) {
+        var data = jsonEncode(cardTypesResult!.data);
+        if (mounted) {
+          setState(() {
+            cardTypes = cardTypeListModelFromJson(data);
+          });
+        }
+      }
+
+      // Bind dropdown values after loading reference data
+      _bindDropdownValues();
+    } catch (e) {
+      motivePrint('Error loading reference data: ${e.toString()}');
+    }
+
+    if (mounted) {
+      setState(() {
+        loadingReferenceData = false;
+      });
     }
   }
 
-  Widget _buildModernCheckboxTile({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required IconData icon,
-    required Color color,
-    required Function(bool?) onChanged,
-  }) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: BoxDecoration(
-        gradient: value
-            ? LinearGradient(
-                colors: [
-                  color.withValues(alpha: 0.1),
-                  color.withValues(alpha: 0.05),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        color: value ? null : Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: value ? color : Colors.grey[300]!,
-          width: value ? 2 : 1,
-        ),
-        boxShadow: value
-            ? [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => onChanged(!value),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: value ? color : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: value ? color : Colors.grey[400]!,
-                      width: 2,
-                    ),
-                  ),
-                  child: value
-                      ? const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 16,
-                        )
-                      : null,
-                ),
-                const SizedBox(width: 16),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color:
-                        value ? color.withValues(alpha: 0.2) : Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: value ? color : Colors.grey[600],
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: value ? color : Colors.grey[800],
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: value
-                              ? color.withValues(alpha: 0.8)
-                              : Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (value)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'เลือกแล้ว',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  // Bind dropdown values from customer data
+  void _bindDropdownValues() {
+    if (!mounted) return;
+
+    setState(() {
+      // Bind Title Name
+      if (widget.c.titleName != null && titleNames.isNotEmpty) {
+        selectedTitleName = titleNames.firstWhere(
+          (title) => title.name == widget.c.titleName,
+          orElse: () => titleNames.first,
+        );
+        titleNameNotifier?.value = selectedTitleName;
+      }
+
+      // Bind Nationality
+      if (widget.c.nationality != null && nationalities.isNotEmpty) {
+        selectedNationality = nationalities.firstWhere(
+          (nat) => nat.nationalityEN == widget.c.nationality ||
+                   nat.nationalityTH == widget.c.nationality,
+          orElse: () => nationalities.first,
+        );
+        nationalityNotifier?.value = selectedNationality;
+      }
+
+      // Bind Card Type
+      if (widget.c.cardType != null && cardTypes.isNotEmpty) {
+        selectedCardType = cardTypes.firstWhere(
+          (cardType) => cardType.nameTH == widget.c.cardType ||
+                        cardType.nameEN == widget.c.cardType,
+          orElse: () => cardTypes.first,
+        );
+        cardTypeNotifier?.value = selectedCardType;
+      }
+
+      // Bind Occupation (for general customer)
+      if (widget.c.occupation != null && occupations.isNotEmpty) {
+        selectedOccupation = occupations.firstWhere(
+          (occ) => occ.name == widget.c.occupation,
+          orElse: () => occupations.first,
+        );
+        occupationNotifier?.value = selectedOccupation;
+      }
+
+      // Bind Country (for company customer)
+      if (widget.c.country != null && nationalities.isNotEmpty) {
+        selectedCountry = nationalities.firstWhere(
+          (nat) => nat.countryEN == widget.c.country ||
+                   nat.countryTH == widget.c.country,
+          orElse: () => nationalities.first,
+        );
+        countryNotifier?.value = selectedCountry;
+      }
+
+      // Bind Business Type (for company customer)
+      if (widget.c.businessType != null && occupations.isNotEmpty) {
+        selectedCompanyBusinessType = occupations.firstWhere(
+          (occ) => occ.name == widget.c.businessType,
+          orElse: () => occupations.first,
+        );
+        companyBusinessTypeNotifier?.value = selectedCompanyBusinessType;
+      }
+    });
+  }
+
+  // Pick documents for attachment
+  Future<void> pickDocuments() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'],
+        allowMultiple: true,
+      );
+
+      if (result != null) {
+        setState(() {
+          attachedDocuments.addAll(result.files);
+        });
+      }
+    } catch (e) {
+      motivePrint('Error picking documents: ${e.toString()}');
+    }
+  }
+
+  // Remove attached document
+  void removeDocument(int index) {
+    setState(() {
+      attachedDocuments.removeAt(index);
+    });
+  }
+
+  // Pick customer photo from camera
+  Future<void> pickCustomerPhoto() async {
+    try {
+      final XFile? photo = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (photo != null) {
+        setState(() {
+          customerPhoto = File(photo.path);
+        });
+      }
+    } catch (e) {
+      motivePrint('Error picking photo: ${e.toString()}');
+    }
+  }
+
+  // Pick customer photo from gallery
+  Future<void> pickCustomerPhotoFromGallery() async {
+    try {
+      final XFile? photo = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (photo != null) {
+        setState(() {
+          customerPhoto = File(photo.path);
+        });
+      }
+    } catch (e) {
+      motivePrint('Error picking photo: ${e.toString()}');
+    }
+  }
+
+  formattedDate(dt) {
+    try {
+      DateTime dateTime = DateTime.parse(dt);
+      String formattedDate = DateFormat.yMMMMd('th_TH').format(dateTime);
+      return formattedDate;
+    } catch (e) {
+      return dt.split('').toString() + e.toString();
+    }
   }
 
   Widget _buildModernCard({
@@ -515,7 +615,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha:0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -525,78 +625,38 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
-  Widget buildTextFieldBig({
-    required String labelText,
-    String? validator,
-    String? hintText,
-    required TextInputType inputType,
-    required TextEditingController controller,
-    Widget? prefixIcon,
-    int maxLines = 1,
-    List<TextInputFormatter>? inputFormatters,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: Colors.grey[800],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextFormField(
-            controller: controller,
-            keyboardType: inputType,
-            maxLines: maxLines,
-            inputFormatters: inputFormatters,
-            style: TextStyle(fontSize: 14.sp),
-            decoration: InputDecoration(
-              hintText: hintText ?? labelText,
-              prefixIcon: prefixIcon,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.teal, width: 2),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+  // Check if selected province is Bangkok
+  bool _isBangkok() {
+    if (Global.provinceModel == null) return false;
+    String provinceName = Global.provinceModel?.nameTh?.toLowerCase() ?? '';
+    return provinceName.contains('กรุงเทพ') || provinceName.contains('bangkok');
   }
 
-  Widget buildTextField({
+  // Get label for Tambon based on province
+  String _getTambonLabel() {
+    return _isBangkok() ? 'เลือกแขวง' : 'เลือกตำบล';
+  }
+
+  // Get label for Amphure based on province
+  String _getAmphureLabel() {
+    return _isBangkok() ? 'เลือกเขต' : 'เลือกอำเภอ';
+  }
+
+  // Get label for Province (no prefix for Bangkok)
+  String _getProvinceLabel() {
+    return 'เลือกจังหวัด';
+  }
+
+  Widget buildTextFieldBig({
     required String labelText,
+    String? hintText,
     String? validator,
     required TextInputType inputType,
     required TextEditingController controller,
-    int line = 1,
     Widget? prefixIcon,
+    List<TextInputFormatter>? inputFormatters,
+    int maxLines = 1,
+    int line = 1,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -604,7 +664,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha:0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -613,14 +673,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       child: TextFormField(
         controller: controller,
         keyboardType: inputType,
-        maxLines: line,
+        maxLines: line > 1 ? line : maxLines,
+        inputFormatters: inputFormatters,
         style: TextStyle(fontSize: 14.sp),
         decoration: InputDecoration(
           labelText: labelText,
+          hintText: hintText,
           prefixIcon: prefixIcon,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -711,67 +772,134 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
-  Widget _buildSimpleDropdown({
-    required String labelText,
-    required String? value,
-    required List<String> items,
-    required Function(String?) onChanged,
-    IconData? icon,
+  Widget _buildModernCheckboxTile({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required IconData icon,
+    required Color color,
+    required Function(bool?) onChanged,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: Colors.grey[800],
-            fontWeight: FontWeight.w500,
-          ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        gradient: value
+            ? LinearGradient(
+          colors: [
+            color.withValues(alpha:0.1),
+            color.withValues(alpha:0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        )
+            : null,
+        color: value ? null : Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: value ? color : Colors.grey[300]!,
+          width: value ? 2 : 1,
         ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        boxShadow: value ? [
+          BoxShadow(
+            color: color.withValues(alpha:0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          child: DropdownButtonFormField<String>(
-            value: value,
-            decoration: InputDecoration(
-              hintText: labelText,
-              prefixIcon: icon != null ? Icon(icon, size: 14.sp) : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.teal, width: 2),
-              ),
+        ] : [
+          BoxShadow(
+            color: Colors.black.withValues(alpha:0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => onChanged(!value),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: value ? color : Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: value ? color : Colors.grey[400]!,
+                      width: 2,
+                    ),
+                  ),
+                  child: value
+                      ? const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 16,
+                  )
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: value ? color.withValues(alpha:0.2) : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: value ? color : Colors.grey[600],
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: value ? color : Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: value ? color.withValues(alpha:0.8) : Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (value)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'เลือกแล้ว',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            items: items.map((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item, style: TextStyle(fontSize: 14.sp)),
-              );
-            }).toList(),
-            onChanged: onChanged,
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -783,17 +911,18 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         height: 300,
         child: TitleContent(
           backButton: true,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 18.0, right: 20),
-            child: Text("เพิ่มลูกค้า",
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900)),
-          ),
+          title: Text("แก้ไขลูกค้า",
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900)),
         ),
       ),
-      body: SafeArea(
+      body: loading
+          ? const Center(
+        child: LoadingProgress(),
+      )
+          : SafeArea(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
@@ -801,13 +930,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           child: FadeTransition(
             opacity: _fadeAnimation ?? const AlwaysStoppedAnimation(1.0),
             child: SlideTransition(
-              position:
-                  _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+              position: _slideAnimation ?? const AlwaysStoppedAnimation(Offset.zero),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -826,22 +954,21 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                               ),
                               const SizedBox(height: 12),
                               SizedBox(
-                                height: 50,
+                                height: 70,
                                 child: MiraiDropDownMenu<ProductTypeModel>(
                                   key: UniqueKey(),
                                   children: customerTypes(),
                                   space: 4,
                                   maxHeight: 360,
                                   showSearchTextField: true,
-                                  selectedItemBackgroundColor:
-                                      Colors.transparent,
+                                  selectedItemBackgroundColor: Colors.transparent,
                                   emptyListMessage: 'ไม่มีข้อมูล',
                                   showSelectedItemBackgroundColor: true,
                                   itemWidgetBuilder: (
-                                    int index,
-                                    ProductTypeModel? project, {
-                                    bool isItemSelected = false,
-                                  }) {
+                                      int index,
+                                      ProductTypeModel? project, {
+                                        bool isItemSelected = false,
+                                      }) {
                                     return DropDownItemWidget(
                                       project: project,
                                       isItemSelected: isItemSelected,
@@ -852,22 +979,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   onChanged: (ProductTypeModel value) {
                                     selectedType = value;
                                     typeNotifier!.value = value;
-                                    if (selectedType?.code == 'general') {
-                                      nationality = 'Thai';
-                                      // Set default occupation to "ประสงค์ระบุเอง" for general customers
-                                      selectedOccupation = occupations.firstWhere(
-                                        (occupation) => occupation.name == 'ประสงค์ระบุเอง',
-                                        orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
-                                      );
-                                      showCustomOccupationInput = selectedOccupation?.name == 'ประสงค์ระบุเอง';
-                                    } else if (selectedType?.code == 'company') {
-                                      // Set default occupation to "นิติบุคคลทั่วไป" for company customers
-                                      selectedOccupation = occupations.firstWhere(
-                                        (occupation) => occupation.name == 'นิติบุคคลทั่วไป',
-                                        orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
-                                      );
-                                      showCustomOccupationInput = false;
-                                    }
                                     setState(() {});
                                   },
                                   child: DropDownObjectChildWidget(
@@ -879,6 +990,38 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                               ),
                             ],
                           ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        CustomerSummaryPanel(
+                          idCard: idCardCtrl.text,
+                          titleName: selectedTitleName?.name,
+                          firstName: firstNameCtrl.text,
+                          middleName: middleNameCtrl.text,
+                          lastName: lastNameCtrl.text,
+                          email: emailAddressCtrl.text,
+                          phone: phoneCtrl.text,
+                          dateOfBirth: widget.c.doB,
+                          issueDate: widget.c.idCardIssueDate,
+                          expiryDate: widget.c.idCardExpiryDate,
+                          building: buildingCtrl.text,
+                          roomNo: roomNoCtrl.text,
+                          floor: floorCtrl.text,
+                          address: addressCtrl.text,
+                          village: villageCtrl.text,
+                          moo: mooCtrl.text,
+                          soi: soiCtrl.text,
+                          road: roadCtrl.text,
+                          tambon: Global.tambonModel?.nameTh,
+                          amphure: Global.amphureModel?.nameTh,
+                          province: Global.provinceModel?.nameTh,
+                          postalCode: postalCodeCtrl.text,
+                          remark: remarkCtrl.text,
+                          occupation: selectedOccupation?.name,
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         _buildModernCard(
                           child: Column(
@@ -908,10 +1051,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isCustomer ? const Color(0xFFFFE8F5) : Colors.white,
+                                          color: isCustomer ? Colors.pink.withValues(alpha: 0.1) : Colors.white,
                                           borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isCustomer ? const Color(0xFFE91E63) : Colors.grey[300]!,
+                                            color: isCustomer ? Colors.pink : Colors.grey[300]!,
                                             width: isCustomer ? 2 : 1,
                                           ),
                                         ),
@@ -920,7 +1063,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isCustomer,
-                                              activeColor: const Color(0xFFE91E63),
+                                              activeColor: Colors.pink,
                                               onChanged: (value) {
                                                 setState(() {
                                                   isCustomer = value ?? false;
@@ -928,7 +1071,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.store, color: isCustomer ? const Color(0xFFE91E63) : Colors.grey, size: 20),
+                                            Icon(Icons.store, color: isCustomer ? Colors.pink : Colors.grey, size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
@@ -936,7 +1079,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   fontWeight: isCustomer ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isCustomer ? const Color(0xFFE91E63) : Colors.grey[800],
+                                                  color: isCustomer ? Colors.pink : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -959,10 +1102,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isBuyer ? const Color(0xFFFFF9E6) : Colors.white,
+                                          color: isBuyer ? Colors.pink.withValues(alpha: 0.1) : Colors.white,
                                           borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isBuyer ? const Color(0xFFFFC107) : Colors.grey[300]!,
+                                            color: isBuyer ? Colors.pink : Colors.grey[300]!,
                                             width: isBuyer ? 2 : 1,
                                           ),
                                         ),
@@ -971,7 +1114,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isBuyer,
-                                              activeColor: const Color(0xFFFFC107),
+                                              activeColor: Colors.pink,
                                               onChanged: (value) {
                                                 setState(() {
                                                   isBuyer = value ?? false;
@@ -979,7 +1122,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.business, color: isBuyer ? const Color(0xFFFFC107) : Colors.grey, size: 20),
+                                            Icon(Icons.business, color: isBuyer ? Colors.pink : Colors.grey, size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
@@ -987,7 +1130,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   fontWeight: isBuyer ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isBuyer ? const Color(0xFFFFC107) : Colors.grey[800],
+                                                  color: isBuyer ? Colors.pink : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -1010,10 +1153,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isSeller ? const Color(0xFFFFEFE6) : Colors.white,
+                                          color: isSeller ? Colors.pink.withValues(alpha: 0.1) : Colors.white,
                                           borderRadius: BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isSeller ? const Color(0xFFFF9800) : Colors.grey[300]!,
+                                            color: isSeller ? Colors.pink : Colors.grey[300]!,
                                             width: isSeller ? 2 : 1,
                                           ),
                                         ),
@@ -1022,7 +1165,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isSeller,
-                                              activeColor: const Color(0xFFFF9800),
+                                              activeColor: Colors.pink,
                                               onChanged: (value) {
                                                 setState(() {
                                                   isSeller = value ?? false;
@@ -1030,7 +1173,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.inventory, color: isSeller ? const Color(0xFFFF9800) : Colors.grey, size: 20),
+                                            Icon(Icons.inventory, color: isSeller ? Colors.pink : Colors.grey, size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
@@ -1038,7 +1181,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   fontWeight: isSeller ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isSeller ? const Color(0xFFFF9800) : Colors.grey[800],
+                                                  color: isSeller ? Colors.pink : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -1053,6 +1196,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         _buildModernCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1065,30 +1211,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   color: Colors.grey[800],
                                 ),
                               ),
-                              const SizedBox(height: 20),
-                              // Nationality Radio Buttons
+                              const SizedBox(height: 10),
                               Row(
                                 children: <Widget>[
                                   Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: nationality == 'Thai'
-                                            ? Colors.teal.withValues(alpha: 0.1)
-                                            : Colors.grey[50],
+                                        color: nationality == 'Thai' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: nationality == 'Thai'
-                                              ? Colors.teal
-                                              : Colors.grey[300]!,
+                                          color: nationality == 'Thai' ? Colors.teal : Colors.grey[300]!,
                                           width: nationality == 'Thai' ? 2 : 1,
                                         ),
                                       ),
                                       child: RadioListTile<String>(
                                         title: Text(
                                           'สัญชาติไทย',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                          ),
+                                          style: TextStyle(fontSize: 14.sp),
                                         ),
                                         value: 'Thai',
                                         groupValue: nationality,
@@ -1106,95 +1245,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   Expanded(
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: nationality == 'Foreigner'
-                                            ? Colors.teal.withValues(alpha: 0.1)
-                                            : Colors.grey[50],
+                                        color: nationality == 'Foreigner' ? Colors.teal.withValues(alpha:0.1) : Colors.grey[50],
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: nationality == 'Foreigner'
-                                              ? Colors.teal
-                                              : Colors.grey[300]!,
-                                          width: nationality == 'Foreigner'
-                                              ? 2
-                                              : 1,
+                                          color: nationality == 'Foreigner' ? Colors.teal : Colors.grey[300]!,
+                                          width: nationality == 'Foreigner' ? 2 : 1,
                                         ),
                                       ),
                                       child: RadioListTile<String>(
                                         title: Text(
                                           'ต่างชาติ',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                          ),
+                                          style: TextStyle(fontSize: 14.sp),
                                         ),
                                         value: 'Foreigner',
                                         groupValue: nationality,
                                         visualDensity: VisualDensity.standard,
                                         activeColor: Colors.teal,
-                                        onChanged: (String? value) async {
+                                        onChanged: (String? value) {
                                           setState(() {
                                             nationality = value;
                                           });
-
-                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner
-                                          if (value == 'Foreigner' && selectedType?.code == 'general') {
-                                            try {
-                                              // Set province to "ไม่ระบุ" (ID: 78)
-                                              final notSpecifiedProvince = Global.provinceList.firstWhere(
-                                                (p) => p.id == 78,
-                                                orElse: () => ProvinceModel(id: 78, nameTh: 'ไม่ระบุ'),
-                                              );
-                                              Global.provinceModel = notSpecifiedProvince;
-                                              Global.provinceNotifier!.value = notSpecifiedProvince;
-
-                                              // Load amphure list for province 78
-                                              var result = await ApiServices.post(
-                                                '/customer/amphure/78',
-                                                Global.requestObj(null),
-                                              );
-
-                                              if (result?.status == "success") {
-                                                var data = jsonEncode(result?.data);
-                                                List<AmphureModel> amphures = amphureModelFromJson(data);
-                                                setState(() {
-                                                  Global.amphureList = amphures;
-                                                });
-
-                                                // Set amphure to "ไม่ระบุ" (ID: 9614)
-                                                final notSpecifiedAmphure = amphures.firstWhere(
-                                                  (a) => a.id == 9614,
-                                                  orElse: () => AmphureModel(id: 9614, nameTh: 'ไม่ระบุ'),
-                                                );
-                                                Global.amphureModel = notSpecifiedAmphure;
-                                                Global.amphureNotifier!.value = notSpecifiedAmphure;
-
-                                                // Load tambon list for amphure 9614
-                                                var tambonResult = await ApiServices.post(
-                                                  '/customer/tambon/9614',
-                                                  Global.requestObj(null),
-                                                );
-
-                                                if (tambonResult?.status == "success") {
-                                                  var tambonData = jsonEncode(tambonResult?.data);
-                                                  List<TambonModel> tambons = tambonModelFromJson(tambonData);
-                                                  setState(() {
-                                                    Global.tambonList = tambons;
-                                                  });
-
-                                                  // Set tambon to "ไม่ระบุ" (ID: 3023)
-                                                  final notSpecifiedTambon = tambons.firstWhere(
-                                                    (t) => t.id == 3023,
-                                                    orElse: () => TambonModel(id: 3023, nameTh: 'ไม่ระบุ'),
-                                                  );
-                                                  Global.tambonModel = notSpecifiedTambon;
-                                                  Global.tambonNotifier!.value = notSpecifiedTambon;
-
-                                                  setState(() {});
-                                                }
-                                              }
-                                            } catch (e) {
-                                              motivePrint(e.toString());
-                                            }
-                                          }
                                         },
                                       ),
                                     ),
@@ -1247,7 +1317,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 });
                                               },
                                               emptyMessage: 'ไม่มีข้อมูล',
-                                              nationality: nationality,
                                             ),
                                           ],
                                         ),
@@ -1354,7 +1423,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             ),
                                             const SizedBox(height: 4),
                                             Container(
-                                              height: 50,
+                                              height: 70,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 borderRadius: BorderRadius.circular(12),
@@ -1418,7 +1487,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             ),
                                             const SizedBox(height: 4),
                                             Container(
-                                              height: 50,
+                                              height: 70,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 borderRadius: BorderRadius.circular(12),
@@ -1532,7 +1601,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 });
                                               },
                                               emptyMessage: 'ไม่มีข้อมูล',
-                                              nationality: nationality,
                                             ),
                                           ],
                                         ),
@@ -1716,15 +1784,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 Expanded(
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      color: companyOfficeType == 'head'
+                                                      color: headquartersOrBranch == 'head'
                                                           ? Colors.teal.withValues(alpha: 0.1)
                                                           : Colors.grey[50],
                                                       borderRadius: BorderRadius.circular(12),
                                                       border: Border.all(
-                                                        color: companyOfficeType == 'head'
+                                                        color: headquartersOrBranch == 'head'
                                                             ? Colors.teal
                                                             : Colors.grey[300]!,
-                                                        width: companyOfficeType == 'head' ? 2 : 1,
+                                                        width: headquartersOrBranch == 'head' ? 2 : 1,
                                                       ),
                                                     ),
                                                     child: RadioListTile<String>(
@@ -1735,12 +1803,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                         ),
                                                       ),
                                                       value: 'head',
-                                                      groupValue: companyOfficeType,
+                                                      groupValue: headquartersOrBranch,
                                                       visualDensity: VisualDensity.standard,
                                                       activeColor: Colors.teal,
                                                       onChanged: (String? value) {
                                                         setState(() {
-                                                          companyOfficeType = value;
+                                                          headquartersOrBranch = value;
                                                         });
                                                       },
                                                     ),
@@ -1750,15 +1818,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 Expanded(
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      color: companyOfficeType == 'branch'
+                                                      color: headquartersOrBranch == 'branch'
                                                           ? Colors.teal.withValues(alpha: 0.1)
                                                           : Colors.grey[50],
                                                       borderRadius: BorderRadius.circular(12),
                                                       border: Border.all(
-                                                        color: companyOfficeType == 'branch'
+                                                        color: headquartersOrBranch == 'branch'
                                                             ? Colors.teal
                                                             : Colors.grey[300]!,
-                                                        width: companyOfficeType == 'branch' ? 2 : 1,
+                                                        width: headquartersOrBranch == 'branch' ? 2 : 1,
                                                       ),
                                                     ),
                                                     child: RadioListTile<String>(
@@ -1769,12 +1837,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                         ),
                                                       ),
                                                       value: 'branch',
-                                                      groupValue: companyOfficeType,
+                                                      groupValue: headquartersOrBranch,
                                                       visualDensity: VisualDensity.standard,
                                                       activeColor: Colors.teal,
                                                       onChanged: (String? value) {
                                                         setState(() {
-                                                          companyOfficeType = value;
+                                                          headquartersOrBranch = value;
                                                         });
                                                       },
                                                     ),
@@ -1899,7 +1967,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 );
                                               },
                                               onChanged: (NationalityModel value) {
-                                                selectedCountryModel = value;
+                                                selectedCountry = value;
                                                 countryNotifier!.value = value;
                                                 setState(() {});
                                               },
@@ -1925,7 +1993,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                       width: 1.0,
                                                     ),
                                                   ),
-                                                  child: ValueListenableBuilder<NationalityModel>(
+                                                  child: ValueListenableBuilder<NationalityModel?>(
                                                     valueListenable: countryNotifier!,
                                                     builder: (_, country, __) {
                                                       return Row(
@@ -1934,7 +2002,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                             child: Align(
                                                               alignment: Alignment.centerLeft,
                                                               child: Text(
-                                                                country.countryTH ?? 'เลือกประเทศ',
+                                                                country?.countryTH ?? 'เลือกประเทศ',
                                                                 maxLines: 1,
                                                                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                                                   color: textColor,
@@ -1997,15 +2065,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       Expanded(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: companyOfficeType == 'head'
+                                            color: headquartersOrBranch == 'head'
                                                 ? Colors.teal.withValues(alpha: 0.1)
                                                 : Colors.grey[50],
                                             borderRadius: BorderRadius.circular(12),
                                             border: Border.all(
-                                              color: companyOfficeType == 'head'
+                                              color: headquartersOrBranch == 'head'
                                                   ? Colors.teal
                                                   : Colors.grey[300]!,
-                                              width: companyOfficeType == 'head' ? 2 : 1,
+                                              width: headquartersOrBranch == 'head' ? 2 : 1,
                                             ),
                                           ),
                                           child: RadioListTile<String>(
@@ -2014,11 +2082,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               style: TextStyle(fontSize: 14.sp),
                                             ),
                                             value: 'head',
-                                            groupValue: companyOfficeType,
+                                            groupValue: headquartersOrBranch,
                                             activeColor: Colors.teal,
                                             onChanged: (String? value) {
                                               setState(() {
-                                                companyOfficeType = value;
+                                                headquartersOrBranch = value;
                                               });
                                             },
                                           ),
@@ -2028,15 +2096,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       Expanded(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: companyOfficeType == 'branch'
+                                            color: headquartersOrBranch == 'branch'
                                                 ? Colors.teal.withValues(alpha: 0.1)
                                                 : Colors.grey[50],
                                             borderRadius: BorderRadius.circular(12),
                                             border: Border.all(
-                                              color: companyOfficeType == 'branch'
+                                              color: headquartersOrBranch == 'branch'
                                                   ? Colors.teal
                                                   : Colors.grey[300]!,
-                                              width: companyOfficeType == 'branch' ? 2 : 1,
+                                              width: headquartersOrBranch == 'branch' ? 2 : 1,
                                             ),
                                           ),
                                           child: RadioListTile<String>(
@@ -2045,11 +2113,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               style: TextStyle(fontSize: 14.sp),
                                             ),
                                             value: 'branch',
-                                            groupValue: companyOfficeType,
+                                            groupValue: headquartersOrBranch,
                                             activeColor: Colors.teal,
                                             onChanged: (String? value) {
                                               setState(() {
-                                                companyOfficeType = value;
+                                                headquartersOrBranch = value;
                                               });
                                             },
                                           ),
@@ -2149,7 +2217,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                         child: buildTextFieldBig(
                                           labelText: 'เลขที่ห้อง',
                                           inputType: TextInputType.text,
-                                          controller: roomNumberCtrl,
+                                          controller: roomNoCtrl,
                                         ),
                                       ),
                                     ],
@@ -2173,7 +2241,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                         child: buildTextFieldBig(
                                           labelText: 'เลขที่',
                                           inputType: TextInputType.text,
-                                          controller: Global.addressCtrl,
+                                          controller: houseNumberCtrl,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -2242,7 +2310,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 4,
                                             ),
                                             Container(
-                                              height: 50,
+                                              height: 70,
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
@@ -2341,7 +2409,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 4,
                                             ),
                                             Container(
-                                              height: 50,
+                                              height: 70,
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
@@ -2440,7 +2508,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 4,
                                             ),
                                             Container(
-                                              height: 50,
+                                              height: 70,
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
@@ -2531,7 +2599,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             const SizedBox(
                                               height: 10,
                                             ),
-                                            buildTextField(
+                                            buildTextFieldBig(
                                               line: 2,
                                               labelText: 'หมายเหตุ'.tr(),
                                               validator: null,
@@ -2615,128 +2683,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              // File attachment row with dropdown and action buttons
-                              Row(
-                                children: [
-                                  // Dropdown for file selection
-                                  Expanded(
-                                    child: CompositedTransformTarget(
-                                      link: _occupationFileLayerLink,
-                                      child: Builder(
-                                        builder: (BuildContext btnContext) {
-                                          return InkWell(
-                                            onTap: occupationFiles.isEmpty
-                                                ? null
-                                                : () {
-                                                    if (_occupationFileOverlay == null) {
-                                                      showFileSelectionDropdown('occupation', btnContext);
-                                                    } else {
-                                                      _removeFileOverlay('occupation');
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                            child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedOccupationFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedOccupationFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedOccupationFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                            ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
-                                          ],
-                                        ),
-                                      ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Add button (เพิ่ม)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'เพิ่ม',
-                                      icon: Icons.save,
-                                      color: const Color(0xFF26A69A),
-                                      size: ButtonSize.medium,
-                                      onTap: () => pickFile('occupation'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Delete button (ลบ)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'ลบ',
-                                      icon: Icons.delete,
-                                      color: selectedOccupationFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedOccupationFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedOccupationFile != null,
-                                      onTap: () => removeFileFromList('occupation'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Save/Download button (บันทึก)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'บันทึก',
-                                      icon: Icons.download,
-                                      color: selectedOccupationFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedOccupationFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedOccupationFile != null,
-                                      onTap: () => downloadFile('occupation'),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              ],
 
-                              const SizedBox(height: 16),
-                            ],
-
-                              // Section: ประเภทธุรกิจ (Business Type) - Only for company customers
+                              // Section 2: ประเภทธุรกิจ (Business Type) - Only for company customers
                               if (selectedType?.code == 'company') ...[
                                 Text(
                                   'ประเภทธุรกิจ',
@@ -2749,286 +2698,87 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 16),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                  child: GroupedOccupationDropdown(
-                                    occupations: occupations.where((occupation) => occupation.category == 'ประเภทธุรกิจ').toList(),
-                                    selectedOccupation: selectedOccupation,
-                                    onChanged: (OccupationModel value) {
-                                      setState(() {
-                                        selectedOccupation = value;
-                                      });
-                                    },
-                                    emptyMessage: 'ไม่มีข้อมูล',
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'ประเภทธุรกิจ',
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey[800],
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      GroupedOccupationDropdown(
+                                        occupations: occupations.where((occupation) => occupation.category == 'ประเภทธุรกิจ').toList(),
+                                        selectedOccupation: selectedCompanyBusinessType,
+                                        onChanged: (OccupationModel value) {
+                                          setState(() {
+                                            selectedCompanyBusinessType = value;
+                                          });
+                                        },
+                                        emptyMessage: 'ไม่มีข้อมูล',
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 const SizedBox(height: 32),
                               ],
-
-                              // Section 2: แบบประเมินความเสี่ยงลูกค้า (Risk Assessment)
+                            ],
+                          ),
+                        ),
+                        // KYC Attachment Sections
+                        const SizedBox(height: 20),
+                        _buildModernCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                'แบบประเมินความเสี่ยงลูกค้า',
+                                'เอกสารแนบ KYC',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.grey[800],
                                 ),
                               ),
-                              const SizedBox(height: 16),
-                              // File attachment row with dropdown and action buttons
-                              Row(
-                                children: [
-                                  // Dropdown for file selection
-                                  Expanded(
-                                    child: CompositedTransformTarget(
-                                      link: _riskFileLayerLink,
-                                      child: Builder(
-                                        builder: (BuildContext btnContext) {
-                                          return InkWell(
-                                            onTap: riskAssessmentFiles.isEmpty
-                                                ? null
-                                                : () {
-                                                    if (_riskFileOverlay == null) {
-                                                      showFileSelectionDropdown('risk', btnContext);
-                                                    } else {
-                                                      _removeFileOverlay('risk');
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                            child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedRiskAssessmentFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedRiskAssessmentFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedRiskAssessmentFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                            ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
-                                          ],
-                                        ),
-                                      ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Add button (เพิ่ม)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'เพิ่ม',
-                                      icon: Icons.add,
-                                      color: const Color(0xFF26A69A),
-                                      size: ButtonSize.medium,
-                                      onTap: () => pickFile('risk'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Delete button (ลบ)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'ลบ',
-                                      icon: Icons.delete,
-                                      color: selectedRiskAssessmentFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedRiskAssessmentFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedRiskAssessmentFile != null,
-                                      onTap: () => removeFileFromList('risk'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Save/Download button (บันทึก)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'บันทึก',
-                                      icon: Icons.download,
-                                      color: selectedRiskAssessmentFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedRiskAssessmentFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedRiskAssessmentFile != null,
-                                      onTap: () => downloadFile('risk'),
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 20),
+
+                              // 1. Occupation Documents
+                              AttachmentSection(
+                                title: 'อาชีพ - ไฟล์ภาพ / วันที่ Attachment',
+                                attachmentType: 'Occupation',
+                                customerId: widget.c.id,
                               ),
 
-                              const SizedBox(height: 32),
+                              const SizedBox(height: 24),
 
-                              // Section 3: ภาพลูกค้า (Customer Photo)
-                              Text(
-                                'ภาพลูกค้า',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
-                                ),
+                              // 2. Risk Assessment Form
+                              AttachmentSection(
+                                title: 'แบบประเมินความเสี่ยงลูกค้า',
+                                attachmentType: 'RiskAssessment',
+                                customerId: widget.c.id,
                               ),
-                              const SizedBox(height: 16),
-                              // File attachment row with dropdown and action buttons
-                              Row(
-                                children: [
-                                  // Dropdown for file selection
-                                  Expanded(
-                                    child: CompositedTransformTarget(
-                                      link: _photoFileLayerLink,
-                                      child: Builder(
-                                        builder: (BuildContext btnContext) {
-                                          return InkWell(
-                                            onTap: customerPhotoFiles.isEmpty
-                                                ? null
-                                                : () {
-                                                    if (_photoFileOverlay == null) {
-                                                      showFileSelectionDropdown('photo', btnContext);
-                                                    } else {
-                                                      _removeFileOverlay('photo');
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                            child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedCustomerPhotoFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedCustomerPhotoFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedCustomerPhotoFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
-                                            ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
-                                          ],
-                                        ),
-                                      ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Add button (เพิ่ม)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'เพิ่ม',
-                                      icon: Icons.add,
-                                      color: const Color(0xFF26A69A),
-                                      size: ButtonSize.medium,
-                                      onTap: () => pickFile('photo'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Delete button (ลบ)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'ลบ',
-                                      icon: Icons.delete,
-                                      color: selectedCustomerPhotoFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedCustomerPhotoFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedCustomerPhotoFile != null,
-                                      onTap: () => removeFileFromList('photo'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Save/Download button (บันทึก)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'บันทึก',
-                                      icon: Icons.download,
-                                      color: selectedCustomerPhotoFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedCustomerPhotoFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedCustomerPhotoFile != null,
-                                      onTap: () => downloadFile('photo'),
-                                    ),
-                                  ),
-                                ],
+
+                              const SizedBox(height: 24),
+
+                              // 3. Customer Photo
+                              AttachmentSection(
+                                title: 'ภาพลูกค้า',
+                                attachmentType: 'Photo',
+                                customerId: widget.c.id,
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+                      ], // End of Column children
+                    ), // End of SingleChildScrollView
+                  ), // End of Padding
+                ), // End of SizedBox
+              ), // End of SlideTransition
+            ), // End of FadeTransition
+          ), // End of GestureDetector
+        ), // End of SafeArea
       ),
       persistentFooterButtons: [
         Container(
@@ -3039,7 +2789,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             style: ButtonStyle(
                 foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
                 backgroundColor:
-                    WidgetStateProperty.all<Color>(Colors.teal[700]!),
+                WidgetStateProperty.all<Color>(Colors.teal[700]!),
                 elevation: WidgetStateProperty.all<double>(0),
                 shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -3057,7 +2807,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
               if (selectedType?.code == 'company') {
                 taxNumber = nationality == 'Thai'
                     ? taxNumberCtrl.text
-                    : idCardCtrl.text;
+                    : taxNumberCtrl.text;
               } else {
                 taxNumber = nationality == 'Thai'
                     ? idCardCtrl.text
@@ -3065,35 +2815,29 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
               }
 
               if (taxNumber.isNotEmpty) {
-                // Remove formatting (dashes) before checking length
-                String cleanTaxNumber = taxNumber.replaceAll('-', '');
-
                 // Check length for Thai nationality
-                if (nationality == 'Thai' && cleanTaxNumber.length != 13) {
+                if (nationality == 'Thai' && taxNumber.length != 13) {
                   Alert.info(
                       context,
                       'คำเตือน',
                       'Tax ID ไม่เท่ากับ 13 หลัก\nคุณแน่ใจว่าจะดำเนินการต่อ?',
                       'ตกลง', action: () async {
-                    await _saveDirectly();
+                    await _processUpdate();
                   });
                   return;
                 }
 
-                // Check for duplicates
-                bool isValid = await validateTaxNumber(taxNumber);
+                // Check for duplicates (excluding current customer)
+                bool isValid = await validateTaxNumber(taxNumber, widget.c.id!);
                 if (!isValid) {
-                  Alert.warning(
-                      context,
-                      'คำเตือน',
-                      'Tax number already exists. Please use a different tax number',
-                      'OK',
+                  Alert.warning(context, 'คำเตือน',
+                      'Tax number already exists. Please use a different tax number', 'OK',
                       action: () {});
                   return;
                 }
               }
 
-              await _processSave();
+              await _processUpdate();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -3118,42 +2862,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
-  Future<void> _processSave() async {
-    if (selectedCustomer == null) {
-      Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
-          action: () async {
-        await _saveDirectly();
-      });
-    } else {
-      setState(() {
-        Global.customer = selectedCustomer;
-      });
-      Navigator.of(context).pop();
-    }
-  }
-
-  Future<void> _saveDirectly() async {
+  Future<void> _processUpdate() async {
     var customerObject = Global.requestObj({
+      "id": widget.c.id,
       "customerType": selectedType?.code,
       "companyName": companyNameCtrl.text,
-
-      // Company-specific fields
-      "establishmentName": businessNameCtrl.text, // Maps to EstablishmentName in API
-      "headquartersOrBranch": companyOfficeType, // 'head' or 'branch' maps to HeadquartersOrBranch
-      "registrationDate": registrationDateCtrl.text.isEmpty
-          ? null
-          : DateTime.parse(registrationDateCtrl.text).toString(),
-      "businessType": selectedType?.code == "company"
-          ? (selectedOccupation?.name ?? occupationCtrl.text)
-          : null,
-
-      // Name fields
-      "titleName": selectedTitleName?.name,
       "firstName": firstNameCtrl.text,
-      "middleName": middleNameCtrl.text,
       "lastName": lastNameCtrl.text,
-
-      // Contact info
       "email": emailAddressCtrl.text,
       "doB": birthDateCtrl.text.isEmpty
           ? ""
@@ -3161,252 +2876,112 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       "phoneNumber": phoneCtrl.text,
       "username": generateRandomString(8),
       "password": generateRandomString(10),
+      "address": Global.addressCtrl.text,
+      "tambonId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 3023
+          : Global.tambonModel?.id,
+      "amphureId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 9614
+          : Global.amphureModel?.id,
+      "provinceId": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? 78
+          : Global.provinceModel?.id,
+      "nationality": nationality,
+      "postalCode": nationality == 'Foreigner' && selectedType?.code == 'general'
+          ? ''
+          : postalCodeCtrl.text,
+      "branchCode": branchCodeCtrl.text,
+      "idCard": selectedType?.code == "general" ? idCardCtrl.text : "",
+      "taxNumber": selectedType?.code == "company"
+          ? nationality == 'Thai'
+          ? taxNumberCtrl.text
+          : taxNumberCtrl.text
+          : nationality == 'Thai'
+          ? idCardCtrl.text
+          : taxNumberCtrl.text,
+      "isSeller": isSeller ? 1 : 0,
+      "isBuyer": isBuyer ? 1 : 0,
+      "isCustomer": isCustomer ? 1 : 0,
+      "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
+      "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
+      "remark": remarkCtrl.text,
+      "occupation": occupationCtrl.text,
 
-      // Address fields (Thai enhanced structure)
+      // New enhanced fields
+      "titleName": selectedTitleName?.name ?? '',
+      "middleName": middleNameCtrl.text,
       "building": buildingCtrl.text,
-      "roomNo": roomNumberCtrl.text,
+      "roomNo": roomNoCtrl.text,
       "floor": floorCtrl.text,
-      "address": Global.addressCtrl.text, // House number
       "village": villageCtrl.text,
       "moo": mooCtrl.text,
       "soi": soiCtrl.text,
       "road": roadCtrl.text,
-      "tambonId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 3023
-              : Global.tambonModel?.id,
-      "amphureId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 9614
-              : Global.amphureModel?.id,
-      "provinceId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 78
-              : Global.provinceModel?.id,
-      "postalCode":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? ''
-              : postalCodeCtrl.text,
-
-      // Nationality and ID info
-      "nationality": nationality == 'Foreigner'
-          ? (selectedNationality?.nationalityTH ?? 'Foreigner')
-          : nationality,
-      "country": selectedCountryModel?.countryTH, // For Company + Foreigner
-      "cardType": selectedCardType?.nameTH,
-      "idCard": selectedType?.code == "general" ? idCardCtrl.text.replaceAll('-', '') : "",
-      "idCardIssueDate": issueDateCtrl.text.isEmpty
-          ? null
-          : DateTime.parse(issueDateCtrl.text).toString(),
-      "idCardExpiryDate": expiryDateCtrl.text.isEmpty
-          ? null
-          : DateTime.parse(expiryDateCtrl.text).toString(),
-
-      // Foreign national fields
+      "cardType": selectedCardType?.nameTH ?? '',
+      "idCardIssueDate": idCardIssueDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(idCardIssueDateCtrl.text).toString(),
+      "idCardExpiryDate": idCardExpiryDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(idCardExpiryDateCtrl.text).toString(),
       "entryDate": entryDateCtrl.text.isEmpty
-          ? null
+          ? ""
           : DateTime.parse(entryDateCtrl.text).toString(),
       "exitDate": exitDateCtrl.text.isEmpty
-          ? null
+          ? ""
           : DateTime.parse(exitDateCtrl.text).toString(),
-      "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
-      "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
+      "occupationCustom": occupationCustomCtrl.text,
+      "attachments": jsonEncode(attachedDocuments.map((file) => {
+        "name": file.name,
+        "size": file.size,
+        "extension": file.extension,
+        "path": file.path ?? '',
+      }).toList()),
+      "photoUrl": customerPhoto?.path ?? '',
 
-      // Business fields
-      "branchCode": branchCodeCtrl.text,
-      "taxNumber": selectedType?.code == "company"
-          ? nationality == 'Thai'
-              ? taxNumberCtrl.text.replaceAll('-', '')
-              : taxNumberCtrl.text
-          : nationality == 'Thai'
-              ? idCardCtrl.text.replaceAll('-', '')
-              : taxNumberCtrl.text,
-
-      // Occupation (for general customers only)
-      "occupation": selectedType?.code == "general"
-          ? (selectedOccupation?.name ?? occupationCtrl.text)
-          : null,
-      "occupationCustom": selectedType?.code == "general" &&
-              selectedOccupation?.name == 'ประสงค์ระบุเอง'
-          ? occupationCtrl.text
-          : null,
-
-      // Customer type flags
-      "isSeller": isSeller ? 1 : 0,
-      "isBuyer": isBuyer ? 1 : 0,
-      "isCustomer": isCustomer ? 1 : 0,
-
-      // Other
-      "photoUrl": '',
-      "remark": remarkCtrl.text,
+      // Company-specific fields
+      "country": selectedCountry?.countryTH ?? '',
+      "establishmentName": establishmentNameCtrl.text,
+      "headquartersOrBranch": headquartersOrBranch ?? '',
+      "registrationDate": registrationDateCtrl.text.isEmpty
+          ? ""
+          : DateTime.parse(registrationDateCtrl.text).toString(),
+      "businessType": selectedCompanyBusinessType?.name ?? '',
     });
 
-    final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal,
-        isDismissible: true,
-        showLogs: true);
-    await pr.show();
-    pr.update(message: 'processing'.tr());
+    Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
+        action: () async {
+          final ProgressDialog pr = ProgressDialog(context,
+              type: ProgressDialogType.normal,
+              isDismissible: true,
+              showLogs: true);
+          await pr.show();
+          pr.update(message: 'processing'.tr());
 
-    var result = await ApiServices.post('/customer/create', customerObject);
+          var result = await ApiServices.put(
+              '/customer', widget.c.id, customerObject);
+          await pr.hide();
 
-    if (result?.status == "success") {
-      if (mounted) {
-        CustomerModel customer =
-            customerModelFromJson(jsonEncode(result!.data!));
-        setState(() {
-          Global.customer = customer;
+          if (result?.status == "success") {
+            if (mounted) {
+              CustomerModel customer =
+              customerModelFromJson(jsonEncode(result!.data!));
+              setState(() {
+                Global.customer = customer;
+              });
+              Alert.success(context, 'Success'.tr(),
+                  "บันทึกเรียบร้อยแล้ว", 'OK'.tr(), action: () {
+                    Navigator.of(context).pop();
+                  });
+            }
+          } else {
+            if (mounted) {
+              Alert.warning(context, 'Warning'.tr(),
+                  result!.message ?? result.data, 'OK'.tr(),
+                  action: () {});
+            }
+          }
         });
-
-        // Check if there are any files to upload
-        int totalFiles = occupationFiles.length +
-                       riskAssessmentFiles.length +
-                       customerPhotoFiles.length;
-
-        print('Total files to upload: $totalFiles');
-        print('Occupation files: ${occupationFiles.length}');
-        print('Risk Assessment files: ${riskAssessmentFiles.length}');
-        print('Customer Photo files: ${customerPhotoFiles.length}');
-
-        if (totalFiles > 0) {
-          // Update progress message for file uploads
-          pr.update(message: 'กำลังอัพโหลดไฟล์... (0/$totalFiles)');
-
-          // Upload KYC files after customer creation
-          await _uploadKycFiles(customer.id!, pr, totalFiles);
-        } else {
-          print('No files selected for upload');
-        }
-
-        await pr.hide();
-
-        if (mounted) {
-          Alert.success(
-              context, 'Success'.tr(), "บันทึกเรียบร้อยแล้ว", 'OK'.tr(),
-              action: () {
-            Navigator.of(context).pop();
-          });
-        }
-      }
-    } else {
-      await pr.hide();
-      if (mounted) {
-        Alert.warning(context, 'Warning'.tr(),
-            result!.message ?? result.data, 'OK'.tr(),
-            action: () {});
-      }
-    }
-  }
-
-  Future<void> _uploadKycFiles(int customerId, ProgressDialog pr, int totalFiles) async {
-    try {
-      int uploadedCount = 0;
-
-      // Upload Occupation files
-      for (var fileWithTime in occupationFiles) {
-        await _uploadSingleFile(
-          customerId,
-          fileWithTime.file,
-          'Occupation',
-          fileWithTime.addedDateTime,
-        );
-        uploadedCount++;
-        pr.update(message: 'กำลังอัพโหลดไฟล์... ($uploadedCount/$totalFiles)');
-      }
-
-      // Upload Risk Assessment files
-      for (var fileWithTime in riskAssessmentFiles) {
-        await _uploadSingleFile(
-          customerId,
-          fileWithTime.file,
-          'RiskAssessment',
-          fileWithTime.addedDateTime,
-        );
-        uploadedCount++;
-        pr.update(message: 'กำลังอัพโหลดไฟล์... ($uploadedCount/$totalFiles)');
-      }
-
-      // Upload Customer Photo files
-      for (var fileWithTime in customerPhotoFiles) {
-        await _uploadSingleFile(
-          customerId,
-          fileWithTime.file,
-          'Photo',
-          fileWithTime.addedDateTime,
-        );
-        uploadedCount++;
-        pr.update(message: 'กำลังอัพโหลดไฟล์... ($uploadedCount/$totalFiles)');
-      }
-    } catch (e) {
-      print('Error uploading KYC files: $e');
-      // Don't block the success message, just log the error
-    }
-  }
-
-  Future<void> _uploadSingleFile(
-    int customerId,
-    PlatformFile file,
-    String attachmentType,
-    DateTime attachmentDate,
-  ) async {
-    try {
-      print('Uploading file: ${file.name} (type: $attachmentType)');
-      print('File path: ${file.path}');
-      print('Customer ID: $customerId');
-
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            '${Constants.BACKEND_URL}/customer/attachment/$customerId'),
-      );
-
-      // Add file
-      if (file.path != null) {
-        print('Adding file from path: ${file.path}');
-        request.files.add(
-          await http.MultipartFile.fromPath('file', file.path!),
-        );
-      } else if (file.bytes != null) {
-        print('Adding file from bytes (size: ${file.bytes!.length})');
-        request.files.add(
-          http.MultipartFile.fromBytes(
-            'file',
-            file.bytes!,
-            filename: file.name,
-          ),
-        );
-      } else {
-        print('WARNING: No file path or bytes available');
-      }
-
-      // Add fields
-      request.fields['attachmentType'] = attachmentType;
-      request.fields['attachmentDate'] = attachmentDate.toIso8601String();
-      if (Global.user?.id != null) {
-        request.fields['userId'] = Global.user!.id!;
-      }
-
-      print('Sending upload request...');
-      var response = await request.send();
-      var responseData = await response.stream.bytesToString();
-
-      print('Upload response status: ${response.statusCode}');
-      print('Upload response data: $responseData');
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(responseData);
-        if (data['status'] == 'success') {
-          print('Successfully uploaded $attachmentType file: ${file.name}');
-        } else {
-          print('Upload failed: ${data['message']}');
-        }
-      } else {
-        print('Upload failed with status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error uploading file ${file.name}: $e');
-      rethrow;
-    }
   }
 
   saveRow() {
@@ -3451,13 +3026,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     return 'ลูกค้า';
   }
 
-  // 1. Add tax number validation function at the top of your class
-  Future<bool> validateTaxNumber(String taxNumber) async {
+  Future<bool> validateTaxNumber(String taxNumber, int currentCustomerId) async {
     if (taxNumber.isEmpty) return true;
 
     try {
       var result = await ApiServices.post('/customer/check-tax-number',
-          Global.requestObj({"taxNumber": taxNumber}));
+          Global.requestObj({
+            "taxNumber": taxNumber,
+            "excludeId": currentCustomerId // Exclude current customer from duplicate check
+          }));
 
       if (result?.status == "success") {
         return result?.data == null; // true if no duplicate found
@@ -3466,699 +3043,5 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     } catch (e) {
       return true; // Allow on error to avoid blocking
     }
-  }
-
-  // File picker method for KYC documents
-  Future<void> pickFile(String fileType) async {
-    try {
-      if (fileType == 'photo') {
-        // For photos, use ImagePicker to access photo library
-        await _pickFromGallery(fileType);
-      } else {
-        // For documents, show dialog to choose between file or photo
-        await _showPickerDialog(fileType);
-      }
-    } catch (e) {
-      motivePrint("Error picking file: $e");
-    }
-  }
-
-  // Show dialog to choose between file picker or photo gallery
-  Future<void> _showPickerDialog(String fileType) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('เลือกแหล่งที่มา', style: TextStyle(fontSize: 16.sp)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo_library, color: Colors.blue),
-                title: Text('เลือกจากคลังภาพ', style: TextStyle(fontSize: 14.sp)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickFromGallery(fileType);
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.folder_open, color: Colors.orange),
-                title: Text('เลือกจากไฟล์', style: TextStyle(fontSize: 14.sp)),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickFromFiles(fileType);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Pick from photo gallery using ImagePicker (or FilePicker on web)
-  Future<void> _pickFromGallery(String fileType) async {
-    try {
-      PlatformFile? platformFile;
-
-      if (kIsWeb) {
-        // On web, use FilePicker for images
-        FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: false,
-        );
-
-        if (result != null && result.files.isNotEmpty) {
-          platformFile = result.files.first;
-        }
-      } else {
-        // On mobile/desktop, use ImagePicker
-        final ImagePicker picker = ImagePicker();
-        final XFile? image = await picker.pickImage(
-          source: ImageSource.gallery,
-          maxWidth: 1920,
-          maxHeight: 1920,
-          imageQuality: 85,
-        );
-
-        if (image != null) {
-          // Convert XFile to PlatformFile format for consistency
-          final File file = File(image.path);
-          final int fileSize = await file.length();
-          final String fileName = image.path.split('/').last;
-
-          platformFile = PlatformFile(
-            path: image.path,
-            name: fileName,
-            size: fileSize,
-            bytes: await file.readAsBytes(),
-          );
-        }
-      }
-
-      if (platformFile != null) {
-        if (!mounted) return;
-        setState(() {
-          final fileWithTimestamp = FileWithTimestamp(platformFile!, DateTime.now());
-          if (fileType == 'photo') {
-            customerPhotoFiles.add(fileWithTimestamp);
-            selectedCustomerPhotoFile = fileWithTimestamp;
-          } else if (fileType == 'occupation') {
-            occupationFiles.add(fileWithTimestamp);
-            selectedOccupationFile = fileWithTimestamp;
-          } else if (fileType == 'risk') {
-            riskAssessmentFiles.add(fileWithTimestamp);
-            selectedRiskAssessmentFile = fileWithTimestamp;
-          }
-        });
-      }
-    } catch (e) {
-      motivePrint("Error picking from gallery: $e");
-    }
-  }
-
-  // Pick from file system using FilePicker
-  Future<void> _pickFromFiles(String fileType) async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        allowMultiple: false,
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile pickedFile = result.files.first;
-        String? ext = pickedFile.extension?.toLowerCase();
-
-        // Validate file extension
-        List<String> allowedExtensions = [
-          'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-          'txt', 'rtf', 'odt', 'ods', 'odp',
-          'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp'
-        ];
-        if (ext == null || !allowedExtensions.contains(ext)) {
-          if (!mounted) return;
-          Alert.warning(context, 'คำเตือน',
-            'กรุณาเลือกไฟล์เอกสารหรือรูปภาพเท่านั้น',
-            'OK', action: () {});
-          return;
-        }
-
-        // Add file to list immediately and select it
-        if (!mounted) return;
-        setState(() {
-          final fileWithTimestamp = FileWithTimestamp(pickedFile, DateTime.now());
-          if (fileType == 'occupation') {
-            occupationFiles.add(fileWithTimestamp);
-            selectedOccupationFile = fileWithTimestamp;
-          } else if (fileType == 'risk') {
-            riskAssessmentFiles.add(fileWithTimestamp);
-            selectedRiskAssessmentFile = fileWithTimestamp;
-          }
-        });
-      }
-    } catch (e) {
-      motivePrint("Error picking from files: $e");
-    }
-  }
-
-  // Add file to the list
-  void addFileToList(String fileType) {
-    setState(() {
-      if (fileType == 'occupation' && selectedOccupationFile != null) {
-        occupationFiles.add(selectedOccupationFile!);
-        // Set as selected in dropdown
-        selectedOccupationFile = occupationFiles.last;
-      } else if (fileType == 'risk' && selectedRiskAssessmentFile != null) {
-        riskAssessmentFiles.add(selectedRiskAssessmentFile!);
-        selectedRiskAssessmentFile = riskAssessmentFiles.last;
-      } else if (fileType == 'photo' && selectedCustomerPhotoFile != null) {
-        customerPhotoFiles.add(selectedCustomerPhotoFile!);
-        selectedCustomerPhotoFile = customerPhotoFiles.last;
-      }
-    });
-  }
-
-  // Remove selected file from list with confirmation
-  Future<void> removeFileFromList(String fileType) async {
-    FileWithTimestamp? fileToDelete;
-    String fileName = '';
-
-    if (fileType == 'occupation' && selectedOccupationFile != null) {
-      fileToDelete = selectedOccupationFile;
-      fileName = selectedOccupationFile!.file.name;
-    } else if (fileType == 'risk' && selectedRiskAssessmentFile != null) {
-      fileToDelete = selectedRiskAssessmentFile;
-      fileName = selectedRiskAssessmentFile!.file.name;
-    } else if (fileType == 'photo' && selectedCustomerPhotoFile != null) {
-      fileToDelete = selectedCustomerPhotoFile;
-      fileName = selectedCustomerPhotoFile!.file.name;
-    }
-
-    if (fileToDelete == null) return;
-
-    // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          contentPadding: EdgeInsets.zero,
-          content: Container(
-            width: MediaQuery.of(context).size.width * 0.85,
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header with warning icon
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.orange[100],
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.warning_amber_rounded,
-                          color: Colors.orange[700],
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          'ยืนยันการลบไฟล์',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'คุณต้องการลบไฟล์นี้หรือไม่?',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.grey[800],
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                _getFileIcon(fileToDelete?.file.extension ?? ''),
-                                color: Colors.blue[600],
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                fileName,
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Icon(Icons.info_outline, size: 16, color: Colors.red[700]),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'การดำเนินการนี้ไม่สามารถย้อนกลับได้',
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.red[700],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Action buttons
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.grey[700],
-                            side: BorderSide(color: Colors.grey[300]!),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'ยกเลิก',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red[500],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            'ลบ',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    // If confirmed, remove the file
-    if (confirmed == true) {
-      setState(() {
-        if (fileType == 'occupation') {
-          occupationFiles.remove(fileToDelete);
-          selectedOccupationFile = occupationFiles.isNotEmpty ? occupationFiles.first : null;
-        } else if (fileType == 'risk') {
-          riskAssessmentFiles.remove(fileToDelete);
-          selectedRiskAssessmentFile = riskAssessmentFiles.isNotEmpty ? riskAssessmentFiles.first : null;
-        } else if (fileType == 'photo') {
-          customerPhotoFiles.remove(fileToDelete);
-          selectedCustomerPhotoFile = customerPhotoFiles.isNotEmpty ? customerPhotoFiles.first : null;
-        }
-      });
-    }
-  }
-
-  // Format filename to show the end (with date/time) instead of beginning
-  String formatFileName(String? fileName, {int maxLength = 60}) {
-    if (fileName == null || fileName.isEmpty) {
-      return 'ไม่มีการแนบเอกสาร';
-    }
-
-    if (fileName.length <= maxLength) {
-      return fileName;
-    }
-
-    // Show the last part of filename (which contains date/time)
-    return '...${fileName.substring(fileName.length - maxLength)}';
-  }
-
-  // Format file size for display
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    }
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-  }
-
-  // Remove file dropdown overlay
-  void _removeFileOverlay(String fileType) {
-    if (fileType == 'occupation') {
-      _occupationFileOverlay?.remove();
-      _occupationFileOverlay = null;
-    } else if (fileType == 'risk') {
-      _riskFileOverlay?.remove();
-      _riskFileOverlay = null;
-    } else {
-      _photoFileOverlay?.remove();
-      _photoFileOverlay = null;
-    }
-  }
-
-  // Show file selection dropdown
-  void showFileSelectionDropdown(String fileType, BuildContext buttonContext) {
-    List<FileWithTimestamp> files;
-    FileWithTimestamp? selectedFile;
-
-    if (fileType == 'occupation') {
-      files = occupationFiles;
-      selectedFile = selectedOccupationFile;
-    } else if (fileType == 'risk') {
-      files = riskAssessmentFiles;
-      selectedFile = selectedRiskAssessmentFile;
-    } else {
-      files = customerPhotoFiles;
-      selectedFile = selectedCustomerPhotoFile;
-    }
-
-    final RenderBox renderBox = buttonContext.findRenderObject() as RenderBox;
-    final size = renderBox.size;
-
-    final overlayEntry = OverlayEntry(
-      builder: (context) => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          _removeFileOverlay(fileType);
-          setState(() {});
-        },
-        child: Stack(
-          children: [
-            Positioned(
-              width: size.width,
-              child: CompositedTransformFollower(
-                link: fileType == 'occupation'
-                    ? _occupationFileLayerLink
-                    : fileType == 'risk'
-                        ? _riskFileLayerLink
-                        : _photoFileLayerLink,
-                showWhenUnlinked: false,
-                offset: Offset(0.0, size.height + 5.0),
-                child: Material(
-                  elevation: 8.0,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    constraints: const BoxConstraints(maxHeight: 300),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
-                    ),
-                    child: files.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: Text(
-                              'ไม่มีไฟล์',
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            itemCount: files.length,
-                            itemBuilder: (context, index) {
-                              final fileWithTimestamp = files[index];
-                              final file = fileWithTimestamp.file;
-                              final addedDateTime = fileWithTimestamp.addedDateTime;
-                              final isSelected = selectedFile?.file.name == file.name;
-
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    if (fileType == 'occupation') {
-                                      selectedOccupationFile = fileWithTimestamp;
-                                    } else if (fileType == 'risk') {
-                                      selectedRiskAssessmentFile = fileWithTimestamp;
-                                    } else {
-                                      selectedCustomerPhotoFile = fileWithTimestamp;
-                                    }
-                                  });
-                                  _removeFileOverlay(fileType);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  color: isSelected
-                                      ? Colors.blue.withValues(alpha: 0.1)
-                                      : Colors.transparent,
-                                  child: Row(
-                                    children: [
-                                      // File icon
-                                      Icon(
-                                        _getFileIcon(file.extension ?? ''),
-                                        color: Colors.blue,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      // File info - showing filename and date as separate columns
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            // Filename
-                                            Text(
-                                              file.name,
-                                              style: TextStyle(
-                                                fontSize: 13.sp,
-                                                fontWeight: isSelected
-                                                    ? FontWeight.w600
-                                                    : FontWeight.normal,
-                                                color: Colors.grey[800],
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                            ),
-                                            const SizedBox(height: 2),
-                                            // Date/time and file size as separate row
-                                            Text(
-                                              '${DateFormat('dd/MM/yyyy HH:mm').format(addedDateTime)} • ${_formatFileSize(file.size)}',
-                                              style: TextStyle(
-                                                fontSize: 11.sp,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Store and insert overlay
-    if (fileType == 'occupation') {
-      _occupationFileOverlay = overlayEntry;
-    } else if (fileType == 'risk') {
-      _riskFileOverlay = overlayEntry;
-    } else {
-      _photoFileOverlay = overlayEntry;
-    }
-
-    Overlay.of(buttonContext).insert(overlayEntry);
-  }
-
-  IconData _getFileIcon(String extension) {
-    switch (extension.toLowerCase()) {
-      case 'pdf':
-        return Icons.picture_as_pdf;
-      case 'doc':
-      case 'docx':
-        return Icons.description;
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-      case 'bmp':
-        return Icons.image;
-      default:
-        return Icons.insert_drive_file;
-    }
-  }
-
-  // Download/Save selected file
-  Future<void> downloadFile(String fileType) async {
-    FileWithTimestamp? fileWithTimestamp;
-    if (fileType == 'occupation') {
-      fileWithTimestamp = selectedOccupationFile;
-    } else if (fileType == 'risk') {
-      fileWithTimestamp = selectedRiskAssessmentFile;
-    } else if (fileType == 'photo') {
-      fileWithTimestamp = selectedCustomerPhotoFile;
-    }
-
-    if (fileWithTimestamp != null && fileWithTimestamp.file.bytes != null) {
-      try {
-        await download_helper.downloadFile(fileWithTimestamp.file.bytes!, fileWithTimestamp.file.name);
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text('บันทึกไฟล์ "${fileWithTimestamp.file.name}" สำเร็จ'),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.green[600],
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-        }
-      } catch (e) {
-        motivePrint('Error downloading file: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error, color: Colors.white),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text('ไม่สามารถบันทึกไฟล์ได้'),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.red[600],
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-        }
-      }
-    }
-  }
-
-// 2. Replace your tax number field validation with this enhanced version:
-  Widget buildTaxNumberField() {
-    return buildTextFieldBig(
-      labelText: nationality == 'Thai'
-          ? (selectedType?.code == 'company'
-              ? 'เลขประจำตัวผู้เสียภาษี'
-              : 'เลขบัตรประชาชน')
-          : 'Tax ID',
-      inputType: TextInputType.number,
-      controller: selectedType?.code == 'company'
-          ? (nationality == 'Thai' ? taxNumberCtrl : idCardCtrl)
-          : (nationality == 'Thai' ? idCardCtrl : taxNumberCtrl),
-      prefixIcon: Icon(
-          nationality == 'Thai'
-              ? (selectedType?.code == 'company'
-                  ? Icons.receipt
-                  : Icons.credit_card)
-              : Icons.receipt,
-          size: 14.sp),
-    );
   }
 }

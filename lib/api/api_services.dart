@@ -137,7 +137,7 @@ class ApiServices {
 
   /// Get all nationalities
   static Future<Response>? getNationalities() {
-    return post('/api/nationality/all', jsonEncode({}));
+    return post('/nationality/all', jsonEncode({})); // Fixed: removed /api/ prefix
   }
 
   /// Get all occupations
@@ -162,6 +162,6 @@ class ApiServices {
 
   /// Get all card types
   static Future<Response>? getCardTypes() {
-    return post('/api/cardtype/all', jsonEncode({}));
+    return post('/cardtype/all', jsonEncode({}));
   }
 }

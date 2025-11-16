@@ -88,7 +88,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                     Text('เลือกจังหวัด', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
-                      height: 70,
+                      height: 50,
                       child: MiraiDropDownMenu<ProvinceModel>(
                         key: UniqueKey(),
                         children: Global.provinceList,
@@ -136,7 +136,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                     Text('เลือกอำเภอ', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
-                      height: 70,
+                      height: 50,
                       child: MiraiDropDownMenu<AmphureModel>(
                         key: UniqueKey(),
                         children: Global.amphureList,
@@ -189,7 +189,7 @@ class _LocationEntryWidgetState extends State<LocationEntryWidget> {
                     Text('เลือกตำบล', style: TextStyle(fontSize: 16.sp, color: textColor),),
                     const SizedBox(height: 4,),
                     SizedBox(
-                      height: 70,
+                      height: 50,
                       child: MiraiDropDownMenu<TambonModel>(
                         key: UniqueKey(),
                         children: Global.tambonList,

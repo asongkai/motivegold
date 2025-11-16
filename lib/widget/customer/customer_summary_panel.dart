@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sizer/sizer.dart';
 
 class CustomerSummaryPanel extends StatelessWidget {
   final String? idCard;
@@ -91,18 +92,18 @@ class CustomerSummaryPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFE0F2F1), // Teal 50
+        color: Colors.white, // White background like in the 3rd image
         border: Border.all(
-          color: const Color(0xFF80CBC4), // Teal 200
+          color: Colors.grey[300]!, // Light gray border
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
+            blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
@@ -111,72 +112,68 @@ class CustomerSummaryPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header
+          // Header with icon
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.person,
-                color: Color(0xFF00897B), // Teal 600
-                size: 24,
+                color: Colors.teal[700],
+                size: 14.sp,
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'สรุปข้อมูลลูกค้า',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF00695C), // Teal 700
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          const Divider(color: Color(0xFF80CBC4), thickness: 1),
           const SizedBox(height: 12),
 
-          // Summary fields
-          _buildSummaryRow('เลขบัตรประชาชน:', idCard),
-          _buildSummaryRow('ชื่อ:', _buildFullName()),
-          _buildSummaryRow('อีเมล:', email),
-          _buildSummaryRow('โทร:', phone),
-          _buildSummaryRow('เกิด:', _formatDate(dateOfBirth)),
-          _buildSummaryRow('วันที่ออกบัตร:', _formatDate(issueDate)),
-          _buildSummaryRow('วันที่หมดอายุ:', _formatDate(expiryDate)),
-          _buildSummaryRow('ที่อยู่:', _buildFullAddress(), maxLines: 5),
-          _buildSummaryRow('หมายเหตุ:', remark),
-          _buildSummaryRow('อาชีพ:', occupation),
+          // Summary text - dark blue color like in the 3rd image
+          Text(
+            _buildSummaryText(),
+            style: TextStyle(
+              fontSize: 12.sp,
+              color:
+                  Color(0xFF1565C0), // Dark blue color matching the 3rd image
+              height: 1.6,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSummaryRow(String label, String? value, {int maxLines = 2}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF00695C), // Teal 700
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value?.isNotEmpty == true ? value! : '-',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[800],
-              height: 1.4,
-            ),
-            maxLines: maxLines,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
+  String _buildSummaryText() {
+    final parts = <String>[];
+
+    // All info on one line, space-separated like in the 3rd image
+    if (idCard?.isNotEmpty == true) parts.add('เลขบัตรประชาชน : $idCard');
+    final fullName = _buildFullName();
+    if (fullName != '-') parts.add('ชื่อ : $fullName');
+    if (email?.isNotEmpty == true) parts.add('อีเมล : $email');
+    if (phone?.isNotEmpty == true) parts.add('โทร : $phone');
+    final dob = _formatDate(dateOfBirth);
+    if (dob != '-') parts.add('เกิด : $dob');
+    final issue = _formatDate(issueDate);
+    if (issue != '-') parts.add('วันที่ออกบัตร : $issue');
+    final expiry = _formatDate(expiryDate);
+    if (expiry != '-') parts.add('วันที่หมดอายุ : $expiry');
+
+    // Add address on the same line
+    final address = _buildFullAddress();
+    if (address != '-') parts.add('ที่อยู่ : $address');
+
+    // Add occupation if exists
+    if (occupation?.isNotEmpty == true) {
+      parts.add('อาชีพ : $occupation');
+    }
+
+    // Join all parts with 3-4 spaces for readability (matching the image style)
+    return parts.isEmpty ? '-' : parts.join('   ');
   }
 }

@@ -8,6 +8,7 @@ class GroupedTitleDropdown extends StatefulWidget {
   final TitleNameModel? selectedTitle;
   final ValueChanged<TitleNameModel> onChanged;
   final String emptyMessage;
+  final String? nationality;
 
   const GroupedTitleDropdown({
     super.key,
@@ -15,6 +16,7 @@ class GroupedTitleDropdown extends StatefulWidget {
     required this.selectedTitle,
     required this.onChanged,
     this.emptyMessage = 'ไม่มีข้อมูล',
+    this.nationality,
   });
 
   @override
@@ -28,6 +30,50 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
   OverlayEntry? overlayEntry;
   final LayerLink layerLink = LayerLink();
   final FocusNode focusNode = FocusNode();
+
+  // Track which categories are expanded (all expanded by default)
+  final Map<String, bool> _expandedCategories = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeExpandedCategories();
+  }
+
+  @override
+  void didUpdateWidget(GroupedTitleDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If nationality changed, rebuild the overlay if it's open
+    if (oldWidget.nationality != widget.nationality && overlayEntry != null) {
+      overlayEntry?.markNeedsBuild();
+    }
+  }
+
+  void _initializeExpandedCategories() {
+    // Initialize categories: expand the one containing selected item, or first if none selected
+    final groups = TitleNameGroup.groupByCategory(widget.titleNames);
+
+    // Find which group contains the selected title
+    String? selectedCategory;
+    if (widget.selectedTitle != null) {
+      for (var group in groups) {
+        if (group.items.any((item) => item.id == widget.selectedTitle!.id)) {
+          selectedCategory = group.category;
+          break;
+        }
+      }
+    }
+
+    // Expand the selected category, or first category if no selection
+    _expandedCategories.clear();
+    for (var i = 0; i < groups.length; i++) {
+      if (selectedCategory != null) {
+        _expandedCategories[groups[i].category] = groups[i].category == selectedCategory;
+      } else {
+        _expandedCategories[groups[i].category] = i == 0;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -45,6 +91,9 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
 
   void showOverlay() {
     if (overlayEntry != null) return;
+
+    // Re-initialize expansion state when dropdown opens
+    _initializeExpandedCategories();
 
     overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(overlayEntry!);
@@ -78,7 +127,7 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
                     elevation: 8.0,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
-                      constraints: const BoxConstraints(maxHeight: 360),
+                      constraints: const BoxConstraints(maxHeight: 300),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -171,6 +220,21 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
           (title.category?.toLowerCase().contains(searchQuery) ?? false);
     }).toList();
 
+    // Filter titles based on nationality
+    if (widget.nationality == 'Thai') {
+      // For Thai nationality: hide English titles (MR, MRS, MS, MISS)
+      filteredTitles = filteredTitles.where((title) {
+        final name = title.name?.toUpperCase() ?? '';
+        return name != 'MR' && name != 'MRS' && name != 'MS' && name != 'MISS';
+      }).toList();
+    } else if (widget.nationality == 'Foreigner') {
+      // For Foreigner nationality: show ONLY English titles (MR, MRS, MS, MISS)
+      filteredTitles = filteredTitles.where((title) {
+        final name = title.name?.toUpperCase() ?? '';
+        return name == 'MR' || name == 'MRS' || name == 'MS' || name == 'MISS';
+      }).toList();
+    }
+
     if (filteredTitles.isEmpty) {
       return Center(
         child: Padding(
@@ -186,53 +250,63 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
     // Group by category
     List<TitleNameGroup> groups = TitleNameGroup.groupByCategory(filteredTitles);
 
-    // Debug: Print group information
-    if (groups.isNotEmpty && searchQuery.isEmpty) {
-      print('GroupedTitleDropdown: ${groups.length} groups found');
-      for (var group in groups) {
-        print('  - ${group.category}: ${group.items.length} items (order: ${group.displayOrder})');
-      }
-    }
+    // Build list manually with collapse/expand support
+    List<Widget> widgets = [];
+    for (var i = 0; i < groups.length; i++) {
+      final group = groups[i];
+      // If category not in map, default to true for first group, false for others
+      final isCategoryExpanded = _expandedCategories[group.category] ?? (i == 0);
 
-    return ListView.builder(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      itemCount: groups.fold<int>(0, (sum, group) => sum + group.items.length + 1),
-      itemBuilder: (context, index) {
-        int currentIndex = 0;
-
-        for (var group in groups) {
-          // Category header
-          if (index == currentIndex) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: Colors.grey[100],
-              child: Text(
-                group.category,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.bold,
+      // Category header - clickable to collapse/expand
+      widgets.add(
+        InkWell(
+          onTap: () {
+            setState(() {
+              _expandedCategories[group.category] = !isCategoryExpanded;
+            });
+            overlayEntry?.markNeedsBuild();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Colors.grey[100],
+            child: Row(
+              children: [
+                Icon(
+                  isCategoryExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  size: 20,
                   color: Colors.grey[700],
                 ),
-              ),
-            );
-          }
-          currentIndex++;
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    group.category,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
-          // Items in this group
-          if (index < currentIndex + group.items.length) {
-            final itemIndex = index - currentIndex;
-            final title = group.items[itemIndex];
-            final isSelected = widget.selectedTitle?.id == title.id;
+      // Items in this group - only show when expanded
+      if (isCategoryExpanded) {
+        for (var title in group.items) {
+          final isSelected = widget.selectedTitle?.id == title.id;
 
-            return InkWell(
+          widgets.add(
+            InkWell(
               onTap: () {
                 widget.onChanged(title);
                 removeOverlay();
                 setState(() {});
               },
               child: Container(
-                padding: const EdgeInsets.only(left: 32, right: 24, top: 12, bottom: 12),
+                padding: const EdgeInsets.only(left: 44, right: 24, top: 12, bottom: 12),
                 color: isSelected ? Colors.blue.withValues(alpha: 0.1) : Colors.transparent,
                 child: Row(
                   children: [
@@ -255,13 +329,16 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
                   ],
                 ),
               ),
-            );
-          }
-          currentIndex += group.items.length;
+            ),
+          );
         }
+      }
+    }
 
-        return const SizedBox.shrink();
-      },
+    return ListView(
+      shrinkWrap: true,
+      padding: EdgeInsets.zero,
+      children: widgets,
     );
   }
 
@@ -279,7 +356,8 @@ class _GroupedTitleDropdownState extends State<GroupedTitleDropdown> {
           setState(() {});
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),

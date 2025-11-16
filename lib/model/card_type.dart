@@ -70,4 +70,12 @@ class CardTypeModel {
 
   @override
   int get hashCode => id.hashCode ^ nameTH.hashCode ^ nameEN.hashCode;
+
+  // Getter for compatibility with DropDownItemWidget
+  String? get name => nameTH;
+
+  bool filter(String query) {
+    return nameTH!.toLowerCase().contains(query.toLowerCase()) ||
+           (nameEN?.toLowerCase().contains(query.toLowerCase()) ?? false);
+  }
 }

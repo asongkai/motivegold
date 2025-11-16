@@ -26,10 +26,14 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
   final TextEditingController _searchController = TextEditingController();
   List<OccupationModel> _filteredOccupations = [];
 
+  // Track which categories are expanded (all expanded by default)
+  final Map<String, bool> _expandedCategories = {};
+
   @override
   void initState() {
     super.initState();
     _filteredOccupations = widget.occupations;
+    _initializeExpandedCategories();
   }
 
   @override
@@ -48,8 +52,36 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
     _filteredOccupations = widget.occupations;
     _searchController.clear();
 
+    // Re-initialize expansion state when dropdown opens
+    _initializeExpandedCategories();
+
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _initializeExpandedCategories() {
+    final groups = OccupationGroup.groupByCategory(widget.occupations);
+
+    // Find which group contains the selected occupation
+    String? selectedCategory;
+    if (widget.selectedOccupation != null) {
+      for (var group in groups) {
+        if (group.items.any((item) => item.id == widget.selectedOccupation!.id)) {
+          selectedCategory = group.category;
+          break;
+        }
+      }
+    }
+
+    // Expand the selected category, or first category if no selection
+    _expandedCategories.clear();
+    for (var i = 0; i < groups.length; i++) {
+      if (selectedCategory != null) {
+        _expandedCategories[groups[i].category] = groups[i].category == selectedCategory;
+      } else {
+        _expandedCategories[groups[i].category] = i == 0;
+      }
+    }
   }
 
   void _filterOccupations(String query) {
@@ -90,7 +122,7 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
                   elevation: 8.0,
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    constraints: const BoxConstraints(maxHeight: 400),
+                    constraints: const BoxConstraints(maxHeight: 300),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -164,49 +196,75 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
     final groups = OccupationGroup.groupByCategory(_filteredOccupations);
     List<Widget> widgets = [];
 
-    for (var group in groups) {
-      // Category header
+    for (var i = 0; i < groups.length; i++) {
+      final group = groups[i];
+      // If category not in map, default to true for first group, false for others
+      final isExpanded = _expandedCategories[group.category] ?? (i == 0);
+
+      // Category header - clickable to collapse/expand
       widgets.add(
-        Container(
-          padding: const EdgeInsets.only(left: 16, right: 24, top: 12, bottom: 8),
-          child: Text(
-            group.category,
-            style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
+        InkWell(
+          onTap: () {
+            setState(() {
+              _expandedCategories[group.category] = !isExpanded;
+            });
+            _overlayEntry?.markNeedsBuild();
+          },
+          child: Container(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 8),
+            child: Row(
+              children: [
+                Icon(
+                  isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  size: 20,
+                  color: Colors.grey[700],
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    group.category,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       );
 
-      // Category items (indented)
-      for (var occupation in group.items) {
-        widgets.add(
-          InkWell(
-            onTap: () {
-              widget.onChanged(occupation);
-              removeOverlay();
-              setState(() {});
-            },
-            child: Container(
-              padding: const EdgeInsets.only(left: 32, right: 24, top: 12, bottom: 12),
-              color: widget.selectedOccupation?.id == occupation.id
-                  ? Colors.blue.withValues(alpha: 0.1)
-                  : Colors.transparent,
-              child: Text(
-                occupation.name ?? '',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: Colors.grey[800],
-                  fontWeight: widget.selectedOccupation?.id == occupation.id
-                      ? FontWeight.w600
-                      : FontWeight.normal,
+      // Category items (indented) - only show when expanded
+      if (isExpanded) {
+        for (var occupation in group.items) {
+          widgets.add(
+            InkWell(
+              onTap: () {
+                widget.onChanged(occupation);
+                removeOverlay();
+                setState(() {});
+              },
+              child: Container(
+                padding: const EdgeInsets.only(left: 44, right: 24, top: 12, bottom: 12),
+                color: widget.selectedOccupation?.id == occupation.id
+                    ? Colors.blue.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                child: Text(
+                  occupation.name ?? '',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: Colors.grey[800],
+                    fontWeight: widget.selectedOccupation?.id == occupation.id
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
 
@@ -227,8 +285,8 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
           setState(() {});
         },
         child: Container(
-          height: 70,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey[300]!),
@@ -248,7 +306,7 @@ class _GroupedOccupationDropdownState extends State<GroupedOccupationDropdown> {
                 child: Text(
                   widget.selectedOccupation?.name ?? 'เลือกอาชีพ',
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 12.sp,
                     color: widget.selectedOccupation == null
                         ? Colors.grey[600]
                         : Colors.grey[800],

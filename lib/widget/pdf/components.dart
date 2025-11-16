@@ -65,10 +65,11 @@ Future<Widget> header(OrderModel order, String? title,
                           TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   Text(getBillAddressLine1(),
                       style: const TextStyle(fontSize: 10)),
-                  Text(getBillAddressLine2(),
+                  Text(
+                      '${getBillAddressLine2()} โทรศัพท์ : ${Global.branch?.phone}',
                       style: const TextStyle(fontSize: 10)),
-                  Text('โทรศัพท์ : ${Global.branch?.phone}',
-                      style: const TextStyle(fontSize: 11)),
+                  // Text('โทรศัพท์ : ${Global.branch?.phone}',
+                  //     style: const TextStyle(fontSize: 11)),
                   Text(
                       'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
                       style: const TextStyle(fontSize: 11)),
@@ -177,9 +178,11 @@ Future<Widget> headerRedeem(RedeemModel order, String? title,
               Text(getCompanyName(full: true),
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               Text(getBillAddressLine1(), style: const TextStyle(fontSize: 10)),
-              Text(getBillAddressLine2(), style: const TextStyle(fontSize: 10)),
-              Text('โทรศัพท์ : ${Global.branch?.phone}',
-                  style: const TextStyle(fontSize: 11)),
+              Text(
+                  '${getBillAddressLine2()} โทรศัพท์ : ${Global.branch?.phone}',
+                  style: const TextStyle(fontSize: 10)),
+              // Text('โทรศัพท์ : ${Global.branch?.phone}',
+              //     style: const TextStyle(fontSize: 11)),
               Text(
                   'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber}',
                   style: const TextStyle(fontSize: 11)),
@@ -364,7 +367,8 @@ Widget docNoRedeem(RedeemModel order) {
               children: [
                 TableRow(
                   children: [
-                    Text('ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
+                    Text(
+                        'ชื่อ-สกุลผู้ไถ่ถอน : ${getCustomerName(order.customer!)}',
                         style: const TextStyle(fontSize: 11)),
                   ],
                 ),
@@ -387,7 +391,8 @@ Widget docNoRedeem(RedeemModel order) {
                                 if (getCustomerBillAddressLine2(order.customer!)
                                     .isNotEmpty)
                                   Text(
-                                    getCustomerBillAddressLine2(order.customer!),
+                                    getCustomerBillAddressLine2(
+                                        order.customer!),
                                     style: const TextStyle(fontSize: 11),
                                   ),
                               ],
@@ -531,8 +536,10 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
               ),
             ),
           ),
+        if (order.status != "2" || order.orderStatus != 'CANCEL')
+          Expanded(flex: 1, child: Container()),
         Expanded(
-            flex: 5,
+            flex: 3,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Table(children: [
@@ -680,8 +687,10 @@ Widget buyerSellerInfoRedeem(
               ),
             ),
           ),
+        if (order.status != 2 || order.redeemStatus != 'CANCEL')
+          Expanded(flex: 1, child: Container()),
         Expanded(
-            flex: 5,
+            flex: 3,
             child: Column(children: [
               Table(children: [
                 TableRow(children: [
@@ -813,8 +822,10 @@ Widget buyerSellerInfoRefill(
               ),
             ),
           ),
+        if (order.status != "2" || order.orderStatus != 'CANCEL')
+          Expanded(flex: 1, child: Container()),
         Expanded(
-            flex: 5,
+            flex: 3,
             child: Column(children: [
               Table(children: [
                 TableRow(children: [
@@ -915,13 +926,13 @@ Widget buyerSellerInfoSellUsedWholeSale(
                     getWorkId(customer),
                     style: const TextStyle(fontSize: 12),
                   ),
-                if (order.orderTypeId == 5 || order.orderTypeId == 10)
-                  Text('อ้างอิงเลขที่ใบกำกับภาษี : ${order.referenceNo}',
-                      style: const TextStyle(fontSize: 11)),
-                if (order.orderTypeId == 6 || order.orderTypeId == 11)
-                  Text(
-                      'อ้างอิงเลขที่ใบรับซื้อจากร้านค้าส่ง : ${order.referenceNo}',
-                      style: const TextStyle(fontSize: 11)),
+                // if (order.orderTypeId == 5 || order.orderTypeId == 10)
+                //   Text('อ้างอิงเลขที่ใบกำกับภาษี : ${order.referenceNo}',
+                //       style: const TextStyle(fontSize: 11)),
+                // if (order.orderTypeId == 6 || order.orderTypeId == 11)
+                //   Text(
+                //       'อ้างอิงเลขที่ใบรับซื้อจากร้านค้าส่ง : ${order.referenceNo}',
+                //       style: const TextStyle(fontSize: 11)),
               ]),
             ],
           ),
@@ -952,8 +963,10 @@ Widget buyerSellerInfoSellUsedWholeSale(
               ),
             ),
           ),
+        if (order.status != "2" || order.orderStatus != 'CANCEL')
+          Expanded(flex: 1, child: Container()),
         Expanded(
-            flex: 5,
+            flex: 3,
             child: Column(children: [
               Table(children: [
                 TableRow(children: [

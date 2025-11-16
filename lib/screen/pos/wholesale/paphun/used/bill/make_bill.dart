@@ -12,8 +12,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
         await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
@@ -24,7 +23,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
     List<Widget> widgets = [];
 
     widgets.add(
-      await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี', versionText: versionText),
+      await header(invoice.order, 'ใบส่งของ / ใบเสร็จรับเงิน / ใบกํากับภาษี',
+          versionText: versionText),
     );
     widgets.add(
       docNoRefill(invoice.order),
@@ -34,7 +34,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
         decoration: BoxDecoration(
           border: Border.all(width: 0.25),
         ),
-        child: buyerSellerInfoSellUsedWholeSale(invoice.customer, invoice.order, invoice.items[0].productId!),
+        child: buyerSellerInfoSellUsedWholeSale(
+            invoice.customer, invoice.order, invoice.items[0].productId!),
       ),
     );
     widgets.add(
@@ -88,7 +89,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
+                    child:
+                        paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
                   )),
             ]),
       ),
@@ -212,7 +214,9 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
         height: 20,
         decoration: const BoxDecoration(
           border: Border(
-              left: BorderSide(width: 0.25), bottom: BorderSide(width: 0.25), right: BorderSide(width: 0.25)),
+              left: BorderSide(width: 0.25),
+              bottom: BorderSide(width: 0.25),
+              right: BorderSide(width: 0.25)),
         ),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -234,7 +238,10 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('รวมน้ำหนัก / รวมราคาสินค้า (รวมภาษีมูลค่าเพิ่ม)', align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: paddedText(
+                        'รวมน้ำหนัก / รวมราคาสินค้า (รวมภาษีมูลค่าเพิ่ม)',
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -246,7 +253,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalWeight(invoice.items))}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -254,7 +262,10 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                     decoration: const BoxDecoration(
                       border: Border(),
                     ),
-                    child: paddedText('${Global.format(Global.getOrderTotalAmount(invoice.items))}', align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: paddedText(
+                        '${Global.format(Global.getOrderTotalAmount(invoice.items))}',
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
             ]),
       ),
@@ -264,7 +275,9 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
         height: 60,
         decoration: const BoxDecoration(
           border: Border(
-              left: BorderSide(width: 0.25), bottom: BorderSide(width: 0.25), right: BorderSide(width: 0.25)),
+              left: BorderSide(width: 0.25),
+              bottom: BorderSide(width: 0.25),
+              right: BorderSide(width: 0.25)),
         ),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,14 +295,26 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              if (invoice.order.orderTypeId == 5 ||
+                                  invoice.order.orderTypeId == 10)
+                                Text(
+                                    'อ้างอิงเลขที่ใบกำกับภาษี : ${invoice.order.referenceNo}',
+                                    style: const TextStyle(fontSize: 11)),
+                              if (invoice.order.orderTypeId == 6 ||
+                                  invoice.order.orderTypeId == 11)
+                                Text(
+                                    'อ้างอิงเลขที่ใบรับซื้อจากร้านค้าส่ง : ${invoice.order.referenceNo}',
+                                    style: const TextStyle(fontSize: 11)),
                               Text('หมายเหตุ : ${invoice.order.remark ?? ''}',
                                   style: const TextStyle(fontSize: 10)),
                               Spacer(),
-                              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Text(
-                                    '(${NumberToThaiWords.convertDouble(Global.getOrderTotalWholeSale(invoice.order))})',
-                                    style: const TextStyle(fontSize: 10)),
-                              ]),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                        '(${NumberToThaiWords.convertDouble(Global.getOrderTotalWholeSale(invoice.order))})',
+                                        style: const TextStyle(fontSize: 10)),
+                                  ]),
                               SizedBox(height: 4),
                             ])),
                   )),
@@ -300,7 +325,8 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                       border: Border(right: BorderSide(width: 0.25)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 0.0, right: 4.0, top: 4.0),
+                      padding: const EdgeInsets.only(
+                          bottom: 0.0, right: 4.0, top: 4.0),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -328,10 +354,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        right: 4.0,
-                        bottom: 0.0,
-                        top: 4.0
-                      ),
+                          right: 4.0, bottom: 0.0, top: 4.0),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -339,14 +362,16 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                                 '${Global.format(invoice.order.purchasePrice ?? 0)}',
                                 textAlign: TextAlign.right,
                                 style: const TextStyle(fontSize: 10)),
-                            Text('${(invoice.order.priceDiff ?? 0) < 0 ? "(${Global.format(-(invoice.order.priceDiff)!)})" : Global.format(invoice.order.priceDiff ?? 0)}',
+                            Text(
+                                '${(invoice.order.priceDiff ?? 0) < 0 ? "(${Global.format(-(invoice.order.priceDiff)!)})" : Global.format(invoice.order.priceDiff ?? 0)}',
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
                                     fontSize: 10,
                                     color: (invoice.order.priceDiff ?? 0) < 0
                                         ? PdfColors.red
                                         : PdfColors.black)),
-                            Text('${Global.format(invoice.order.taxAmount ?? 0)}',
+                            Text(
+                                '${Global.format(invoice.order.taxAmount ?? 0)}',
                                 textAlign: TextAlign.right,
                                 style: const TextStyle(fontSize: 10)),
                             Text(
@@ -441,21 +466,25 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                           Expanded(
                               child: Container(
                                   child: Row(children: [
-                                    Expanded(
-                                        flex: invoice.payments!.length > 1 ? 3 : 8,
-                                        child: Text(
-                                            "${getPaymentType(invoice.payments![i].paymentMethod)} :",
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(
-                                                fontSize: 10, color: PdfColors.blue700))),
-                                    Expanded(
-                                        flex: 2,
-                                        child: Text(
-                                            invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(
-                                                fontSize: 10, color: PdfColors.blue700)))
-                                  ])))
+                            Expanded(
+                                flex: invoice.payments!.length > 1 ? 3 : 8,
+                                child: Text(
+                                    "${getPaymentType(invoice.payments![i].paymentMethod)} :",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        color: PdfColors.blue700))),
+                            Expanded(
+                                flex: 2,
+                                child: Text(
+                                    invoice.order.orderStatus == 'CANCEL'
+                                        ? "0.00 บาท"
+                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    textAlign: TextAlign.right,
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        color: PdfColors.blue700)))
+                          ])))
                       ],
                     ),
                   ],
@@ -472,18 +501,19 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                     Text('${getCustomerName(invoice.customer)}',
                         style: const TextStyle(fontSize: 10)),
                     Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
                     Spacer(),
                     Text('${Global.branch?.name}',
                         style: const TextStyle(fontSize: 10)),
                     Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                   ])),
             ),
           ])),
     );
-
 
     return widgets;
   }
@@ -596,8 +626,8 @@ Widget bu(List<OrderModel>? orders) {
 }
 
 Widget paddedText(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 10)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 10)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

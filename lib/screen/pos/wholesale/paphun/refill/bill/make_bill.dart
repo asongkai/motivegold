@@ -294,6 +294,16 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              if (invoice.order.orderTypeId == 5 ||
+                                  invoice.order.orderTypeId == 10)
+                                Text(
+                                    'อ้างอิงเลขที่ใบกำกับภาษี : ${invoice.order.referenceNo}',
+                                    style: const TextStyle(fontSize: 11)),
+                              if (invoice.order.orderTypeId == 6 ||
+                                  invoice.order.orderTypeId == 11)
+                                Text(
+                                    'อ้างอิงเลขที่ใบรับซื้อจากร้านค้าส่ง : ${invoice.order.referenceNo}',
+                                    style: const TextStyle(fontSize: 11)),
                               Text('หมายเหตุ : ${invoice.order.remark ?? ''}',
                                   style: const TextStyle(fontSize: 12)),
                               // Text(
@@ -362,7 +372,8 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                               '${Global.format(invoice.order.purchasePrice ?? 0)}',
                               textAlign: TextAlign.right,
                               style: const TextStyle(fontSize: 11)),
-                          Text('${Global.format((invoice.order.priceDiff ?? 0) * 100 / 107)}',
+                          Text(
+                              '${Global.format((invoice.order.priceDiff ?? 0) * 100 / 107)}',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 11,
@@ -459,7 +470,9 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                             Expanded(
                                 flex: 2,
                                 child: Text(
-                                    invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    invoice.order.orderStatus == 'CANCEL'
+                                        ? "0.00 บาท"
+                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 12,
