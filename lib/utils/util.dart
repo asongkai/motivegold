@@ -1376,48 +1376,42 @@ String getCustomerBillAddressLine1(CustomerModel customer) {
     return '';
   }
 
-  // If address field is empty but we have location data (province/amphure/tambon),
-  // return a marker to indicate address section should be shown
-  // The location details will be displayed in line 2
-  if (customer.address == null || customer.address!.isEmpty) {
-    bool hasLocationData = (customer.tambonName != null && customer.tambonName!.isNotEmpty) ||
-                          (customer.amphureName != null && customer.amphureName!.isNotEmpty) ||
-                          (customer.provinceName != null && customer.provinceName!.isNotEmpty);
+  String addressLine1 = "";
 
-    if (hasLocationData) {
-      // Return a dash to indicate "address continues on next line"
-      return '-';
-    }
-    return '';
+  // Build complete address line 1: เลขที่ อาคาร ห้องเลขที่ ชั้น หมู่บ้าน หมู่ที่ ตรอก/ซอย ถนน
+  if (customer.address != null && customer.address!.isNotEmpty) {
+    addressLine1 += 'เลขที่ ${customer.address} ';
   }
 
-  String address = customer.address!;
-
-  // For legacy data: If address contains location keywords, extract only the street part
-  // Location part will be moved to line 2
-  if (address.contains('ตำบล') ||
-      address.contains('แขวง') ||
-      address.contains('อำเภอ') ||
-      address.contains('เขต') ||
-      address.contains('จังหวัด')) {
-    // Find the first occurrence of location keywords
-    int locationStart = -1;
-    final keywords = ['ตำบล', 'แขวง', 'อำเภอ', 'เขต', 'จังหวัด'];
-
-    for (var keyword in keywords) {
-      int index = address.indexOf(keyword);
-      if (index != -1 && (locationStart == -1 || index < locationStart)) {
-        locationStart = index;
-      }
-    }
-
-    if (locationStart > 0) {
-      // Return only the street address part (before location keywords)
-      address = address.substring(0, locationStart).trim();
-    }
+  if (customer.building != null && customer.building!.isNotEmpty) {
+    addressLine1 += 'อาคาร ${customer.building} ';
   }
 
-  return address;
+  if (customer.roomNo != null && customer.roomNo!.isNotEmpty) {
+    addressLine1 += 'เลขที่ห้อง ${customer.roomNo} ';
+  }
+
+  if (customer.floor != null && customer.floor!.isNotEmpty) {
+    addressLine1 += 'ชั้นที่ ${customer.floor} ';
+  }
+
+  if (customer.village != null && customer.village!.isNotEmpty) {
+    addressLine1 += 'หมู่บ้าน ${customer.village} ';
+  }
+
+  // if (customer.moo != null && customer.moo!.isNotEmpty) {
+  //   addressLine1 += 'หมู่ที่ ${customer.moo} ';
+  // }
+
+  if (customer.soi != null && customer.soi!.isNotEmpty) {
+    addressLine1 += 'ตรอก/ซอย ${customer.soi} ';
+  }
+
+  if (customer.road != null && customer.road!.isNotEmpty) {
+    addressLine1 += 'ถนน ${customer.road} ';
+  }
+
+  return addressLine1.trim();
 }
 
 /// Get customer address for bills/reports - Line 2: District, phone, tax ID
@@ -1633,7 +1627,18 @@ String getWorkId(CustomerModel customer) {
     return 'เลขประจำตัว : $workId';
   } else {
     if (customer.customerType == 'company') {
-      return 'เลขประจำตัวผู้เสียภาษี : $workId';
+      // For companies, show Tax ID and Branch Code
+      String result = 'เลขประจำตัวผู้เสียภาษี : $workId';
+
+      // Add branch code if available
+      if (customer.branchCode != null && customer.branchCode!.isNotEmpty) {
+        result += ' สาขา ${customer.branchCode}';
+      } else {
+        // Default to "00000" for head office if no branch code
+        result += ' สาขา 00000';
+      }
+
+      return result;
     }
     return 'เลขประจำตัวประชาชน : $workId';
   }
@@ -1645,7 +1650,7 @@ String getWorkIdTitleOnly(CustomerModel customer) {
     return 'เลขประจำตัว : ';
   } else {
     if (customer.customerType == 'company') {
-      return 'เลขประจำตัวผู้เสียภาษี : ';
+      return 'เลขประจำตัวผู้เสียภาษี :  สาขา ';
     }
     return 'เลขประจำตัวประชาชน : ';
   }
