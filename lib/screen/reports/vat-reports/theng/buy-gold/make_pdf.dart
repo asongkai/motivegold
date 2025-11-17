@@ -85,15 +85,16 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                   1: const FixedColumnWidth(70),
                   2: const FixedColumnWidth(45),
                   3: const FixedColumnWidth(75),
-                  4: const FixedColumnWidth(60),
+                  4: const FixedColumnWidth(50),
                   5: const FixedColumnWidth(50),
                   6: const FixedColumnWidth(45),
-                  7: const FixedColumnWidth(70),
+                  7: const FixedColumnWidth(45),
                   8: const FixedColumnWidth(55),
                   9: const FixedColumnWidth(60),
                   10: const FixedColumnWidth(65),
                   11: const FixedColumnWidth(60),
-                  12: const FixedColumnWidth(65),
+                  12: const FixedColumnWidth(60),
+                  13: const FixedColumnWidth(65),
                 }
               : {
                   0: const FixedColumnWidth(30),
@@ -136,6 +137,12 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                               color: PdfColors.white),
                           align: TextAlign.center),
                       paddedTextSmall('ชื่อผู้ซื้อ',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
+                      paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -302,15 +309,16 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
               1: const FixedColumnWidth(70),
               2: const FixedColumnWidth(45),
               3: const FixedColumnWidth(75),
-              4: const FixedColumnWidth(60),
+              4: const FixedColumnWidth(50),
               5: const FixedColumnWidth(50),
               6: const FixedColumnWidth(45),
-              7: const FixedColumnWidth(70),
+              7: const FixedColumnWidth(45),
               8: const FixedColumnWidth(55),
               9: const FixedColumnWidth(60),
               10: const FixedColumnWidth(65),
               11: const FixedColumnWidth(60),
-              12: const FixedColumnWidth(65),
+              12: const FixedColumnWidth(60),
+              13: const FixedColumnWidth(65),
             }
           : {
               0: const FixedColumnWidth(30),
@@ -359,12 +367,21 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                     align: TextAlign.center),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall(
-                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)} ',
+                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForReports(orders[i]!.customer!)} ',
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
                             ? PdfColors.red900
                             : null)),
+                paddedTextSmall(
+                    orders[i]!.status == "2"
+                        ? ""
+                        : getCustomerBranchCode(orders[i]!.customer!),
+                    style: TextStyle(
+                        fontSize: 10,
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
+                    align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? ""

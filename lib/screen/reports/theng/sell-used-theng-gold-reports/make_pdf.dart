@@ -81,6 +81,8 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                 if (type == 1)
                   paddedTextSmall('ชื่อผู้ซื้อ', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
                 if (type == 1)
+                  paddedTextSmall('รหัสสำนักงานใหญ่/สาขา', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                if (type == 1)
                   paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
                 paddedTextSmall('รายการสินค้า', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
                 paddedTextSmall('น้ําหนัก\n(บาท)', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
@@ -160,8 +162,18 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร"
                         : type == 1
-                            ? '${getCustomerName(orders[i]!.customer!)}'
+                            ? '${getCustomerNameForReports(orders[i]!.customer!)}'
                             : 'รวมรายการทองเก่า\nประจําวัน',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
+                    align: TextAlign.center),
+              if (type == 1)
+                paddedTextSmall(
+                    orders[i]!.status == "2"
+                        ? ""
+                        : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
                         color:

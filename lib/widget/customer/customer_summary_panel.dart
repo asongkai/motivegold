@@ -28,6 +28,20 @@ class CustomerSummaryPanel extends StatelessWidget {
   final String? remark;
   final String? occupation;
 
+  // Additional fields for non-Thai general customers
+  final String? taxId;
+  final String? workPermit;
+  final String? passport;
+
+  // Additional fields for company customers
+  final String? companyName;
+  final String? establishmentName;
+  final String? taxNumber;
+  final String? branchCode;
+  final DateTime? registrationDate;
+  final String? nationality;
+  final String? country;
+
   const CustomerSummaryPanel({
     super.key,
     this.idCard,
@@ -54,6 +68,16 @@ class CustomerSummaryPanel extends StatelessWidget {
     this.postalCode,
     this.remark,
     this.occupation,
+    this.taxId,
+    this.workPermit,
+    this.passport,
+    this.companyName,
+    this.establishmentName,
+    this.taxNumber,
+    this.branchCode,
+    this.registrationDate,
+    this.nationality,
+    this.country,
   });
 
   String _formatDate(DateTime? date) {
@@ -151,12 +175,36 @@ class CustomerSummaryPanel extends StatelessWidget {
   String _buildSummaryText() {
     final parts = <String>[];
 
-    // All info on one line, space-separated like in the 3rd image
-    if (idCard?.isNotEmpty == true) parts.add('เลขบัตรประชาชน : $idCard');
+    // Follow exact order from screenshots
+    // ID Card / Tax Number (show Tax Number for company, ID Card for general)
+    if (taxNumber?.isNotEmpty == true) {
+      parts.add('เลขประจำตัวผู้เสียภาษี : $taxNumber');
+    } else if (idCard?.isNotEmpty == true) {
+      parts.add('เลขบัตรประชาชน : $idCard');
+    }
+
+    // Company name (for company customers)
+    if (companyName?.isNotEmpty == true) parts.add('ชื่อผู้ประกอบการ : $companyName');
+
+    // Establishment name (for company customers)
+    if (establishmentName?.isNotEmpty == true) parts.add('ชื่อสถานประกอบการ : $establishmentName');
+
+    // Name (for general customers)
     final fullName = _buildFullName();
     if (fullName != '-') parts.add('ชื่อ : $fullName');
+
+    // Branch code (for company only)
+    if (branchCode?.isNotEmpty == true) parts.add('รหัสสาขา : $branchCode');
+
+    // Registration date (for company only)
+    final regDate = _formatDate(registrationDate);
+    if (regDate != '-') parts.add('วันที่จดทะเบียน : $regDate');
+
+    // Email and Phone
     if (email?.isNotEmpty == true) parts.add('อีเมล : $email');
     if (phone?.isNotEmpty == true) parts.add('โทร : $phone');
+
+    // Dates (for general customers)
     final dob = _formatDate(dateOfBirth);
     if (dob != '-') parts.add('เกิด : $dob');
     final issue = _formatDate(issueDate);
@@ -164,13 +212,27 @@ class CustomerSummaryPanel extends StatelessWidget {
     final expiry = _formatDate(expiryDate);
     if (expiry != '-') parts.add('วันที่หมดอายุ : $expiry');
 
-    // Add address on the same line
+    // Foreign customer documents
+    if (taxId?.isNotEmpty == true) parts.add('Tax ID : $taxId');
+    if (workPermit?.isNotEmpty == true) parts.add('Work Permit : $workPermit');
+    if (passport?.isNotEmpty == true) parts.add('Passport : $passport');
+
+    // Nationality and Country
+    if (nationality?.isNotEmpty == true) parts.add('สัญชาติ : $nationality');
+    if (country?.isNotEmpty == true) parts.add('ประเทศ : $country');
+
+    // Address
     final address = _buildFullAddress();
     if (address != '-') parts.add('ที่อยู่ : $address');
 
-    // Add occupation if exists
+    // Occupation
     if (occupation?.isNotEmpty == true) {
       parts.add('อาชีพ : $occupation');
+    }
+
+    // Remark (always last)
+    if (remark?.isNotEmpty == true) {
+      parts.add('หมายเหตุ : $remark');
     }
 
     // Join all parts with 3-4 spaces for readability (matching the image style)

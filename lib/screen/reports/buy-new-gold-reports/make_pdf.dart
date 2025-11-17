@@ -74,6 +74,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                 paddedTextSmall('เลขที่ใบรับทอง', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
                 paddedTextSmall('วันที่', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
                 paddedTextSmall('ชื่อผู้ขาย', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('รหัสสำนักงานใหญ่/สาขา', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
                 paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
                 paddedTextSmall('น้ําหนักรวม\n(กรัม)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
                 paddedTextSmall('ราคาซื้อ\nไม่รวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
@@ -141,11 +142,16 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                       color: orders[i]!.status == "2" ? PdfColors.red900 : null
                   ), align: TextAlign.center),
 
-              paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)}',
+              paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForReports(orders[i]!.customer!)}',
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : null
                   )),
+              paddedTextSmall(orders[i]!.status == "2" ? "" : getCustomerBranchCode(orders[i]!.customer!),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
+                  ), align: TextAlign.center),
               paddedTextSmall(orders[i]!.status == "2" ? "" :
                   orders[i]!.customer?.taxNumber != null
                       ? orders[i]!.customer?.taxNumber ?? ''

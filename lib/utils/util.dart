@@ -1399,9 +1399,9 @@ String getCustomerBillAddressLine1(CustomerModel customer) {
     addressLine1 += 'หมู่บ้าน ${customer.village} ';
   }
 
-  // if (customer.moo != null && customer.moo!.isNotEmpty) {
-  //   addressLine1 += 'หมู่ที่ ${customer.moo} ';
-  // }
+  if (customer.moo != null && customer.moo!.isNotEmpty) {
+    addressLine1 += 'หมู่ที่ ${customer.moo} ';
+  }
 
   if (customer.soi != null && customer.soi!.isNotEmpty) {
     addressLine1 += 'ตรอก/ซอย ${customer.soi} ';
@@ -1620,12 +1620,31 @@ String getWorkId(CustomerModel customer) {
     return getWorkIdTitleOnly(customer);
   }
 
-  String workId = getCustomerWorkIdValue(customer);
-  if (workId.isEmpty) return getWorkIdTitleOnly(customer);
-
   if (customer.nationality == 'Foreigner') {
-    return 'เลขประจำตัว : $workId';
+    // For foreigners, show all fields on single line if available
+    List<String> ids = [];
+
+    if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
+      ids.add('Tax ID : ${customer.taxNumber}');
+    }
+
+    if (customer.workPermit != null && customer.workPermit!.isNotEmpty) {
+      ids.add('Work Permit : ${customer.workPermit}');
+    }
+
+    if (customer.passportId != null && customer.passportId!.isNotEmpty) {
+      ids.add('Passport ID : ${customer.passportId}');
+    }
+
+    // If no IDs, return empty title
+    if (ids.isEmpty) return getWorkIdTitleOnly(customer);
+
+    // Join with space for single line display
+    return ids.join(' ');
   } else {
+    String workId = getCustomerWorkIdValue(customer);
+    if (workId.isEmpty) return getWorkIdTitleOnly(customer);
+
     if (customer.customerType == 'company') {
       // For companies, show Tax ID and Branch Code
       String result = 'เลขประจำตัวผู้เสียภาษี : $workId';
@@ -1668,9 +1687,92 @@ String getCustomerDisplayAddress(CustomerModel customer) {
 
 getCustomerName(CustomerModel customer) {
   if (customer.customerType == 'company') {
-    return '${customer.companyName}';
+    // For companies
+    String companyName = customer.companyName ?? '';
+
+    // Check if has branch code
+    if (customer.branchCode != null &&
+        customer.branchCode!.isNotEmpty &&
+        customer.branchCode != '00000') {
+      // Branch format: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
+      String branchName = customer.establishmentName ?? companyName;
+      return '$companyName สาขาที่(${customer.branchCode}) "$branchName"';
+    } else {
+      // Head office format: "บริษัท ห้างทองมนวาท จำกัด (สำนักงานใหญ่)"
+      return '$companyName (สำนักงานใหญ่)';
+    }
   }
-  return '${customer.firstName} ${customer.lastName}';
+
+  // For individuals
+  String name = '';
+
+  // Add title if available
+  if (customer.titleName != null && customer.titleName!.isNotEmpty) {
+    name += '${customer.titleName}';
+  }
+
+  // Add first name
+  if (customer.firstName != null && customer.firstName!.isNotEmpty) {
+    name += '${customer.firstName} ';
+  }
+
+  // Add middle name if available
+  if (customer.middleName != null && customer.middleName!.isNotEmpty) {
+    name += '${customer.middleName} ';
+  }
+
+  // Add last name
+  if (customer.lastName != null && customer.lastName!.isNotEmpty) {
+    name += '${customer.lastName}';
+  }
+
+  return name.trim();
+}
+
+// Get customer name for reports (specific to 6 reports that need establishment name only)
+// For companies: returns establishment name only
+// For individuals: returns full name as normal
+String getCustomerNameForReports(CustomerModel customer) {
+  if (customer.customerType == 'company') {
+    // For companies, return establishment name (ชื่อผู้ประกอบการ) only
+    return customer.establishmentName ?? customer.companyName ?? '';
+  }
+
+  // For individuals, use same logic as getCustomerName
+  String name = '';
+
+  if (customer.titleName != null && customer.titleName!.isNotEmpty) {
+    name += '${customer.titleName}';
+  }
+
+  if (customer.firstName != null && customer.firstName!.isNotEmpty) {
+    name += '${customer.firstName} ';
+  }
+
+  if (customer.middleName != null && customer.middleName!.isNotEmpty) {
+    name += '${customer.middleName} ';
+  }
+
+  if (customer.lastName != null && customer.lastName!.isNotEmpty) {
+    name += '${customer.lastName}';
+  }
+
+  return name.trim();
+}
+
+// Get customer branch code for reports
+// Returns branch code or "00000" for head office
+String getCustomerBranchCode(CustomerModel customer) {
+  if (customer.customerType == 'company') {
+    if (customer.branchCode != null &&
+        customer.branchCode!.isNotEmpty &&
+        customer.branchCode != '00000') {
+      return customer.branchCode!;
+    } else {
+      return '00000'; // Head office
+    }
+  }
+  return ''; // Not applicable for individuals
 }
 
 getRefillAttachment() {

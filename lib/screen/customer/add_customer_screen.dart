@@ -1135,8 +1135,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             nationality = value;
                                           });
 
-                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner
-                                          if (value == 'Foreigner' && selectedType?.code == 'general') {
+                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner OR Company + Foreigner
+                                          if (value == 'Foreigner' && (selectedType?.code == 'general' || selectedType?.code == 'company')) {
                                             try {
                                               // Set province to "ไม่ระบุ" (ID: 78)
                                               final notSpecifiedProvince = Global.provinceList.firstWhere(
@@ -3263,19 +3263,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                        riskAssessmentFiles.length +
                        customerPhotoFiles.length;
 
-        print('Total files to upload: $totalFiles');
-        print('Occupation files: ${occupationFiles.length}');
-        print('Risk Assessment files: ${riskAssessmentFiles.length}');
-        print('Customer Photo files: ${customerPhotoFiles.length}');
+        motivePrint('=== FILE UPLOAD DEBUG ===');
+        motivePrint('Total files to upload: $totalFiles');
+        motivePrint('Occupation files: ${occupationFiles.length}');
+        motivePrint('Risk Assessment files: ${riskAssessmentFiles.length}');
+        motivePrint('Customer Photo files: ${customerPhotoFiles.length}');
+        motivePrint('Customer ID: ${customer.id}');
 
         if (totalFiles > 0) {
           // Update progress message for file uploads
           pr.update(message: 'กำลังอัพโหลดไฟล์... (0/$totalFiles)');
 
           // Upload KYC files after customer creation
+          motivePrint('Starting file upload for customer ID: ${customer.id}');
           await _uploadKycFiles(customer.id!, pr, totalFiles);
+          motivePrint('Finished uploading all files');
         } else {
-          print('No files selected for upload');
+          motivePrint('No files selected for upload');
         }
 
         await pr.hide();
@@ -3350,9 +3354,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     DateTime attachmentDate,
   ) async {
     try {
-      print('Uploading file: ${file.name} (type: $attachmentType)');
-      print('File path: ${file.path}');
-      print('Customer ID: $customerId');
+      motivePrint('=== UPLOADING FILE ===');
+      motivePrint('File name: ${file.name}');
+      motivePrint('File type: $attachmentType');
+      motivePrint('File path: ${file.path}');
+      motivePrint('File size: ${file.size}');
+      motivePrint('Has bytes: ${file.bytes != null}');
+      motivePrint('Bytes length: ${file.bytes?.length ?? 0}');
+      motivePrint('Customer ID: $customerId');
+      motivePrint('API URL: ${Constants.BACKEND_URL}/customer/attachment/$customerId');
 
       var request = http.MultipartRequest(
         'POST',
@@ -3360,23 +3370,42 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             '${Constants.BACKEND_URL}/customer/attachment/$customerId'),
       );
 
-      // Add file
-      if (file.path != null) {
-        print('Adding file from path: ${file.path}');
-        request.files.add(
-          await http.MultipartFile.fromPath('file', file.path!),
-        );
-      } else if (file.bytes != null) {
-        print('Adding file from bytes (size: ${file.bytes!.length})');
-        request.files.add(
-          http.MultipartFile.fromBytes(
-            'file',
-            file.bytes!,
-            filename: file.name,
-          ),
-        );
+      // Add file - use bytes for web, path for mobile
+      if (kIsWeb) {
+        // On web, always use bytes
+        if (file.bytes != null) {
+          motivePrint('Adding file from bytes for web (size: ${file.bytes!.length})');
+          request.files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              file.bytes!,
+              filename: file.name,
+            ),
+          );
+        } else {
+          motivePrint('ERROR: No bytes available for web upload of ${file.name}');
+          return;
+        }
       } else {
-        print('WARNING: No file path or bytes available');
+        // On mobile/desktop, prefer path if available, otherwise use bytes
+        if (file.path != null && file.path!.isNotEmpty && !file.path!.startsWith('blob:')) {
+          motivePrint('Adding file from path: ${file.path}');
+          request.files.add(
+            await http.MultipartFile.fromPath('file', file.path!),
+          );
+        } else if (file.bytes != null) {
+          motivePrint('Adding file from bytes (size: ${file.bytes!.length})');
+          request.files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              file.bytes!,
+              filename: file.name,
+            ),
+          );
+        } else {
+          motivePrint('ERROR: No file path or bytes available for ${file.name}');
+          return;
+        }
       }
 
       // Add fields
@@ -3386,25 +3415,27 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         request.fields['userId'] = Global.user!.id!;
       }
 
-      print('Sending upload request...');
+      motivePrint('Request fields: ${request.fields}');
+      motivePrint('Sending upload request...');
       var response = await request.send();
       var responseData = await response.stream.bytesToString();
 
-      print('Upload response status: ${response.statusCode}');
-      print('Upload response data: $responseData');
+      motivePrint('Upload response status: ${response.statusCode}');
+      motivePrint('Upload response data: $responseData');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(responseData);
         if (data['status'] == 'success') {
-          print('Successfully uploaded $attachmentType file: ${file.name}');
+          motivePrint('✓ Successfully uploaded $attachmentType file: ${file.name}');
         } else {
-          print('Upload failed: ${data['message']}');
+          motivePrint('✗ Upload failed: ${data['message']}');
         }
       } else {
-        print('Upload failed with status code: ${response.statusCode}');
+        motivePrint('✗ Upload failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error uploading file ${file.name}: $e');
+      motivePrint('✗ Error uploading file ${file.name}: $e');
+      motivePrint('Stack trace: ${StackTrace.current}');
       rethrow;
     }
   }
@@ -3471,6 +3502,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   // File picker method for KYC documents
   Future<void> pickFile(String fileType) async {
     try {
+      motivePrint("pickFile called with fileType: $fileType");
       if (fileType == 'photo') {
         // For photos, use ImagePicker to access photo library
         await _pickFromGallery(fileType);
@@ -3485,6 +3517,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
   // Show dialog to choose between file picker or photo gallery
   Future<void> _showPickerDialog(String fileType) async {
+    motivePrint("_showPickerDialog called with fileType: $fileType");
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -3543,16 +3576,17 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         );
 
         if (image != null) {
-          // Convert XFile to PlatformFile format for consistency
-          final File file = File(image.path);
-          final int fileSize = await file.length();
-          final String fileName = image.path.split('/').last;
+          // Read bytes first (works on all platforms including web)
+          final Uint8List imageBytes = await image.readAsBytes();
+          final int fileSize = imageBytes.length;
+          final String fileName = image.name;
 
+          // Create PlatformFile with bytes (essential for web)
           platformFile = PlatformFile(
-            path: image.path,
+            path: image.path.isNotEmpty ? image.path : null, // Path may be empty on web
             name: fileName,
             size: fileSize,
-            bytes: await file.readAsBytes(),
+            bytes: imageBytes, // Critical for web - bytes must be set
           );
         }
       }
@@ -3572,6 +3606,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             selectedRiskAssessmentFile = fileWithTimestamp;
           }
         });
+        motivePrint('Image picked successfully: ${platformFile.name} (${platformFile.size} bytes)');
       }
     } catch (e) {
       motivePrint("Error picking from gallery: $e");
@@ -3581,10 +3616,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   // Pick from file system using FilePicker
   Future<void> _pickFromFiles(String fileType) async {
     try {
+      motivePrint("_pickFromFiles called with fileType: $fileType");
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.any,
         allowMultiple: false,
       );
+      motivePrint("FilePicker result: ${result != null ? 'File selected' : 'No file selected'}");
 
       if (result != null && result.files.isNotEmpty) {
         PlatformFile pickedFile = result.files.first;
@@ -3611,9 +3648,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           if (fileType == 'occupation') {
             occupationFiles.add(fileWithTimestamp);
             selectedOccupationFile = fileWithTimestamp;
+            motivePrint("Added occupation file: ${pickedFile.name}");
           } else if (fileType == 'risk') {
             riskAssessmentFiles.add(fileWithTimestamp);
             selectedRiskAssessmentFile = fileWithTimestamp;
+            motivePrint("Added risk assessment file: ${pickedFile.name}");
           }
         });
       }

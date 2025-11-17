@@ -140,6 +140,12 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                               fontWeight: FontWeight.bold,
                               color: PdfColors.white),
                           align: TextAlign.center),
+                      paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.white),
+                          align: TextAlign.center),
                       paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
                           style: TextStyle(
                               fontSize: 11,
@@ -356,12 +362,22 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                     align: TextAlign.center),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall(
-                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)} ',
+                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForReports(orders[i]!.customer!)} ',
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"
                             ? PdfColors.red900
                             : null)),
+                paddedTextSmall(
+                    orders[i]!.status == "2"
+                        ? ""
+                        : getCustomerBranchCode(orders[i]!.customer!),
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : null),
+                    align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? ""

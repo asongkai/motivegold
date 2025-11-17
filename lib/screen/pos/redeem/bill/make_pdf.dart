@@ -36,7 +36,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
           versionText: versionText),
     );
     widgets.add(
-      docNoRedeem(invoice.order),
+      docNoRedeem(invoice.order, customer: invoice.customer),
     );
     widgets.add(height(h: 5));
 

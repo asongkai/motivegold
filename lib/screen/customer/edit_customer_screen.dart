@@ -301,6 +301,15 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     if (widget.c.customerType == 'company') {
       typeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[0]);
       selectedType = customerTypes()[0];
+
+      // Set company office type based on branch code
+      if (widget.c.branchCode != null &&
+          widget.c.branchCode!.isNotEmpty &&
+          widget.c.branchCode != '00000') {
+        companyOfficeType = 'branch';
+      } else {
+        companyOfficeType = 'head';
+      }
     } else {
       typeNotifier = ValueNotifier<ProductTypeModel>(customerTypes()[1]);
       selectedType = customerTypes()[1];
@@ -1390,6 +1399,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                           postalCode: postalCodeCtrl.text,
                           remark: remarkCtrl.text,
                           occupation: selectedOccupation?.name,
+                          // Non-Thai general customer fields
+                          taxId: taxNumberCtrl.text,
+                          workPermit: workPermitCtrl.text,
+                          passport: passportNoCtrl.text,
+                          // Company customer fields
+                          companyName: companyNameCtrl.text,
+                          establishmentName: businessNameCtrl.text,
+                          taxNumber: taxNumberCtrl.text,
+                          branchCode: branchCodeCtrl.text,
+                          registrationDate: widget.c.registrationDate,
+                          nationality: selectedNationality?.nationalityTH,
+                          country: selectedCountry,
                         ),
                         const SizedBox(height: 10),
                         _buildModernCard(
@@ -1647,8 +1668,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                             nationality = value;
                                           });
 
-                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner
-                                          if (value == 'Foreigner' && selectedType?.code == 'general') {
+                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner OR Company + Foreigner
+                                          if (value == 'Foreigner' && (selectedType?.code == 'general' || selectedType?.code == 'company')) {
                                             try {
                                               // Set province to "ไม่ระบุ" (ID: 78)
                                               final notSpecifiedProvince = Global.provinceList.firstWhere(
@@ -2253,6 +2274,14 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                                       onChanged: (String? value) {
                                                         setState(() {
                                                           companyOfficeType = value;
+                                                          if (value == 'head') {
+                                                            branchCodeCtrl.text = '00000';
+                                                          } else if (value == 'branch') {
+                                                            // Clear branch code so user can enter their own
+                                                            if (branchCodeCtrl.text == '00000') {
+                                                              branchCodeCtrl.text = '';
+                                                            }
+                                                          }
                                                         });
                                                       },
                                                     ),
@@ -2287,6 +2316,14 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                                       onChanged: (String? value) {
                                                         setState(() {
                                                           companyOfficeType = value;
+                                                          if (value == 'head') {
+                                                            branchCodeCtrl.text = '00000';
+                                                          } else if (value == 'branch') {
+                                                            // Clear branch code so user can enter their own
+                                                            if (branchCodeCtrl.text == '00000') {
+                                                              branchCodeCtrl.text = '';
+                                                            }
+                                                          }
                                                         });
                                                       },
                                                     ),
@@ -4020,7 +4057,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
 
     try {
       var result = await ApiServices.post('/customer/check-tax-number',
-          Global.requestObj({"taxNumber": taxNumber}));
+          Global.requestObj({
+            "taxNumber": taxNumber,
+            "excludeId": widget.c.id  // Exclude current customer when editing
+          }));
 
       if (result?.status == "success") {
         return result?.data == null; // true if no duplicate found

@@ -29,13 +29,13 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('บัญชีสำหรับผู้ทำการค้าของเก่า (ประเภททองรูปพรรณและทองคำแท่ง)',
+              Text(
+                  'บัญชีสำหรับผู้ทำการค้าของเก่า (ประเภททองรูปพรรณและทองคำแท่ง)',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               Text(
                   'สถานประกอบอาชีพ : ${Global.company?.name} (${Global.branch!.name})',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              Text(
-                  'ที่อยู่ : ${Global.branch?.address}, ${Global.branch?.village}, ${Global.branch?.district}, ${Global.branch?.province}',
+              Text('ที่อยู่ : ${getFullAddress()}',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               Text('ใบอนุญาตเลขที่ : ${Global.branch?.oldGoldLicenseNumber}',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
@@ -215,10 +215,12 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
             children: [
               paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 10)),
               paddedTextSmall(orders[i]!.orderId,
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall('ทองรูปพรรณ 96.5%',
-                  style: TextStyle(fontSize: 10, color: PdfColors.red600, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: PdfColors.red600,
+                      fontWeight: FontWeight.bold),
                   align: TextAlign.center),
               paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
               paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
@@ -228,43 +230,43 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                   style: TextStyle(fontSize: 10, color: PdfColors.blue600),
                   align: TextAlign.right),
               paddedTextSmall('กรัม',
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               Container(
                   padding: EdgeInsets.all(4),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text( 
-                            '${getCustomerName(orders[i]!.customer!)}',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                        Text('${orders[i]!.customer?.address}',
+                        Text(getCustomerName(orders[i]!.customer!),
+                            style: TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold)),
+                        if (getCustomerBillAddressLine1(orders[i]!.customer!)
+                            .isNotEmpty)
+                          Text(
+                              'ที่อยู่ ${getCustomerBillAddressLine1(orders[i]!.customer!)}',
+                              style: TextStyle(fontSize: 10)),
+                        if (getCustomerBillAddressLine1(orders[i]!.customer!)
+                            .isNotEmpty)
+                          Text(
+                              getCustomerBillAddressLine2(orders[i]!.customer!),
+                              style: TextStyle(fontSize: 10)),
+                        Text('Tel : ${orders[i]!.customer?.phoneNumber}',
                             style: TextStyle(fontSize: 10)),
-                        Text('Tel: ${orders[i]!.customer?.phoneNumber}',
-                            style: TextStyle(fontSize: 10, color: PdfColors.purple600)),
-                        Text('ID: ${orders[i]!.customer?.idCard}',
-                            style: TextStyle(fontSize: 10, color: PdfColors.teal600)),
-                      ]
-                  )
-              ),
+                        Text(getWorkId(orders[i]!.customer!),
+                            style: TextStyle(fontSize: 10)),
+                      ])),
               paddedTextSmall(Global.dateOnly(orders[i]!.orderDate.toString()),
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
                   style: TextStyle(fontSize: 10, color: PdfColors.red600),
                   align: TextAlign.right),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10),
-                  align: TextAlign.center),
+                  style: TextStyle(fontSize: 10), align: TextAlign.center),
             ],
           ),
         // Summary row with clean styling
@@ -285,34 +287,34 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800
-                ),
+                    color: PdfColors.blue800),
                 align: TextAlign.right),
             paddedTextSmall(
                 type == 1
-                    ? Global.format(orders.fold(0.0, (sum, order) => sum + getWeight(order)))
-                    : Global.format(orders.fold(0.0, (sum, order) => sum + (order?.weight ?? 0))),
+                    ? Global.format(orders.fold(
+                        0.0, (sum, order) => sum + getWeight(order)))
+                    : Global.format(orders.fold(
+                        0.0, (sum, order) => sum + (order?.weight ?? 0))),
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue700
-                ),
+                    color: PdfColors.blue700),
                 align: TextAlign.right),
             paddedTextSmall('กรัม',
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800
-                ),
+                    color: PdfColors.blue800),
                 align: TextAlign.center),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-            paddedTextSmall(Global.format(orders.fold(0.0, (sum, order) => sum + (order?.priceIncludeTax ?? 0))),
+            paddedTextSmall(
+                Global.format(orders.fold(
+                    0.0, (sum, order) => sum + (order?.priceIncludeTax ?? 0))),
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.red700
-                ),
+                    color: PdfColors.red700),
                 align: TextAlign.right),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
@@ -329,7 +331,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
       margin: const EdgeInsets.all(20),
       pageFormat: PdfPageFormat(
         PdfPageFormat.a4.height, // height becomes width
-        PdfPageFormat.a4.width,  // width becomes height
+        PdfPageFormat.a4.width, // width becomes height
       ),
       orientation: PageOrientation.landscape,
       header: (context) => buildHeader(),
@@ -348,8 +350,8 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
 }
 
 Widget paddedTextSmall(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 10)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 10)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

@@ -131,6 +131,14 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                       ),
                       align: TextAlign.center),
                 if (type == 1)
+                  paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                      align: TextAlign.center),
+                if (type == 1)
                   paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
                       style: TextStyle(
                         fontSize: 11,
@@ -288,8 +296,18 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร"
                         : type == 1
-                            ? '${getCustomerName(orders[i]!.customer!)}'
+                            ? '${getCustomerNameForReports(orders[i]!.customer!)}'
                             : 'รวมรายการทองเก่า\nประจําวัน',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
+                    align: TextAlign.center),
+              if (type == 1)
+                paddedTextSmall(
+                    orders[i]!.status == "2"
+                        ? ""
+                        : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
                         color:
