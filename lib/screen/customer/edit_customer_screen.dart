@@ -1667,67 +1667,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                           setState(() {
                                             nationality = value;
                                           });
-
-                                          // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner OR Company + Foreigner
-                                          if (value == 'Foreigner' && (selectedType?.code == 'general' || selectedType?.code == 'company')) {
-                                            try {
-                                              // Set province to "ไม่ระบุ" (ID: 78)
-                                              final notSpecifiedProvince = Global.provinceList.firstWhere(
-                                                (p) => p.id == 78,
-                                                orElse: () => ProvinceModel(id: 78, nameTh: 'ไม่ระบุ'),
-                                              );
-                                              Global.provinceModel = notSpecifiedProvince;
-                                              Global.provinceNotifier!.value = notSpecifiedProvince;
-
-                                              // Load amphure list for province 78
-                                              var result = await ApiServices.post(
-                                                '/customer/amphure/78',
-                                                Global.requestObj(null),
-                                              );
-
-                                              if (result?.status == "success") {
-                                                var data = jsonEncode(result?.data);
-                                                List<AmphureModel> amphures = amphureModelFromJson(data);
-                                                setState(() {
-                                                  Global.amphureList = amphures;
-                                                });
-
-                                                // Set amphure to "ไม่ระบุ" (ID: 9614)
-                                                final notSpecifiedAmphure = amphures.firstWhere(
-                                                  (a) => a.id == 9614,
-                                                  orElse: () => AmphureModel(id: 9614, nameTh: 'ไม่ระบุ'),
-                                                );
-                                                Global.amphureModel = notSpecifiedAmphure;
-                                                Global.amphureNotifier!.value = notSpecifiedAmphure;
-
-                                                // Load tambon list for amphure 9614
-                                                var tambonResult = await ApiServices.post(
-                                                  '/customer/tambon/9614',
-                                                  Global.requestObj(null),
-                                                );
-
-                                                if (tambonResult?.status == "success") {
-                                                  var tambonData = jsonEncode(tambonResult?.data);
-                                                  List<TambonModel> tambons = tambonModelFromJson(tambonData);
-                                                  setState(() {
-                                                    Global.tambonList = tambons;
-                                                  });
-
-                                                  // Set tambon to "ไม่ระบุ" (ID: 3023)
-                                                  final notSpecifiedTambon = tambons.firstWhere(
-                                                    (t) => t.id == 3023,
-                                                    orElse: () => TambonModel(id: 3023, nameTh: 'ไม่ระบุ'),
-                                                  );
-                                                  Global.tambonModel = notSpecifiedTambon;
-                                                  Global.tambonNotifier!.value = notSpecifiedTambon;
-
-                                                  setState(() {});
-                                                }
-                                              }
-                                            } catch (e) {
-                                              motivePrint(e.toString());
-                                            }
-                                          }
+                                          // Note: In edit screen, we don't automatically change province/amphure/tambon
+                                          // We keep the existing saved values so user can see and modify them if needed
                                         },
                                       ),
                                     ),
@@ -3721,22 +3662,11 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       "moo": mooCtrl.text,
       "soi": soiCtrl.text,
       "road": roadCtrl.text,
-      "tambonId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 3023
-              : Global.tambonModel?.id,
-      "amphureId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 9614
-              : Global.amphureModel?.id,
-      "provinceId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 78
-              : Global.provinceModel?.id,
-      "postalCode":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? ''
-              : postalCodeCtrl.text,
+      // Use the selected tambon/amphure/province, don't override with defaults
+      "tambonId": Global.tambonModel?.id,
+      "amphureId": Global.amphureModel?.id,
+      "provinceId": Global.provinceModel?.id,
+      "postalCode": postalCodeCtrl.text,
 
       // Nationality and ID info
       "nationality": nationality == 'Foreigner'

@@ -3171,22 +3171,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       "moo": mooCtrl.text,
       "soi": soiCtrl.text,
       "road": roadCtrl.text,
-      "tambonId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 3023
-              : Global.tambonModel?.id,
-      "amphureId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 9614
-              : Global.amphureModel?.id,
-      "provinceId":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? 78
-              : Global.provinceModel?.id,
-      "postalCode":
-          nationality == 'Foreigner' && selectedType?.code == 'general'
-              ? ''
-              : postalCodeCtrl.text,
+      // Use the selected tambon/amphure/province, don't override with defaults
+      "tambonId": Global.tambonModel?.id,
+      "amphureId": Global.amphureModel?.id,
+      "provinceId": Global.provinceModel?.id,
+      "postalCode": postalCodeCtrl.text,
 
       // Nationality and ID info
       "nationality": nationality == 'Foreigner'
