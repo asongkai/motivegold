@@ -48,11 +48,17 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     'CANCEL',
     'CONFIRM',
     'REJECT',
+    'LOGIN',
+    'LOGOUT',
   ];
 
   @override
   void initState() {
     super.initState();
+    // Set default date filter to today
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    fromDateCtrl.text = today;
+    toDateCtrl.text = today;
     loadActivities();
   }
 
@@ -391,8 +397,10 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        fromDateCtrl.text = "";
-                        toDateCtrl.text = "";
+                        // Reset to today's date instead of clearing
+                        String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                        fromDateCtrl.text = today;
+                        toDateCtrl.text = today;
                         selectedActionType = null;
                         selectedScreenName = null;
                       });
@@ -510,6 +518,14 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
       case 'GENERATE_REPORT':
         actionIcon = Icons.print_rounded;
         actionColor = Colors.purple;
+        break;
+      case 'LOGIN':
+        actionIcon = Icons.login_rounded;
+        actionColor = Colors.blueAccent;
+        break;
+      case 'LOGOUT':
+        actionIcon = Icons.logout_rounded;
+        actionColor = Colors.grey;
         break;
       default:
         actionIcon = Icons.info_rounded;
@@ -840,10 +856,14 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
       loading = true;
     });
     try {
-      // Use search endpoint with role-based filtering
+      // Use search endpoint with role-based filtering and date filter
       var searchData = {
-        'startDate': null,
-        'endDate': null,
+        'startDate': fromDateCtrl.text.isNotEmpty
+            ? DateTime.parse(fromDateCtrl.text).toIso8601String()
+            : null,
+        'endDate': toDateCtrl.text.isNotEmpty
+            ? DateTime.parse(toDateCtrl.text).toIso8601String()
+            : null,
         'actionType': null,
         'screenName': null,
       };

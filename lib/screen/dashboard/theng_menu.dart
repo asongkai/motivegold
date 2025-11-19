@@ -184,20 +184,21 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: background,
-                    shape: BoxShape.circle,
-                  ),
-                  child: iconData is Image
-                    ? iconData
-                    : Icon(
-                      iconData,
-                      color: Colors.white,
-                      size: 18.sp,
-                    )
-              ),
+              // Icon or Image
+              iconData is Image
+                  ? iconData
+                  : Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: background,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        iconData,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                    ),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
@@ -262,70 +263,129 @@ class _ThengMenuScreenState extends State<ThengMenuScreen> {
 
   get grid => Expanded(
     child: Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: OrientationBuilder(
-        builder: (context, orientation) {
-          return GridView.count(
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            crossAxisCount: 4,
-            childAspectRatio:
-            orientation == Orientation.portrait ? .80 : .90,
-            children: [
-              iconDashboard(
-                'ซื้อขายทองแท่ง \n(จับคู่) ',
-                Image.asset('assets/icons/menu_icons/theng_matching.png', height: 110,),
-                kPrimaryTosca,
-                const ThengSaleMatchingMenuScreen(title: 'Matching'),
-              ),
-              Stack(
-                children: [
-                  iconDashboard(
-                    'รายการที่รอดำเนินการ',
-                    Image.asset('assets/icons/menu_icons/pending.png', height: 110,),
-                    Colors.red,
-                    const MatchingPendingScreen(),
-                  ),
-                  if (list != null && list!.isNotEmpty)
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(20.0)),
-                          padding:
-                          const EdgeInsets.only(left: 5.0, right: 5.0),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  (list == null)
-                                      ? 0.toString()
-                                      : list!.length.toString(),
-                                  style:
-                                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+      child: Column(
+        children: [
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _buildMenuItem(
+                      'ซื้อขายทองแท่ง \n(จับคู่) ',
+                      'assets/icons/menu_icons/theng_matching.png',
+                      kPrimaryTosca,
+                      const ThengSaleMatchingMenuScreen(title: 'Matching'),
                     ),
-                ],
-              ),
-              iconDashboard(
-                'ซื้อขายทองแท่ง \n(ซื้อ-ขายจริง) ',
-                Image.asset('assets/icons/menu_icons/theng_storefront.png', height: 110,),
-                primer,
-                const ThengSaleMenuScreen(title: 'Real'),
-              ),
-            ],
-          );
-        },
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Stack(
+                      children: [
+                        _buildMenuItem(
+                          'รายการที่รอดำเนินการ',
+                          'assets/icons/menu_icons/pending.png',
+                          Colors.red,
+                          const MatchingPendingScreen(),
+                        ),
+                        if (list != null && list!.isNotEmpty)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              child: Text(
+                                list!.length.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _buildMenuItem(
+                      'ซื้อขายทองแท่ง \n(ซื้อ-ขายจริง) ',
+                      'assets/icons/menu_icons/theng_storefront.png',
+                      primer,
+                      const ThengSaleMenuScreen(title: 'Real'),
+                    ),
+                  ),
+                ),
+                Expanded(child: SizedBox()),
+              ],
+            ),
+          ),
+        ],
       ),
     ),
   );
+
+  Widget _buildMenuItem(String title, String imagePath, Color color, dynamic route) {
+    return InkWell(
+      onTap: () {
+        if (route != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => route),
+          ).whenComplete(() {
+            loadData();
+            setState(() {});
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              imagePath,
+              width: 160,
+              height: 160,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title.toUpperCase(),
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

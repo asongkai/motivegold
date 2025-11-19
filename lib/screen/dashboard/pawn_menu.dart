@@ -158,20 +158,21 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: background,
-                    shape: BoxShape.circle,
-                  ),
-                  child: iconData is Image
-                    ? iconData
-                    : Icon(
-                      iconData,
-                      color: Colors.white,
-                      size: 18.sp,
-                    )
-              ),
+              // Icon or Image
+              iconData is Image
+                  ? iconData
+                  : Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: background,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        iconData,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                    ),
               const SizedBox(height: 8),
               Text(
                 title.toUpperCase(),
@@ -187,38 +188,104 @@ class _PawnMenuScreenState extends State<PawnMenuScreen> {
 
   get grid => Expanded(
     child: Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-      child: OrientationBuilder(
-        builder: (context, orientation) {
-          return GridView.count(
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            crossAxisCount: 4,
-            childAspectRatio:
-            orientation == Orientation.portrait ? .70 : .90,
-            children: [
-              iconDashboard(
-                'ไถ่ถอน',
-                Image.asset('assets/icons/menu_icons/redeem.png', height: 110,),
-                stmBgColor,
-                const RedeemMenuScreen(),
-              ),
-              iconDashboard(
-                'ออกตั๋วขายฝาก\nไถ่ถอน',
-                Image.asset('assets/icons/menu_icons/pawn_ticket.png', height: 110,),
-                stmBgColor,
-                null,
-              ),
-              iconDashboard(
-                'ขายฝาก รับดอกเบี้ย\nเพิ่มต้น-ลดต้น ไถ่ถอน',
-                Image.asset('assets/icons/menu_icons/pawn.png', height: 110,),
-                stmBgColor,
-                null,
-              ),
-            ],
-          );
-        },
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
+      child: Column(
+        children: [
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _buildMenuItem(
+                      'ไถ่ถอน',
+                      'assets/icons/menu_icons/redeem.png',
+                      stmBgColor,
+                      const RedeemMenuScreen(),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _buildMenuItem(
+                      'ออกตั๋วขายฝาก\nไถ่ถอน',
+                      'assets/icons/menu_icons/pawn_ticket.png',
+                      stmBgColor,
+                      null,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _buildMenuItem(
+                      'ขายฝาก รับดอกเบี้ย\nเพิ่มต้น-ลดต้น ไถ่ถอน',
+                      'assets/icons/menu_icons/pawn.png',
+                      stmBgColor,
+                      null,
+                    ),
+                  ),
+                ),
+                Expanded(child: SizedBox()),
+              ],
+            ),
+          ),
+        ],
       ),
     ),
   );
+
+  Widget _buildMenuItem(String title, String imagePath, Color color, dynamic route) {
+    return InkWell(
+      onTap: () {
+        if (route != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => route),
+          ).whenComplete(() {
+            setState(() {});
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: 0.2),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              imagePath,
+              width: 160,
+              height: 160,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title.toUpperCase(),
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

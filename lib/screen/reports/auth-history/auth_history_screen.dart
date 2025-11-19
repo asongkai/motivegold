@@ -51,6 +51,10 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
   @override
   void initState() {
     super.initState();
+    // Set default date filter to today
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    fromDateCtrl.text = today;
+    toDateCtrl.text = today;
     loadAuthLogs();
   }
 
@@ -83,6 +87,8 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       _buildFilterButton(),
+                      const SizedBox(width: 8),
+                      _buildSearchButton(),
                       const SizedBox(width: 8),
                       _buildPrintButton(),
                     ],
@@ -141,13 +147,48 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              showFilters ? Icons.filter_alt : Icons.filter_alt_outlined,
+              showFilters ? Icons.filter_alt_off : Icons.filter_alt,
               size: 20,
               color: Colors.white,
             ),
             const SizedBox(width: 6),
             Text(
-              'กรอง',
+              showFilters ? 'ซ่อนตัวกรอง' : 'ค้นหา',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchButton() {
+    return GestureDetector(
+      onTap: () {
+        loadAuthLogs();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.refresh,
+              size: 20,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'รีเฟรช',
               style: TextStyle(
                 fontSize: 14.sp,
                 color: Colors.white,
@@ -255,8 +296,8 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
               const Spacer(),
               TextButton.icon(
                 onPressed: _resetFilters,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: const Text('รีเซ็ต'),
+                icon: const Icon(Icons.refresh, size: 16),
+                label: const Text('รีเซ็ต', style: TextStyle(fontSize: 12)),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.grey[600],
                 ),
@@ -291,8 +332,8 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                                   onTap: () {
                                     setState(() {
                                       fromDateCtrl.clear();
-                                      _applyFilters();
                                     });
+                                    loadAuthLogs();
                                   },
                                   child: const Icon(Icons.clear, size: 18))
                               : null,
@@ -324,7 +365,7 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                                 setState(() {
                                   fromDateCtrl.text = formattedDate;
                                 });
-                                _applyFilters();
+                                loadAuthLogs();
                               },
                             ),
                           );
@@ -360,8 +401,8 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                                   onTap: () {
                                     setState(() {
                                       toDateCtrl.clear();
-                                      _applyFilters();
                                     });
+                                    loadAuthLogs();
                                   },
                                   child: const Icon(Icons.clear, size: 18))
                               : null,
@@ -393,7 +434,7 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                                 setState(() {
                                   toDateCtrl.text = formattedDate;
                                 });
-                                _applyFilters();
+                                loadAuthLogs();
                               },
                             ),
                           );
@@ -440,23 +481,50 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                       setState(() {
                         selectedType = newValue;
                       });
-                      _applyFilters();
+                      loadAuthLogs();
                     },
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+
+          // Action Buttons
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(
-                'แสดง ${filteredAuthLogList?.length ?? 0} รายการ',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                flex: 4,
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                    ),
+                    onPressed: loadAuthLogs,
+                    icon: const Icon(Icons.search_rounded, size: 20),
+                    label: const Text('ค้นหา', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 3,
+                child: SizedBox(
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.red, width: 1.5),
+                      foregroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: _resetFilters,
+                    icon: const Icon(Icons.clear_rounded, size: 20),
+                    label: const Text('Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  ),
                 ),
               ),
             ],
@@ -468,44 +536,13 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
 
   void _resetFilters() {
     setState(() {
-      fromDateCtrl.clear();
-      toDateCtrl.clear();
+      // Reset to today's date instead of clearing
+      String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      fromDateCtrl.text = today;
+      toDateCtrl.text = today;
       selectedType = null;
-      filteredAuthLogList = List.from(authLogList ?? []);
     });
-  }
-
-  void _applyFilters() {
-    setState(() {
-      filteredAuthLogList = authLogList?.where((log) {
-        // Date filter
-        if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
-          try {
-            DateTime fromDate = DateTime.parse(fromDateCtrl.text);
-            DateTime toDate = DateTime.parse(toDateCtrl.text);
-            DateTime logDate = log.date!;
-
-            if (logDate.isBefore(fromDate) ||
-                logDate.isAfter(toDate.add(const Duration(days: 1)))) {
-              return false;
-            }
-          } catch (e) {
-            if (kDebugMode) {
-              print('Date filter error: $e');
-            }
-          }
-        }
-
-        // Type filter
-        if (selectedType != null && selectedType != 'ทั้งหมด') {
-          if (log.type?.toLowerCase() != selectedType?.toLowerCase()) {
-            return false;
-          }
-        }
-
-        return true;
-      }).toList();
-    });
+    loadAuthLogs();
   }
 
   Widget modernAuthCard(List<AuthLogModel>? authList, int index) {
@@ -758,8 +795,27 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
       loading = true;
     });
     try {
-      var result = await ApiServices.post('/authlog', Global.requestObj(null));
+      // Use search endpoint with date filtering
+      var searchData = {
+        'startDate': fromDateCtrl.text.isNotEmpty
+            ? DateTime.parse(fromDateCtrl.text).toIso8601String()
+            : null,
+        'endDate': toDateCtrl.text.isNotEmpty
+            ? DateTime.parse(toDateCtrl.text).toIso8601String()
+            : null,
+        'type': selectedType != null && selectedType != 'ทั้งหมด' ? selectedType : null,
+      };
+
+      var request = jsonEncode({
+        'companyId': Global.company?.id ?? Global.user?.companyId,
+        'branchId': Global.branch?.id ?? Global.user?.branchId,
+        'userId': Global.user?.id,
+        'data': searchData,
+      });
+
+      var result = await ApiServices.post('/authlog/search', request);
       motivePrint(result?.toJson());
+
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<AuthLogModel> logs = authLogListModelFromJson(data);

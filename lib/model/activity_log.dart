@@ -65,11 +65,11 @@ class ActivityLogModel {
     resultDetail: json["resultDetail"],
     companyId: json["companyId"],
     branchId: json["branchId"],
-    actionDate: json["actionDate"] == null ? null : DateTime.parse(json["actionDate"]).toLocal(),
+    actionDate: json["actionDate"] == null ? null : DateTime.parse(json["actionDate"] + 'Z').toLocal(),
     createdBy: json["createdBy"],
-    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]).toLocal(),
+    createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"] + 'Z').toLocal(),
     updatedBy: json["updatedBy"],
-    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"]).toLocal(),
+    updatedDate: json["updatedDate"] == null ? null : DateTime.parse(json["updatedDate"] + 'Z').toLocal(),
   );
 
   Map<String, dynamic> toJson() => {
