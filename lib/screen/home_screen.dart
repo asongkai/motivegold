@@ -15,8 +15,10 @@ import 'package:motivegold/screen/pos/storefront/theng/menu_screen.dart';
 import 'package:motivegold/screen/pos/storefront/theng/ui-matching/matching_pending_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_paphun_screen.dart';
 import 'package:motivegold/screen/pos/wholesale/menu_theng_screen.dart';
+import 'package:motivegold/screen/reports/paphun_accounting_book_report_menu_screen.dart';
 import 'package:motivegold/screen/reports/paphun_report_menu_screen.dart';
 import 'package:motivegold/screen/reports/pawn_report_menu_screen.dart';
+import 'package:motivegold/screen/reports/theng_accounting_book_report_menu_screen.dart';
 import 'package:motivegold/screen/reports/theng_matching_report_menu_screen.dart';
 import 'package:motivegold/screen/reports/theng_report_menu_screen.dart';
 import 'package:motivegold/screen/transfer/transfer_gold_menu_screen.dart';
@@ -112,18 +114,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 pageBuilder: (_) => const TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                imagePath: 'assets/icons/menu_icons/reports.png',
-                label: 'รายงาน\nทองรูปพรรณ',
-                color: Colors.green[600]!,
-                pageBuilder: (_) => PaphunReportMenuScreen(),
-              ),
-              MenuItemData(
                 imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.grey[600]!,
                 pageBuilder: (_) => HistoryScreen(
                   productType: orderTypes()[0],
                 ),
+              ),
+              MenuItemData(
+                imagePath: 'assets/icons/menu_icons/accounting_book.png',
+                label: 'สมุดบัญชี',
+                color: Colors.green[600]!,
+                pageBuilder: (_) => PaphunAccountingBookReportMenuScreen(),
+              ),
+              MenuItemData(
+                imagePath: 'assets/icons/menu_icons/reports.png',
+                label: 'รายงาน\nทองรูปพรรณ',
+                color: Colors.green[600]!,
+                pageBuilder: (_) => PaphunReportMenuScreen(),
               ),
             ]),
 
@@ -146,18 +154,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 pageBuilder: null,
               ),
               MenuItemData(
-                imagePath: 'assets/icons/menu_icons/reports.png',
-                label: 'รายงาน\nขายฝาก',
-                color: Colors.green[600]!,
-                pageBuilder: (_) => PawnReportMenuScreen(),
-              ),
-              MenuItemData(
                 imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.grey[600]!,
                 pageBuilder: (_) => SingleRedeemHistoryScreen(
                   productType: redeemTypes()[0],
                 ),
+              ),
+              MenuItemData(
+                imagePath: 'assets/icons/menu_icons/reports.png',
+                label: 'รายงาน\nขายฝาก',
+                color: Colors.green[600]!,
+                pageBuilder: (_) => PawnReportMenuScreen(),
               ),
             ]),
 
@@ -187,18 +195,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 pageBuilder: (_) => TransferGoldMenuScreen(),
               ),
               MenuItemData(
-                imagePath: 'assets/icons/menu_icons/reports.png',
-                label: 'รายงาน\nทองคำแท่ง',
-                color: Colors.green[600]!,
-                pageBuilder: (_) => ThengReportMenuScreen(),
-              ),
-              MenuItemData(
                 imagePath: 'assets/icons/menu_icons/history.png',
                 label: 'ประวัติการ\nทำธุรกรรม',
                 color: Colors.grey[600]!,
                 pageBuilder: (_) => HistoryScreen(
                   productType: orderTypes()[4],
                 ),
+              ),
+              MenuItemData(
+                imagePath: 'assets/icons/menu_icons/accounting_book.png',
+                label: 'สมุดบัญชี',
+                color: Colors.green[600]!,
+                pageBuilder: (_) => ThengAccountingBookReportMenuScreen(),
+              ),
+              MenuItemData(
+                imagePath: 'assets/icons/menu_icons/reports.png',
+                label: 'รายงาน\nทองคำแท่ง',
+                color: Colors.green[600]!,
+                pageBuilder: (_) => ThengReportMenuScreen(),
               ),
             ]),
 

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/stockmovement.dart';
-import 'package:motivegold/screen/reports/stock-movement-reports/preview.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_card.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
@@ -26,16 +25,14 @@ import 'package:motivegold/widget/pdf/components.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:sizer/sizer.dart';
 
-class StockMovementReportListScreen extends StatefulWidget {
-  const StockMovementReportListScreen({super.key});
+class StockCardReportScreen extends StatefulWidget {
+  const StockCardReportScreen({super.key});
 
   @override
-  State<StockMovementReportListScreen> createState() =>
-      _StockMovementReportListScreenState();
+  State<StockCardReportScreen> createState() => _StockCardReportScreenState();
 }
 
-class _StockMovementReportListScreenState
-    extends State<StockMovementReportListScreen> {
+class _StockCardReportScreenState extends State<StockCardReportScreen> {
   bool loading = false;
   List<StockMovementModel>? dataList = [];
   List<StockMovementModel>? filterList = [];
@@ -62,17 +59,14 @@ class _StockMovementReportListScreenState
   @override
   void initState() {
     super.initState();
-    productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    productNotifier = ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     loadProducts();
   }
 
   void loadProducts() async {
     try {
-      var result =
-          await ApiServices.post('/product/all', Global.requestObj(null));
+      var result = await ApiServices.post('/product/all', Global.requestObj(null));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
         List<ProductModel> products = productListModelFromJson(data);
@@ -83,8 +77,7 @@ class _StockMovementReportListScreenState
         productList = [];
       }
 
-      var warehouse = await ApiServices.post('/binlocation/all/branch',
-          Global.requestObj({"branchId": Global.branch?.id}));
+      var warehouse = await ApiServices.post('/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -106,18 +99,12 @@ class _StockMovementReportListScreenState
       loading = true;
     });
 
-    var location = await ApiServices.post(
-        '/stockmovement/search',
-        Global.reportRequestObj({
-          "productId": selectedProduct?.id,
-          "binLocationId": selectedWarehouse?.id,
-          "fromDate": fromDateCtrl.text.isNotEmpty
-              ? DateTime.parse(fromDateCtrl.text).toString()
-              : null,
-          "toDate": toDateCtrl.text.isNotEmpty
-              ? DateTime.parse(toDateCtrl.text).toString()
-              : null,
-        }));
+    var location = await ApiServices.post('/stockmovement/search', Global.reportRequestObj({
+      "productId": selectedProduct?.id,
+      "binLocationId": selectedWarehouse?.id,
+      "fromDate": fromDateCtrl.text.isNotEmpty ? DateTime.parse(fromDateCtrl.text).toString() : null,
+      "toDate": toDateCtrl.text.isNotEmpty ? DateTime.parse(toDateCtrl.text).toString() : null,
+    }));
 
     if (location?.status == "success") {
       var data = jsonEncode(location?.data);
@@ -142,20 +129,11 @@ class _StockMovementReportListScreenState
       filterList = List.from(dataList!);
     } else {
       filterList = dataList!.where((item) {
-        return (item.product?.name
-                    ?.toLowerCase()
-                    .contains(searchQuery.toLowerCase()) ??
-                false) ||
-            (item.binLocation?.name
-                    ?.toLowerCase()
-                    .contains(searchQuery.toLowerCase()) ??
-                false) ||
-            (item.orderId?.toLowerCase().contains(searchQuery.toLowerCase()) ??
-                false) ||
-            (item.type?.toLowerCase().contains(searchQuery.toLowerCase()) ??
-                false) ||
-            (item.docType?.toLowerCase().contains(searchQuery.toLowerCase()) ??
-                false);
+        return (item.product?.name?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+            (item.binLocation?.name?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+            (item.orderId?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+            (item.type?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+            (item.docType?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
       }).toList();
     }
   }
@@ -210,17 +188,11 @@ class _StockMovementReportListScreenState
         }
 
         if (aValue is String && bValue is String) {
-          return ascending
-              ? aValue.compareTo(bValue)
-              : bValue.compareTo(aValue);
+          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         } else if (aValue is num && bValue is num) {
-          return ascending
-              ? aValue.compareTo(bValue)
-              : bValue.compareTo(aValue);
+          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         } else if (aValue is DateTime && bValue is DateTime) {
-          return ascending
-              ? aValue.compareTo(bValue)
-              : bValue.compareTo(aValue);
+          return ascending ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
         }
         return 0;
       });
@@ -228,10 +200,8 @@ class _StockMovementReportListScreenState
   }
 
   void resetFilters() {
-    productNotifier =
-        ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
-    warehouseNotifier = ValueNotifier<WarehouseModel>(
-        WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+    productNotifier = ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
+    warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
     productCtrl.text = "";
     warehouseCtrl.text = "";
     fromDateCtrl.text = "";
@@ -242,6 +212,65 @@ class _StockMovementReportListScreenState
     searchQuery = '';
     search();
     setState(() {});
+  }
+
+  void _printStockCard() async {
+    if (selectedWarehouse == null) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกคลังสินค้า', 'OK', action: () {});
+      return;
+    }
+
+    if (selectedProduct == null) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกสินค้า', 'OK', action: () {});
+      return;
+    }
+
+    if (fromDateCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกจากวันที่', 'OK', action: () {});
+      return;
+    }
+
+    if (toDateCtrl.text.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'กรุณาเลือกถึงวันที่', 'OK', action: () {});
+      return;
+    }
+
+    if (filterList!.isEmpty) {
+      Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
+      return;
+    }
+
+    final ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+    await pr.show();
+    pr.update(message: 'กำลังประมวลผล...');
+
+    var location = await ApiServices.post('/stockmovement/search', Global.requestObj({
+      "productId": selectedProduct?.id,
+      "binLocationId": selectedWarehouse?.id,
+      "fromDate": fromDateCtrl.text.isNotEmpty ? DateTime.parse(fromDateCtrl.text).toString() : null,
+      "toDate": toDateCtrl.text.isNotEmpty ? DateTime.parse(toDateCtrl.text).toString() : null,
+    }));
+
+    StockMovementModel? product;
+    if (location?.status == "success") {
+      product = StockMovementModel.fromJson(location?.data);
+      setState(() {});
+    }
+
+    await pr.hide();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PreviewStockCardReportPage(
+          list: filterList!.reversed.toList(),
+          type: 1,
+          warehouseModel: selectedWarehouse,
+          productModel: selectedProduct,
+          stockMovementModel: product,
+          date: '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
+        ),
+      ),
+    );
   }
 
   @override
@@ -259,7 +288,7 @@ class _StockMovementReportListScreenState
               children: [
                 Expanded(
                   flex: 6,
-                  child: Text("รายงานความเคลื่อนไหวสต๊อกสินค้า(รับ-จ่าย)",
+                  child: Text("สมุดบัญชีสินค้าคงเหลือ",
                       style: TextStyle(
                           fontSize: 24,
                           color: Colors.white,
@@ -285,8 +314,7 @@ class _StockMovementReportListScreenState
           children: [
             _buildFilterSection(),
             Expanded(
-              child:
-                  loading ? const LoadingProgress() : _buildEnhancedDataTable(),
+              child: loading ? const LoadingProgress() : _buildEnhancedDataTable(),
             ),
           ],
         ),
@@ -296,20 +324,7 @@ class _StockMovementReportListScreenState
 
   Widget _buildPrintButton() {
     return GestureDetector(
-      onTap: () {
-        if (filterList!.isEmpty) {
-          Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
-          return;
-        }
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PreviewStockMovementReportPage(
-              list: filterList!.reversed.toList(),
-              type: 1,
-            ),
-          ),
-        );
-      },
+      onTap: _printStockCard,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -322,11 +337,7 @@ class _StockMovementReportListScreenState
           children: [
             const Icon(Icons.print_rounded, size: 20, color: Colors.white),
             const SizedBox(width: 6),
-            Text('พิมพ์',
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500)),
+            Text('พิมพ์', style: TextStyle(fontSize: 14.sp, color: Colors.white, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -365,35 +376,23 @@ class _StockMovementReportListScreenState
                       color: Colors.indigo.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.filter_alt_rounded,
-                        color: Colors.indigo[600], size: 20),
+                    child: Icon(Icons.filter_alt_rounded, color: Colors.indigo[600], size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ตัวกรองข้อมูล',
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2D3748))),
-                        if (selectedProduct != null ||
-                            selectedWarehouse != null ||
-                            fromDateCtrl.text.isNotEmpty)
-                          Text(_buildFilterSummary(),
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500)),
+                        Text('ตัวกรองข้อมูล', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
+                        if (selectedProduct != null || selectedWarehouse != null || fromDateCtrl.text.isNotEmpty)
+                          Text(_buildFilterSummary(), style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
                   AnimatedRotation(
                     turns: isFilterExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Colors.grey[600], size: 24),
+                    child: Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey[600], size: 24),
                   ),
                 ],
               ),
@@ -406,147 +405,126 @@ class _StockMovementReportListScreenState
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
               opacity: isFilterExpanded ? 1.0 : 0.0,
-              child: isFilterExpanded
-                  ? Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.5,
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: Colors.grey[200]),
-                              const SizedBox(height: 20),
+              child: isFilterExpanded ? Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Column(
+                      children: [
+                        Container(width: double.infinity, height: 1, color: Colors.grey[200]),
+                        const SizedBox(height: 20),
 
-                              // First row - Product and Warehouse
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildDropdownField(
-                                          label: 'สินค้า',
-                                          icon: Icons.inventory_2_rounded,
-                                          notifier: productNotifier!,
-                                          items: productList,
-                                          onChanged: (ProductModel value) {
-                                            productCtrl.text = value.name;
-                                            selectedProduct = value;
-                                            productNotifier!.value = value;
-                                            search();
-                                          })),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildDropdownField(
-                                          label: 'คลังสินค้า',
-                                          icon: Icons.warehouse_rounded,
-                                          notifier: warehouseNotifier!,
-                                          items: warehouseList,
-                                          onChanged: (WarehouseModel value) {
-                                            warehouseCtrl.text =
-                                                value.name.toString();
-                                            selectedWarehouse = value;
-                                            warehouseNotifier!.value = value;
-                                            search();
-                                          })),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Second row - Date range
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'จากวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: fromDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                      });
-                                      search();
-                                    },
-                                  )),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'ถึงวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: toDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                      });
-                                      search();
-                                    },
-                                  )),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Action buttons
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.indigo,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          elevation: 2,
-                                        ),
-                                        onPressed: search,
-                                        icon: const Icon(Icons.search_rounded,
-                                            size: 20),
-                                        label: const Text('ค้นหา',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    flex: 3,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: OutlinedButton.icon(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                              color: Colors.red, width: 1.5),
-                                          foregroundColor: Colors.red,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                        ),
-                                        onPressed: resetFilters,
-                                        icon: const Icon(Icons.clear_rounded,
-                                            size: 20),
-                                        label: const Text('Reset',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        // First row - Product and Warehouse
+                        Row(
+                          children: [
+                            Expanded(child: _buildDropdownField(
+                                label: 'สินค้า',
+                                icon: Icons.inventory_2_rounded,
+                                notifier: productNotifier!,
+                                items: productList,
+                                onChanged: (ProductModel value) {
+                                  productCtrl.text = value.name;
+                                  selectedProduct = value;
+                                  productNotifier!.value = value;
+                                  search();
+                                }
+                            )),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildDropdownField(
+                                label: 'คลังสินค้า',
+                                icon: Icons.warehouse_rounded,
+                                notifier: warehouseNotifier!,
+                                items: warehouseList,
+                                onChanged: (WarehouseModel value) {
+                                  warehouseCtrl.text = value.name.toString();
+                                  selectedWarehouse = value;
+                                  warehouseNotifier!.value = value;
+                                  search();
+                                }
+                            )),
+                          ],
                         ),
-                      ),
-                    )
-                  : const SizedBox(),
+                        const SizedBox(height: 20),
+
+                        // Second row - Date range
+                        Row(
+                          children: [
+                            Expanded(child: _buildDateField(
+                              label: 'จากวันที่',
+                              icon: Icons.calendar_today,
+                              controller: fromDateCtrl,
+                              onClear: () {
+                                setState(() {
+                                  fromDateCtrl.text = "";
+                                  toDateCtrl.text = "";
+                                });
+                                search();
+                              },
+                            )),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildDateField(
+                              label: 'ถึงวันที่',
+                              icon: Icons.calendar_today,
+                              controller: toDateCtrl,
+                              onClear: () {
+                                setState(() {
+                                  fromDateCtrl.text = "";
+                                  toDateCtrl.text = "";
+                                });
+                                search();
+                              },
+                            )),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Action buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: SizedBox(
+                                height: 48,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.indigo,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    elevation: 2,
+                                  ),
+                                  onPressed: search,
+                                  icon: const Icon(Icons.search_rounded, size: 20),
+                                  label: const Text('ค้นหา', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 3,
+                              child: SizedBox(
+                                height: 48,
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.red, width: 1.5),
+                                    foregroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                  onPressed: resetFilters,
+                                  icon: const Icon(Icons.clear_rounded, size: 20),
+                                  label: const Text('Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ) : const SizedBox(),
             ),
           ),
         ],
@@ -603,16 +581,12 @@ class _StockMovementReportListScreenState
             ),
             child: Row(
               children: [
-                Icon(Icons.timeline_rounded,
-                    color: Colors.indigo[600], size: 20),
+                Icon(Icons.timeline_rounded, color: Colors.indigo[600], size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'รายงานความเคลื่อนไหวสต๊อกสินค้า (${filterList!.length} รายการ)',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.indigo[700]),
+                    'สมุดบัญชีสินค้าคงเหลือ (${filterList!.length} รายการ)',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.indigo[700]),
                   ),
                 ),
               ],
@@ -625,8 +599,7 @@ class _StockMovementReportListScreenState
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width -
-                      32, // Full width minus margins
+                  minWidth: MediaQuery.of(context).size.width - 32, // Full width minus margins
                 ),
                 child: IntrinsicWidth(
                   child: Column(
@@ -645,15 +618,12 @@ class _StockMovementReportListScreenState
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.tag,
-                                        size: 14, color: Colors.grey[600]),
+                                    Icon(Icons.tag, size: 14, color: Colors.grey[600]),
                                     const SizedBox(width: 2),
                                     const Flexible(
                                       child: Text(
                                         'ลำดับ',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 11),
+                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -669,23 +639,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(0, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.receipt_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'เลขที่ใบกํากับภาษี',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 0)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -703,23 +668,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(1, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.calendar_today,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'วันที่',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 1)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -737,23 +697,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(2, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.inventory_2_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.inventory_2_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'สินค้า',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 2)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -771,23 +726,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(3, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.warehouse_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.warehouse_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'คลังสินค้า',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 3)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -805,23 +755,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(4, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.swap_horiz,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.swap_horiz, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'ประเภทการเคลื่อนไหว',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 4)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -839,23 +784,18 @@ class _StockMovementReportListScreenState
                                     onTap: () => _sortData(5, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.description,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.description, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'ประเภทเอกสาร',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         if (sortColumnIndex == 5)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -874,24 +814,19 @@ class _StockMovementReportListScreenState
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(Icons.scale_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.scale_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'น้ำหนักรวม',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
                                         if (sortColumnIndex == 6)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -910,24 +845,19 @@ class _StockMovementReportListScreenState
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(Icons.attach_money_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.attach_money_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'ราคาต่อหน่วย',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
                                         if (sortColumnIndex == 7)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -946,24 +876,19 @@ class _StockMovementReportListScreenState
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Icon(Icons.monetization_on_rounded,
-                                            size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.monetization_on_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
                                             'ราคารวม',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 10),
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
                                         ),
                                         if (sortColumnIndex == 8)
                                           Icon(
-                                            isAscending
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
+                                            isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                                             size: 14,
                                             color: Colors.indigo[600],
                                           ),
@@ -987,13 +912,8 @@ class _StockMovementReportListScreenState
                               return Container(
                                 height: 64,
                                 decoration: BoxDecoration(
-                                  color: index % 2 == 0
-                                      ? Colors.grey[50]
-                                      : Colors.white,
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.grey[200]!,
-                                          width: 0.5)),
+                                  color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
+                                  border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 0.5)),
                                 ),
                                 child: IntrinsicHeight(
                                   child: Row(
@@ -1003,12 +923,10 @@ class _StockMovementReportListScreenState
                                         width: 60,
                                         padding: const EdgeInsets.all(8),
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                           decoration: BoxDecoration(
                                             color: Colors.grey.withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
+                                            borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
                                             '${index + 1}',
@@ -1027,13 +945,10 @@ class _StockMovementReportListScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 3),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Colors.blue.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              color: Colors.blue.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               item.orderId ?? '',
@@ -1054,10 +969,8 @@ class _StockMovementReportListScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.dateOnly(
-                                                item.createdDate.toString()),
-                                            style:
-                                                const TextStyle(fontSize: 11),
+                                            Global.dateOnly(item.createdDate.toString()),
+                                            style: const TextStyle(fontSize: 11),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -1073,25 +986,17 @@ class _StockMovementReportListScreenState
                                                 width: 24,
                                                 height: 24,
                                                 decoration: BoxDecoration(
-                                                  color: Colors.green
-                                                      .withOpacity(0.2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
+                                                  color: Colors.green.withOpacity(0.2),
+                                                  borderRadius: BorderRadius.circular(4),
                                                 ),
-                                                child: Icon(Icons.inventory_2,
-                                                    size: 12,
-                                                    color: Colors.green[600]),
+                                                child: Icon(Icons.inventory_2, size: 12, color: Colors.green[600]),
                                               ),
                                               const SizedBox(width: 6),
                                               Expanded(
                                                 child: Text(
                                                   item.product?.name ?? '',
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 12),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+                                                  overflow: TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                 ),
                                               ),
@@ -1105,13 +1010,10 @@ class _StockMovementReportListScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.purple
-                                                  .withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              color: Colors.purple.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               item.binLocation?.name ?? '',
@@ -1132,22 +1034,17 @@ class _StockMovementReportListScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: _getMovementTypeColor(
-                                                      item.type)
-                                                  .withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              color: _getMovementTypeColor(item.type).withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               item.type ?? '',
                                               style: TextStyle(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w600,
-                                                color: _getMovementTypeColor(
-                                                    item.type)[700],
+                                                color: _getMovementTypeColor(item.type)[700],
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
@@ -1178,16 +1075,12 @@ class _StockMovementReportListScreenState
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            item.product?.type == 'BAR'
-                                                ? Global.format4(
-                                                    item.weight ?? 0)
-                                                : Global.format(
-                                                    item.weight ?? 0),
+                                            item.product?.type == 'BAR' ? Global.format4(item.weight ?? 0) :
+                                            Global.format(item.weight ?? 0),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 11,
-                                              color: _getMovementTypeColor(
-                                                  item.type)[600],
+                                              color: _getMovementTypeColor(item.type)[600],
                                             ),
                                             textAlign: TextAlign.right,
                                             overflow: TextOverflow.ellipsis,
@@ -1221,8 +1114,7 @@ class _StockMovementReportListScreenState
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 11,
-                                              color: _getMovementTypeColor(
-                                                  item.type)[600],
+                                              color: _getMovementTypeColor(item.type)[600],
                                             ),
                                             textAlign: TextAlign.right,
                                             overflow: TextOverflow.ellipsis,
@@ -1258,8 +1150,7 @@ class _StockMovementReportListScreenState
               children: [
                 Row(
                   children: [
-                    Icon(Icons.info_outline,
-                        size: 16, color: Colors.indigo[600]),
+                    Icon(Icons.info_outline, size: 16, color: Colors.indigo[600]),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -1334,11 +1225,7 @@ class _StockMovementReportListScreenState
           children: [
             Icon(icon, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 6),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
+            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
           ],
         ),
         const SizedBox(height: 8),
@@ -1353,8 +1240,7 @@ class _StockMovementReportListScreenState
             selectedItemBackgroundColor: Colors.transparent,
             emptyListMessage: 'ไม่มีข้อมูล',
             showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (int index, T? project,
-                {bool isItemSelected = false}) {
+            itemWidgetBuilder: (int index, T? project, {bool isItemSelected = false}) {
               return DropDownItemWidget(
                 project: project,
                 isItemSelected: isItemSelected,
@@ -1387,11 +1273,7 @@ class _StockMovementReportListScreenState
           children: [
             Icon(icon, size: 16, color: Colors.grey[600]),
             const SizedBox(width: 6),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
+            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
           ],
         ),
         const SizedBox(height: 8),
@@ -1404,10 +1286,10 @@ class _StockMovementReportListScreenState
               prefixIcon: Icon(Icons.calendar_today, size: 18),
               suffixIcon: controller.text.isNotEmpty
                   ? GestureDetector(
-                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
+                  onTap: onClear,
+                  child: const Icon(Icons.clear, size: 18))
                   : null,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
               hintText: label,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -1429,8 +1311,7 @@ class _StockMovementReportListScreenState
                 builder: (_) => SfDatePickerDialog(
                   initialDate: DateTime.now(),
                   onDateSelected: (date) {
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(date);
+                    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
                     setState(() {
                       controller.text = formattedDate;
                     });
@@ -1454,8 +1335,7 @@ class _StockMovementReportListScreenState
       filters.add('คลัง: ${selectedWarehouse!.name}');
     }
     if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
-      filters.add(
-          'ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
+      filters.add('ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
     }
     return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
   }
