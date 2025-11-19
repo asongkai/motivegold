@@ -3,32 +3,39 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/screen/reports/theng/buy-used-theng-gold-reports/preview.dart';
-import 'package:motivegold/screen/reports/vat-reports/papun/buy-new-gold/preview.dart';
-import 'package:motivegold/screen/reports/vat-reports/papun/sell-new-gold/preview.dart';
-import 'package:motivegold/screen/reports/vat-reports/theng/buy-gold/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
+import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-import 'package:quiver/time.dart';
 
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
+
+// ThaiMonth Class
+class ThaiMonth {
+  final int value;
+  final String name;
+
+  ThaiMonth(this.value, this.name);
+
+  @override
+  String toString() => name;
+
+  Map<String, dynamic> toJson() => {'value': value, 'name': name};
+}
 
 class BuyUsedThengGoldReportScreen extends StatefulWidget {
   const BuyUsedThengGoldReportScreen({super.key});
@@ -53,8 +60,8 @@ class _BuyUsedThengGoldReportScreenState
 
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
-  ValueNotifier<dynamic>? fromDateNotifier;
-  ValueNotifier<dynamic>? toDateNotifier;
+
+  // We use local variables for print logic, but UI relies on controllers
   DateTime? fromDate;
   DateTime? toDate;
 
@@ -65,12 +72,31 @@ class _BuyUsedThengGoldReportScreenState
   ValueNotifier<dynamic>? productNotifier;
   ValueNotifier<dynamic>? warehouseNotifier;
 
+  late List<ThaiMonth> thaiMonths;
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize Thai months
+    thaiMonths = [
+      ThaiMonth(1, 'มกราคม'),
+      ThaiMonth(2, 'กุมภาพันธ์'),
+      ThaiMonth(3, 'มีนาคม'),
+      ThaiMonth(4, 'เมษายน'),
+      ThaiMonth(5, 'พฤษภาคม'),
+      ThaiMonth(6, 'มิถุนายน'),
+      ThaiMonth(7, 'กรกฎาคม'),
+      ThaiMonth(8, 'สิงหาคม'),
+      ThaiMonth(9, 'กันยายน'),
+      ThaiMonth(10, 'ตุลาคม'),
+      ThaiMonth(11, 'พฤศจิกายน'),
+      ThaiMonth(12, 'ธันวาคม'),
+    ];
+
     resetFilter();
     loadProducts();
-    search();
+    // search();
   }
 
   void loadProducts() async {
@@ -106,8 +132,6 @@ class _BuyUsedThengGoldReportScreenState
   }
 
   Future<void> search() async {
-    makeSearchDate();
-
     setState(() {
       loading = true;
     });
@@ -116,12 +140,16 @@ class _BuyUsedThengGoldReportScreenState
       var result = await ApiServices.post(
           '/order/all/type/44',
           Global.reportRequestObj({
-            "year": yearCtrl.text == "" ? null : yearCtrl.text,
-            "month": monthCtrl.text == "" ? null : monthCtrl.text,
+            "year": yearCtrl.text == "" ? 0 : yearCtrl.text,
+            "month": monthCtrl.text == "" ? 0 : monthCtrl.text,
             "productId": selectedProduct?.id,
             "warehouseId": selectedWarehouse?.id,
-            "fromDate": fromDate.toString(),
-            "toDate": toDate.toString(),
+            "fromDate": fromDateCtrl.text.isNotEmpty
+                ? DateTime.parse(fromDateCtrl.text).toString()
+                : null,
+            "toDate": toDateCtrl.text.isNotEmpty
+                ? DateTime.parse(toDateCtrl.text).toString()
+                : null,
           }));
       if (result?.status == "success") {
         var data = jsonEncode(result?.data);
@@ -202,6 +230,19 @@ class _BuyUsedThengGoldReportScreenState
   Widget _buildPrintButtons() {
     return PopupMenuButton<int>(
       onSelected: (int value) async {
+        if (fromDateCtrl.text.isEmpty || toDateCtrl.text.isEmpty) {
+          Alert.warning(context, 'คำเตือน', 'กรุณาเลือกช่วงวันที่', 'OK');
+          return;
+        }
+
+        // Parse dates from controllers for report generation
+        DateTime start = DateTime.parse(fromDateCtrl.text);
+        DateTime end = DateTime.parse(toDateCtrl.text);
+
+        // Update state variables for genList functions
+        fromDate = start;
+        toDate = end;
+
         if (value == 1) {
           if (filterList!.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
@@ -212,17 +253,18 @@ class _BuyUsedThengGoldReportScreenState
               builder: (context) => PreviewBuyUsedThengGoldReportPage(
                 orders: filterList!.reversed.toList(),
                 type: 1,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: start,
+                toDate: end,
                 date:
-                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                    '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
               ),
             ),
           );
         }
 
         if (value == 2 || value == 3) {
-          List<OrderModel> dailyList = genDailyList(filterList!.reversed.toList());
+          List<OrderModel> dailyList =
+              genDailyList(filterList!.reversed.toList(), value: value);
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -232,29 +274,27 @@ class _BuyUsedThengGoldReportScreenState
               builder: (context) => PreviewBuyUsedThengGoldReportPage(
                 orders: dailyList,
                 type: value,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: start,
+                toDate: end,
                 date:
-                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                    '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
               ),
             ),
           );
         }
 
         if (value == 4) {
-
-          if (yearCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+          // For monthly summary, we typically check year
+          if (yearCtrl.text.isEmpty &&
+              (fromDateCtrl.text.isEmpty || toDateCtrl.text.isEmpty)) {
+            // If no specific year filter, ensure dates are set
+            Alert.warning(
+                context, 'คำเตือน', 'กรุณาเลือกปีหรือช่วงวันที่', 'OK');
             return;
           }
 
-          DateTime now = DateTime.now();
-          fromDate = DateTime(now.year, 1, 1);
-          toDate = DateTime(now.year, 12, 31);
-
-          // await search();
-
-          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
+          List<OrderModel> monthlyList =
+              genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -264,10 +304,10 @@ class _BuyUsedThengGoldReportScreenState
               builder: (context) => PreviewBuyUsedThengGoldReportPage(
                 orders: monthlyList,
                 type: 4,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: start,
+                toDate: end,
                 date:
-                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                    '${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}',
               ),
             ),
           );
@@ -404,7 +444,7 @@ class _BuyUsedThengGoldReportScreenState
               child: isFilterExpanded
                   ? Container(
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                        maxHeight: MediaQuery.of(context).size.height * 0.6,
                       ),
                       child: SingleChildScrollView(
                         child: Padding(
@@ -417,7 +457,7 @@ class _BuyUsedThengGoldReportScreenState
                                   color: Colors.grey[200]),
                               const SizedBox(height: 16),
 
-                              // First row - Product, Warehouse, From Date
+                              // Row 1: Product and Warehouse
                               Row(
                                 children: [
                                   Expanded(
@@ -447,60 +487,108 @@ class _BuyUsedThengGoldReportScreenState
                               ),
                               const SizedBox(height: 16),
 
-                              // Second row - To Date, Month, Year
+                              // Row 2: Month and Year
                               Row(
                                 children: [
                                   Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'จากวันที่',
-                                          icon: Icons.calendar_today,
-                                          notifier: fromDateNotifier!,
-                                          items: Global.genMonthDays(),
-                                          onChanged: (dynamic value) {
-                                            fromDateCtrl.text =
-                                                value.toString();
-                                            fromDateNotifier!.value = value;
-                                            search();
-                                          })),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
-                                          label: 'ถึงวันที่',
-                                          icon: Icons.calendar_today,
-                                          notifier: toDateNotifier!,
-                                          items: Global.genMonthDays(),
-                                          onChanged: (dynamic value) {
-                                            toDateCtrl.text = value.toString();
-                                            toDateNotifier!.value = value;
-                                            search();
-                                          })),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildCompactDropdownField(
+                                      child: _buildCompactDropdownField<
+                                              ThaiMonth>(
                                           label: 'เดือน',
                                           icon: Icons.calendar_month,
                                           notifier: monthNotifier!,
-                                          items: Global.genMonth(),
-                                          onChanged: (dynamic value) {
-                                            monthCtrl.text = value.toString();
-                                            monthNotifier!.value = value;
+                                          items: thaiMonths,
+                                          onChanged: (ThaiMonth value) {
+                                            setState(() {
+                                              monthCtrl.text =
+                                                  value.value.toString();
+                                              monthNotifier!.value = value;
+
+                                              // Auto populate dates
+                                              int year = yearCtrl.text.isEmpty
+                                                  ? DateTime.now().year
+                                                  : int.parse(yearCtrl.text);
+                                              DateTime firstDay = DateTime(
+                                                  year, value.value, 1);
+                                              DateTime lastDay = DateTime(
+                                                  year, value.value + 1, 0);
+
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+                                            });
                                             search();
                                           })),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                      child: _buildCompactDropdownField(
+                                      child: _buildCompactDropdownField<int>(
                                           label: 'ปี',
                                           icon: Icons.date_range,
                                           notifier: yearNotifier!,
                                           items: Global.genYear(),
-                                          onChanged: (dynamic value) {
-                                            yearCtrl.text = value.toString();
-                                            yearNotifier!.value = value;
+                                          onChanged: (int value) {
+                                            setState(() {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
+
+                                              // Auto populate dates for full year
+                                              DateTime firstDay =
+                                                  DateTime(value, 1, 1);
+                                              DateTime lastDay =
+                                                  DateTime(value, 12, 31);
+
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+
+                                              // Clear month when year changes
+                                              monthCtrl.text = "";
+                                              monthNotifier!.value = null;
+                                            });
                                             search();
                                           })),
                                 ],
                               ),
                               const SizedBox(height: 16),
+
+                              // Row 3: Date Range
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'จากวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: fromDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                      });
+                                      search();
+                                    },
+                                  )),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'ถึงวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: toDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                      });
+                                      search();
+                                    },
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
 
                               // Action buttons
                               Row(
@@ -566,6 +654,77 @@ class _BuyUsedThengGoldReportScreenState
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDateField({
+    required String label,
+    required IconData icon,
+    required TextEditingController controller,
+    required VoidCallback onClear,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 6),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700])),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 48,
+          child: TextField(
+            controller: controller,
+            style: TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.calendar_today, size: 18),
+              suffixIcon: controller.text.isNotEmpty
+                  ? GestureDetector(
+                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
+                  : null,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              hintText: label,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.indigo[600]!),
+              ),
+            ),
+            readOnly: true,
+            onTap: () async {
+              showDialog(
+                context: context,
+                builder: (_) => SfDatePickerDialog(
+                  initialDate: DateTime.now(),
+                  onDateSelected: (date) {
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(date);
+                    setState(() {
+                      controller.text = formattedDate;
+                    });
+                    search();
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -1500,8 +1659,9 @@ class _BuyUsedThengGoldReportScreenState
     if (selectedWarehouse != null && selectedWarehouse!.id != 0) {
       filters.add('คลัง: ${selectedWarehouse!.name}');
     }
-    if (monthCtrl.text.isNotEmpty) {
-      filters.add('เดือน: ${monthCtrl.text}');
+    if (monthNotifier?.value != null && monthNotifier?.value is ThaiMonth) {
+      ThaiMonth month = monthNotifier!.value as ThaiMonth;
+      filters.add('เดือน: ${month.name}');
     }
     if (yearCtrl.text.isNotEmpty) {
       filters.add('ปี: ${yearCtrl.text}');
@@ -1514,6 +1674,7 @@ class _BuyUsedThengGoldReportScreenState
 
   List<OrderModel> genDailyList(List<OrderModel?>? filterList, {int? value}) {
     List<OrderModel> orderList = [];
+    // Use local variables for calculation
     int days = Global.daysBetween(fromDate!, toDate!);
 
     for (int i = 0; i <= days; i++) {
@@ -1652,67 +1813,24 @@ class _BuyUsedThengGoldReportScreenState
     return orderList;
   }
 
-  makeSearchDate() {
-    int month = 0;
-    int year = 0;
-
-    if (monthCtrl.text.isEmpty) {
-      month = DateTime.now().month;
-    } else {
-      month = Global.toNumber(monthCtrl.text).toInt();
-    }
-
-    if (yearCtrl.text.isEmpty) {
-      year = DateTime.now().year;
-    } else {
-      year = Global.toNumber(yearCtrl.text).toInt();
-    }
-
-    if (fromDateCtrl.text.isNotEmpty) {
-      fromDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(fromDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      fromDate = null;
-    }
-
-    if (toDateCtrl.text.isNotEmpty) {
-      toDate = Global.convertDate(
-          '${twoDigit(Global.toNumber(toDateCtrl.text).toInt())}-${twoDigit(month)}-$year');
-    } else {
-      toDate = null;
-    }
-
-    if (fromDate == null && toDate == null) {
-      if (monthCtrl.text.isNotEmpty && yearCtrl.text.isEmpty) {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      } else if (monthCtrl.text.isEmpty && yearCtrl.text.isNotEmpty) {
-        fromDate = DateTime(year, 1, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!)
-            .add(months: 12, days: -1)
-            .dateTime;
-      } else {
-        fromDate = DateTime(year, month, 1);
-        toDate = Jiffy.parseFromDateTime(fromDate!).endOf(Unit.month).dateTime;
-      }
-    }
-  }
-
   void resetFilter() {
-    yearNotifier = ValueNotifier<dynamic>("");
-    monthNotifier = ValueNotifier<dynamic>("");
-    fromDateNotifier = ValueNotifier<dynamic>("");
-    toDateNotifier = ValueNotifier<dynamic>("");
+    yearNotifier = ValueNotifier<dynamic>(null);
+    monthNotifier = ValueNotifier<dynamic>(null);
     yearCtrl.text = "";
     monthCtrl.text = "";
     fromDateCtrl.text = "";
     toDateCtrl.text = "";
     fromDate = null;
     toDate = null;
+
     productNotifier =
         ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(
         WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+
+    selectedProduct = null;
+    selectedWarehouse = null;
+
     search();
     setState(() {});
   }

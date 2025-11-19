@@ -1126,7 +1126,7 @@ class _SellNewRetailThengReportScreenState
         // Create order ID from first and last order
         String combinedOrderId = dateList.length == 1
             ? dateList.first.orderId
-            : '${dateList.first.orderId} - ${dateList.last.orderId}';
+            : '${dateList.first.orderId} - ${dateList.last.orderId.split("-").last.trim()}';
 
         // Calculate commission and packagePrice from all order details
         double totalCommission = 0.0;
@@ -1203,7 +1203,7 @@ class _SellNewRetailThengReportScreenState
         // Create order ID from first and last order of the month
         String combinedOrderId = monthList.length == 1
             ? monthList.first.orderId
-            : '${monthList.first.orderId} - ${monthList.last.orderId}';
+            : '${monthList.first.orderId} - ${monthList.last.orderId.split("-").last.trim()}';
 
         // Calculate commission and packagePrice from all order details
         double totalCommission = 0.0;

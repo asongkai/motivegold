@@ -58,7 +58,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
         customerName: orders[i]!.redeemStatus == 'CANCEL'
             ? 'ยกเลิกเอกสาร'
             : (orders[i]!.customer != null
-                ? '${getCustomerName(orders[i]!.customer!)}'
+                ? getCustomerNameForReports(orders[i]!.customer!)
                 : ''),
         taxNumber: orders[i]!.redeemStatus == 'CANCEL'
             ? ''
@@ -80,7 +80,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
             orders[i]!.redeemStatus == 'CANCEL'
                 ? 'ยกเลิกเอกสาร'
                 : (orders[i]!.customer != null
-                    ? '${getCustomerName(orders[i]!.customer!)}'
+                    ? getCustomerNameForReports(orders[i]!.customer!)
                     : '');
         // Remove tax ID for cancelled redeems
         orders[i]!.details![j].taxNumber = orders[i]!.redeemStatus == 'CANCEL'
@@ -208,8 +208,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
           left: BorderSide(color: PdfColors.grey200, width: 0.5),
           right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide.none,
-          verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         ),
         columnWidths: type == 4
             ? {
@@ -371,12 +371,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide.none,
-          bottom: BorderSide.none,
-          left: BorderSide.none,
-          right: BorderSide.none,
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
           horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -615,12 +615,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide.none,
-          bottom: BorderSide.none,
-          left: BorderSide.none,
-          right: BorderSide.none,
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
           horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -786,7 +786,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       isFirstRowForOrderId(orders[i]!.details!, j)
                           ? (orders[i]!.redeemStatus == 'CANCEL'
                               ? 'ยกเลิกเอกสาร'
-                              : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}')
+                              : '${orders[i]?.details![j].customerName}')
                           : '',
                       style: TextStyle(
                           fontSize: 11,
@@ -943,12 +943,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide.none,
-          bottom: BorderSide.none,
-          left: BorderSide.none,
-          right: BorderSide.none,
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
           horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -993,7 +993,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 paddedTextSmall(
                   orders[i]!.redeemStatus == 'CANCEL'
                       ? 'ยกเลิกเอกสาร'
-                      : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
+                      : getCustomerNameForReports(orders[i]!.customer!),
                   style: TextStyle(
                       fontSize: 11,
                       color: orders[i]!.status == 2 ? PdfColors.red900 : null),
@@ -1148,12 +1148,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide.none,
-          bottom: BorderSide.none,
-          left: BorderSide.none,
-          right: BorderSide.none,
+          top: BorderSide(color: PdfColors.grey200, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+          left: BorderSide(color: PdfColors.grey200, width: 0.5),
+          right: BorderSide(color: PdfColors.grey200, width: 0.5),
           horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(25),

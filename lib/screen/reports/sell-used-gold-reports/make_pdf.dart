@@ -295,9 +295,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร"
-                        : type == 1
-                            ? '${getCustomerNameForReports(orders[i]!.customer!)}'
-                            : 'รวมรายการทองเก่า\nประจําวัน',
+                        : getCustomerNameForReports(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
                         color:
@@ -430,6 +428,8 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

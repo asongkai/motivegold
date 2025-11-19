@@ -93,6 +93,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                   10: const FixedColumnWidth(65),
                   11: const FixedColumnWidth(60),
                   12: const FixedColumnWidth(65),
+                  13: const FixedColumnWidth(65),
                 }
               : {
                   0: const FixedColumnWidth(30),
@@ -314,6 +315,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
               10: const FixedColumnWidth(65),
               11: const FixedColumnWidth(60),
               12: const FixedColumnWidth(65),
+              13: const FixedColumnWidth(65),
             }
           : {
               0: const FixedColumnWidth(30),
@@ -374,9 +376,8 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                         : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
-                        color: orders[i]!.status == "2"
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
                     align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
@@ -487,6 +488,8 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
             children: [
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

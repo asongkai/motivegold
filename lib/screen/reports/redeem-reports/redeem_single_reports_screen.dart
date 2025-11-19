@@ -5,11 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
-import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/redeem/redeem.dart';
 import 'package:motivegold/model/warehouseModel.dart';
-import 'package:motivegold/screen/reports/buy-used-gold-gov-reports/preview.dart';
 import 'package:motivegold/screen/reports/redeem-reports/preview_redeem_single.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
@@ -17,14 +15,11 @@ import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
-import 'package:quiver/time.dart';
 
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
@@ -305,28 +300,6 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
           }
-
-          // int days = Global.daysBetween(fromDate!, toDate!);
-
-          // for (int j = 0; j <= days; j++) {
-          //   var indexDay = fromDate?.add(Duration(days: j));
-          //   for (int i = 0; i < daily.length; i++) {
-          //     if (daily[i].createdDate == indexDay) {
-          //       daily[i].referenceNo = 'รวมใบกำกับภาษีประจำวัน';
-          //       dailyList.add(daily[i]);
-          //     } else {
-          //       var checkExisting =
-          //           dailyList.where((e) => e.createdDate == indexDay).toList();
-          //       if (checkExisting.isEmpty) {
-          //         dailyList.add(RedeemModel(
-          //             redeemId: 'ไม่มียอดไถ่ถอน',
-          //             redeemDate: indexDay,
-          //             referenceNo: '',
-          //             customer: daily[i].customer));
-          //       }
-          //     }
-          //   }
-          // }
         }
 
         if (value == 4 && dailyList.isEmpty) {

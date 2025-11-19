@@ -76,8 +76,8 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
             bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
             left: BorderSide(color: PdfColors.grey200, width: 0.5),
             right: BorderSide(color: PdfColors.grey200, width: 0.5),
-            horizontalInside: BorderSide.none,
-            verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+            horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+            verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
           ),
           columnWidths: type == 1
               ? {
@@ -93,6 +93,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                   9: const FixedColumnWidth(60),
                   10: const FixedColumnWidth(60),
                   11: const FixedColumnWidth(70),
+                  12: const FixedColumnWidth(70),
                 }
               : {
                   0: const FixedColumnWidth(30),
@@ -272,16 +273,16 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
   // Apply modern design pattern
   dataRows.add(Container(
     decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey300, width: 1),
+      border: Border.all(color: PdfColors.grey300, width: 0.5),
     ),
     child: Table(
       border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
+        top: BorderSide(color: PdfColors.grey200, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
+        left: BorderSide(color: PdfColors.grey200, width: 0.5),
+        right: BorderSide(color: PdfColors.grey200, width: 0.5),
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide.none,
+        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
       columnWidths: type == 1
           ? {
@@ -297,6 +298,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
               9: const FixedColumnWidth(60),
               10: const FixedColumnWidth(60),
               11: const FixedColumnWidth(70),
+              12: const FixedColumnWidth(70),
             }
           : {
               0: const FixedColumnWidth(30),
@@ -360,9 +362,8 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                         : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
-                        color: orders[i]!.status == "2"
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
                     align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
@@ -452,8 +453,8 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            list[i].status == "2" ? PdfColors.red900 : null)),
+                        color: list[i].status == "2" ? PdfColors.red900 : null),
+                    align: TextAlign.center),
                 paddedTextSmall(
                     Global.formatDateMFT(list[i].orderDate.toString()),
                     style: TextStyle(
@@ -563,6 +564,8 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
             children: [
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

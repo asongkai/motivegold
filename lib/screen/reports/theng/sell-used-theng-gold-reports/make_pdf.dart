@@ -27,20 +27,23 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
         Center(
           child: Text(
             'รายงานขายทองคำแท่งเก่า',
-            style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+            style: TextStyle(
+                decoration: TextDecoration.none,
+                fontSize: 20,
+                fontWeight: FontWeight.bold),
           ),
         ),
         Center(
           child: type == 2
               ? Text(
                   'ปีภาษี : ${Global.formatDateYFT(fromDate.toString())} ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 )
               : Text(
                   'ระหว่างวันที่ : $date',
-                  style:
-                      const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+                  style: const TextStyle(
+                      decoration: TextDecoration.none, fontSize: 18),
                 ),
         ),
         height(),
@@ -49,45 +52,106 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
         // Table column headers
         Table(
           border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
-          columnWidths: type == 1 ? {
-            0: const FixedColumnWidth(25),
-            1: const FixedColumnWidth(70),
-            2: const FixedColumnWidth(45),
-            3: const FixedColumnWidth(75),
-            4: const FixedColumnWidth(60),
-            5: const FixedColumnWidth(50),
-            6: const FixedColumnWidth(45),
-            7: const FixedColumnWidth(70),
-            8: const FixedColumnWidth(55),
-          } : {
-            0: const FixedColumnWidth(30),
-            1: const FixedColumnWidth(55),
-            2: const FixedColumnWidth(70),
-            3: const FixedColumnWidth(80),
-            4: const FixedColumnWidth(55),
-            5: const FixedColumnWidth(50),
-            6: const FixedColumnWidth(75),
-          },
+          columnWidths: type == 1
+              ? {
+                  0: FixedColumnWidth(25), // Seq
+                  1: FixedColumnWidth(70), // Date
+                  2: FixedColumnWidth(45), // Ref
+                  3: FixedColumnWidth(75), // Order ID
+                  4: FixedColumnWidth(60), // Name
+                  5: FixedColumnWidth(50), // Branch
+                  6: FixedColumnWidth(45), // Tax
+                  7: FixedColumnWidth(45), // Product
+                  8: FixedColumnWidth(70), // Weight Baht
+                  9: FixedColumnWidth(55), // Weight Gram
+                  10: FixedColumnWidth(
+                      55), // Amount (THIS WAS MISSING IN YOUR ORIGINAL CODE)
+                }
+              : {
+                  0: const FixedColumnWidth(30),
+                  1: const FixedColumnWidth(55),
+                  2: const FixedColumnWidth(70),
+                  3: const FixedColumnWidth(80),
+                  4: const FixedColumnWidth(55),
+                  5: const FixedColumnWidth(50),
+                  6: const FixedColumnWidth(75),
+                },
           children: [
             TableRow(
               decoration: const BoxDecoration(color: PdfColors.blue600),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                paddedTextSmall('ลำดับ', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall(type == 2 ? 'เดือน' : 'วันที่', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                paddedTextSmall('ลำดับ',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
+                paddedTextSmall(type == 2 ? 'เดือน' : 'วันที่',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
                 if (type == 1)
-                  paddedTextSmall('เลขที่ใบรับซื้อ', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall(type == 1 ? 'เลขที่ใบกำกับภาษี' : 'เลขที่ใบสำคัญจ่าย', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                  paddedTextSmall('เลขที่ใบรับซื้อ',
+                      align: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white)),
+                paddedTextSmall(
+                    type == 1 ? 'เลขที่ใบกำกับภาษี' : 'เลขที่ใบสำคัญจ่าย',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
                 if (type == 1)
-                  paddedTextSmall('ชื่อผู้ซื้อ', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                  paddedTextSmall('ชื่อผู้ซื้อ',
+                      align: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white)),
                 if (type == 1)
-                  paddedTextSmall('รหัสสำนักงานใหญ่/สาขา', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                  paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                      align: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white)),
                 if (type == 1)
-                  paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall('รายการสินค้า', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall('น้ําหนัก\n(บาท)', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall('น้ําหนัก\n(กรัม)', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
-                paddedTextSmall('จำนวนเงิน (บาท)', align: TextAlign.center, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white)),
+                  paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
+                      align: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: PdfColors.white)),
+                paddedTextSmall('รายการสินค้า',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
+                paddedTextSmall('น้ําหนัก\n(บาท)',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
+                paddedTextSmall('น้ําหนัก\n(กรัม)',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
+                paddedTextSmall('จำนวนเงิน (บาท)',
+                    align: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white)),
               ],
             ),
           ],
@@ -101,25 +165,30 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
   dataRows.add(Container(
     child: Table(
       border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
-      columnWidths: type == 1 ? {
-        0: const FixedColumnWidth(25),
-        1: const FixedColumnWidth(70),
-        2: const FixedColumnWidth(45),
-        3: const FixedColumnWidth(75),
-        4: const FixedColumnWidth(60),
-        5: const FixedColumnWidth(50),
-        6: const FixedColumnWidth(45),
-        7: const FixedColumnWidth(70),
-        8: const FixedColumnWidth(55),
-      } : {
-        0: const FixedColumnWidth(30),
-        1: const FixedColumnWidth(55),
-        2: const FixedColumnWidth(70),
-        3: const FixedColumnWidth(80),
-        4: const FixedColumnWidth(55),
-        5: const FixedColumnWidth(50),
-        6: const FixedColumnWidth(75),
-      },
+      columnWidths: type == 1
+          ? {
+              0: FixedColumnWidth(25), // Seq
+              1: FixedColumnWidth(70), // Date
+              2: FixedColumnWidth(45), // Ref
+              3: FixedColumnWidth(75), // Order ID
+              4: FixedColumnWidth(60), // Name
+              5: FixedColumnWidth(50), // Branch
+              6: FixedColumnWidth(45), // Tax
+              7: FixedColumnWidth(45), // Product
+              8: FixedColumnWidth(70), // Weight Baht
+              9: FixedColumnWidth(55), // Weight Gram
+              10: FixedColumnWidth(
+                  55), // Amount (THIS WAS MISSING IN YOUR ORIGINAL CODE)
+            }
+          : {
+              0: const FixedColumnWidth(30),
+              1: const FixedColumnWidth(55),
+              2: const FixedColumnWidth(70),
+              3: const FixedColumnWidth(80),
+              4: const FixedColumnWidth(55),
+              5: const FixedColumnWidth(50),
+              6: const FixedColumnWidth(75),
+            },
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
@@ -243,6 +312,10 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

@@ -38,7 +38,10 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
       Center(
         child: Text(
           'รายงานเส้นทางทองคำแท่ง-เส้นทางการเงิน',
-          style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+          style: TextStyle(
+              decoration: TextDecoration.none,
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
         ),
       ),
       Center(

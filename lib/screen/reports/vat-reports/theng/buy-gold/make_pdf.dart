@@ -626,6 +626,8 @@ Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 2 || type == 3 || type == 4)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',

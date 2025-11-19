@@ -26,13 +26,15 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
         Center(
           child: Text(
             'รายงานซื้อทองรูปพรรณใหม่ 96.5%',
-            style: const TextStyle(decoration: TextDecoration.none, fontSize: 20),
+            style:
+                const TextStyle(decoration: TextDecoration.none, fontSize: 20),
           ),
         ),
         Center(
           child: Text(
             'ระหว่างวันที่ : $date',
-            style: const TextStyle(decoration: TextDecoration.none, fontSize: 18),
+            style:
+                const TextStyle(decoration: TextDecoration.none, fontSize: 18),
           ),
         ),
         height(),
@@ -46,12 +48,12 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
             left: BorderSide(color: PdfColors.grey200, width: 0.5),
             right: BorderSide(color: PdfColors.grey200, width: 0.5),
             horizontalInside: BorderSide.none,
-            verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+            verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
           ),
           columnWidths: {
             0: FixedColumnWidth(30),
             1: FixedColumnWidth(60),
-            2: FixedColumnWidth(60),
+            2: FixedColumnWidth(70),
             3: FixedColumnWidth(50),
             4: FixedColumnWidth(80),
             5: FixedColumnWidth(60),
@@ -61,6 +63,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
             9: FixedColumnWidth(60),
             10: FixedColumnWidth(50),
             11: FixedColumnWidth(70),
+            12: FixedColumnWidth(70),
           },
           children: [
             TableRow(
@@ -69,19 +72,85 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
               ),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                paddedTextSmall('ลำดับ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('เลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('เลขที่ใบรับทอง', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('วันที่', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('ชื่อผู้ขาย', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('รหัสสำนักงานใหญ่/สาขา', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('น้ําหนักรวม\n(กรัม)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('ราคาซื้อ\nไม่รวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('มูลค่าฐานภาษี\nยกเว้น\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('ผลต่างฐานภาษี\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
-                paddedTextSmall('ราคาซื้อ\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.white), align: TextAlign.center),
+                paddedTextSmall('ลำดับ',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ใบกำกับภาษี',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขที่ใบรับทอง',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('วันที่',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ชื่อผู้ขาย',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('เลขประจําตัว\nผู้เสียภาษี',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('น้ําหนักรวม\n(กรัม)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall(
+                    'ราคาซื้อ\nไม่รวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('มูลค่าฐานภาษี\nยกเว้น\nจำนวนเงิน (บาท)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ผลต่างฐานภาษี\nจำนวนเงิน (บาท)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
+                paddedTextSmall('ราคาซื้อ\nรวมภาษีมูลค่าเพิ่ม\nจำนวนเงิน (บาท)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.white),
+                    align: TextAlign.center),
               ],
             ),
           ],
@@ -105,7 +174,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
       columnWidths: {
         0: FixedColumnWidth(30),
         1: FixedColumnWidth(60),
-        2: FixedColumnWidth(60),
+        2: FixedColumnWidth(70),
         3: FixedColumnWidth(50),
         4: FixedColumnWidth(80),
         5: FixedColumnWidth(60),
@@ -115,77 +184,107 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
         9: FixedColumnWidth(60),
         10: FixedColumnWidth(50),
         11: FixedColumnWidth(70),
+        12: FixedColumnWidth(70),
       },
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
-                color: orders[i]!.status == "2" ? PdfColors.red100 : PdfColors.white
-            ),
+                color: orders[i]!.status == "2"
+                    ? PdfColors.red100
+                    : PdfColors.white),
             children: [
-              paddedTextSmall('${i + 1}', style: TextStyle(
-                  fontSize: 10,
-                  color: orders[i]!.status == "2" ? PdfColors.red900 : null
-              ), align: TextAlign.center),
+              paddedTextSmall('${i + 1}',
+                  style: TextStyle(
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null),
+                  align: TextAlign.center),
               paddedTextSmall(orders[i]!.referenceNo ?? '',
                   style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall(orders[i]!.orderId,
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
-                  ), align: TextAlign.center),
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null),
+                  align: TextAlign.center),
               paddedTextSmall(
                   Global.dateOnly(orders[i]!.createdDate.toString()),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
-                  ), align: TextAlign.center),
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null),
+                  align: TextAlign.center),
 
-              paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForReports(orders[i]!.customer!)}',
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "ยกเลิกเอกสาร"
+                      : getCustomerNameForReports(orders[i]!.customer!),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
-                  )),
-              paddedTextSmall(orders[i]!.status == "2" ? "" : getCustomerBranchCode(orders[i]!.customer!),
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null)),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? ""
+                      : getCustomerBranchCode(orders[i]!.customer!),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
-                  ), align: TextAlign.center),
-              paddedTextSmall(orders[i]!.status == "2" ? "" :
-                  orders[i]!.customer?.taxNumber != null
-                      ? orders[i]!.customer?.taxNumber ?? ''
-                      : '',
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null),
+                  align: TextAlign.center),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? ""
+                      : orders[i]!.customer?.taxNumber != null
+                          ? orders[i]!.customer?.taxNumber ?? ''
+                          : '',
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : null
-                  )),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" :
-              type == 1
-                      ? Global.format(getWeight(orders[i]!))
-                      : Global.format(orders[i]!.weight!),
+                      fontSize: 11,
+                      color:
+                          orders[i]!.status == "2" ? PdfColors.red900 : null)),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : type == 1
+                          ? Global.format(getWeight(orders[i]!))
+                          : Global.format(orders[i]!.weight!),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.blue600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.blue600),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceExcludeTax ?? 0),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.priceExcludeTax ?? 0),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.green600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.green600),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.purchasePrice ?? 0),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.purchasePrice ?? 0),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.orange600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.orange600),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.taxBase ?? 0),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.taxBase ?? 0),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.purple600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.purple600),
                   align: TextAlign.right),
               // paddedTextSmall(Global.format(orders[i]!.taxBase ?? 0),
               //     style: TextStyle(
@@ -193,17 +292,25 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
               //         color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.teal600
               //     ),
               //     align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.taxAmount ?? 0),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.taxAmount ?? 0),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.red600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.red600),
                   align: TextAlign.right),
-              paddedTextSmall(orders[i]!.status == "2" ? "0.00" : Global.format(orders[i]!.priceIncludeTax ?? 0),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.priceIncludeTax ?? 0),
                   style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.indigo600
-                  ),
+                      fontSize: 11,
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.indigo600),
                   align: TextAlign.right)
             ],
           ),
@@ -221,26 +328,50 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue800)),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue800)),
               paddedTextSmall(
-                  type == 1 ? Global.format(getWeightTotal(orders)) : Global.format(getWeightTotalB(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.blue700),
+                  type == 1
+                      ? Global.format(getWeightTotal(orders))
+                      : Global.format(getWeightTotalB(orders)),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.blue700),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceExcludeTaxTotal(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.green700),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.green700),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(purchasePriceTotal(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.orange700),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.orange700),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(taxBaseTotal(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.purple700),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.purple700),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(taxAmountTotal(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.red700),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.red700),
                   align: TextAlign.right),
               paddedTextSmall(Global.format(priceIncludeTaxTotal(orders)),
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: PdfColors.indigo700),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: PdfColors.indigo700),
                   align: TextAlign.right),
             ]),
       ],

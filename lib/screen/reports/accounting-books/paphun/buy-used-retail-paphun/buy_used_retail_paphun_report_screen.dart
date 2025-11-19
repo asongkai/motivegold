@@ -1125,7 +1125,7 @@ class _BuyUsedRetailPaphunReportScreenState
         // Create order ID from first and last order
         String combinedOrderId = dateList.length == 1
             ? dateList.first.orderId
-            : '${dateList.first.orderId} - ${dateList.last.orderId}';
+            : '${dateList.first.orderId} - ${dateList.last.orderId.split("-").last.trim()}';
 
         // Import the helper functions from make_pdf.dart
         var order = OrderModel(
@@ -1181,7 +1181,7 @@ class _BuyUsedRetailPaphunReportScreenState
         // Create order ID from first and last order of the month
         String combinedOrderId = monthList.length == 1
             ? monthList.first.orderId
-            : '${monthList.first.orderId} - ${monthList.last.orderId}';
+            : '${monthList.first.orderId} - ${monthList.last.orderId.split("-").last.trim()}';
 
         var order = OrderModel(
             orderId: combinedOrderId,
