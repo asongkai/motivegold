@@ -1708,11 +1708,29 @@ getCustomerName(CustomerModel customer, {bool forReport = false}) {
   if (customer.customerType == 'company') {
     // For companies
     String companyName = customer.companyName ?? '';
+    bool hasBranchCode = customer.branchCode != null &&
+                         customer.branchCode!.isNotEmpty &&
+                         customer.branchCode != '00000';
+    bool hasEstablishmentName = customer.establishmentName != null &&
+                                customer.establishmentName!.isNotEmpty;
 
-    // Check if has branch code
-    if (customer.branchCode != null &&
-        customer.branchCode!.isNotEmpty &&
-        customer.branchCode != '00000') {
+    // ROW 6: Branch without establishment name AND no branch code - show only company name
+    if (!hasEstablishmentName && !hasBranchCode) {
+      return companyName;
+    }
+
+    // ROW 5: Branch with no branch code - don't show "สาขาที่( )"
+    if (!hasBranchCode) {
+      // Show only company name if no establishment name either
+      if (!hasEstablishmentName) {
+        return companyName;
+      }
+      // Show company name with establishment name in quotes
+      return '$companyName "${customer.establishmentName}"';
+    }
+
+    // Has branch code (not 00000)
+    if (hasBranchCode) {
       // Branch format: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
       String branchName = customer.establishmentName ?? companyName;
       return '$companyName สาขาที่(${customer.branchCode}) ${forReport ? '' : branchName}';
@@ -1755,11 +1773,29 @@ String getCustomerNameForReports(CustomerModel customer) {
   if (customer.customerType == 'company') {
     // For companies
     String companyName = customer.companyName ?? '';
+    bool hasBranchCode = customer.branchCode != null &&
+                         customer.branchCode!.isNotEmpty &&
+                         customer.branchCode != '00000';
+    bool hasEstablishmentName = customer.establishmentName != null &&
+                                customer.establishmentName!.isNotEmpty;
 
-    // Check if has branch code
-    if (customer.branchCode != null &&
-        customer.branchCode!.isNotEmpty &&
-        customer.branchCode != '00000') {
+    // ROW 6: Branch without establishment name AND no branch code - show only company name
+    if (!hasEstablishmentName && !hasBranchCode) {
+      return companyName;
+    }
+
+    // ROW 5: Branch with no branch code - don't show "สาขาที่( )"
+    if (!hasBranchCode) {
+      // Show only company name if no establishment name either
+      if (!hasEstablishmentName) {
+        return companyName;
+      }
+      // Show company name with establishment name in quotes
+      return '$companyName "${customer.establishmentName}"';
+    }
+
+    // Has branch code (not 00000)
+    if (hasBranchCode) {
       // Branch format: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
       String branchName = customer.establishmentName ?? companyName;
       return '$companyName สาขาที่(${customer.branchCode}) $branchName';

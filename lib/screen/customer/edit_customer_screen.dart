@@ -3583,6 +3583,53 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                 }
               }
 
+              // NEW VALIDATION: Row 3 & Row 4 - Block save when missing required fields
+              if (selectedType?.code == 'company') {
+                // Check if only establishment name is filled but missing company name, address, and branch code
+                bool hasOnlyEstablishmentName = businessNameCtrl.text.isNotEmpty &&
+                    companyNameCtrl.text.isEmpty &&
+                    Global.addressCtrl.text.isEmpty &&
+                    branchCodeCtrl.text.isEmpty;
+
+                if (hasOnlyEstablishmentName) {
+                  Alert.warning(
+                      context,
+                      'คำเตือน',
+                      'กรุณากรอกชื่อบริษัท ที่อยู่ และรหัสสาขา',
+                      'ตกลง',
+                      action: () {});
+                  return;
+                }
+              }
+
+              // NEW VALIDATION: Row 2 - Warning when head office branch code manually changed from default
+              if (selectedType?.code == 'company' && companyOfficeType == 'head') {
+                if (branchCodeCtrl.text.isNotEmpty && branchCodeCtrl.text != '00000') {
+                  Alert.info(
+                      context,
+                      'คำเตือน',
+                      'นิติบุคคลรายนี้เป็นสำนักงานใหญ่ คุณต้องการบันทึกด้วยรหัส ${branchCodeCtrl.text}?',
+                      'ตกลง', action: () async {
+                    await _processSave();
+                  });
+                  return;
+                }
+              }
+
+              // NEW VALIDATION: Row 7 - Warning when branch has '00000' branch code
+              if (selectedType?.code == 'company' && companyOfficeType == 'branch') {
+                if (branchCodeCtrl.text == '00000') {
+                  Alert.info(
+                      context,
+                      'คำเตือน',
+                      'นิติบุคคลรายนี้เป็นสาขา คุณต้องการบันทึกด้วยรหัสสาขา 00000?',
+                      'ตกลง', action: () async {
+                    await _processSave();
+                  });
+                  return;
+                }
+              }
+
               await _processSave();
             },
             child: Row(
@@ -3623,6 +3670,14 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
   }
 
   Future<void> _saveDirectly() async {
+    // ROW 1: Auto-default branch code to '00000' for head office when empty
+    String finalBranchCode = branchCodeCtrl.text;
+    if (selectedType?.code == 'company' && companyOfficeType == 'head') {
+      if (finalBranchCode.isEmpty) {
+        finalBranchCode = '00000';
+      }
+    }
+
     var customerObject = Global.requestObj({
       "id": widget.c.id,  // IMPORTANT: Include customer ID
       "customerType": selectedType?.code,
@@ -3693,7 +3748,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
 
       // Business fields
-      "branchCode": branchCodeCtrl.text,
+      "branchCode": finalBranchCode,
       "taxNumber": selectedType?.code == "company"
           ? nationality == 'Thai'
               ? taxNumberCtrl.text.replaceAll('-', '')

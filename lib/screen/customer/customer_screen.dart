@@ -817,30 +817,66 @@ class _CustomerScreenState extends State<CustomerScreen> {
   // Helper method to build identification cards for Thai/Foreigner
   Widget _buildModernIdentificationCards(CustomerModel customer) {
     if (customer.nationality == "Foreigner") {
-      return Column(
-        children: [
-          _buildIdentificationCard(
-            icon: Icons.work_outline,
-            label: 'Work Permit',
-            value: customer.workPermit ?? 'ไม่ระบุ',
-            color: Colors.purple,
-          ),
-          SizedBox(height: 6),
-          _buildIdentificationCard(
-            icon: Icons.flight_takeoff,
-            label: 'Passport',
-            value: customer.passportId ?? 'ไม่ระบุ',
-            color: Colors.green,
-          ),
-          SizedBox(height: 6),
-          _buildIdentificationCard(
-            icon: Icons.receipt_long,
-            label: 'Tax ID',
-            value: customer.taxNumber ?? 'ไม่ระบุ',
-            color: Colors.orange,
-          ),
-        ],
-      );
+      // Company + Foreigner: Only show Tax ID (เลขประจำตัวผู้เสียภาษี)
+      if (customer.customerType == 'company') {
+        return _buildIdentificationCard(
+          icon: Icons.receipt_long,
+          label: 'เลขประจำตัวผู้เสียภาษี',
+          value: customer.taxNumber ?? 'ไม่ระบุ',
+          color: Colors.orange,
+        );
+      }
+
+      // Individual/General + Foreigner: Show Tax ID, Work Permit, Passport
+      // Count how many IDs are filled
+      int filledIdCount = 0;
+      if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) filledIdCount++;
+      if (customer.workPermit != null && customer.workPermit!.isNotEmpty) filledIdCount++;
+      if (customer.passportId != null && customer.passportId!.isNotEmpty) filledIdCount++;
+
+      // If only 1 ID filled -> Show only Tax ID with English label
+      if (filledIdCount == 1 && customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
+        return _buildIdentificationCard(
+          icon: Icons.receipt_long,
+          label: 'Tax ID',
+          value: customer.taxNumber!,
+          color: Colors.orange,
+        );
+      }
+
+      // If 2 or 3 IDs filled -> Show all filled IDs (hide empty ones)
+      List<Widget> idCards = [];
+
+      if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
+        idCards.add(_buildIdentificationCard(
+          icon: Icons.receipt_long,
+          label: 'Tax ID',
+          value: customer.taxNumber!,
+          color: Colors.orange,
+        ));
+      }
+
+      if (customer.workPermit != null && customer.workPermit!.isNotEmpty) {
+        if (idCards.isNotEmpty) idCards.add(SizedBox(height: 6));
+        idCards.add(_buildIdentificationCard(
+          icon: Icons.work_outline,
+          label: 'Work Permit',
+          value: customer.workPermit!,
+          color: Colors.purple,
+        ));
+      }
+
+      if (customer.passportId != null && customer.passportId!.isNotEmpty) {
+        if (idCards.isNotEmpty) idCards.add(SizedBox(height: 6));
+        idCards.add(_buildIdentificationCard(
+          icon: Icons.flight_takeoff,
+          label: 'Passport',
+          value: customer.passportId!,
+          color: Colors.green,
+        ));
+      }
+
+      return Column(children: idCards);
     } else {
       return _buildIdentificationCard(
         icon: Icons.badge_outlined,
