@@ -498,7 +498,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                   height: 70,
                   child: Column(children: [
                     SizedBox(height: 5),
-                    Text('${getCustomerName(invoice.customer)}',
+                    Text('${getCustomerNameForBillSign(invoice.customer)}',
                         style: const TextStyle(fontSize: 10)),
                     Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
                         style: TextStyle(

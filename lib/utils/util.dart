@@ -1371,6 +1371,40 @@ String getBillAddressLine2() {
 }
 
 /// Get customer address for bills/reports - Line 1: Street address only (no district details)
+/// Check if customer has any address line 1 fields filled
+/// (เลขที่, อาคาร, ห้องเลขที่, ชั้น, หมู่บ้าน, หมู่ที่, ตรอก/ซอย, ถนน)
+bool hasAddressLine1Fields(CustomerModel customer) {
+  return (customer.address != null && customer.address!.isNotEmpty) ||
+      (customer.building != null && customer.building!.isNotEmpty) ||
+      (customer.roomNo != null && customer.roomNo!.isNotEmpty) ||
+      (customer.floor != null && customer.floor!.isNotEmpty) ||
+      (customer.village != null && customer.village!.isNotEmpty) ||
+      (customer.moo != null && customer.moo!.isNotEmpty) ||
+      (customer.soi != null && customer.soi!.isNotEmpty) ||
+      (customer.road != null && customer.road!.isNotEmpty);
+}
+
+/// Check if customer has location fields filled (province/amphure/tambon)
+bool hasLocationFields(CustomerModel customer) {
+  String? tambonName = customer.tambonName;
+  String? amphureName = customer.amphureName;
+  String? provinceName = customer.provinceName;
+
+  // Check if location is excluded (ไม่ระบุ)
+  bool isExcluded = customer.tambonId != null &&
+      (customer.tambonId == 3023 ||
+          customer.amphureId == 9614 ||
+          customer.provinceId == 78);
+
+  if (isExcluded) {
+    return false;
+  }
+
+  return (tambonName != null && tambonName.isNotEmpty) ||
+      (amphureName != null && amphureName.isNotEmpty) ||
+      (provinceName != null && provinceName.isNotEmpty);
+}
+
 String getCustomerBillAddressLine1(CustomerModel customer) {
   if (customer.defaultWalkIn == 1) {
     return '';
@@ -1384,31 +1418,31 @@ String getCustomerBillAddressLine1(CustomerModel customer) {
   }
 
   if (customer.building != null && customer.building!.isNotEmpty) {
-    addressLine1 += 'อาคาร ${customer.building} ';
+    addressLine1 += 'อาคาร${customer.building} ';
   }
 
   if (customer.roomNo != null && customer.roomNo!.isNotEmpty) {
-    addressLine1 += 'เลขที่ห้อง ${customer.roomNo} ';
+    addressLine1 += 'เลขที่ห้อง${customer.roomNo} ';
   }
 
   if (customer.floor != null && customer.floor!.isNotEmpty) {
-    addressLine1 += 'ชั้นที่ ${customer.floor} ';
+    addressLine1 += 'ชั้นที่${customer.floor} ';
   }
 
   if (customer.village != null && customer.village!.isNotEmpty) {
-    addressLine1 += 'หมู่บ้าน ${customer.village} ';
+    addressLine1 += 'หมู่บ้าน${customer.village} ';
   }
 
   if (customer.moo != null && customer.moo!.isNotEmpty) {
-    addressLine1 += 'หมู่ที่ ${customer.moo} ';
+    addressLine1 += 'หมู่ที่${customer.moo} ';
   }
 
   if (customer.soi != null && customer.soi!.isNotEmpty) {
-    addressLine1 += 'ตรอก/ซอย ${customer.soi} ';
+    addressLine1 += 'ตรอก/ซอย${customer.soi} ';
   }
 
   if (customer.road != null && customer.road!.isNotEmpty) {
-    addressLine1 += 'ถนน ${customer.road} ';
+    addressLine1 += 'ถนน${customer.road} ';
   }
 
   return addressLine1.trim();
@@ -1467,9 +1501,16 @@ String getCustomerBillAddressLine2(CustomerModel customer,
     }
   }
 
-  if (customer.postalCode != null && customer.postalCode!.isNotEmpty) {
-    address += '${customer.postalCode} ';
+  // Only show postal code when location fields are selected
+  // (to avoid showing "0" when province/amphure/tambon not selected)
+  if (hasLocationFields(customer)) {
+    if (customer.postalCode != null &&
+        customer.postalCode!.isNotEmpty &&
+        customer.postalCode != '0') {
+      address += '${customer.postalCode} ';
+    }
   }
+
   if (includePhone) {
     if (customer.phoneNumber != null && customer.phoneNumber!.isNotEmpty) {
       address += 'โทร ${customer.phoneNumber}';
@@ -1480,6 +1521,49 @@ String getCustomerBillAddressLine2(CustomerModel customer,
   // It's already shown in a separate line below the address
 
   return address.trim();
+}
+
+/// Get smart customer address that returns lines in correct order
+/// When only location fields are filled (no address line 1 fields),
+/// returns address2 as first line (ตำบล อำเภอ จังหวัด รหัสไปรษณีย์ เบอร์โทร)
+/// Returns a list of address lines to display [firstLine, secondLine]
+List<String> getCustomerAddressLines(CustomerModel customer,
+    {bool includePhone = true}) {
+  if (customer.defaultWalkIn == 1) {
+    return [];
+  }
+
+  String line1 = getCustomerBillAddressLine1(customer);
+  String line2 =
+      getCustomerBillAddressLine2(customer, includePhone: includePhone);
+
+  // When only location fields are filled (no address line 1 fields),
+  // show address2 as the first/only line
+  if (!hasAddressLine1Fields(customer) && hasLocationFields(customer)) {
+    // Only location fields filled - show line2 as first line
+    if (line2.isNotEmpty) {
+      return [line2];
+    }
+    return [];
+  }
+
+  // Normal case: line1 first, then line2
+  List<String> lines = [];
+  if (line1.isNotEmpty) {
+    lines.add(line1);
+  }
+  if (line2.isNotEmpty) {
+    lines.add(line2);
+  }
+  return lines;
+}
+
+/// Check if customer has any address to display
+bool hasCustomerAddress(CustomerModel customer) {
+  if (customer.defaultWalkIn == 1) {
+    return false;
+  }
+  return hasAddressLine1Fields(customer) || hasLocationFields(customer);
 }
 
 getIdTitleName(String? selectedType) {
@@ -1629,12 +1713,16 @@ String getWorkId(CustomerModel customer, {bool forOldGoldGov = false}) {
     return getWorkIdTitleOnly(customer, forOldGoldGov: forOldGoldGov);
   }
 
-  if (customer.nationality == 'Foreigner') {
-    // For foreigners, show all fields on single line if available
+  if (customer.nationality != 'Thai') {
+    // For foreigners (any nationality that is not Thai), show all fields on single line if available
     List<String> ids = [];
+    bool isCompany = customer.customerType == 'company';
 
     if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
-      ids.add('Tax ID : ${customer.taxNumber}');
+      // For foreigner companies, use Thai label "เลขประจำตัวผู้เสียภาษี"
+      // For foreigner individuals, use "Tax ID"
+      String taxLabel = isCompany ? 'เลขประจำตัวผู้เสียภาษี' : 'Tax ID';
+      ids.add('$taxLabel : ${customer.taxNumber}');
     }
 
     if (customer.workPermit != null && customer.workPermit!.isNotEmpty) {
@@ -1663,15 +1751,15 @@ String getWorkId(CustomerModel customer, {bool forOldGoldGov = false}) {
       String result =
           '${forOldGoldGov ? "Tax ID" : "เลขประจำตัวผู้เสียภาษี"} : $workId';
 
-      if (forOldGoldGov == false) {
-        // Add branch code if available
-        if (customer.branchCode != null && customer.branchCode!.isNotEmpty) {
-          result += ' สาขา ${customer.branchCode}';
-        } else {
-          // Default to "00000" for head office if no branch code
-          result += ' สาขา 00000';
-        }
-      }
+      // if (forOldGoldGov == false) {
+      //   // Add branch code if available
+      //   if (customer.branchCode != null && customer.branchCode!.isNotEmpty) {
+      //     result += ' สาขา ${customer.branchCode}';
+      //   } else {
+      //     // Default to "00000" for head office if no branch code
+      //     result += ' สาขา 00000';
+      //   }
+      // }
 
       return result;
     }
@@ -1682,10 +1770,14 @@ String getWorkId(CustomerModel customer, {bool forOldGoldGov = false}) {
 // Keep the existing getWorkIdTitleOnly function as is
 String getWorkIdTitleOnly(CustomerModel customer,
     {bool forOldGoldGov = false}) {
-  if (customer.nationality == 'Foreigner') {
+  if (customer.nationality != 'Thai') {
+    // For foreigners (any nationality that is not Thai)
+    bool isCompany = customer.customerType == 'company';
+    // For foreigner companies, use Thai label "เลขประจำตัวผู้เสียภาษี"
+    String taxLabel = isCompany ? 'เลขประจำตัวผู้เสียภาษี' : 'Tax ID';
     return forOldGoldGov
-        ? 'Tax ID : \nWork Permit : \nPassport ID : '
-        : 'Tax ID : Work Permit : Passport ID : ';
+        ? '$taxLabel : \nWork Permit : \nPassport ID : '
+        : '$taxLabel : Work Permit : Passport ID : ';
   } else {
     if (customer.customerType == 'company') {
       return '${forOldGoldGov ? "Tax ID" : "เลขประจำตัวผู้เสียภาษี"} : ';
@@ -1709,34 +1801,31 @@ getCustomerName(CustomerModel customer, {bool forReport = false}) {
     // For companies
     String companyName = customer.companyName ?? '';
     bool hasBranchCode = customer.branchCode != null &&
-                         customer.branchCode!.isNotEmpty &&
-                         customer.branchCode != '00000';
+        customer.branchCode!.isNotEmpty &&
+        customer.branchCode != '00000';
     bool hasEstablishmentName = customer.establishmentName != null &&
-                                customer.establishmentName!.isNotEmpty;
+        customer.establishmentName!.isNotEmpty;
 
-    // ROW 6: Branch without establishment name AND no branch code - show only company name
-    if (!hasEstablishmentName && !hasBranchCode) {
-      return companyName;
-    }
+    // Check if this is head office using the headquartersOrBranch field
+    bool isHeadOffice = customer.headquartersOrBranch == 'head';
 
-    // ROW 5: Branch with no branch code - don't show "สาขาที่( )"
-    if (!hasBranchCode) {
-      // Show only company name if no establishment name either
-      if (!hasEstablishmentName) {
-        return companyName;
-      }
-      // Show company name with establishment name in quotes
-      return '$companyName "${customer.establishmentName}"';
-    }
-
-    // Has branch code (not 00000)
-    if (hasBranchCode) {
-      // Branch format: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
-      String branchName = customer.establishmentName ?? companyName;
-      return '$companyName สาขาที่(${customer.branchCode}) ${forReport ? '' : branchName}';
-    } else {
-      // Head office format: "บริษัท ห้างทองมนวาท จำกัด (สำนักงานใหญ่)"
+    // HEAD OFFICE: Always show (สำนักงานใหญ่)
+    if (isHeadOffice) {
       return '$companyName (สำนักงานใหญ่)';
+    }
+
+    // BRANCH: Check if has branch code
+    if (hasBranchCode) {
+      // Branch with code: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
+      String branchName = customer.establishmentName ?? companyName;
+      return '$companyName สาขาที่(${customer.branchCode}) ${forReport ? '' : '"$branchName"'}';
+    } else {
+      // Branch without code: Show company name with establishment name in quotes (if available)
+      if (hasEstablishmentName) {
+        return '$companyName "${customer.establishmentName}"';
+      }
+      // Branch without code and no establishment name: show only company name
+      return companyName;
     }
   }
 
@@ -1766,6 +1855,62 @@ getCustomerName(CustomerModel customer, {bool forReport = false}) {
   return name.trim();
 }
 
+getCustomerNameForBillSign(CustomerModel customer, {bool forReport = false}) {
+  if (customer.customerType == 'company') {
+    // For companies: Always show company name (ชื่อผู้ประกอบการ) because signature area is small
+    return customer.companyName ?? '';
+  }
+
+  // For individuals
+  String name = '';
+
+  // Add title if available
+  if (customer.titleName != null && customer.titleName!.isNotEmpty) {
+    name += '${customer.titleName}';
+  }
+
+  // Add first name
+  if (customer.firstName != null && customer.firstName!.isNotEmpty) {
+    name += '${customer.firstName} ';
+  }
+
+  // Add middle name if available
+  if (customer.middleName != null && customer.middleName!.isNotEmpty) {
+    name += '${customer.middleName} ';
+  }
+
+  // Add last name
+  if (customer.lastName != null && customer.lastName!.isNotEmpty) {
+    name += '${customer.lastName}';
+  }
+
+  return name.trim();
+}
+
+// Get customer name for wholesale reports that have branch code column
+// For companies: returns ONLY companyName (ชื่อผู้ประกอบการ)
+// For individuals: returns full name as normal
+String getCustomerNameForWholesaleReports(CustomerModel customer) {
+  if (customer.customerType == 'company') {
+    // For companies: Show only company name (ชื่อผู้ประกอบการ)
+    // Do NOT show สำนักงานใหญ่ or ชื่อสถานประกอบการ
+    return customer.companyName ?? '';
+  }
+
+  // For individuals, return full name
+  String name = '';
+  if (customer.titleName != null && customer.titleName!.isNotEmpty) {
+    name += '${customer.titleName}';
+  }
+  if (customer.firstName != null && customer.firstName!.isNotEmpty) {
+    name += '${customer.firstName} ';
+  }
+  if (customer.lastName != null && customer.lastName!.isNotEmpty) {
+    name += customer.lastName!;
+  }
+  return name.trim();
+}
+
 // Get customer name for reports (specific to 6 reports that need establishment name only)
 // For companies: returns establishment name only
 // For individuals: returns full name as normal
@@ -1774,34 +1919,31 @@ String getCustomerNameForReports(CustomerModel customer) {
     // For companies
     String companyName = customer.companyName ?? '';
     bool hasBranchCode = customer.branchCode != null &&
-                         customer.branchCode!.isNotEmpty &&
-                         customer.branchCode != '00000';
+        customer.branchCode!.isNotEmpty &&
+        customer.branchCode != '00000';
     bool hasEstablishmentName = customer.establishmentName != null &&
-                                customer.establishmentName!.isNotEmpty;
+        customer.establishmentName!.isNotEmpty;
 
-    // ROW 6: Branch without establishment name AND no branch code - show only company name
-    if (!hasEstablishmentName && !hasBranchCode) {
-      return companyName;
-    }
+    // Check if this is head office using the headquartersOrBranch field
+    bool isHeadOffice = customer.headquartersOrBranch == 'head';
 
-    // ROW 5: Branch with no branch code - don't show "สาขาที่( )"
-    if (!hasBranchCode) {
-      // Show only company name if no establishment name either
-      if (!hasEstablishmentName) {
-        return companyName;
-      }
-      // Show company name with establishment name in quotes
-      return '$companyName "${customer.establishmentName}"';
-    }
-
-    // Has branch code (not 00000)
-    if (hasBranchCode) {
-      // Branch format: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
-      String branchName = customer.establishmentName ?? companyName;
-      return '$companyName สาขาที่(${customer.branchCode}) $branchName';
-    } else {
-      // Head office format: "บริษัท ห้างทองมนวาท จำกัด (สำนักงานใหญ่)"
+    // HEAD OFFICE: Always show (สำนักงานใหญ่)
+    if (isHeadOffice) {
       return '$companyName (สำนักงานใหญ่)';
+    }
+
+    // BRANCH: Check if has branch code
+    if (hasBranchCode) {
+      // Branch with code: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
+      String branchName = customer.establishmentName ?? companyName;
+      return '$companyName สาขาที่(${customer.branchCode}) "$branchName"';
+    } else {
+      // Branch without code: Show company name with establishment name in quotes (if available)
+      if (hasEstablishmentName) {
+        return '$companyName "${customer.establishmentName}"';
+      }
+      // Branch without code and no establishment name: show only company name
+      return companyName;
     }
   }
 

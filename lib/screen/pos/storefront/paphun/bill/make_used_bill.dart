@@ -328,6 +328,27 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
             ]),
       ),
     );
+
+    widgets.add(
+      Container(
+        height: 53,
+        padding: const EdgeInsets.only(top: 1.0),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัทฯโดยปราศจากภาระผูกพัน ',
+                  style: const TextStyle(fontSize: 12)),
+              Text(
+                  'และการลิดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ามีความยินยอมให้ทางบริษัทฯ นำทองคำที่ส่งมอบข้างต้นไปดำเนินการตรวจสอบคุณภาพตามวิธีการของบริษัทฯ',
+                  style: const TextStyle(fontSize: 12)),
+              Text(
+                  'หากไม่ผ่านการตรวจสอบ ข้าพเจ้ายอมให้บริษัทฯ มีสิทธิปฏิเสธการรับทองคำและชดใช้ค่าเสียหายตามที่บริษัทฯ เรียกร้องโดยไม่มีข้อโต้แย้งในทุกกรณี ',
+                  style: const TextStyle(fontSize: 12)),
+            ]),
+      ),
+    );
     widgets.add(
       Container(
         height: 20,
@@ -351,26 +372,6 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                               style: const TextStyle(fontSize: 12)),
                         ])),
               )),
-            ]),
-      ),
-    );
-    widgets.add(
-      Container(
-        height: 53,
-        padding: const EdgeInsets.only(top: 1.0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                  'ข้าพเจ้าขอรับรองว่า ข้าพเจ้าเป็นเจ้าของและมีกรรมสิทธิ์โดยชอบด้วยกฎหมายแต่เพียงผู้เดียวในทองคำที่นำมาขายให้กับบริษัทฯโดยปราศจากภาระผูกพัน ',
-                  style: const TextStyle(fontSize: 12)),
-              Text(
-                  'และการลิดรอนสิทธิใดๆ ทั้งสิ้น ข้าพเจ้ามีความยินยอมให้ทางบริษัทฯ นำทองคำที่ส่งมอบข้างต้นไปดำเนินการตรวจสอบคุณภาพตามวิธีการของบริษัทฯ',
-                  style: const TextStyle(fontSize: 12)),
-              Text(
-                  'หากไม่ผ่านการตรวจสอบ ข้าพเจ้ายอมให้บริษัทฯ มีสิทธิปฏิเสธการรับทองคำและชดใช้ค่าเสียหายตามที่บริษัทฯ เรียกร้องโดยไม่มีข้อโต้แย้งในทุกกรณี ',
-                  style: const TextStyle(fontSize: 12)),
             ]),
       ),
     );
@@ -459,7 +460,9 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                             Expanded(
                                 flex: 2,
                                 child: Text(
-                                    invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    invoice.order.orderStatus == 'CANCEL'
+                                        ? "0.00 บาท"
+                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 12,
@@ -479,7 +482,8 @@ Future<Uint8List> makeUsedBill(Invoice invoice, {int option = 1}) async {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      SizedBox(height: 15),
+                      Text('${getCustomerNameForBillSign(invoice.customer)}',
+                          style: const TextStyle(fontSize: 11)),
                       Text('ผู้ขาย / ผู้รับเงิน / ผู้ส่งมอบทอง',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold)),

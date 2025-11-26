@@ -463,9 +463,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
             height: 65,
             child: Column(
               children: [
-                Text('                                ',
-                    style: const TextStyle(fontSize: 10)),
-                Text('${getCustomerName(invoice.customer)}',
+                Text('${getCustomerNameForBillSign(invoice.customer)}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 10)),
                 Text('ผู้ไถ่ถอนและรับคืนหลักประกัน',

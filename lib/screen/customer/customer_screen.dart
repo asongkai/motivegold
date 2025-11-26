@@ -827,24 +827,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
         );
       }
 
-      // Individual/General + Foreigner: Show Tax ID, Work Permit, Passport
-      // Count how many IDs are filled
-      int filledIdCount = 0;
-      if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) filledIdCount++;
-      if (customer.workPermit != null && customer.workPermit!.isNotEmpty) filledIdCount++;
-      if (customer.passportId != null && customer.passportId!.isNotEmpty) filledIdCount++;
-
-      // If only 1 ID filled -> Show only Tax ID with English label
-      if (filledIdCount == 1 && customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
-        return _buildIdentificationCard(
-          icon: Icons.receipt_long,
-          label: 'Tax ID',
-          value: customer.taxNumber!,
-          color: Colors.orange,
-        );
-      }
-
-      // If 2 or 3 IDs filled -> Show all filled IDs (hide empty ones)
+      // Individual/General + Foreigner: Show all IDs that have data (1, 2, or 3 IDs)
       List<Widget> idCards = [];
 
       if (customer.taxNumber != null && customer.taxNumber!.isNotEmpty) {
@@ -874,6 +857,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
           value: customer.passportId!,
           color: Colors.green,
         ));
+      }
+
+      // If no IDs filled, return empty
+      if (idCards.isEmpty) {
+        return SizedBox.shrink();
       }
 
       return Column(children: idCards);
@@ -960,10 +948,14 @@ class _CustomerScreenState extends State<CustomerScreen> {
   }
 
   String _getCustomerTypeText(CustomerModel customer) {
-    if (customer.nationality == "Foreigner") {
-      return "ต่างชาติ";
+    bool isCompany = customer.customerType == "company";
+    bool isThai = customer.nationality == "Thai";
+
+    if (isCompany) {
+      return isThai ? "นิติบุคคลสัญชาติไทย" : "นิติบุคคลต่างชาติ";
+    } else {
+      return isThai ? "บุคคลธรรมดาสัญชาติไทย" : "บุคคลธรรมดาต่างชาติ";
     }
-    return customer.customerType == "company" ? "นิติบุคคล" : "บุคคลธรรมดา";
   }
 
   Widget _buildActionButton({

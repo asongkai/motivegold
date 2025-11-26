@@ -483,7 +483,7 @@ Future<Uint8List> makeSellUsedThengBill(Invoice invoice,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text('${getCustomerName(invoice.customer)}',
+                        Text('${getCustomerNameForBillSign(invoice.customer)}',
                             style: const TextStyle(fontSize: 10)),
                         Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
                             style: TextStyle(

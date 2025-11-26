@@ -220,7 +220,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "ยกเลิกเอกสาร"
-                      : getCustomerNameForReports(orders[i]!.customer!),
+                      : getCustomerNameForWholesaleReports(orders[i]!.customer!),
                   style: TextStyle(
                       fontSize: 11,
                       color:

@@ -20,6 +20,42 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
   );
   final pdf = Document(theme: myTheme);
 
+  // 1. DEFINE WIDTHS HERE TO ENSURE ALIGNMENT
+  // Type 1 has 15 Columns (Indices 0-14)
+  const columnWidthsType1 = <int, TableColumnWidth>{
+    0: FixedColumnWidth(28), // Seq
+    1: FixedColumnWidth(45), // Date
+    2: FixedColumnWidth(65), // Tax Invoice
+    3: FixedColumnWidth(65), // Receipt No
+    4: FixedColumnWidth(65), // Buyer Name
+    5: FixedColumnWidth(65), // Branch
+    6: FixedColumnWidth(60), // Tax ID
+    7: FixedColumnWidth(40), // Product
+    8: FixedColumnWidth(70), // Weight
+    9: FixedColumnWidth(70), // Price Inc Tax
+    10: FixedColumnWidth(75), // Tax Base Exempt
+    11: FixedColumnWidth(70), // Diff Base < Buy
+    12: FixedColumnWidth(55), // Diff Base VAT
+    13: FixedColumnWidth(55), // VAT Amount
+    14: FixedColumnWidth(70), // Price Ex Tax
+  };
+
+  // Type 2 has 12 Columns (Indices 0-11)
+  const columnWidthsType2 = <int, TableColumnWidth>{
+    0: FixedColumnWidth(30), // Seq
+    1: FixedColumnWidth(50), // Month
+    2: FixedColumnWidth(70), // Tax Invoice
+    3: FixedColumnWidth(70), // Receipt No
+    4: FixedColumnWidth(80), // Product
+    5: FixedColumnWidth(45), // Weight
+    6: FixedColumnWidth(80), // Price Inc Tax
+    7: FixedColumnWidth(80), // Tax Base Exempt
+    8: FixedColumnWidth(85), // Diff Base < Buy
+    9: FixedColumnWidth(80), // Diff Base VAT
+    10: FixedColumnWidth(65), // VAT Amount
+    11: FixedColumnWidth(80), // Price Ex Tax
+  };
+
   Widget buildHeader() {
     return Column(
       children: [
@@ -56,37 +92,8 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
             horizontalInside: BorderSide.none,
             verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
           ),
-          columnWidths: type == 1
-              ? {
-                  0: FixedColumnWidth(28),
-                  1: FixedColumnWidth(45),
-                  2: FixedColumnWidth(65),
-                  3: FixedColumnWidth(65),
-                  4: FixedColumnWidth(65),
-                  5: FixedColumnWidth(65),
-                  6: FixedColumnWidth(60),
-                  7: FixedColumnWidth(40),
-                  8: FixedColumnWidth(70),
-                  9: FixedColumnWidth(70),
-                  10: FixedColumnWidth(75),
-                  11: FixedColumnWidth(70),
-                  12: FixedColumnWidth(55),
-                  13: FixedColumnWidth(70),
-                }
-              : {
-                  0: FixedColumnWidth(30),
-                  1: FixedColumnWidth(50),
-                  2: FixedColumnWidth(70),
-                  3: FixedColumnWidth(70),
-                  4: FixedColumnWidth(80),
-                  5: FixedColumnWidth(45),
-                  6: FixedColumnWidth(80),
-                  7: FixedColumnWidth(80),
-                  8: FixedColumnWidth(85),
-                  9: FixedColumnWidth(80),
-                  10: FixedColumnWidth(65),
-                  11: FixedColumnWidth(80),
-                },
+          // 2. USE VARIABLE HERE
+          columnWidths: type == 1 ? columnWidthsType1 : columnWidthsType2,
           children: [
             TableRow(
               decoration: BoxDecoration(
@@ -224,45 +231,17 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
         horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
         verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
       ),
-      columnWidths: type == 1
-          ? {
-              0: FixedColumnWidth(28),
-              1: FixedColumnWidth(45),
-              2: FixedColumnWidth(65),
-              3: FixedColumnWidth(65),
-              4: FixedColumnWidth(65),
-              5: FixedColumnWidth(65),
-              6: FixedColumnWidth(60),
-              7: FixedColumnWidth(40),
-              8: FixedColumnWidth(70),
-              9: FixedColumnWidth(70),
-              10: FixedColumnWidth(75),
-              11: FixedColumnWidth(70),
-              12: FixedColumnWidth(55),
-              13: FixedColumnWidth(70),
-            }
-          : {
-              0: FixedColumnWidth(30),
-              1: FixedColumnWidth(50),
-              2: FixedColumnWidth(70),
-              3: FixedColumnWidth(70),
-              4: FixedColumnWidth(80),
-              5: FixedColumnWidth(45),
-              6: FixedColumnWidth(80),
-              7: FixedColumnWidth(80),
-              8: FixedColumnWidth(85),
-              9: FixedColumnWidth(80),
-              10: FixedColumnWidth(65),
-              11: FixedColumnWidth(80),
-            },
+      // 3. USE THE SAME VARIABLE HERE
+      columnWidths: type == 1 ? columnWidthsType1 : columnWidthsType2,
       children: [
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
+                // 4. STRIPED ROW LOGIC
                 color: orders[i]!.status == "2"
                     ? PdfColors.red100
-                    : PdfColors.white),
+                    : (i % 2 == 0 ? PdfColors.white : PdfColors.grey100)),
             children: [
               paddedTextSmall('${i + 1}',
                   align: TextAlign.center,
@@ -295,7 +274,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร"
-                        : getCustomerNameForReports(orders[i]!.customer!),
+                        : getCustomerNameForWholesaleReports(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
                         color:
@@ -428,6 +407,9 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              // 5. FIXED SUMMARY PADDING
+              // 4 columns above + 3 extra = 7 columns.
+              // Total columns before "Product" (index 7) is 7 (0-6).
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

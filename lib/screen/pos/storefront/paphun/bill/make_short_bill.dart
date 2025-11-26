@@ -13,8 +13,7 @@ import 'package:flutter/services.dart' show rootBundle;
 
 Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
   var myTheme = ThemeData.withFont(
-    base: Font.ttf(
-        await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
+    base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
     bold: Font.ttf(
         await rootBundle.load("assets/fonts/thai/THSarabunNew-Bold.ttf")),
   );
@@ -80,7 +79,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('น้ำหนัก (บาททอง)', align: TextAlign.right),
+                    child:
+                        paddedText('น้ำหนัก (บาททอง)', align: TextAlign.right),
                   )),
               Expanded(
                   flex: 2,
@@ -100,7 +100,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                         right: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
+                    child:
+                        paddedText('จํานวนเงิน (บาท)', align: TextAlign.right),
                   )),
             ]),
       ),
@@ -148,7 +149,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(invoice.items[i].weightBath ?? 0, option: true)}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -162,7 +164,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(invoice.items[i].weight ?? 0)}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 3,
@@ -174,7 +177,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(invoice.items[i].priceIncludeTax ?? 0)}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
             ]),
       ));
@@ -254,7 +258,9 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
         height: 20,
         decoration: const BoxDecoration(
           border: Border(
-              left: BorderSide(width: 0.25), bottom: BorderSide(width: 0.25), right: BorderSide(width: 0.25)),
+              left: BorderSide(width: 0.25),
+              bottom: BorderSide(width: 0.25),
+              right: BorderSide(width: 0.25)),
         ),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,7 +288,9 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                         bottom: BorderSide(width: 0.25),
                       ),
                     ),
-                    child: paddedText('รวม', align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: paddedText('รวม',
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -296,7 +304,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalWeightBaht(invoice.items), option: true)}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 2,
@@ -308,7 +317,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalWeight(invoice.items))}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
               Expanded(
                   flex: 3,
@@ -318,7 +328,8 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                     ),
                     child: paddedText(
                         '${Global.format(Global.getOrderTotalAmount(invoice.items))}',
-                        align: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold)),
+                        align: TextAlign.right,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   )),
             ]),
       ),
@@ -328,14 +339,16 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
         height: 100,
         decoration: const BoxDecoration(
           border: Border(
-              left: BorderSide(width: 0.25), bottom: BorderSide(width: 0.25), right: BorderSide(width: 0.25)),
+              left: BorderSide(width: 0.25),
+              bottom: BorderSide(width: 0.25),
+              right: BorderSide(width: 0.25)),
         ),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                  flex: 6,
+                  flex: 7,
                   child: Container(
                     decoration: const BoxDecoration(
                       border: Border(),
@@ -346,31 +359,33 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text('หมายเหตุ : ${invoice.order.remark ?? ''}',
-                                  style: const TextStyle(fontSize: 12)),
+                              Text(
+                                  'ใบเสร็จรับเงินนี้จะสมบูรณ์ก็ต่อเมื่อกิจการได้รับชำระค่าสินค้าครบถ้วนเรียบร้อย',
+                                  style: const TextStyle(fontSize: 11)),
                               Row(children: [
                                 // SizedBox(width: 20),
                                 Expanded(
                                   child: Padding(
-                                    padding: const EdgeInsets.all(6.0),
+                                    padding: const EdgeInsets.only(top: 4.0),
                                     child: Container(
                                         padding: const EdgeInsets.all(8.0),
                                         decoration: BoxDecoration(
                                             border: Border.all(width: 0.25),
-                                            borderRadius: const BorderRadius.all(
-                                                Radius.circular(10))),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(10))),
                                         child: Column(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  'ใบเสร็จรับเงินนี้จะสมบูรณ์่ต่อเมื่อ',
+                                                  'หมายเหตุ : ${invoice.order.remark ?? ''}',
                                                   style: const TextStyle(
-                                                      fontSize: 12)),
-                                              Text(
-                                                  'กิจการได้รับชำระค่าสินค้าครบถ้วนเรียบร้อย',
-                                                  style: const TextStyle(
-                                                      fontSize: 12))
+                                                      fontSize: 11)),
+                                              // Text(
+                                              //     '',
+                                              //     style: const TextStyle(
+                                              //         fontSize: 11))
                                             ])),
                                   ),
                                 ),
@@ -378,7 +393,7 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                             ])),
                   )),
               Expanded(
-                  flex: 5,
+                  flex: 4,
                   child: Container(
                     decoration: const BoxDecoration(
                       border: Border(right: BorderSide(width: 0.25)),
@@ -428,27 +443,33 @@ Future<Uint8List> makeShortBill(Invoice invoice, {int option = 1}) async {
                             Text(
                                 '${Global.format(invoice.order.details?.totalPriceIncludeTax)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Text(
                                 '${Global.format(invoice.order.details?.totalPurchasePrice)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Text(
                                 '${Global.format(invoice.order.details?.totalPriceDiff)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Text(
                                 '${Global.format(invoice.order.details?.totalTaxBase)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Text(
                                 '${Global.format(invoice.order.details?.totalTaxAmount)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             Text(
                                 '${Global.format(invoice.order.details?.totalPriceExcludeTax)}',
                                 textAlign: TextAlign.right,
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                           ]),
                     ),
                   )),
@@ -520,7 +541,8 @@ Widget sn(List<OrderModel>? orders) {
           Expanded(
             flex: 5,
             child: Text('ขายทองคํารูปพรรณใหม่ : ${orders[i].orderId}',
-                textAlign: TextAlign.left, style: const TextStyle(fontSize: 12)),
+                textAlign: TextAlign.left,
+                style: const TextStyle(fontSize: 12)),
           ),
           Expanded(
               flex: 3,
@@ -552,7 +574,8 @@ Widget bu(List<OrderModel>? orders) {
           Expanded(
             flex: 5,
             child: Text('รับซื้อทองคํารูปพรรณเก่า : ${orders[i].orderId}',
-                textAlign: TextAlign.left, style: const TextStyle(fontSize: 12)),
+                textAlign: TextAlign.left,
+                style: const TextStyle(fontSize: 12)),
           ),
           Expanded(
               flex: 3,
@@ -574,8 +597,8 @@ Widget bu(List<OrderModel>? orders) {
 }
 
 Widget paddedText(final String text,
-    {final TextAlign align = TextAlign.left,
-      final TextStyle style = const TextStyle(fontSize: 12)}) =>
+        {final TextAlign align = TextAlign.left,
+        final TextStyle style = const TextStyle(fontSize: 12)}) =>
     Padding(
       padding: const EdgeInsets.all(4),
       child: Text(

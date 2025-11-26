@@ -364,7 +364,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                     align: TextAlign.center),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall(
-                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForReports(orders[i]!.customer!)} ',
+                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerNameForWholesaleReports(orders[i]!.customer!)} ',
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"

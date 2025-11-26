@@ -598,14 +598,17 @@ class _CheckOutScreenState extends State<CheckOutScreen>
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            "${Global.customer!.address}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF374151),
-                              fontSize: 14.sp,
+                          for (String line in getCustomerAddressLines(Global.customer!)) ...[
+                            Text(
+                              line,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xFF374151),
+                                fontSize: 14.sp,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 4),
+                          ],
                           const SizedBox(height: 4),
                           Text(
                             "${getWorkId(Global.customer!)}",

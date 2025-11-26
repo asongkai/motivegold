@@ -1741,6 +1741,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                       onChanged: (String? value) {
                                                         setState(() {
                                                           companyOfficeType = value;
+                                                          // Default branch code to 00000 for head office
+                                                          if (value == 'head') {
+                                                            branchCodeCtrl.text = '00000';
+                                                          }
                                                         });
                                                       },
                                                     ),
@@ -1775,6 +1779,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                       onChanged: (String? value) {
                                                         setState(() {
                                                           companyOfficeType = value;
+                                                          // Clear branch code when switching to branch so user can enter their own
+                                                          if (value == 'branch' && branchCodeCtrl.text == '00000') {
+                                                            branchCodeCtrl.text = '';
+                                                          }
                                                         });
                                                       },
                                                     ),
@@ -2019,6 +2027,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             onChanged: (String? value) {
                                               setState(() {
                                                 companyOfficeType = value;
+                                                // Default branch code to 00000 for head office
+                                                if (value == 'head') {
+                                                  branchCodeCtrl.text = '00000';
+                                                }
                                               });
                                             },
                                           ),
@@ -2050,6 +2062,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             onChanged: (String? value) {
                                               setState(() {
                                                 companyOfficeType = value;
+                                                // Clear branch code when switching to branch so user can enter their own
+                                                if (value == 'branch' && branchCodeCtrl.text == '00000') {
+                                                  branchCodeCtrl.text = '';
+                                                }
                                               });
                                             },
                                           ),
@@ -3068,14 +3084,17 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 // Remove formatting (dashes) before checking length
                 String cleanTaxNumber = taxNumber.replaceAll('-', '');
 
-                // Check length for Thai nationality
-                if (nationality == 'Thai' && cleanTaxNumber.length != 13) {
+                // Check length for Tax ID (both Thai and Foreigner)
+                if (cleanTaxNumber.length != 13) {
+                  String warningMessage = cleanTaxNumber.length < 13
+                      ? 'เลขประจำตัวผู้เสียภาษีไม่ครบ'
+                      : 'เลขประจำตัวผู้เสียภาษีเกิน13หลัก';
                   Alert.info(
                       context,
                       'คำเตือน',
-                      'Tax ID ไม่เท่ากับ 13 หลัก\nคุณแน่ใจว่าจะดำเนินการต่อ?',
+                      warningMessage,
                       'ตกลง', action: () async {
-                    await _saveDirectly();
+                    await _continueAfterTaxIdWarning();
                   });
                   return;
                 }
@@ -3089,53 +3108,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                       'Tax number already exists. Please use a different tax number',
                       'OK',
                       action: () {});
-                  return;
-                }
-              }
-
-              // NEW VALIDATION: Row 3 & Row 4 - Block save when missing required fields
-              if (selectedType?.code == 'company') {
-                // Check if only establishment name is filled but missing company name, address, and branch code
-                bool hasOnlyEstablishmentName = businessNameCtrl.text.isNotEmpty &&
-                    companyNameCtrl.text.isEmpty &&
-                    Global.addressCtrl.text.isEmpty &&
-                    branchCodeCtrl.text.isEmpty;
-
-                if (hasOnlyEstablishmentName) {
-                  Alert.warning(
-                      context,
-                      'คำเตือน',
-                      'กรุณากรอกชื่อบริษัท ที่อยู่ และรหัสสาขา',
-                      'ตกลง',
-                      action: () {});
-                  return;
-                }
-              }
-
-              // NEW VALIDATION: Row 2 - Warning when head office branch code manually changed from default
-              if (selectedType?.code == 'company' && companyOfficeType == 'head') {
-                if (branchCodeCtrl.text.isNotEmpty && branchCodeCtrl.text != '00000') {
-                  Alert.info(
-                      context,
-                      'คำเตือน',
-                      'นิติบุคคลรายนี้เป็นสำนักงานใหญ่ คุณต้องการบันทึกด้วยรหัส ${branchCodeCtrl.text}?',
-                      'ตกลง', action: () async {
-                    await _processSave();
-                  });
-                  return;
-                }
-              }
-
-              // NEW VALIDATION: Row 7 - Warning when branch has '00000' branch code
-              if (selectedType?.code == 'company' && companyOfficeType == 'branch') {
-                if (branchCodeCtrl.text == '00000') {
-                  Alert.info(
-                      context,
-                      'คำเตือน',
-                      'นิติบุคคลรายนี้เป็นสาขา คุณต้องการบันทึกด้วยรหัสสาขา 00000?',
-                      'ตกลง', action: () async {
-                    await _processSave();
-                  });
                   return;
                 }
               }
@@ -3165,7 +3137,97 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
+  Future<void> _continueAfterTaxIdWarning() async {
+    // Continue validation after Tax ID warning is accepted
+    // Skip the normal save confirmation since user already confirmed via Tax ID warning
+
+    // NEW VALIDATION: Block save when company name is empty for company customers
+    if (selectedType?.code == 'company') {
+      // Company name (ชื่อผู้ประกอบการ) is required for all company customers
+      if (companyNameCtrl.text.isEmpty) {
+        Alert.warning(
+            context,
+            'คำเตือน',
+            'กรุณากรอกชื่อผู้ประกอบการ',
+            'ตกลง',
+            action: () {});
+        return;
+      }
+    }
+
+    // NEW VALIDATION: Row 2 - Warning when head office branch code manually changed from default
+    if (selectedType?.code == 'company' && companyOfficeType == 'head') {
+      if (branchCodeCtrl.text.isNotEmpty && branchCodeCtrl.text != '00000') {
+        Alert.info(
+            context,
+            'คำเตือน',
+            'นิติบุคคลรายนี้เป็นสำนักงานใหญ่ คุณต้องการบันทึกด้วยรหัส ${branchCodeCtrl.text}?',
+            'ตกลง', action: () async {
+          await _saveDirectly();
+        });
+        return;
+      }
+    }
+
+    // NEW VALIDATION: Row 7 - Warning when branch has '00000' branch code
+    if (selectedType?.code == 'company' && companyOfficeType == 'branch') {
+      if (branchCodeCtrl.text == '00000') {
+        Alert.info(
+            context,
+            'คำเตือน',
+            'นิติบุคคลรายนี้เป็นสาขา คุณต้องการบันทึกด้วยรหัสสาขา 00000?',
+            'ตกลง', action: () async {
+          await _saveDirectly();
+        });
+        return;
+      }
+    }
+
+    await _saveDirectly();
+  }
+
   Future<void> _processSave() async {
+    // Validate company name is required for company customers
+    if (selectedType?.code == 'company') {
+      if (companyNameCtrl.text.isEmpty) {
+        Alert.warning(
+            context,
+            'คำเตือน',
+            'กรุณากรอกชื่อผู้ประกอบการ',
+            'ตกลง',
+            action: () {});
+        return;
+      }
+    }
+
+    // Warning when head office branch code manually changed from default
+    if (selectedType?.code == 'company' && companyOfficeType == 'head') {
+      if (branchCodeCtrl.text.isNotEmpty && branchCodeCtrl.text != '00000') {
+        Alert.info(
+            context,
+            'คำเตือน',
+            'นิติบุคคลรายนี้เป็นสำนักงานใหญ่ คุณต้องการบันทึกด้วยรหัส ${branchCodeCtrl.text}?',
+            'ตกลง', action: () async {
+          await _saveDirectly();
+        });
+        return;
+      }
+    }
+
+    // Warning when branch has '00000' branch code
+    if (selectedType?.code == 'company' && companyOfficeType == 'branch') {
+      if (branchCodeCtrl.text == '00000') {
+        Alert.info(
+            context,
+            'คำเตือน',
+            'นิติบุคคลรายนี้เป็นสาขา คุณต้องการบันทึกด้วยรหัสสาขา 00000?',
+            'ตกลง', action: () async {
+          await _saveDirectly();
+        });
+        return;
+      }
+    }
+
     if (selectedCustomer == null) {
       Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
           action: () async {

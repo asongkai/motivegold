@@ -615,8 +615,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(height: 15),
-                    Text('                                ',
+                    Text('${getCustomerNameForBillSign(invoice.customer)}',
                         style: const TextStyle(fontSize: 11)),
                     Text('ผู้ซื้อ / ผู้จ่ายเงิน / ผู้รับทอง',
                         style: TextStyle(

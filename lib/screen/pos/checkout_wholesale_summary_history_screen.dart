@@ -262,14 +262,17 @@ class _CheckOutWholesaleSummaryHistoryScreenState
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            "${customer!.address}",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              color: const Color(0xFF374151),
-              fontSize: 14.sp,
+          for (String line in getCustomerAddressLines(customer!)) ...[
+            Text(
+              line,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF374151),
+                fontSize: 14.sp,
+              ),
             ),
-          ),
+            const SizedBox(height: 4),
+          ],
           const SizedBox(height: 4),
           Text(
             "${getIdTitleCustomer(customer)}",

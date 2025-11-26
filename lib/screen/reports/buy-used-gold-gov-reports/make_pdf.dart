@@ -239,17 +239,10 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                         Text(getCustomerName(orders[i]!.customer!),
                             style: TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.bold)),
-                        if (getCustomerBillAddressLine1(orders[i]!.customer!)
-                            .isNotEmpty)
-                          Text(
-                              getCustomerBillAddressLine1(orders[i]!.customer!),
-                              style: TextStyle(fontSize: 10)),
-                        if (getCustomerBillAddressLine1(orders[i]!.customer!)
-                            .isNotEmpty)
-                          Text(
-                              getCustomerBillAddressLine2(orders[i]!.customer!,
-                                  includePhone: false),
-                              style: TextStyle(fontSize: 10)),
+                        for (String line in getCustomerAddressLines(
+                            orders[i]!.customer!,
+                            includePhone: false))
+                          Text(line, style: TextStyle(fontSize: 10)),
                         Text('Tel : ${orders[i]!.customer?.phoneNumber}',
                             style: TextStyle(fontSize: 10)),
                         Text(

@@ -28,8 +28,6 @@ import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/button/kcl_button.dart';
 import 'package:motivegold/widget/calculate/calculator_button.dart';
-import 'package:motivegold/widget/empty_data.dart';
-import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/widget/payment/payment_method.dart';
 
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
@@ -102,7 +100,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
     int redeemTypeId = 1; // Default redeem type ID (ไถ่ถอน)
 
     var payment = await ApiServices.post(
-        '/defaultredeempayment/by-redeem-type/$redeemTypeId', Global.requestObj(null));
+        '/defaultredeempayment/by-redeem-type/$redeemTypeId',
+        Global.requestObj(null));
 
     if (payment != null) {
       motivePrint(payment.toJson());
@@ -116,7 +115,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
   }
 
   // Convert DefaultRedeemPaymentModel to DefaultPaymentModel for widget compatibility
-  DefaultPaymentModel? convertToDefaultPayment(DefaultRedeemPaymentModel? redeemPayment) {
+  DefaultPaymentModel? convertToDefaultPayment(
+      DefaultRedeemPaymentModel? redeemPayment) {
     if (redeemPayment == null) return null;
     return DefaultPaymentModel(
       id: redeemPayment.id,
@@ -161,11 +161,11 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
           child: Global.redeems.isEmpty
               ? const ModernEmptyState()
               : _fadeAnimation != null
-              ? FadeTransition(
-            opacity: _fadeAnimation!,
-            child: _buildContent(),
-          )
-              : _buildContent(),
+                  ? FadeTransition(
+                      opacity: _fadeAnimation!,
+                      child: _buildContent(),
+                    )
+                  : _buildContent(),
         ),
       ),
       persistentFooterButtons: [
@@ -323,10 +323,15 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0F766E).withOpacity(0.05) : Colors.transparent,
+          color: isSelected
+              ? const Color(0xFF0F766E).withOpacity(0.05)
+              : Colors.transparent,
           borderRadius: value == 1
-              ? const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12))
-              : const BorderRadius.only(bottomLeft: Radius.circular(12), bottomRight: Radius.circular(12)),
+              ? const BorderRadius.only(
+                  topLeft: Radius.circular(12), topRight: Radius.circular(12))
+              : const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12)),
         ),
         child: Row(
           children: [
@@ -336,21 +341,23 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF0F766E) : const Color(0xFFD1D5DB),
+                  color: isSelected
+                      ? const Color(0xFF0F766E)
+                      : const Color(0xFFD1D5DB),
                   width: 2,
                 ),
               ),
               child: isSelected
                   ? Center(
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF0F766E),
-                  ),
-                ),
-              )
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF0F766E),
+                        ),
+                      ),
+                    )
                   : null,
             ),
             const SizedBox(width: 12),
@@ -359,7 +366,9 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? const Color(0xFF0F766E) : const Color(0xFF374151),
+                color: isSelected
+                    ? const Color(0xFF0F766E)
+                    : const Color(0xFF374151),
               ),
             ),
           ],
@@ -378,166 +387,169 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
       ),
       child: Global.customer == null
           ? Row(
-        children: [
-          Expanded(flex: 5, child: Container()),
-          Expanded(
-            flex: 1,
-            child: Column(
               children: [
-                KclButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const AddCustomerScreen(),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      setState(() {});
-                    });
-                  },
-                  text: 'เพิ่ม',
-                  fullWidth: true,
-                  icon: Icons.add,
+                Expanded(flex: 5, child: Container()),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddCustomerScreen(),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'เพิ่ม',
+                        fullWidth: true,
+                        icon: Icons.add,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                        width: 8,
+                      ),
+                      KclButton(
+                        onTap: () {
+                          Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CustomerScreen(
+                                            selected: true,
+                                            type: "C",
+                                          ),
+                                      fullscreenDialog: true))
+                              .whenComplete(() {
+                            setState(() {});
+                          });
+                        },
+                        text: 'ค้นหา',
+                        icon: Icons.search,
+                        fullWidth: true,
+                        color: Colors.deepOrange,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 8,
-                  width: 8,
-                ),
-                KclButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const CustomerScreen(
-                              selected: true,
-                              type: "C",
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${Global.customer!.firstName} ${Global.customer!.lastName}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.sp,
+                              color: const Color(0xFF1F2937),
                             ),
-                            fullscreenDialog: true))
-                        .whenComplete(() {
-                      setState(() {});
-                    });
-                  },
-                  text: 'ค้นหา',
-                  icon: Icons.search,
-                  fullWidth: true,
-                  color: Colors.deepOrange,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "${Global.customer!.phoneNumber}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "${Global.customer!.email}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF6B7280),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          for (String line in getCustomerAddressLines(Global.customer!)) ...[
+                            Text(
+                              line,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: const Color(0xFF374151),
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                          const SizedBox(height: 4),
+                          Text(
+                            "${getWorkId(Global.customer!)}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF374151),
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddCustomerScreen(),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'เพิ่ม',
+                            fullWidth: true,
+                            icon: Icons.add,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                            width: 8,
+                          ),
+                          KclButton(
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const CustomerScreen(
+                                                selected: true,
+                                                type: "C",
+                                              ),
+                                          fullscreenDialog: true))
+                                  .whenComplete(() {
+                                setState(() {});
+                              });
+                            },
+                            text: 'ค้นหา',
+                            icon: Icons.search,
+                            fullWidth: true,
+                            color: Colors.deepOrange,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),
-          ),
-        ],
-      )
-          : Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${Global.customer!.firstName} ${Global.customer!.lastName}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.sp,
-                        color: const Color(0xFF1F2937),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "${Global.customer!.phoneNumber}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6B7280),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${Global.customer!.email}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF6B7280),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${Global.customer!.address}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF374151),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "${getWorkId(Global.customer!)}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF374151),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    KclButton(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const AddCustomerScreen(),
-                                fullscreenDialog: true))
-                            .whenComplete(() {
-                          setState(() {});
-                        });
-                      },
-                      text: 'เพิ่ม',
-                      fullWidth: true,
-                      icon: Icons.add,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                      width: 8,
-                    ),
-                    KclButton(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                const CustomerScreen(
-                                  selected: true,
-                                  type: "C",
-                                ),
-                                fullscreenDialog: true))
-                            .whenComplete(() {
-                          setState(() {});
-                        });
-                      },
-                      text: 'ค้นหา',
-                      icon: Icons.search,
-                      fullWidth: true,
-                      color: Colors.deepOrange,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -738,7 +750,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: const Color(0xFF0F766E),
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -757,7 +770,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                       SizedBox(width: 8),
                       Text(
                         'เพิ่ม',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
                       )
                     ],
                   ),
@@ -787,14 +801,12 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
         }
       },
     );
-    setState(() {
-    });
+    setState(() {});
   }
 
   closeCal() {
     AppCalculatorManager.hideCalculator();
-    setState(() {
-    });
+    setState(() {});
   }
 
   Widget _buildPaymentList() {
@@ -1179,7 +1191,8 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                 for (int j = 0; j < order.details!.length; j++)
                   TableRow(
                     decoration: BoxDecoration(
-                      color: j % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
+                      color:
+                          j % 2 == 0 ? Colors.white : const Color(0xFFF8FAFC),
                     ),
                     children: [
                       paddedTextBigL('${j + 1}',
@@ -1205,10 +1218,17 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                                 onTap: () {
                                   // Edit functionality
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EditRedeemItemDialog(index: index, vatOption: order.details![j].vatOption ?? '', j: j,),
-                                          fullscreenDialog: true))
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditRedeemItemDialog(
+                                                    index: index,
+                                                    vatOption: order.details![j]
+                                                            .vatOption ??
+                                                        '',
+                                                    j: j,
+                                                  ),
+                                              fullscreenDialog: true))
                                       .whenComplete(() {
                                     setState(() {});
                                   });
@@ -1222,11 +1242,13 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.edit, color: Colors.white, size: 16),
+                                      Icon(Icons.edit,
+                                          color: Colors.white, size: 16),
                                       SizedBox(width: 4),
                                       Text(
                                         'แก้ไข',
-                                        style: TextStyle(fontSize: 12, color: Colors.white),
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.white),
                                       )
                                     ],
                                   ),
@@ -1248,11 +1270,13 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.close, color: Colors.white, size: 16),
+                                      Icon(Icons.close,
+                                          color: Colors.white, size: 16),
                                       SizedBox(width: 4),
                                       Text(
                                         'ลบ',
-                                        style: TextStyle(fontSize: 12, color: Colors.white),
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.white),
                                       )
                                     ],
                                   ),
@@ -1280,8 +1304,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
   void _handleSaveOrder() async {
     if (Global.customer == null) {
       if (mounted) {
-        Alert.warning(
-            context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
+        Alert.warning(context, 'Warning'.tr(), 'กรุณากรอกลูกค้า', 'OK'.tr(),
             action: () {});
         return;
       }
@@ -1300,8 +1323,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
           getRedeemWeightTotal(Global.redeems[i].details!);
       Global.redeems[i].weightBath =
           getRedeemWeightBahtTotal(Global.redeems[i].details!);
-      Global.redeems[i].taxBase =
-          getTaxBaseTotal(Global.redeems[i].details!);
+      Global.redeems[i].taxBase = getTaxBaseTotal(Global.redeems[i].details!);
       Global.redeems[i].taxAmount =
           getTaxAmountTotal(Global.redeems[i].details!);
       Global.redeems[i].depositAmount =
@@ -1326,58 +1348,55 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
 
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          final ProgressDialog pr = ProgressDialog(context,
-              type: ProgressDialogType.normal,
-              isDismissible: true,
-              showLogs: true);
-          await pr.show();
-          pr.update(message: 'processing'.tr());
-          try {
-            if (Global.posOrder != null) {
-              await reserveOrder(Global.posOrder!);
-            }
-            // Gen pair ID before submit
-            var pair = await ApiServices.post(
-                '/redeem/gen-pair/${Global.redeems.first.redeemTypeId}',
-                Global.requestObj(null));
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        if (Global.posOrder != null) {
+          await reserveOrder(Global.posOrder!);
+        }
+        // Gen pair ID before submit
+        var pair = await ApiServices.post(
+            '/redeem/gen-pair/${Global.redeems.first.redeemTypeId}',
+            Global.requestObj(null));
 
-            print(pair?.toJson());
-            if (pair?.status == "success") {
-              await postPayment(pair?.data);
-              await postOrder(pair?.data);
-              Global.pairId = pair?.data;
-              await pr.hide();
-              if (mounted) {
-                Global.redeems.clear();
-                Global.discount = 0;
-                Global.addPrice = 0;
-                Global.customer = null;
-                Global.paymentList?.clear();
-                writeRedeemCart();
-                setState(() {});
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PrintRedeemBillScreen()));
-              }
-            } else {
-              await pr.hide();
-              if (mounted) {
-                Alert.warning(context, 'Warning'.tr(),
-                    'Unable to generate pairing ID', 'OK'.tr(),
-                    action: () {});
-              }
-            }
-          } catch (e, stack) {
-            await pr.hide();
-            if (mounted) {
-              Alert.warning(
-                  context, 'Warning'.tr(), stack.toString(), 'OK'.tr(),
-                  action: () {});
-            }
-            return;
+        print(pair?.toJson());
+        if (pair?.status == "success") {
+          await postPayment(pair?.data);
+          await postOrder(pair?.data);
+          Global.pairId = pair?.data;
+          await pr.hide();
+          if (mounted) {
+            Global.redeems.clear();
+            Global.discount = 0;
+            Global.addPrice = 0;
+            Global.customer = null;
+            Global.paymentList?.clear();
+            writeRedeemCart();
+            setState(() {});
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PrintRedeemBillScreen()));
           }
-        });
+        } else {
+          await pr.hide();
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(),
+                'Unable to generate pairing ID', 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e, stack) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), stack.toString(), 'OK'.tr(),
+              action: () {});
+        }
+        return;
+      }
+    });
   }
 
   // Keep all your original methods unchanged
@@ -1424,7 +1443,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
     await Future.forEach<RedeemModel>(Global.redeems, (e) async {
       e.pairId = pairId;
       var result =
-      await ApiServices.post('/redeem/create', Global.requestObj(e));
+          await ApiServices.post('/redeem/create', Global.requestObj(e));
       motivePrint(result?.toJson());
       if (result?.status == "success") {
         var order = redeemModelFromJson(jsonEncode(result?.data));
@@ -1432,7 +1451,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
         await Future.forEach<RedeemDetailModel>(e.details!, (f) async {
           f.redeemId = id;
           var detail =
-          await ApiServices.post('/redeemdetail', Global.requestObj(f));
+              await ApiServices.post('/redeemdetail', Global.requestObj(f));
           motivePrint(detail?.toJson());
           if (detail?.status == "success") {
             motivePrint("Order completed");
@@ -1469,11 +1488,11 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
   void removePayment(int i) async {
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          Global.paymentList!.removeAt(i);
-          Future.delayed(const Duration(milliseconds: 500), () async {
-            setState(() {});
-          });
-        });
+      Global.paymentList!.removeAt(i);
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        setState(() {});
+      });
+    });
   }
 
   void editPayment(int i) async {
@@ -1611,84 +1630,84 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                           ),
                           elevation: 2,
                           shadowColor:
-                          const Color(0xFF059669).withValues(alpha: 0.3),
+                              const Color(0xFF059669).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
                           if (Global.currentPaymentMethod == "CR") {
                             if (Global.cardNameCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardNumberCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
 
-                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
                             if (Global.selectedBank == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.selectedAccount == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate:
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
                                 DateTime.parse(Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate:
-                                Global.cardExpireDateCtrl.text.isNotEmpty
-                                    ? DateTime.parse(
-                                    Global.cardExpireDateCtrl.text)
-                                    : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: Global.paymentAttachment != null
-                                    ? Global.imageToBase64(
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate: Global
+                                    .cardExpireDateCtrl.text.isNotEmpty
+                                ? DateTime.parse(Global.cardExpireDateCtrl.text)
+                                : null,
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: Global.paymentAttachment != null
+                                ? Global.imageToBase64(
                                     Global.paymentAttachment!)
-                                    : null,
-                              );
-
-                              Global.paymentList?[i] = payment;
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                                : null,
                           );
+
+                          Global.paymentList?[i] = payment;
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          //   },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1762,7 +1781,7 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
 
   Future<void> reserveOrder(OrderModel order) async {
     var result =
-    await ApiServices.post('/order/reserve', Global.requestObj(order));
+        await ApiServices.post('/order/reserve', Global.requestObj(order));
     if (result?.status == "success") {
       // motivePrint("Reverse completed");
     }
@@ -1902,84 +1921,84 @@ class _RedeemCheckOutScreenState extends State<RedeemCheckOutScreen>
                           ),
                           elevation: 2,
                           shadowColor:
-                          const Color(0xFF0F766E).withValues(alpha: 0.3),
+                              const Color(0xFF0F766E).withValues(alpha: 0.3),
                         ),
                         onPressed: () async {
                           if (Global.currentPaymentMethod == "CR") {
                             if (Global.cardNameCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกชื่อบนบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardExpireDateCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกวันหมดอายุบัตร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.cardNumberCtrl.text.trim().isEmpty) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณากรอกเลขที่บัตรเครดิต', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
 
-                          if (Global.currentPaymentMethod == "TR" || Global.currentPaymentMethod == "DP") {
+                          if (Global.currentPaymentMethod == "TR" ||
+                              Global.currentPaymentMethod == "DP") {
                             if (Global.selectedBank == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
 
                             if (Global.selectedAccount == null) {
-                              Alert.warning(
-                                  context, 'Warning'.tr(), 'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
+                              Alert.warning(context, 'Warning'.tr(),
+                                  'กรุณาเลือกบัญชีธนาคาร', 'OK'.tr(),
                                   action: () {});
                               return;
                             }
                           }
-                          Alert.info(
-                            context,
-                            'ต้องการบันทึกข้อมูลหรือไม่?',
-                            '',
-                            'ตกลง',
-                            action: () async {
-                              var payment = PaymentModel(
-                                paymentMethod: Global.currentPaymentMethod,
-                                pairId: Global.pairId,
-                                paymentDate:
+                          // Alert.info(
+                          //   context,
+                          //   'ต้องการบันทึกข้อมูลหรือไม่?',
+                          //   '',
+                          //   'ตกลง',
+                          //   action: () async {
+                          var payment = PaymentModel(
+                            paymentMethod: Global.currentPaymentMethod,
+                            pairId: Global.pairId,
+                            paymentDate:
                                 DateTime.parse(Global.paymentDateCtrl.text),
-                                paymentDetail: Global.paymentDetailCtrl.text,
-                                bankId: Global.selectedBank?.id,
-                                bankName: Global.selectedBank?.name,
-                                accountNo: Global.selectedAccount?.accountNo,
-                                accountName: Global.selectedAccount?.name,
-                                cardName: Global.cardNameCtrl.text,
-                                cardNo: Global.cardNumberCtrl.text,
-                                cardExpiryDate:
-                                Global.cardExpireDateCtrl.text.isNotEmpty
-                                    ? DateTime.parse(
-                                    Global.cardExpireDateCtrl.text)
-                                    : null,
-                                amount: Global.toNumber(Global.amountCtrl.text),
-                                referenceNumber: Global.refNoCtrl.text,
-                                attachement: Global.paymentAttachment != null
-                                    ? Global.imageToBase64(
+                            paymentDetail: Global.paymentDetailCtrl.text,
+                            bankId: Global.selectedBank?.id,
+                            bankName: Global.selectedBank?.name,
+                            accountNo: Global.selectedAccount?.accountNo,
+                            accountName: Global.selectedAccount?.name,
+                            cardName: Global.cardNameCtrl.text,
+                            cardNo: Global.cardNumberCtrl.text,
+                            cardExpiryDate: Global
+                                    .cardExpireDateCtrl.text.isNotEmpty
+                                ? DateTime.parse(Global.cardExpireDateCtrl.text)
+                                : null,
+                            amount: Global.toNumber(Global.amountCtrl.text),
+                            referenceNumber: Global.refNoCtrl.text,
+                            attachement: Global.paymentAttachment != null
+                                ? Global.imageToBase64(
                                     Global.paymentAttachment!)
-                                    : null,
-                              );
-
-                              Global.paymentList?.add(payment);
-
-                              setState(() {});
-                              Navigator.of(context).pop();
-                            },
+                                : null,
                           );
+
+                          Global.paymentList?.add(payment);
+
+                          setState(() {});
+                          Navigator.of(context).pop();
+                          //   },
+                          // );
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -2180,13 +2199,13 @@ class PaymentCard extends StatelessWidget {
               boxShadow: [
                 isSelected!
                     ? BoxShadow(
-                  color: kShadowColor,
-                  offset: Offset(
-                    getProportionateScreenWidth(2),
-                    getProportionateScreenWidth(4),
-                  ),
-                  blurRadius: 80,
-                )
+                        color: kShadowColor,
+                        offset: Offset(
+                          getProportionateScreenWidth(2),
+                          getProportionateScreenWidth(4),
+                        ),
+                        blurRadius: 80,
+                      )
                     : const BoxShadow(color: Colors.transparent),
               ],
             ),
@@ -2205,17 +2224,17 @@ class PaymentCard extends StatelessWidget {
                   ),
                   child: image != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Image.asset(image!,
-                        fit: BoxFit.cover, width: 1000.0),
-                  )
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(image!,
+                              fit: BoxFit.cover, width: 1000.0),
+                        )
                       : ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        "assets/images/no_image.png",
-                        fit: BoxFit.cover,
-                        width: 1000.0,
-                      )),
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.asset(
+                            "assets/images/no_image.png",
+                            fit: BoxFit.cover,
+                            width: 1000.0,
+                          )),
                 ),
                 SizedBox(
                   width: getProportionateScreenWidth(8),

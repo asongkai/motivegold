@@ -297,7 +297,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                               if (invoice.order.orderTypeId == 5 ||
                                   invoice.order.orderTypeId == 10)
                                 Text(
-                                    'อ้างอิงเลขที่ใบกำกับภาษี : ${invoice.order.referenceNo}',
+                                    'อ้างอิงใบกำกับภาษีผู้ขาย : ${invoice.order.referenceNo}',
                                     style: const TextStyle(fontSize: 11)),
                               if (invoice.order.orderTypeId == 6 ||
                                   invoice.order.orderTypeId == 11)
@@ -493,8 +493,12 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text('${getCustomerNameForBillSign(invoice.customer)}',
+                            style: const TextStyle(fontSize: 10)),
+                        Text('ผู้รับซื้อ / ผู้จ่ายเงิน / รับทอง',
+                            style: TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold)),
                         Spacer(),
-                        SizedBox(height: 5),
                         Text('${Global.branch?.name}',
                             textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 12)),

@@ -231,7 +231,7 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร"
                         : type == 1
-                            ? '${getCustomerNameForReports(orders[i]!.customer!)}'
+                            ? '${getCustomerNameForWholesaleReports(orders[i]!.customer!)}'
                             : 'รวมรายการทองเก่า\nประจําวัน',
                     style: TextStyle(
                         fontSize: 10,
