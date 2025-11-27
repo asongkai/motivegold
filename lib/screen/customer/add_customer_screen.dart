@@ -43,7 +43,9 @@ import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:sizer/sizer.dart';
-import 'package:motivegold/widget/customer/download_helper_mobile.dart' if (dart.library.html) 'package:motivegold/widget/customer/download_helper_web.dart' as download_helper;
+import 'package:motivegold/widget/customer/download_helper_mobile.dart'
+    if (dart.library.html) 'package:motivegold/widget/customer/download_helper_web.dart'
+    as download_helper;
 
 // Helper class to store file with timestamp
 class FileWithTimestamp {
@@ -198,14 +200,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
     // Initialize CardType and Nationality notifiers with placeholder values
     cardTypeNotifier = ValueNotifier<CardTypeModel>(
-      CardTypeModel(id: 0, nameTH: 'เลือกประเภทบัตร')
-    );
+        CardTypeModel(id: 0, nameTH: 'เลือกประเภทบัตร'));
     nationalityNotifier = ValueNotifier<NationalityModel>(
-      NationalityModel(id: 0, nationalityTH: 'เลือกสัญชาติ')
-    );
+        NationalityModel(id: 0, nationalityTH: 'เลือกสัญชาติ'));
     countryNotifier = ValueNotifier<NationalityModel>(
-      NationalityModel(id: 0, countryTH: 'เลือกประเทศ')
-    );
+        NationalityModel(id: 0, countryTH: 'เลือกประเทศ'));
 
     motivePrint('Current environment: $env');
     motivePrint('Backend URL: ${Constants.BACKEND_URL}');
@@ -252,7 +251,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       var titleNamesResult = await ApiServices.getTitleNames();
       motivePrint('Title names result: ${titleNamesResult?.status}');
 
-      if (titleNamesResult?.status == "success" && titleNamesResult?.data != null) {
+      if (titleNamesResult?.status == "success" &&
+          titleNamesResult?.data != null) {
         var data = jsonEncode(titleNamesResult!.data);
         motivePrint('Title names data length: ${titleNamesResult.data.length}');
 
@@ -263,7 +263,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           });
         }
       } else {
-        motivePrint('Failed to load title names: status=${titleNamesResult?.status}, data=${titleNamesResult?.data}');
+        motivePrint(
+            'Failed to load title names: status=${titleNamesResult?.status}, data=${titleNamesResult?.data}');
       }
     } catch (e, stackTrace) {
       motivePrint('Error loading title names: $e');
@@ -277,9 +278,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       var occupationsResult = await ApiServices.getOccupations();
       motivePrint('Occupations result: ${occupationsResult?.status}');
 
-      if (occupationsResult?.status == "success" && occupationsResult?.data != null) {
+      if (occupationsResult?.status == "success" &&
+          occupationsResult?.data != null) {
         var data = jsonEncode(occupationsResult!.data);
-        motivePrint('Occupations data length: ${occupationsResult.data.length}');
+        motivePrint(
+            'Occupations data length: ${occupationsResult.data.length}');
 
         if (mounted) {
           setState(() {
@@ -291,23 +294,27 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
               // For company: default to "นิติบุคคลทั่วไป"
               selectedOccupation = occupations.firstWhere(
                 (occupation) => occupation.name == 'นิติบุคคลทั่วไป',
-                orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
+                orElse: () =>
+                    occupations.isNotEmpty ? occupations[0] : OccupationModel(),
               );
               showCustomOccupationInput = false;
             } else {
               // For general: default to "ประสงค์ระบุเอง"
               selectedOccupation = occupations.firstWhere(
                 (occupation) => occupation.name == 'ประสงค์ระบุเอง',
-                orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
+                orElse: () =>
+                    occupations.isNotEmpty ? occupations[0] : OccupationModel(),
               );
               // Show custom input if "ประสงค์ระบุเอง" is selected
-              showCustomOccupationInput = selectedOccupation?.name == 'ประสงค์ระบุเอง';
+              showCustomOccupationInput =
+                  selectedOccupation?.name == 'ประสงค์ระบุเอง';
             }
             motivePrint('Default occupation: ${selectedOccupation?.name}');
           });
         }
       } else {
-        motivePrint('Failed to load occupations: status=${occupationsResult?.status}');
+        motivePrint(
+            'Failed to load occupations: status=${occupationsResult?.status}');
       }
     } catch (e, stackTrace) {
       motivePrint('Error loading occupations: $e');
@@ -321,7 +328,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       var cardTypesResult = await ApiServices.getCardTypes();
       motivePrint('Card types result: ${cardTypesResult?.status}');
 
-      if (cardTypesResult?.status == "success" && cardTypesResult?.data != null) {
+      if (cardTypesResult?.status == "success" &&
+          cardTypesResult?.data != null) {
         var data = jsonEncode(cardTypesResult!.data);
         motivePrint('Card types data length: ${cardTypesResult.data.length}');
 
@@ -332,7 +340,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           });
         }
       } else {
-        motivePrint('Failed to load card types: status=${cardTypesResult?.status}');
+        motivePrint(
+            'Failed to load card types: status=${cardTypesResult?.status}');
       }
     } catch (e, stackTrace) {
       motivePrint('Error loading card types: $e');
@@ -346,9 +355,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       var nationalitiesResult = await ApiServices.getNationalities();
       motivePrint('Nationalities result: ${nationalitiesResult?.status}');
 
-      if (nationalitiesResult?.status == "success" && nationalitiesResult?.data != null) {
+      if (nationalitiesResult?.status == "success" &&
+          nationalitiesResult?.data != null) {
         var data = jsonEncode(nationalitiesResult!.data);
-        motivePrint('Nationalities data length: ${nationalitiesResult.data.length}');
+        motivePrint(
+            'Nationalities data length: ${nationalitiesResult.data.length}');
 
         if (mounted) {
           setState(() {
@@ -357,7 +368,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           });
         }
       } else {
-        motivePrint('Failed to load nationalities: status=${nationalitiesResult?.status}');
+        motivePrint(
+            'Failed to load nationalities: status=${nationalitiesResult?.status}');
       }
     } catch (e, stackTrace) {
       motivePrint('Error loading nationalities: $e');
@@ -674,7 +686,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             decoration: InputDecoration(
               prefixIcon: Icon(icon, size: 14.sp),
               hintText: labelText,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -697,7 +710,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 builder: (_) => SfDatePickerDialog(
                   initialDate: DateTime.now(),
                   onDateSelected: (date) {
-                    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+                    String formattedDate =
+                        DateFormat('yyyy-MM-dd').format(date);
                     setState(() {
                       controller.text = formattedDate;
                     });
@@ -746,7 +760,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             decoration: InputDecoration(
               hintText: labelText,
               prefixIcon: icon != null ? Icon(icon, size: 14.sp) : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -855,16 +870,28 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     if (selectedType?.code == 'general') {
                                       nationality = 'Thai';
                                       // Set default occupation to "ประสงค์ระบุเอง" for general customers
-                                      selectedOccupation = occupations.firstWhere(
-                                        (occupation) => occupation.name == 'ประสงค์ระบุเอง',
-                                        orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
+                                      selectedOccupation =
+                                          occupations.firstWhere(
+                                        (occupation) =>
+                                            occupation.name == 'ประสงค์ระบุเอง',
+                                        orElse: () => occupations.isNotEmpty
+                                            ? occupations[0]
+                                            : OccupationModel(),
                                       );
-                                      showCustomOccupationInput = selectedOccupation?.name == 'ประสงค์ระบุเอง';
-                                    } else if (selectedType?.code == 'company') {
+                                      showCustomOccupationInput =
+                                          selectedOccupation?.name ==
+                                              'ประสงค์ระบุเอง';
+                                    } else if (selectedType?.code ==
+                                        'company') {
                                       // Set default occupation to "นิติบุคคลทั่วไป" for company customers
-                                      selectedOccupation = occupations.firstWhere(
-                                        (occupation) => occupation.name == 'นิติบุคคลทั่วไป',
-                                        orElse: () => occupations.isNotEmpty ? occupations[0] : OccupationModel(),
+                                      selectedOccupation =
+                                          occupations.firstWhere(
+                                        (occupation) =>
+                                            occupation.name ==
+                                            'นิติบุคคลทั่วไป',
+                                        orElse: () => occupations.isNotEmpty
+                                            ? occupations[0]
+                                            : OccupationModel(),
                                       );
                                       showCustomOccupationInput = false;
                                     }
@@ -902,16 +929,22 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       onTap: () {
                                         setState(() {
                                           isCustomer = !isCustomer;
-                                          selectedBusinessType = isCustomer ? 'customer' : null;
+                                          selectedBusinessType =
+                                              isCustomer ? 'customer' : null;
                                         });
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isCustomer ? const Color(0xFFFFE8F5) : Colors.white,
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: isCustomer
+                                              ? const Color(0xFFFFE8F5)
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isCustomer ? const Color(0xFFE91E63) : Colors.grey[300]!,
+                                            color: isCustomer
+                                                ? const Color(0xFFE91E63)
+                                                : Colors.grey[300]!,
                                             width: isCustomer ? 2 : 1,
                                           ),
                                         ),
@@ -920,23 +953,35 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isCustomer,
-                                              activeColor: const Color(0xFFE91E63),
+                                              activeColor:
+                                                  const Color(0xFFE91E63),
                                               onChanged: (value) {
                                                 setState(() {
                                                   isCustomer = value ?? false;
-                                                  selectedBusinessType = isCustomer ? 'customer' : null;
+                                                  selectedBusinessType =
+                                                      isCustomer
+                                                          ? 'customer'
+                                                          : null;
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.store, color: isCustomer ? const Color(0xFFE91E63) : Colors.grey, size: 20),
+                                            Icon(Icons.store,
+                                                color: isCustomer
+                                                    ? const Color(0xFFE91E63)
+                                                    : Colors.grey,
+                                                size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
                                                 'ซื้อขายหน้าร้าน',
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
-                                                  fontWeight: isCustomer ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isCustomer ? const Color(0xFFE91E63) : Colors.grey[800],
+                                                  fontWeight: isCustomer
+                                                      ? FontWeight.w600
+                                                      : FontWeight.normal,
+                                                  color: isCustomer
+                                                      ? const Color(0xFFE91E63)
+                                                      : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -953,16 +998,22 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       onTap: () {
                                         setState(() {
                                           isBuyer = !isBuyer;
-                                          selectedBusinessType = isBuyer ? 'buyer' : null;
+                                          selectedBusinessType =
+                                              isBuyer ? 'buyer' : null;
                                         });
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isBuyer ? const Color(0xFFFFF9E6) : Colors.white,
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: isBuyer
+                                              ? const Color(0xFFFFF9E6)
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isBuyer ? const Color(0xFFFFC107) : Colors.grey[300]!,
+                                            color: isBuyer
+                                                ? const Color(0xFFFFC107)
+                                                : Colors.grey[300]!,
                                             width: isBuyer ? 2 : 1,
                                           ),
                                         ),
@@ -971,23 +1022,33 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isBuyer,
-                                              activeColor: const Color(0xFFFFC107),
+                                              activeColor:
+                                                  const Color(0xFFFFC107),
                                               onChanged: (value) {
                                                 setState(() {
                                                   isBuyer = value ?? false;
-                                                  selectedBusinessType = isBuyer ? 'buyer' : null;
+                                                  selectedBusinessType =
+                                                      isBuyer ? 'buyer' : null;
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.business, color: isBuyer ? const Color(0xFFFFC107) : Colors.grey, size: 20),
+                                            Icon(Icons.business,
+                                                color: isBuyer
+                                                    ? const Color(0xFFFFC107)
+                                                    : Colors.grey,
+                                                size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
                                                 'ซื้อขายกับร้านค้าส่ง',
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
-                                                  fontWeight: isBuyer ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isBuyer ? const Color(0xFFFFC107) : Colors.grey[800],
+                                                  fontWeight: isBuyer
+                                                      ? FontWeight.w600
+                                                      : FontWeight.normal,
+                                                  color: isBuyer
+                                                      ? const Color(0xFFFFC107)
+                                                      : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -1004,16 +1065,22 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       onTap: () {
                                         setState(() {
                                           isSeller = !isSeller;
-                                          selectedBusinessType = isSeller ? 'seller' : null;
+                                          selectedBusinessType =
+                                              isSeller ? 'seller' : null;
                                         });
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: isSeller ? const Color(0xFFFFEFE6) : Colors.white,
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: isSeller
+                                              ? const Color(0xFFFFEFE6)
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                           border: Border.all(
-                                            color: isSeller ? const Color(0xFFFF9800) : Colors.grey[300]!,
+                                            color: isSeller
+                                                ? const Color(0xFFFF9800)
+                                                : Colors.grey[300]!,
                                             width: isSeller ? 2 : 1,
                                           ),
                                         ),
@@ -1022,23 +1089,35 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           children: [
                                             Checkbox(
                                               value: isSeller,
-                                              activeColor: const Color(0xFFFF9800),
+                                              activeColor:
+                                                  const Color(0xFFFF9800),
                                               onChanged: (value) {
                                                 setState(() {
                                                   isSeller = value ?? false;
-                                                  selectedBusinessType = isSeller ? 'seller' : null;
+                                                  selectedBusinessType =
+                                                      isSeller
+                                                          ? 'seller'
+                                                          : null;
                                                 });
                                               },
                                             ),
-                                            Icon(Icons.inventory, color: isSeller ? const Color(0xFFFF9800) : Colors.grey, size: 20),
+                                            Icon(Icons.inventory,
+                                                color: isSeller
+                                                    ? const Color(0xFFFF9800)
+                                                    : Colors.grey,
+                                                size: 20),
                                             const SizedBox(width: 4),
                                             Flexible(
                                               child: Text(
                                                 'ซื้อขายกับร้านทองตู้แดง',
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
-                                                  fontWeight: isSeller ? FontWeight.w600 : FontWeight.normal,
-                                                  color: isSeller ? const Color(0xFFFF9800) : Colors.grey[800],
+                                                  fontWeight: isSeller
+                                                      ? FontWeight.w600
+                                                      : FontWeight.normal,
+                                                  color: isSeller
+                                                      ? const Color(0xFFFF9800)
+                                                      : Colors.grey[800],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -1136,57 +1215,84 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           });
 
                                           // Set default province/amphure/tambon to "ไม่ระบุ" when General + Foreigner OR Company + Foreigner
-                                          if (value == 'Foreigner' && (selectedType?.code == 'general' || selectedType?.code == 'company')) {
+                                          if (value == 'Foreigner' &&
+                                              (selectedType?.code ==
+                                                      'general' ||
+                                                  selectedType?.code ==
+                                                      'company')) {
                                             try {
                                               // Set province to "ไม่ระบุ" (ID: 78)
-                                              final notSpecifiedProvince = Global.provinceList.firstWhere(
+                                              final notSpecifiedProvince =
+                                                  Global.provinceList
+                                                      .firstWhere(
                                                 (p) => p.id == 78,
-                                                orElse: () => ProvinceModel(id: 78, nameTh: 'ไม่ระบุ'),
+                                                orElse: () => ProvinceModel(
+                                                    id: 78, nameTh: 'ไม่ระบุ'),
                                               );
-                                              Global.provinceModel = notSpecifiedProvince;
-                                              Global.provinceNotifier!.value = notSpecifiedProvince;
+                                              Global.provinceModel =
+                                                  notSpecifiedProvince;
+                                              Global.provinceNotifier!.value =
+                                                  notSpecifiedProvince;
 
                                               // Load amphure list for province 78
-                                              var result = await ApiServices.post(
+                                              var result =
+                                                  await ApiServices.post(
                                                 '/customer/amphure/78',
                                                 Global.requestObj(null),
                                               );
 
                                               if (result?.status == "success") {
-                                                var data = jsonEncode(result?.data);
-                                                List<AmphureModel> amphures = amphureModelFromJson(data);
+                                                var data =
+                                                    jsonEncode(result?.data);
+                                                List<AmphureModel> amphures =
+                                                    amphureModelFromJson(data);
                                                 setState(() {
                                                   Global.amphureList = amphures;
                                                 });
 
                                                 // Set amphure to "ไม่ระบุ" (ID: 9614)
-                                                final notSpecifiedAmphure = amphures.firstWhere(
+                                                final notSpecifiedAmphure =
+                                                    amphures.firstWhere(
                                                   (a) => a.id == 9614,
-                                                  orElse: () => AmphureModel(id: 9614, nameTh: 'ไม่ระบุ'),
+                                                  orElse: () => AmphureModel(
+                                                      id: 9614,
+                                                      nameTh: 'ไม่ระบุ'),
                                                 );
-                                                Global.amphureModel = notSpecifiedAmphure;
-                                                Global.amphureNotifier!.value = notSpecifiedAmphure;
+                                                Global.amphureModel =
+                                                    notSpecifiedAmphure;
+                                                Global.amphureNotifier!.value =
+                                                    notSpecifiedAmphure;
 
                                                 // Load tambon list for amphure 9614
-                                                var tambonResult = await ApiServices.post(
+                                                var tambonResult =
+                                                    await ApiServices.post(
                                                   '/customer/tambon/9614',
                                                   Global.requestObj(null),
                                                 );
 
-                                                if (tambonResult?.status == "success") {
-                                                  var tambonData = jsonEncode(tambonResult?.data);
-                                                  List<TambonModel> tambons = tambonModelFromJson(tambonData);
+                                                if (tambonResult?.status ==
+                                                    "success") {
+                                                  var tambonData = jsonEncode(
+                                                      tambonResult?.data);
+                                                  List<TambonModel> tambons =
+                                                      tambonModelFromJson(
+                                                          tambonData);
                                                   setState(() {
                                                     Global.tambonList = tambons;
                                                   });
 
                                                   // Set tambon to "ไม่ระบุ" (ID: 3023)
-                                                  final notSpecifiedTambon = tambons.firstWhere(
+                                                  final notSpecifiedTambon =
+                                                      tambons.firstWhere(
                                                     (t) => t.id == 3023,
-                                                    orElse: () => TambonModel(id: 3023, nameTh: 'ไม่ระบุ'),
+                                                    orElse: () => TambonModel(
+                                                        id: 3023,
+                                                        nameTh: 'ไม่ระบุ'),
                                                   );
-                                                  Global.tambonModel = notSpecifiedTambon;
-                                                  Global.tambonNotifier!.value = notSpecifiedTambon;
+                                                  Global.tambonModel =
+                                                      notSpecifiedTambon;
+                                                  Global.tambonNotifier!.value =
+                                                      notSpecifiedTambon;
 
                                                   setState(() {});
                                                 }
@@ -1204,29 +1310,35 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                               const SizedBox(height: 10),
 
                               // Conditional Fields Based on Nationality and Customer Type
-                              if (nationality == 'Thai' && selectedType?.code == 'general') ...[
+                              if (nationality == 'Thai' &&
+                                  selectedType?.code == 'general') ...[
                                 // Thai + General Customer
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: buildTextFieldBig(
                                     labelText: 'เลขบัตรประจำตัวประชาชน',
                                     hintText: 'x-xxxx-xxxxx-xx-x',
                                     inputType: TextInputType.number,
                                     controller: idCardCtrl,
-                                    prefixIcon: Icon(Icons.credit_card, size: 14.sp),
+                                    prefixIcon:
+                                        Icon(Icons.credit_card, size: 14.sp),
                                     inputFormatters: [ThaiIdCardFormatter()],
                                   ),
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         flex: 2,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'คำนำหน้า',
@@ -1240,10 +1352,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             GroupedTitleDropdown(
                                               titleNames: titleNames,
                                               selectedTitle: selectedTitleName,
-                                              onChanged: (TitleNameModel value) {
+                                              onChanged:
+                                                  (TitleNameModel value) {
                                                 setState(() {
                                                   selectedTitleName = value;
-                                                  titleNameNotifier!.value = value;
+                                                  titleNameNotifier!.value =
+                                                      value;
                                                 });
                                               },
                                               emptyMessage: 'ไม่มีข้อมูล',
@@ -1259,7 +1373,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อ',
                                           inputType: TextInputType.text,
                                           controller: firstNameCtrl,
-                                          prefixIcon: Icon(Icons.person, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.person, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1269,7 +1384,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'นามสกุล',
                                           inputType: TextInputType.text,
                                           controller: lastNameCtrl,
-                                          prefixIcon: Icon(Icons.person_outline, size: 14.sp),
+                                          prefixIcon: Icon(Icons.person_outline,
+                                              size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1277,7 +1393,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1285,7 +1402,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'อีเมล',
                                           inputType: TextInputType.emailAddress,
                                           controller: emailAddressCtrl,
-                                          prefixIcon: Icon(Icons.email, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.email, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1294,7 +1412,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'โทรศัพท์',
                                           inputType: TextInputType.phone,
                                           controller: phoneCtrl,
-                                          prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.phone, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1302,7 +1421,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: _buildDateField(
                                     labelText: 'วันเกิด',
                                     controller: birthDateCtrl,
@@ -1311,7 +1431,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1334,16 +1455,19 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                               ],
 
-                              if (nationality == 'Foreigner' && selectedType?.code == 'general') ...[
+                              if (nationality == 'Foreigner' &&
+                                  selectedType?.code == 'general') ...[
                                 // Foreigner + General Customer - Card Type and Nationality on same row
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       // Card Type
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'ประเภทบัตร',
@@ -1357,25 +1481,30 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 50,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.grey.withValues(alpha: 0.1),
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.1),
                                                     spreadRadius: 1,
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 2),
                                                   ),
                                                 ],
                                               ),
-                                              child: MiraiDropDownMenu<CardTypeModel>(
+                                              child: MiraiDropDownMenu<
+                                                  CardTypeModel>(
                                                 key: UniqueKey(),
                                                 children: cardTypes,
                                                 space: 4,
                                                 maxHeight: 360,
                                                 showSearchTextField: true,
-                                                selectedItemBackgroundColor: Colors.transparent,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
                                                 emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor: true,
+                                                showSelectedItemBackgroundColor:
+                                                    true,
                                                 itemWidgetBuilder: (
                                                   int index,
                                                   CardTypeModel? project, {
@@ -1383,20 +1512,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 }) {
                                                   return DropDownItemWidget(
                                                     project: project,
-                                                    isItemSelected: isItemSelected,
+                                                    isItemSelected:
+                                                        isItemSelected,
                                                     firstSpace: 10,
                                                     fontSize: 14.sp,
                                                   );
                                                 },
-                                                onChanged: (CardTypeModel value) {
+                                                onChanged:
+                                                    (CardTypeModel value) {
                                                   selectedCardType = value;
-                                                  cardTypeNotifier!.value = value;
+                                                  cardTypeNotifier!.value =
+                                                      value;
                                                   setState(() {});
                                                 },
-                                                child: DropDownObjectChildWidget(
+                                                child:
+                                                    DropDownObjectChildWidget(
                                                   key: GlobalKey(),
                                                   fontSize: 14.sp,
-                                                  projectValueNotifier: cardTypeNotifier!,
+                                                  projectValueNotifier:
+                                                      cardTypeNotifier!,
                                                 ),
                                               ),
                                             ),
@@ -1407,7 +1541,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       // Nationality
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'สัญชาติ',
@@ -1421,25 +1556,30 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               height: 50,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.grey.withValues(alpha: 0.1),
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.1),
                                                     spreadRadius: 1,
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 2),
                                                   ),
                                                 ],
                                               ),
-                                              child: MiraiDropDownMenu<NationalityModel>(
+                                              child: MiraiDropDownMenu<
+                                                  NationalityModel>(
                                                 key: UniqueKey(),
                                                 children: nationalities,
                                                 space: 4,
                                                 maxHeight: 360,
                                                 showSearchTextField: true,
-                                                selectedItemBackgroundColor: Colors.transparent,
+                                                selectedItemBackgroundColor:
+                                                    Colors.transparent,
                                                 emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor: true,
+                                                showSelectedItemBackgroundColor:
+                                                    true,
                                                 itemWidgetBuilder: (
                                                   int index,
                                                   NationalityModel? project, {
@@ -1447,20 +1587,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 }) {
                                                   return DropDownItemWidget(
                                                     project: project,
-                                                    isItemSelected: isItemSelected,
+                                                    isItemSelected:
+                                                        isItemSelected,
                                                     firstSpace: 10,
                                                     fontSize: 14.sp,
                                                   );
                                                 },
-                                                onChanged: (NationalityModel value) {
+                                                onChanged:
+                                                    (NationalityModel value) {
                                                   selectedNationality = value;
-                                                  nationalityNotifier!.value = value;
+                                                  nationalityNotifier!.value =
+                                                      value;
                                                   setState(() {});
                                                 },
-                                                child: DropDownObjectChildWidget(
+                                                child:
+                                                    DropDownObjectChildWidget(
                                                   key: GlobalKey(),
                                                   fontSize: 14.sp,
-                                                  projectValueNotifier: nationalityNotifier!,
+                                                  projectValueNotifier:
+                                                      nationalityNotifier!,
                                                 ),
                                               ),
                                             ),
@@ -1472,7 +1617,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1480,7 +1626,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'Tax ID',
                                           inputType: TextInputType.number,
                                           controller: taxNumberCtrl,
-                                          prefixIcon: Icon(Icons.receipt, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.receipt, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1489,7 +1636,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'Work Permit',
                                           inputType: TextInputType.text,
                                           controller: workPermitCtrl,
-                                          prefixIcon: Icon(Icons.work, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.work, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1498,7 +1646,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'Passport ID',
                                           inputType: TextInputType.text,
                                           controller: passportNoCtrl,
-                                          prefixIcon: Icon(Icons.flight, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.flight, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1506,12 +1655,14 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'คำนำหน้า',
@@ -1525,10 +1676,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             GroupedTitleDropdown(
                                               titleNames: titleNames,
                                               selectedTitle: selectedTitleName,
-                                              onChanged: (TitleNameModel value) {
+                                              onChanged:
+                                                  (TitleNameModel value) {
                                                 setState(() {
                                                   selectedTitleName = value;
-                                                  titleNameNotifier!.value = value;
+                                                  titleNameNotifier!.value =
+                                                      value;
                                                 });
                                               },
                                               emptyMessage: 'ไม่มีข้อมูล',
@@ -1543,7 +1696,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อ',
                                           inputType: TextInputType.text,
                                           controller: firstNameCtrl,
-                                          prefixIcon: Icon(Icons.person, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.person, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1551,7 +1705,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1559,7 +1714,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อกลาง',
                                           inputType: TextInputType.text,
                                           controller: middleNameCtrl,
-                                          prefixIcon: Icon(Icons.person_outline, size: 14.sp),
+                                          prefixIcon: Icon(Icons.person_outline,
+                                              size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1568,7 +1724,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'นามสกุล',
                                           inputType: TextInputType.text,
                                           controller: lastNameCtrl,
-                                          prefixIcon: Icon(Icons.person_outline, size: 14.sp),
+                                          prefixIcon: Icon(Icons.person_outline,
+                                              size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1576,7 +1733,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1584,7 +1742,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'อีเมล',
                                           inputType: TextInputType.emailAddress,
                                           controller: emailAddressCtrl,
-                                          prefixIcon: Icon(Icons.email, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.email, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1593,7 +1752,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'โทรศัพท์',
                                           inputType: TextInputType.phone,
                                           controller: phoneCtrl,
-                                          prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.phone, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1601,7 +1761,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: _buildDateField(
                                     labelText: 'วันเกิด',
                                     controller: birthDateCtrl,
@@ -1610,7 +1771,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1633,7 +1795,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1656,11 +1819,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                               ],
 
-                              if (nationality == 'Thai' && selectedType?.code == 'company') ...[
+                              if (nationality == 'Thai' &&
+                                  selectedType?.code == 'company') ...[
                                 // Thai + Company Customer
                                 // Row 1: Tax ID | Operator Name (Title Dropdown)
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1668,7 +1833,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'เลขบัตรประจำตัวภาษี',
                                           inputType: TextInputType.number,
                                           controller: taxNumberCtrl,
-                                          prefixIcon: Icon(Icons.receipt, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.receipt, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1677,7 +1843,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อผู้ประกอบการ',
                                           inputType: TextInputType.text,
                                           controller: companyNameCtrl,
-                                          prefixIcon: Icon(Icons.person, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.person, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1686,7 +1853,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 2: Business Name | Radio buttons (Head/Branch)
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1694,13 +1862,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อสถานประกอบการ',
                                           inputType: TextInputType.text,
                                           controller: businessNameCtrl,
-                                          prefixIcon: Icon(Icons.business, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.business, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '',
@@ -1716,18 +1886,34 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 Expanded(
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      color: companyOfficeType == 'head'
-                                                          ? Colors.teal.withValues(alpha: 0.1)
-                                                          : Colors.grey[50],
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      color:
+                                                          companyOfficeType ==
+                                                                  'head'
+                                                              ? Colors
+                                                                  .teal
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.1)
+                                                              : Colors.grey[50],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
                                                       border: Border.all(
-                                                        color: companyOfficeType == 'head'
-                                                            ? Colors.teal
-                                                            : Colors.grey[300]!,
-                                                        width: companyOfficeType == 'head' ? 2 : 1,
+                                                        color:
+                                                            companyOfficeType ==
+                                                                    'head'
+                                                                ? Colors.teal
+                                                                : Colors
+                                                                    .grey[300]!,
+                                                        width:
+                                                            companyOfficeType ==
+                                                                    'head'
+                                                                ? 2
+                                                                : 1,
                                                       ),
                                                     ),
-                                                    child: RadioListTile<String>(
+                                                    child:
+                                                        RadioListTile<String>(
                                                       title: Text(
                                                         'สำนักงานใหญ่',
                                                         style: TextStyle(
@@ -1735,15 +1921,21 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                         ),
                                                       ),
                                                       value: 'head',
-                                                      groupValue: companyOfficeType,
-                                                      visualDensity: VisualDensity.standard,
+                                                      groupValue:
+                                                          companyOfficeType,
+                                                      visualDensity:
+                                                          VisualDensity
+                                                              .standard,
                                                       activeColor: Colors.teal,
-                                                      onChanged: (String? value) {
+                                                      onChanged:
+                                                          (String? value) {
                                                         setState(() {
-                                                          companyOfficeType = value;
+                                                          companyOfficeType =
+                                                              value;
                                                           // Default branch code to 00000 for head office
                                                           if (value == 'head') {
-                                                            branchCodeCtrl.text = '00000';
+                                                            branchCodeCtrl
+                                                                .text = '00000';
                                                           }
                                                         });
                                                       },
@@ -1754,18 +1946,34 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                 Expanded(
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      color: companyOfficeType == 'branch'
-                                                          ? Colors.teal.withValues(alpha: 0.1)
-                                                          : Colors.grey[50],
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      color:
+                                                          companyOfficeType ==
+                                                                  'branch'
+                                                              ? Colors
+                                                                  .teal
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.1)
+                                                              : Colors.grey[50],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
                                                       border: Border.all(
-                                                        color: companyOfficeType == 'branch'
-                                                            ? Colors.teal
-                                                            : Colors.grey[300]!,
-                                                        width: companyOfficeType == 'branch' ? 2 : 1,
+                                                        color:
+                                                            companyOfficeType ==
+                                                                    'branch'
+                                                                ? Colors.teal
+                                                                : Colors
+                                                                    .grey[300]!,
+                                                        width:
+                                                            companyOfficeType ==
+                                                                    'branch'
+                                                                ? 2
+                                                                : 1,
                                                       ),
                                                     ),
-                                                    child: RadioListTile<String>(
+                                                    child:
+                                                        RadioListTile<String>(
                                                       title: Text(
                                                         'สาขา',
                                                         style: TextStyle(
@@ -1773,15 +1981,25 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                                         ),
                                                       ),
                                                       value: 'branch',
-                                                      groupValue: companyOfficeType,
-                                                      visualDensity: VisualDensity.standard,
+                                                      groupValue:
+                                                          companyOfficeType,
+                                                      visualDensity:
+                                                          VisualDensity
+                                                              .standard,
                                                       activeColor: Colors.teal,
-                                                      onChanged: (String? value) {
+                                                      onChanged:
+                                                          (String? value) {
                                                         setState(() {
-                                                          companyOfficeType = value;
+                                                          companyOfficeType =
+                                                              value;
                                                           // Clear branch code when switching to branch so user can enter their own
-                                                          if (value == 'branch' && branchCodeCtrl.text == '00000') {
-                                                            branchCodeCtrl.text = '';
+                                                          if (value ==
+                                                                  'branch' &&
+                                                              branchCodeCtrl
+                                                                      .text ==
+                                                                  '00000') {
+                                                            branchCodeCtrl
+                                                                .text = '';
                                                           }
                                                         });
                                                       },
@@ -1799,7 +2017,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 3: Branch Code | Email
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1807,7 +2026,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'รหัสสาขา',
                                           inputType: TextInputType.text,
                                           controller: branchCodeCtrl,
-                                          prefixIcon: Icon(Icons.store, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.store, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1816,7 +2036,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'อีเมล',
                                           inputType: TextInputType.emailAddress,
                                           controller: emailAddressCtrl,
-                                          prefixIcon: Icon(Icons.email, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.email, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1825,7 +2046,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 4: Phone | Registration Date
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1833,7 +2055,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'โทรศัพท์',
                                           inputType: TextInputType.phone,
                                           controller: phoneCtrl,
-                                          prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.phone, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1849,11 +2072,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                               ],
 
-                              if (nationality == 'Foreigner' && selectedType?.code == 'company') ...[
+                              if (nationality == 'Foreigner' &&
+                                  selectedType?.code == 'company') ...[
                                 // Foreigner + Company Customer
                                 // Row 1: Tax ID | Country Dropdown
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1861,13 +2086,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'เลขบัตรประจำตัวภาษี',
                                           inputType: TextInputType.number,
                                           controller: taxNumberCtrl,
-                                          prefixIcon: Icon(Icons.receipt, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.receipt, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               'ประเทศ',
@@ -1884,29 +2111,39 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               space: 4,
                                               maxHeight: 360,
                                               showSearchTextField: true,
-                                              selectedItemBackgroundColor: Colors.transparent,
+                                              selectedItemBackgroundColor:
+                                                  Colors.transparent,
                                               emptyListMessage: 'ไม่มีข้อมูล',
-                                              showSelectedItemBackgroundColor: true,
+                                              showSelectedItemBackgroundColor:
+                                                  true,
                                               itemWidgetBuilder: (
                                                 int index,
                                                 NationalityModel? project, {
                                                 bool isItemSelected = false,
                                               }) {
                                                 return Padding(
-                                                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 16.0),
                                                   child: Align(
-                                                    alignment: Alignment.centerLeft,
+                                                    alignment:
+                                                        Alignment.centerLeft,
                                                     child: Text(
                                                       project?.countryTH ?? '',
-                                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                        color: textColor,
-                                                        fontSize: 14.sp,
-                                                      ),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge!
+                                                          .copyWith(
+                                                            color: textColor,
+                                                            fontSize: 14.sp,
+                                                          ),
                                                     ),
                                                   ),
                                                 );
                                               },
-                                              onChanged: (NationalityModel value) {
+                                              onChanged:
+                                                  (NationalityModel value) {
                                                 selectedCountryModel = value;
                                                 countryNotifier!.value = value;
                                                 setState(() {});
@@ -1914,48 +2151,72 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               child: Container(
                                                 key: GlobalKey(),
                                                 decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                      color: Colors.black.withValues(alpha: 0.03),
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.03),
                                                       blurRadius: 8,
-                                                      offset: const Offset(0, 2),
+                                                      offset:
+                                                          const Offset(0, 2),
                                                     ),
                                                   ],
                                                 ),
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 16),
                                                   decoration: BoxDecoration(
                                                     color: Colors.white,
-                                                    borderRadius: BorderRadius.circular(12),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
                                                     border: Border.all(
                                                       color: Colors.grey[300]!,
                                                       width: 1.0,
                                                     ),
                                                   ),
-                                                  child: ValueListenableBuilder<NationalityModel>(
-                                                    valueListenable: countryNotifier!,
+                                                  child: ValueListenableBuilder<
+                                                      NationalityModel>(
+                                                    valueListenable:
+                                                        countryNotifier!,
                                                     builder: (_, country, __) {
                                                       return Row(
                                                         children: <Widget>[
                                                           Expanded(
                                                             child: Align(
-                                                              alignment: Alignment.centerLeft,
+                                                              alignment: Alignment
+                                                                  .centerLeft,
                                                               child: Text(
-                                                                country.countryTH ?? 'เลือกประเทศ',
+                                                                country.countryTH ??
+                                                                    'เลือกประเทศ',
                                                                 maxLines: 1,
-                                                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                                  color: textColor,
-                                                                  fontSize: 14.sp,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                ),
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyLarge!
+                                                                    .copyWith(
+                                                                      color:
+                                                                          textColor,
+                                                                      fontSize:
+                                                                          14.sp,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                    ),
                                                               ),
                                                             ),
                                                           ),
-                                                          const SizedBox(width: 8),
+                                                          const SizedBox(
+                                                              width: 8),
                                                           Icon(
-                                                            Icons.arrow_drop_down,
-                                                            color: Colors.grey[600],
+                                                            Icons
+                                                                .arrow_drop_down,
+                                                            color: Colors
+                                                                .grey[600],
                                                           ),
                                                         ],
                                                       );
@@ -1973,7 +2234,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 2: Operator Name | Business Name
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -1981,7 +2243,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อผู้ประกอบการ',
                                           inputType: TextInputType.text,
                                           controller: companyNameCtrl,
-                                          prefixIcon: Icon(Icons.person, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.person, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -1990,7 +2253,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'ชื่อสถานประกอบการ',
                                           inputType: TextInputType.text,
                                           controller: businessNameCtrl,
-                                          prefixIcon: Icon(Icons.business, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.business, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -1999,21 +2263,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 3: Radio buttons (Head/Branch)
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
                                         child: Container(
                                           decoration: BoxDecoration(
                                             color: companyOfficeType == 'head'
-                                                ? Colors.teal.withValues(alpha: 0.1)
+                                                ? Colors.teal
+                                                    .withValues(alpha: 0.1)
                                                 : Colors.grey[50],
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             border: Border.all(
                                               color: companyOfficeType == 'head'
                                                   ? Colors.teal
                                                   : Colors.grey[300]!,
-                                              width: companyOfficeType == 'head' ? 2 : 1,
+                                              width: companyOfficeType == 'head'
+                                                  ? 2
+                                                  : 1,
                                             ),
                                           ),
                                           child: RadioListTile<String>(
@@ -2041,14 +2310,20 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                         child: Container(
                                           decoration: BoxDecoration(
                                             color: companyOfficeType == 'branch'
-                                                ? Colors.teal.withValues(alpha: 0.1)
+                                                ? Colors.teal
+                                                    .withValues(alpha: 0.1)
                                                 : Colors.grey[50],
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             border: Border.all(
-                                              color: companyOfficeType == 'branch'
-                                                  ? Colors.teal
-                                                  : Colors.grey[300]!,
-                                              width: companyOfficeType == 'branch' ? 2 : 1,
+                                              color:
+                                                  companyOfficeType == 'branch'
+                                                      ? Colors.teal
+                                                      : Colors.grey[300]!,
+                                              width:
+                                                  companyOfficeType == 'branch'
+                                                      ? 2
+                                                      : 1,
                                             ),
                                           ),
                                           child: RadioListTile<String>(
@@ -2063,7 +2338,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                               setState(() {
                                                 companyOfficeType = value;
                                                 // Clear branch code when switching to branch so user can enter their own
-                                                if (value == 'branch' && branchCodeCtrl.text == '00000') {
+                                                if (value == 'branch' &&
+                                                    branchCodeCtrl.text ==
+                                                        '00000') {
                                                   branchCodeCtrl.text = '';
                                                 }
                                               });
@@ -2077,7 +2354,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 4: Branch Code | Email
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -2085,7 +2363,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'รหัสสาขา',
                                           inputType: TextInputType.text,
                                           controller: branchCodeCtrl,
-                                          prefixIcon: Icon(Icons.store, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.store, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -2094,7 +2373,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'อีเมล',
                                           inputType: TextInputType.emailAddress,
                                           controller: emailAddressCtrl,
-                                          prefixIcon: Icon(Icons.email, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.email, size: 14.sp),
                                         ),
                                       ),
                                     ],
@@ -2103,7 +2383,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 10),
                                 // Row 5: Phone | Registration Date
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -2111,7 +2392,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           labelText: 'โทรศัพท์',
                                           inputType: TextInputType.phone,
                                           controller: phoneCtrl,
-                                          prefixIcon: Icon(Icons.phone, size: 14.sp),
+                                          prefixIcon:
+                                              Icon(Icons.phone, size: 14.sp),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -2141,430 +2423,429 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                             children: [
                               Text(
                                 'ข้อมูลที่อยู่',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey[800],
-                                  ),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey[800],
                                 ),
-                                const SizedBox(height: 20),
-                                // Address detail fields - Row 1: อาคาร | เลขที่ห้อง
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'อาคาร',
-                                          inputType: TextInputType.text,
-                                          controller: buildingCtrl,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'เลขที่ห้อง',
-                                          inputType: TextInputType.text,
-                                          controller: roomNumberCtrl,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                // Row 2: ชั้นที่ | เลขที่ | หมู่บ้าน
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'ชั้นที่',
-                                          inputType: TextInputType.text,
-                                          controller: floorCtrl,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'เลขที่',
-                                          inputType: TextInputType.text,
-                                          controller: Global.addressCtrl,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'หมู่บ้าน',
-                                          inputType: TextInputType.text,
-                                          controller: villageCtrl,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                // Row 3: หมู่ที่ | ตรอก/ซอย | ถนน
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'หมู่ที่',
-                                          inputType: TextInputType.text,
-                                          controller: mooCtrl,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'ตรอก / ซอย',
-                                          inputType: TextInputType.text,
-                                          controller: soiCtrl,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'ถนน',
-                                          inputType: TextInputType.text,
-                                          controller: roadCtrl,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              ),
+                              const SizedBox(height: 20),
+                              // Address detail fields - Row 1: อาคาร | เลขที่ห้อง
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Row(
                                   children: [
                                     Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'เลือกจังหวัด',
-                                              style: TextStyle(
+                                      child: buildTextFieldBig(
+                                        labelText: 'อาคาร',
+                                        inputType: TextInputType.text,
+                                        controller: buildingCtrl,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'เลขที่ห้อง',
+                                        inputType: TextInputType.text,
+                                        controller: roomNumberCtrl,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              // Row 2: ชั้นที่ | เลขที่ | หมู่บ้าน
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'ชั้นที่',
+                                        inputType: TextInputType.text,
+                                        controller: floorCtrl,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'เลขที่',
+                                        inputType: TextInputType.text,
+                                        controller: Global.addressCtrl,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'หมู่บ้าน',
+                                        inputType: TextInputType.text,
+                                        controller: villageCtrl,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              // Row 3: หมู่ที่ | ตรอก/ซอย | ถนน
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'หมู่ที่',
+                                        inputType: TextInputType.text,
+                                        controller: mooCtrl,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'ตรอก / ซอย',
+                                        inputType: TextInputType.text,
+                                        controller: soiCtrl,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: buildTextFieldBig(
+                                        labelText: 'ถนน',
+                                        inputType: TextInputType.text,
+                                        controller: roadCtrl,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'เลือกจังหวัด',
+                                            style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: textColor),
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
+                                          ),
+                                          Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            child: MiraiDropDownMenu<
+                                                ProvinceModel>(
+                                              key: UniqueKey(),
+                                              children: Global.provinceList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                                  Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor:
+                                                  true,
+                                              itemWidgetBuilder: (
+                                                int index,
+                                                ProvinceModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected:
+                                                      isItemSelected,
+                                                  firstSpace: 10,
                                                   fontSize: 14.sp,
-                                                  color: textColor),
-                                            ),
-                                            const SizedBox(
-                                              height: 4,
-                                            ),
-                                            Container(
-                                              height: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
-                                                    color: Colors.grey[300]!),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(
-                                                            alpha: 0.03),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: MiraiDropDownMenu<
-                                                  ProvinceModel>(
-                                                key: UniqueKey(),
-                                                children: Global.provinceList,
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                    Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                    true,
-                                                itemWidgetBuilder: (
-                                                  int index,
-                                                  ProvinceModel? project, {
-                                                  bool isItemSelected = false,
-                                                }) {
-                                                  return LocationDropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected:
-                                                        isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: 14.sp,
-                                                  );
-                                                },
-                                                onChanged: (ProvinceModel
-                                                    value) async {
-                                                  Global.provinceModel = value;
-                                                  Global.provinceNotifier!
-                                                      .value = value;
-                                                  // Reset dependent dropdowns
-                                                  Global.amphureModel = null;
-                                                  Global.tambonModel = null;
-                                                  Global.amphureNotifier!
-                                                          .value =
-                                                      AmphureModel(
-                                                          id: 0,
-                                                          nameTh: 'เลือกอำเภอ');
-                                                  Global.tambonNotifier!.value =
-                                                      TambonModel(
-                                                          id: 0,
-                                                          nameTh: 'เลือกตำบล');
-                                                  Global.amphureList = [];
-                                                  Global.tambonList = [];
-                                                  setState(
-                                                      () {}); // Update UI to show loading state
+                                                );
+                                              },
+                                              onChanged:
+                                                  (ProvinceModel value) async {
+                                                Global.provinceModel = value;
+                                                Global.provinceNotifier!.value =
+                                                    value;
+                                                // Reset dependent dropdowns
+                                                Global.amphureModel = null;
+                                                Global.tambonModel = null;
+                                                Global.amphureNotifier!.value =
+                                                    AmphureModel(
+                                                        id: 0,
+                                                        nameTh: 'เลือกอำเภอ');
+                                                Global.tambonNotifier!.value =
+                                                    TambonModel(
+                                                        id: 0,
+                                                        nameTh: 'เลือกตำบล');
+                                                Global.amphureList = [];
+                                                Global.tambonList = [];
+                                                setState(
+                                                    () {}); // Update UI to show loading state
 
-                                                  await loadAmphureByProvince(
-                                                      value.id);
-                                                  setState(
-                                                      () {}); // Update UI after data loads
-                                                },
-                                                child:
-                                                    LocationDropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: 14.sp,
-                                                  projectValueNotifier:
-                                                      Global.provinceNotifier!,
+                                                await loadAmphureByProvince(
+                                                    value.id);
+                                                setState(
+                                                    () {}); // Update UI after data loads
+                                              },
+                                              child:
+                                                  LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                    Global.provinceNotifier!,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'เลือกอำเภอ',
+                                            style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: textColor),
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
+                                          ),
+                                          Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
                                                 ),
+                                              ],
+                                            ),
+                                            child:
+                                                MiraiDropDownMenu<AmphureModel>(
+                                              key: UniqueKey(),
+                                              children: Global.amphureList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                                  Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor:
+                                                  true,
+                                              itemWidgetBuilder: (
+                                                int index,
+                                                AmphureModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected:
+                                                      isItemSelected,
+                                                  firstSpace: 10,
+                                                  fontSize: 14.sp,
+                                                );
+                                              },
+                                              onChanged:
+                                                  (AmphureModel value) async {
+                                                Global.amphureModel = value;
+                                                Global.amphureNotifier!.value =
+                                                    value;
+                                                Global.tambonModel = null;
+                                                Global.tambonNotifier!.value =
+                                                    TambonModel(
+                                                        id: 0,
+                                                        nameTh: 'เลือกตำบล');
+                                                Global.tambonList = [];
+                                                setState(
+                                                    () {}); // Update UI to show loading state
+                                                await loadTambonByAmphure(
+                                                    value.id);
+                                                setState(() {});
+                                              },
+                                              child:
+                                                  LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                    Global.amphureNotifier!,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'เลือกอำเภอ',
-                                              style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  color: textColor),
-                                            ),
-                                            const SizedBox(
-                                              height: 4,
-                                            ),
-                                            Container(
-                                              height: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
-                                                    color: Colors.grey[300]!),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(
-                                                            alpha: 0.03),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: MiraiDropDownMenu<
-                                                  AmphureModel>(
-                                                key: UniqueKey(),
-                                                children: Global.amphureList,
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                    Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                    true,
-                                                itemWidgetBuilder: (
-                                                  int index,
-                                                  AmphureModel? project, {
-                                                  bool isItemSelected = false,
-                                                }) {
-                                                  return LocationDropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected:
-                                                        isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: 14.sp,
-                                                  );
-                                                },
-                                                onChanged:
-                                                    (AmphureModel value) async {
-                                                  Global.amphureModel = value;
-                                                  Global.amphureNotifier!
-                                                      .value = value;
-                                                  Global.tambonModel = null;
-                                                  Global.tambonNotifier!.value =
-                                                      TambonModel(
-                                                          id: 0,
-                                                          nameTh: 'เลือกตำบล');
-                                                  Global.tambonList = [];
-                                                  setState(
-                                                      () {}); // Update UI to show loading state
-                                                  await loadTambonByAmphure(
-                                                      value.id);
-                                                  setState(() {});
-                                                },
-                                                child:
-                                                    LocationDropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: 14.sp,
-                                                  projectValueNotifier:
-                                                      Global.amphureNotifier!,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'เลือกตำบล',
+                                            style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: textColor),
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
+                                          ),
+                                          Container(
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                  color: Colors.grey[300]!),
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.03),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
                                                 ),
-                                              ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'เลือกตำบล',
-                                              style: TextStyle(
+                                            child:
+                                                MiraiDropDownMenu<TambonModel>(
+                                              key: UniqueKey(),
+                                              children: Global.tambonList,
+                                              space: 4,
+                                              maxHeight: 360,
+                                              showSearchTextField: true,
+                                              selectedItemBackgroundColor:
+                                                  Colors.transparent,
+                                              emptyListMessage: 'ไม่มีข้อมูล',
+                                              showSelectedItemBackgroundColor:
+                                                  true,
+                                              itemWidgetBuilder: (
+                                                int index,
+                                                TambonModel? project, {
+                                                bool isItemSelected = false,
+                                              }) {
+                                                return LocationDropDownItemWidget(
+                                                  project: project,
+                                                  isItemSelected:
+                                                      isItemSelected,
+                                                  firstSpace: 10,
                                                   fontSize: 14.sp,
-                                                  color: textColor),
-                                            ),
-                                            const SizedBox(
-                                              height: 4,
-                                            ),
-                                            Container(
-                                              height: 50,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
-                                                    color: Colors.grey[300]!),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withValues(
-                                                            alpha: 0.03),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: MiraiDropDownMenu<
-                                                  TambonModel>(
-                                                key: UniqueKey(),
-                                                children: Global.tambonList,
-                                                space: 4,
-                                                maxHeight: 360,
-                                                showSearchTextField: true,
-                                                selectedItemBackgroundColor:
-                                                    Colors.transparent,
-                                                emptyListMessage: 'ไม่มีข้อมูล',
-                                                showSelectedItemBackgroundColor:
-                                                    true,
-                                                itemWidgetBuilder: (
-                                                  int index,
-                                                  TambonModel? project, {
-                                                  bool isItemSelected = false,
-                                                }) {
-                                                  return LocationDropDownItemWidget(
-                                                    project: project,
-                                                    isItemSelected:
-                                                        isItemSelected,
-                                                    firstSpace: 10,
-                                                    fontSize: 14.sp,
-                                                  );
-                                                },
-                                                onChanged: (TambonModel value) {
-                                                  Global.tambonModel = value;
-                                                  Global.tambonNotifier!.value =
-                                                      value;
-                                                  postalCodeCtrl.text =
-                                                      value.zipCode.toString();
-                                                },
-                                                child:
-                                                    LocationDropDownObjectChildWidget(
-                                                  key: GlobalKey(),
-                                                  fontSize: 14.sp,
-                                                  projectValueNotifier:
-                                                      Global.tambonNotifier!,
-                                                ),
+                                                );
+                                              },
+                                              onChanged: (TambonModel value) {
+                                                Global.tambonModel = value;
+                                                Global.tambonNotifier!.value =
+                                                    value;
+                                                postalCodeCtrl.text =
+                                                    value.zipCode.toString();
+                                              },
+                                              child:
+                                                  LocationDropDownObjectChildWidget(
+                                                key: GlobalKey(),
+                                                fontSize: 14.sp,
+                                                projectValueNotifier:
+                                                    Global.tambonNotifier!,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: buildTextFieldBig(
-                                          labelText: 'รหัสไปรษณีย์',
-                                          inputType: TextInputType.number,
-                                          controller: postalCodeCtrl,
-                                        ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: buildTextFieldBig(
+                                        labelText: 'รหัสไปรษณีย์',
+                                        inputType: TextInputType.number,
+                                        controller: postalCodeCtrl,
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 8.0, right: 8.0),
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            buildTextField(
-                                              line: 2,
-                                              labelText: 'หมายเหตุ'.tr(),
-                                              validator: null,
-                                              inputType: TextInputType.text,
-                                              controller: remarkCtrl,
-                                              prefixIcon:
-                                                  Icon(Icons.note, size: 14.sp),
-                                            ),
-                                          ],
-                                        ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0),
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          buildTextField(
+                                            line: 2,
+                                            labelText: 'หมายเหตุ'.tr(),
+                                            validator: null,
+                                            inputType: TextInputType.text,
+                                            controller: remarkCtrl,
+                                            prefixIcon:
+                                                Icon(Icons.note, size: 14.sp),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
+                        ),
                         const SizedBox(height: 10),
                         _buildModernCard(
                           child: Column(
@@ -2583,174 +2864,229 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 const SizedBox(height: 16),
                                 // First row: occupation dropdown and custom input field (2 columns)
                                 Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'อาชีพ',
-                                            style: TextStyle(
-                                              fontSize: 13.sp,
-                                              color: Colors.grey[800],
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          GroupedOccupationDropdown(
-                                            occupations: occupations,
-                                            selectedOccupation: selectedOccupation,
-                                            onChanged: (OccupationModel value) {
-                                              setState(() {
-                                                selectedOccupation = value;
-                                                showCustomOccupationInput =
-                                                    value.name == 'ประสงค์ระบุเอง';
-                                                if (!showCustomOccupationInput) {
-                                                  occupationCtrl.clear();
-                                                }
-                                              });
-                                            },
-                                            emptyMessage: 'ไม่มีข้อมูล',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (showCustomOccupationInput) ...[
-                                      const SizedBox(width: 8),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
                                       Expanded(
-                                        child: buildTextFieldBig(
-                                          labelText: 'ระบุอาชีพ',
-                                          inputType: TextInputType.text,
-                                          controller: occupationCtrl,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              // File attachment row with dropdown and action buttons
-                              Row(
-                                children: [
-                                  // Dropdown for file selection
-                                  Expanded(
-                                    child: CompositedTransformTarget(
-                                      link: _occupationFileLayerLink,
-                                      child: Builder(
-                                        builder: (BuildContext btnContext) {
-                                          return InkWell(
-                                            onTap: occupationFiles.isEmpty
-                                                ? null
-                                                : () {
-                                                    if (_occupationFileOverlay == null) {
-                                                      showFileSelectionDropdown('occupation', btnContext);
-                                                    } else {
-                                                      _removeFileOverlay('occupation');
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                            child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedOccupationFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedOccupationFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedOccupationFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
+                                            Text(
+                                              'อาชีพ',
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: Colors.grey[800],
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
+                                            const SizedBox(height: 8),
+                                            GroupedOccupationDropdown(
+                                              occupations: occupations,
+                                              selectedOccupation:
+                                                  selectedOccupation,
+                                              onChanged:
+                                                  (OccupationModel value) {
+                                                setState(() {
+                                                  selectedOccupation = value;
+                                                  showCustomOccupationInput =
+                                                      value.name ==
+                                                          'ประสงค์ระบุเอง';
+                                                  if (!showCustomOccupationInput) {
+                                                    occupationCtrl.clear();
+                                                  }
+                                                });
+                                              },
+                                              emptyMessage: 'ไม่มีข้อมูล',
+                                            ),
                                           ],
                                         ),
                                       ),
-                                          );
-                                        },
+                                      if (showCustomOccupationInput) ...[
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: buildTextFieldBig(
+                                            labelText: 'ระบุอาชีพ',
+                                            inputType: TextInputType.text,
+                                            controller: occupationCtrl,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                // File attachment row with dropdown and action buttons
+                                Row(
+                                  children: [
+                                    // Dropdown for file selection
+                                    Expanded(
+                                      child: CompositedTransformTarget(
+                                        link: _occupationFileLayerLink,
+                                        child: Builder(
+                                          builder: (BuildContext btnContext) {
+                                            return InkWell(
+                                              onTap: occupationFiles.isEmpty
+                                                  ? null
+                                                  : () {
+                                                      if (_occupationFileOverlay ==
+                                                          null) {
+                                                        showFileSelectionDropdown(
+                                                            'occupation',
+                                                            btnContext);
+                                                      } else {
+                                                        _removeFileOverlay(
+                                                            'occupation');
+                                                      }
+                                                      setState(() {});
+                                                    },
+                                              child: Container(
+                                                height: 60,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color: Colors.grey[300]!,
+                                                      width: 1),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.attach_file,
+                                                        color: Colors.blue,
+                                                        size: 18),
+                                                    const SizedBox(width: 8),
+                                                    Expanded(
+                                                      child:
+                                                          selectedOccupationFile !=
+                                                                  null
+                                                              ? Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Text(
+                                                                      selectedOccupationFile!
+                                                                          .file
+                                                                          .name,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            12.sp,
+                                                                        color: Colors
+                                                                            .black87,
+                                                                      ),
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                      maxLines:
+                                                                          1,
+                                                                    ),
+                                                                    const SizedBox(
+                                                                        height:
+                                                                            2),
+                                                                    Text(
+                                                                      DateFormat(
+                                                                              'dd/MM/yyyy HH:mm')
+                                                                          .format(
+                                                                              selectedOccupationFile!.addedDateTime),
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            11.sp,
+                                                                        color: Colors
+                                                                            .grey[600],
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                )
+                                                              : Text(
+                                                                  'ไม่มีการแนบเอกสาร',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        12.sp,
+                                                                    color: Colors
+                                                                            .grey[
+                                                                        600],
+                                                                  ),
+                                                                ),
+                                                    ),
+                                                    Icon(Icons.arrow_drop_down,
+                                                        color:
+                                                            Colors.grey[600]),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Add button (เพิ่ม)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'เพิ่ม',
-                                      icon: Icons.save,
-                                      color: const Color(0xFF26A69A),
-                                      size: ButtonSize.medium,
-                                      onTap: () => pickFile('occupation'),
+                                    const SizedBox(width: 8),
+                                    // Add button (เพิ่ม)
+                                    SizedBox(
+                                      height: 60,
+                                      child: KclButton(
+                                        text: 'เพิ่ม',
+                                        icon: Icons.save,
+                                        color: const Color(0xFF26A69A),
+                                        size: ButtonSize.medium,
+                                        onTap: () => pickFile('occupation'),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Delete button (ลบ)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'ลบ',
-                                      icon: Icons.delete,
-                                      color: selectedOccupationFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedOccupationFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedOccupationFile != null,
-                                      onTap: () => removeFileFromList('occupation'),
+                                    const SizedBox(width: 8),
+                                    // Delete button (ลบ)
+                                    SizedBox(
+                                      height: 60,
+                                      child: KclButton(
+                                        text: 'ลบ',
+                                        icon: Icons.delete,
+                                        color: selectedOccupationFile != null
+                                            ? const Color(0xFFE57373)
+                                            : Colors.grey[300]!,
+                                        size: ButtonSize.medium,
+                                        variant: selectedOccupationFile != null
+                                            ? ButtonVariant.primary
+                                            : ButtonVariant.outlined,
+                                        enabled: selectedOccupationFile != null,
+                                        onTap: () =>
+                                            removeFileFromList('occupation'),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Save/Download button (บันทึก)
-                                  SizedBox(
-                                    height: 60,
-                                    child: KclButton(
-                                      text: 'บันทึก',
-                                      icon: Icons.download,
-                                      color: selectedOccupationFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
-                                      size: ButtonSize.medium,
-                                      variant: selectedOccupationFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedOccupationFile != null,
-                                      onTap: () => downloadFile('occupation'),
+                                    const SizedBox(width: 8),
+                                    // Save/Download button (บันทึก)
+                                    SizedBox(
+                                      height: 60,
+                                      child: KclButton(
+                                        text: 'บันทึก',
+                                        icon: Icons.download,
+                                        color: selectedOccupationFile != null
+                                            ? const Color(0xFF42A5F5)
+                                            : Colors.grey[300]!,
+                                        size: ButtonSize.medium,
+                                        variant: selectedOccupationFile != null
+                                            ? ButtonVariant.primary
+                                            : ButtonVariant.outlined,
+                                        enabled: selectedOccupationFile != null,
+                                        onTap: () => downloadFile('occupation'),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
 
-                              const SizedBox(height: 16),
-                            ],
+                                const SizedBox(height: 16),
+                              ],
 
                               // Section: ประเภทธุรกิจ (Business Type) - Only for company customers
                               if (selectedType?.code == 'company') ...[
@@ -2764,9 +3100,14 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 ),
                                 const SizedBox(height: 16),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8.0),
                                   child: GroupedOccupationDropdown(
-                                    occupations: occupations.where((occupation) => occupation.category == 'ประเภทธุรกิจ').toList(),
+                                    occupations: occupations
+                                        .where((occupation) =>
+                                            occupation.category ==
+                                            'ประเภทธุรกิจ')
+                                        .toList(),
                                     selectedOccupation: selectedOccupation,
                                     onChanged: (OccupationModel value) {
                                       setState(() {
@@ -2802,62 +3143,100 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             onTap: riskAssessmentFiles.isEmpty
                                                 ? null
                                                 : () {
-                                                    if (_riskFileOverlay == null) {
-                                                      showFileSelectionDropdown('risk', btnContext);
+                                                    if (_riskFileOverlay ==
+                                                        null) {
+                                                      showFileSelectionDropdown(
+                                                          'risk', btnContext);
                                                     } else {
-                                                      _removeFileOverlay('risk');
+                                                      _removeFileOverlay(
+                                                          'risk');
                                                     }
                                                     setState(() {});
                                                   },
                                             child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedRiskAssessmentFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedRiskAssessmentFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedRiskAssessmentFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
+                                              height: 60,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.attach_file,
+                                                      color: Colors.blue,
+                                                      size: 18),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child:
+                                                        selectedRiskAssessmentFile !=
+                                                                null
+                                                            ? Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text(
+                                                                    selectedRiskAssessmentFile!
+                                                                        .file
+                                                                        .name,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.sp,
+                                                                      color: Colors
+                                                                          .black87,
+                                                                    ),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    maxLines: 1,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          2),
+                                                                  Text(
+                                                                    DateFormat(
+                                                                            'dd/MM/yyyy HH:mm')
+                                                                        .format(
+                                                                            selectedRiskAssessmentFile!.addedDateTime),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          11.sp,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            : Text(
+                                                                'ไม่มีการแนบเอกสาร',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize:
+                                                                      12.sp,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
+                                                                ),
+                                                              ),
+                                                  ),
+                                                  Icon(Icons.arrow_drop_down,
+                                                      color: Colors.grey[600]),
+                                                ],
+                                              ),
                                             ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
-                                          ],
-                                        ),
-                                      ),
                                           );
                                         },
                                       ),
@@ -2882,10 +3261,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     child: KclButton(
                                       text: 'ลบ',
                                       icon: Icons.delete,
-                                      color: selectedRiskAssessmentFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
+                                      color: selectedRiskAssessmentFile != null
+                                          ? const Color(0xFFE57373)
+                                          : Colors.grey[300]!,
                                       size: ButtonSize.medium,
-                                      variant: selectedRiskAssessmentFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedRiskAssessmentFile != null,
+                                      variant:
+                                          selectedRiskAssessmentFile != null
+                                              ? ButtonVariant.primary
+                                              : ButtonVariant.outlined,
+                                      enabled:
+                                          selectedRiskAssessmentFile != null,
                                       onTap: () => removeFileFromList('risk'),
                                     ),
                                   ),
@@ -2896,10 +3281,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     child: KclButton(
                                       text: 'บันทึก',
                                       icon: Icons.download,
-                                      color: selectedRiskAssessmentFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
+                                      color: selectedRiskAssessmentFile != null
+                                          ? const Color(0xFF42A5F5)
+                                          : Colors.grey[300]!,
                                       size: ButtonSize.medium,
-                                      variant: selectedRiskAssessmentFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedRiskAssessmentFile != null,
+                                      variant:
+                                          selectedRiskAssessmentFile != null
+                                              ? ButtonVariant.primary
+                                              : ButtonVariant.outlined,
+                                      enabled:
+                                          selectedRiskAssessmentFile != null,
                                       onTap: () => downloadFile('risk'),
                                     ),
                                   ),
@@ -2931,62 +3322,100 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                             onTap: customerPhotoFiles.isEmpty
                                                 ? null
                                                 : () {
-                                                    if (_photoFileOverlay == null) {
-                                                      showFileSelectionDropdown('photo', btnContext);
+                                                    if (_photoFileOverlay ==
+                                                        null) {
+                                                      showFileSelectionDropdown(
+                                                          'photo', btnContext);
                                                     } else {
-                                                      _removeFileOverlay('photo');
+                                                      _removeFileOverlay(
+                                                          'photo');
                                                     }
                                                     setState(() {});
                                                   },
                                             child: Container(
-                                        height: 60,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey[300]!, width: 1),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.attach_file, color: Colors.blue, size: 18),
-                                            const SizedBox(width: 8),
-                                            Expanded(
-                                              child: selectedCustomerPhotoFile != null
-                                                  ? Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          selectedCustomerPhotoFile!.file.name,
-                                                          style: TextStyle(
-                                                            fontSize: 12.sp,
-                                                            color: Colors.black87,
-                                                          ),
-                                                          overflow: TextOverflow.ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                        const SizedBox(height: 2),
-                                                        Text(
-                                                          DateFormat('dd/MM/yyyy HH:mm').format(selectedCustomerPhotoFile!.addedDateTime),
-                                                          style: TextStyle(
-                                                            fontSize: 11.sp,
-                                                            color: Colors.grey[600],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Text(
-                                                      'ไม่มีการแนบเอกสาร',
-                                                      style: TextStyle(
-                                                        fontSize: 12.sp,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                    ),
+                                              height: 60,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!,
+                                                    width: 1),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.attach_file,
+                                                      color: Colors.blue,
+                                                      size: 18),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child:
+                                                        selectedCustomerPhotoFile !=
+                                                                null
+                                                            ? Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text(
+                                                                    selectedCustomerPhotoFile!
+                                                                        .file
+                                                                        .name,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          12.sp,
+                                                                      color: Colors
+                                                                          .black87,
+                                                                    ),
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                    maxLines: 1,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          2),
+                                                                  Text(
+                                                                    DateFormat(
+                                                                            'dd/MM/yyyy HH:mm')
+                                                                        .format(
+                                                                            selectedCustomerPhotoFile!.addedDateTime),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          11.sp,
+                                                                      color: Colors
+                                                                              .grey[
+                                                                          600],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            : Text(
+                                                                'ไม่มีการแนบเอกสาร',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize:
+                                                                      12.sp,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
+                                                                ),
+                                                              ),
+                                                  ),
+                                                  Icon(Icons.arrow_drop_down,
+                                                      color: Colors.grey[600]),
+                                                ],
+                                              ),
                                             ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey[600]),
-                                          ],
-                                        ),
-                                      ),
                                           );
                                         },
                                       ),
@@ -3011,10 +3440,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     child: KclButton(
                                       text: 'ลบ',
                                       icon: Icons.delete,
-                                      color: selectedCustomerPhotoFile != null ? const Color(0xFFE57373) : Colors.grey[300]!,
+                                      color: selectedCustomerPhotoFile != null
+                                          ? const Color(0xFFE57373)
+                                          : Colors.grey[300]!,
                                       size: ButtonSize.medium,
-                                      variant: selectedCustomerPhotoFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedCustomerPhotoFile != null,
+                                      variant: selectedCustomerPhotoFile != null
+                                          ? ButtonVariant.primary
+                                          : ButtonVariant.outlined,
+                                      enabled:
+                                          selectedCustomerPhotoFile != null,
                                       onTap: () => removeFileFromList('photo'),
                                     ),
                                   ),
@@ -3025,10 +3459,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     child: KclButton(
                                       text: 'บันทึก',
                                       icon: Icons.download,
-                                      color: selectedCustomerPhotoFile != null ? const Color(0xFF42A5F5) : Colors.grey[300]!,
+                                      color: selectedCustomerPhotoFile != null
+                                          ? const Color(0xFF42A5F5)
+                                          : Colors.grey[300]!,
                                       size: ButtonSize.medium,
-                                      variant: selectedCustomerPhotoFile != null ? ButtonVariant.primary : ButtonVariant.outlined,
-                                      enabled: selectedCustomerPhotoFile != null,
+                                      variant: selectedCustomerPhotoFile != null
+                                          ? ButtonVariant.primary
+                                          : ButtonVariant.outlined,
+                                      enabled:
+                                          selectedCustomerPhotoFile != null,
                                       onTap: () => downloadFile('photo'),
                                     ),
                                   ),
@@ -3087,13 +3526,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 // Check length for Tax ID (both Thai and Foreigner)
                 if (cleanTaxNumber.length != 13) {
                   String warningMessage = cleanTaxNumber.length < 13
-                      ? 'เลขประจำตัวผู้เสียภาษีไม่ครบ'
-                      : 'เลขประจำตัวผู้เสียภาษีเกิน13หลัก';
-                  Alert.info(
-                      context,
-                      'คำเตือน',
-                      warningMessage,
-                      'ตกลง', action: () async {
+                      ? 'เลขประจำตัวผู้เสียภาษีไม่ครบ 13 หลัก คุณแน่ใจว่าจะดำเนิการต่อ?'
+                      : 'เลขประจำตัวผู้เสียภาษีเกิน 13 หลัก คุณแน่ใจว่าจะดำเนินการต่อ?';
+                  Alert.info(context, 'คำเตือน', warningMessage, 'ตกลง',
+                      action: () async {
                     await _continueAfterTaxIdWarning();
                   });
                   return;
@@ -3102,11 +3538,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                 // Check for duplicates
                 bool isValid = await validateTaxNumber(taxNumber);
                 if (!isValid) {
-                  Alert.warning(
-                      context,
-                      'คำเตือน',
-                      'Tax number already exists. Please use a different tax number',
-                      'OK',
+                  Alert.warning(context, 'คำเตือน',
+                      'หมายเลขภาษีมีอยู่แล้ว กรุณาใช้หมายเลขภาษีอื่น', 'OK',
                       action: () {});
                   return;
                 }
@@ -3145,11 +3578,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     if (selectedType?.code == 'company') {
       // Company name (ชื่อผู้ประกอบการ) is required for all company customers
       if (companyNameCtrl.text.isEmpty) {
-        Alert.warning(
-            context,
-            'คำเตือน',
-            'กรุณากรอกชื่อผู้ประกอบการ',
-            'ตกลง',
+        Alert.warning(context, 'คำเตือน', 'กรุณากรอกชื่อผู้ประกอบการ', 'ตกลง',
             action: () {});
         return;
       }
@@ -3190,11 +3619,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     // Validate company name is required for company customers
     if (selectedType?.code == 'company') {
       if (companyNameCtrl.text.isEmpty) {
-        Alert.warning(
-            context,
-            'คำเตือน',
-            'กรุณากรอกชื่อผู้ประกอบการ',
-            'ตกลง',
+        Alert.warning(context, 'คำเตือน', 'กรุณากรอกชื่อผู้ประกอบการ', 'ตกลง',
             action: () {});
         return;
       }
@@ -3255,8 +3680,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       "companyName": companyNameCtrl.text,
 
       // Company-specific fields
-      "establishmentName": businessNameCtrl.text, // Maps to EstablishmentName in API
-      "headquartersOrBranch": companyOfficeType, // 'head' or 'branch' maps to HeadquartersOrBranch
+      "establishmentName":
+          businessNameCtrl.text, // Maps to EstablishmentName in API
+      "headquartersOrBranch":
+          companyOfficeType, // 'head' or 'branch' maps to HeadquartersOrBranch
       "registrationDate": registrationDateCtrl.text.isEmpty
           ? null
           : DateTime.parse(registrationDateCtrl.text).toString(),
@@ -3300,7 +3727,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           : nationality,
       "country": selectedCountryModel?.countryTH, // For Company + Foreigner
       "cardType": selectedCardType?.nameTH,
-      "idCard": selectedType?.code == "general" ? idCardCtrl.text.replaceAll('-', '') : "",
+      "idCard": selectedType?.code == "general"
+          ? idCardCtrl.text.replaceAll('-', '')
+          : "",
       "idCardIssueDate": issueDateCtrl.text.isEmpty
           ? null
           : DateTime.parse(issueDateCtrl.text).toString(),
@@ -3348,9 +3777,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     });
 
     final ProgressDialog pr = ProgressDialog(context,
-        type: ProgressDialogType.normal,
-        isDismissible: true,
-        showLogs: true);
+        type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
     await pr.show();
     pr.update(message: 'processing'.tr());
 
@@ -3366,8 +3793,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
         // Check if there are any files to upload
         int totalFiles = occupationFiles.length +
-                       riskAssessmentFiles.length +
-                       customerPhotoFiles.length;
+            riskAssessmentFiles.length +
+            customerPhotoFiles.length;
 
         motivePrint('=== FILE UPLOAD DEBUG ===');
         motivePrint('Total files to upload: $totalFiles');
@@ -3401,14 +3828,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     } else {
       await pr.hide();
       if (mounted) {
-        Alert.warning(context, 'Warning'.tr(),
-            result!.message ?? result.data, 'OK'.tr(),
+        Alert.warning(
+            context, 'Warning'.tr(), result!.message ?? result.data, 'OK'.tr(),
             action: () {});
       }
     }
   }
 
-  Future<void> _uploadKycFiles(int customerId, ProgressDialog pr, int totalFiles) async {
+  Future<void> _uploadKycFiles(
+      int customerId, ProgressDialog pr, int totalFiles) async {
     try {
       int uploadedCount = 0;
 
@@ -3468,19 +3896,20 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       motivePrint('Has bytes: ${file.bytes != null}');
       motivePrint('Bytes length: ${file.bytes?.length ?? 0}');
       motivePrint('Customer ID: $customerId');
-      motivePrint('API URL: ${Constants.BACKEND_URL}/customer/attachment/$customerId');
+      motivePrint(
+          'API URL: ${Constants.BACKEND_URL}/customer/attachment/$customerId');
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse(
-            '${Constants.BACKEND_URL}/customer/attachment/$customerId'),
+        Uri.parse('${Constants.BACKEND_URL}/customer/attachment/$customerId'),
       );
 
       // Add file - use bytes for web, path for mobile
       if (kIsWeb) {
         // On web, always use bytes
         if (file.bytes != null) {
-          motivePrint('Adding file from bytes for web (size: ${file.bytes!.length})');
+          motivePrint(
+              'Adding file from bytes for web (size: ${file.bytes!.length})');
           request.files.add(
             http.MultipartFile.fromBytes(
               'file',
@@ -3489,12 +3918,15 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             ),
           );
         } else {
-          motivePrint('ERROR: No bytes available for web upload of ${file.name}');
+          motivePrint(
+              'ERROR: No bytes available for web upload of ${file.name}');
           return;
         }
       } else {
         // On mobile/desktop, prefer path if available, otherwise use bytes
-        if (file.path != null && file.path!.isNotEmpty && !file.path!.startsWith('blob:')) {
+        if (file.path != null &&
+            file.path!.isNotEmpty &&
+            !file.path!.startsWith('blob:')) {
           motivePrint('Adding file from path: ${file.path}');
           request.files.add(
             await http.MultipartFile.fromPath('file', file.path!),
@@ -3509,7 +3941,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             ),
           );
         } else {
-          motivePrint('ERROR: No file path or bytes available for ${file.name}');
+          motivePrint(
+              'ERROR: No file path or bytes available for ${file.name}');
           return;
         }
       }
@@ -3532,7 +3965,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       if (response.statusCode == 200) {
         final data = jsonDecode(responseData);
         if (data['status'] == 'success') {
-          motivePrint('✓ Successfully uploaded $attachmentType file: ${file.name}');
+          motivePrint(
+              '✓ Successfully uploaded $attachmentType file: ${file.name}');
         } else {
           motivePrint('✗ Upload failed: ${data['message']}');
         }
@@ -3634,7 +4068,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library, color: Colors.blue),
-                title: Text('เลือกจากคลังภาพ', style: TextStyle(fontSize: 14.sp)),
+                title:
+                    Text('เลือกจากคลังภาพ', style: TextStyle(fontSize: 14.sp)),
                 onTap: () {
                   Navigator.pop(context);
                   _pickFromGallery(fileType);
@@ -3689,7 +4124,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
           // Create PlatformFile with bytes (essential for web)
           platformFile = PlatformFile(
-            path: image.path.isNotEmpty ? image.path : null, // Path may be empty on web
+            path: image.path.isNotEmpty
+                ? image.path
+                : null, // Path may be empty on web
             name: fileName,
             size: fileSize,
             bytes: imageBytes, // Critical for web - bytes must be set
@@ -3700,7 +4137,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       if (platformFile != null) {
         if (!mounted) return;
         setState(() {
-          final fileWithTimestamp = FileWithTimestamp(platformFile!, DateTime.now());
+          final fileWithTimestamp =
+              FileWithTimestamp(platformFile!, DateTime.now());
           if (fileType == 'photo') {
             customerPhotoFiles.add(fileWithTimestamp);
             selectedCustomerPhotoFile = fileWithTimestamp;
@@ -3712,7 +4150,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             selectedRiskAssessmentFile = fileWithTimestamp;
           }
         });
-        motivePrint('Image picked successfully: ${platformFile.name} (${platformFile.size} bytes)');
+        motivePrint(
+            'Image picked successfully: ${platformFile.name} (${platformFile.size} bytes)');
       }
     } catch (e) {
       motivePrint("Error picking from gallery: $e");
@@ -3727,7 +4166,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         type: FileType.any,
         allowMultiple: false,
       );
-      motivePrint("FilePicker result: ${result != null ? 'File selected' : 'No file selected'}");
+      motivePrint(
+          "FilePicker result: ${result != null ? 'File selected' : 'No file selected'}");
 
       if (result != null && result.files.isNotEmpty) {
         PlatformFile pickedFile = result.files.first;
@@ -3735,22 +4175,39 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
         // Validate file extension
         List<String> allowedExtensions = [
-          'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-          'txt', 'rtf', 'odt', 'ods', 'odp',
-          'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp'
+          'pdf',
+          'doc',
+          'docx',
+          'xls',
+          'xlsx',
+          'ppt',
+          'pptx',
+          'txt',
+          'rtf',
+          'odt',
+          'ods',
+          'odp',
+          'jpg',
+          'jpeg',
+          'png',
+          'gif',
+          'bmp',
+          'tiff',
+          'webp'
         ];
         if (ext == null || !allowedExtensions.contains(ext)) {
           if (!mounted) return;
           Alert.warning(context, 'คำเตือน',
-            'กรุณาเลือกไฟล์เอกสารหรือรูปภาพเท่านั้น',
-            'OK', action: () {});
+              'กรุณาเลือกไฟล์เอกสารหรือรูปภาพเท่านั้น', 'OK',
+              action: () {});
           return;
         }
 
         // Add file to list immediately and select it
         if (!mounted) return;
         setState(() {
-          final fileWithTimestamp = FileWithTimestamp(pickedFile, DateTime.now());
+          final fileWithTimestamp =
+              FileWithTimestamp(pickedFile, DateTime.now());
           if (fileType == 'occupation') {
             occupationFiles.add(fileWithTimestamp);
             selectedOccupationFile = fileWithTimestamp;
@@ -3889,7 +4346,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
-                                _getFileIcon(fileToDelete?.file.extension ?? ''),
+                                _getFileIcon(
+                                    fileToDelete?.file.extension ?? ''),
                                 color: Colors.blue[600],
                                 size: 24,
                               ),
@@ -3913,7 +4371,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          Icon(Icons.info_outline, size: 16, color: Colors.red[700]),
+                          Icon(Icons.info_outline,
+                              size: 16, color: Colors.red[700]),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -4000,13 +4459,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       setState(() {
         if (fileType == 'occupation') {
           occupationFiles.remove(fileToDelete);
-          selectedOccupationFile = occupationFiles.isNotEmpty ? occupationFiles.first : null;
+          selectedOccupationFile =
+              occupationFiles.isNotEmpty ? occupationFiles.first : null;
         } else if (fileType == 'risk') {
           riskAssessmentFiles.remove(fileToDelete);
-          selectedRiskAssessmentFile = riskAssessmentFiles.isNotEmpty ? riskAssessmentFiles.first : null;
+          selectedRiskAssessmentFile =
+              riskAssessmentFiles.isNotEmpty ? riskAssessmentFiles.first : null;
         } else if (fileType == 'photo') {
           customerPhotoFiles.remove(fileToDelete);
-          selectedCustomerPhotoFile = customerPhotoFiles.isNotEmpty ? customerPhotoFiles.first : null;
+          selectedCustomerPhotoFile =
+              customerPhotoFiles.isNotEmpty ? customerPhotoFiles.first : null;
         }
       });
     }
@@ -4116,18 +4578,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                             itemBuilder: (context, index) {
                               final fileWithTimestamp = files[index];
                               final file = fileWithTimestamp.file;
-                              final addedDateTime = fileWithTimestamp.addedDateTime;
-                              final isSelected = selectedFile?.file.name == file.name;
+                              final addedDateTime =
+                                  fileWithTimestamp.addedDateTime;
+                              final isSelected =
+                                  selectedFile?.file.name == file.name;
 
                               return InkWell(
                                 onTap: () {
                                   setState(() {
                                     if (fileType == 'occupation') {
-                                      selectedOccupationFile = fileWithTimestamp;
+                                      selectedOccupationFile =
+                                          fileWithTimestamp;
                                     } else if (fileType == 'risk') {
-                                      selectedRiskAssessmentFile = fileWithTimestamp;
+                                      selectedRiskAssessmentFile =
+                                          fileWithTimestamp;
                                     } else {
-                                      selectedCustomerPhotoFile = fileWithTimestamp;
+                                      selectedCustomerPhotoFile =
+                                          fileWithTimestamp;
                                     }
                                   });
                                   _removeFileOverlay(fileType);
@@ -4152,7 +4619,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                       // File info - showing filename and date as separate columns
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             // Filename
                                             Text(
@@ -4237,7 +4705,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
     if (fileWithTimestamp != null && fileWithTimestamp.file.bytes != null) {
       try {
-        await download_helper.downloadFile(fileWithTimestamp.file.bytes!, fileWithTimestamp.file.name);
+        await download_helper.downloadFile(
+            fileWithTimestamp.file.bytes!, fileWithTimestamp.file.name);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -4247,7 +4716,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                   const Icon(Icons.check_circle, color: Colors.white),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text('บันทึกไฟล์ "${fileWithTimestamp.file.name}" สำเร็จ'),
+                    child: Text(
+                        'บันทึกไฟล์ "${fileWithTimestamp.file.name}" สำเร็จ'),
                   ),
                 ],
               ),

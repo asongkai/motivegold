@@ -1817,7 +1817,10 @@ getCustomerName(CustomerModel customer, {bool forReport = false}) {
     // BRANCH: Check if has branch code
     if (hasBranchCode) {
       // Branch with code: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
-      String branchName = customer.establishmentName ?? companyName;
+      String branchName = customer.establishmentName ?? "";
+      if (!hasEstablishmentName) {
+        return '$companyName สาขาที่(${customer.branchCode})';
+      }
       return '$companyName สาขาที่(${customer.branchCode}) ${forReport ? '' : '"$branchName"'}';
     } else {
       // Branch without code: Show company name with establishment name in quotes (if available)
@@ -1935,7 +1938,10 @@ String getCustomerNameForReports(CustomerModel customer) {
     // BRANCH: Check if has branch code
     if (hasBranchCode) {
       // Branch with code: "บริษัท ห้างทองมนวาท จำกัด สาขาที่(00004) "ร้านทองสกุลพงษ์""
-      String branchName = customer.establishmentName ?? companyName;
+      String branchName = customer.establishmentName ?? "";
+      if (!hasEstablishmentName) {
+        return '$companyName สาขาที่(${customer.branchCode})';
+      }
       return '$companyName สาขาที่(${customer.branchCode}) "$branchName"';
     } else {
       // Branch without code: Show company name with establishment name in quotes (if available)
@@ -1978,6 +1984,10 @@ String getCustomerBranchCode(CustomerModel customer) {
         customer.branchCode != '00000') {
       return customer.branchCode!;
     } else {
+      if (customer.headquartersOrBranch == 'branch' &&
+          (customer.branchCode != null || customer.branchCode!.isNotEmpty)) {
+        return ''; // Branch without code
+      }
       return '00000'; // Head office
     }
   }

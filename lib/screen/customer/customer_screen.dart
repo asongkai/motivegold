@@ -90,9 +90,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
           Global.requestObj({
             "customerType": selectedCustomerType?.code,
             "idCard":
-            selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+                selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
             "taxNumber":
-            selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+                selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
             "firstName": firstNameCtrl.text,
             "lastName": lastNameCtrl.text,
             "companyName": companyNameCtrl.text,
@@ -140,9 +140,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
           Global.requestObj({
             "customerType": selectedCustomerType?.code,
             "idCard":
-            selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
+                selectedCustomerType?.code == "general" ? idCardCtrl.text : "",
             "taxNumber":
-            selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
+                selectedCustomerType?.code == "company" ? idCardCtrl.text : "",
             "firstName": firstNameCtrl.text,
             "lastName": lastNameCtrl.text,
             "companyName": companyNameCtrl.text,
@@ -205,46 +205,46 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
                 // if (widget.selected != true)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(
-                        MaterialPageRoute(
-                          builder: (context) => const AddCustomerScreen(),
-                        ),
-                      )
-                          .whenComplete(() {
-                        loadData();
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.teal[900],
-                        borderRadius: BorderRadius.circular(8),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                      MaterialPageRoute(
+                        builder: (context) => const AddCustomerScreen(),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              'เพิ่มลูกค้า',
-                              style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ),
+                    )
+                        .whenComplete(() {
+                      loadData();
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.teal[900],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.add,
+                            size: 24,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'เพิ่มลูกค้า',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                          )
+                        ],
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
@@ -265,7 +265,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha:0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: Offset(0, 2),
                     ),
@@ -315,212 +315,221 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       height: isFilterExpanded ? null : 0,
                       child: isFilterExpanded
                           ? Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Column(
-                          children: [
-                            Divider(height: 1),
-                            SizedBox(height: 16),
-
-                            // Customer Type Dropdown
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'ประเภทลูกค้า',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Container(
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: Colors.grey[300]!),
-                                  ),
-                                  child:
-                                  MiraiDropDownMenu<ProductTypeModel>(
-                                    key: ValueKey(
-                                        'customer_type_dropdown'),
-                                    // Add stable key
-                                    children: customerTypes(),
-                                    space: 4,
-                                    maxHeight: 300,
-                                    showSearchTextField: true,
-                                    selectedItemBackgroundColor:
-                                    Colors.transparent,
-                                    emptyListMessage: 'ไม่มีข้อมูล',
-                                    showSelectedItemBackgroundColor: true,
-                                    itemWidgetBuilder: (int index,
-                                        ProductTypeModel? project,
-                                        {bool isItemSelected = false}) {
-                                      return DropDownItemWidget(
-                                        project: project,
-                                        isItemSelected: isItemSelected,
-                                        firstSpace: 10,
-                                        fontSize: 14.sp,
-                                      );
-                                    },
-                                    onChanged:
-                                        (ProductTypeModel value) async {
-                                      selectedCustomerType = value;
-                                      customerTypeNotifier!.value = value;
-                                      search();
-                                    },
-                                    child: DropDownObjectChildWidget(
-                                      key: GlobalKey(),
-                                      fontSize: 14.sp,
-                                      projectValueNotifier:
-                                      customerTypeNotifier!,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            SizedBox(height: 16),
-
-                            // Conditional Fields based on Customer Type
-                            if (selectedCustomerType?.code == 'general')
-                              Column(
+                              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              child: Column(
                                 children: [
-                                  Row(
+                                  Divider(height: 1),
+                                  SizedBox(height: 16),
+
+                                  // Customer Type Dropdown
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: _buildTextField(
-                                          label: getIdTitle(
-                                              selectedCustomerType),
-                                          controller: idCardCtrl,
-                                          onSubmitted: (value) =>
-                                              search(),
+                                      Text(
+                                        'ประเภทลูกค้า',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey[700],
                                         ),
                                       ),
-                                      SizedBox(width: 12),
-                                      Expanded(
-                                        child: _buildTextField(
-                                          label: "ชื่อ",
-                                          controller: firstNameCtrl,
-                                          onSubmitted: (value) =>
-                                              search(),
+                                      SizedBox(height: 8),
+                                      Container(
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Colors.grey[300]!),
                                         ),
-                                      ),
-                                      SizedBox(width: 12),
-                                      Expanded(
-                                        child: _buildTextField(
-                                          label: "นามสกุล",
-                                          controller: lastNameCtrl,
-                                          onSubmitted: (value) =>
-                                              search(),
+                                        child:
+                                            MiraiDropDownMenu<ProductTypeModel>(
+                                          key: ValueKey(
+                                              'customer_type_dropdown'),
+                                          // Add stable key
+                                          children: customerTypes(),
+                                          space: 4,
+                                          maxHeight: 300,
+                                          showSearchTextField: true,
+                                          selectedItemBackgroundColor:
+                                              Colors.transparent,
+                                          emptyListMessage: 'ไม่มีข้อมูล',
+                                          showSelectedItemBackgroundColor: true,
+                                          itemWidgetBuilder: (int index,
+                                              ProductTypeModel? project,
+                                              {bool isItemSelected = false}) {
+                                            return DropDownItemWidget(
+                                              project: project,
+                                              isItemSelected: isItemSelected,
+                                              firstSpace: 10,
+                                              fontSize: 14.sp,
+                                            );
+                                          },
+                                          onChanged:
+                                              (ProductTypeModel value) async {
+                                            selectedCustomerType = value;
+                                            customerTypeNotifier!.value = value;
+                                            search();
+                                          },
+                                          child: DropDownObjectChildWidget(
+                                            key: GlobalKey(),
+                                            fontSize: 14.sp,
+                                            projectValueNotifier:
+                                                customerTypeNotifier!,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
+
                                   SizedBox(height: 16),
-                                ],
-                              ),
 
-                            if (selectedCustomerType?.code == 'company')
-                              Column(
-                                children: [
-                                  _buildTextField(
-                                    label: "ชื่อบริษัท",
-                                    controller: companyNameCtrl,
-                                    onSubmitted: (value) => search(),
-                                  ),
-                                  SizedBox(height: 16),
-                                ],
-                              ),
-
-                            // Email and Phone
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildTextField(
-                                    label: "อีเมล",
-                                    controller: emailCtrl,
-                                    onSubmitted: (value) => search(),
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildTextField(
-                                    label: "โทรศัพท์",
-                                    controller: phoneCtrl,
-                                    onSubmitted: (value) => search(),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            SizedBox(height: 16),
-
-                            // Action Buttons - Custom Compact Design
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // Reset Button
-                                GestureDetector(
-                                  onTap: _resetFilters,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.redAccent,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                  // Conditional Fields based on Customer Type
+                                  if (selectedCustomerType?.code == 'general')
+                                    Column(
                                       children: [
-                                        Icon(Icons.refresh, color: Colors.white, size: 16),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          'รีเซ็ต',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: _buildTextField(
+                                                label: getIdTitle(
+                                                    selectedCustomerType),
+                                                controller: idCardCtrl,
+                                                onSubmitted: (value) =>
+                                                    search(),
+                                              ),
+                                            ),
+                                            SizedBox(width: 12),
+                                            Expanded(
+                                              child: _buildTextField(
+                                                label: "ชื่อ",
+                                                controller: firstNameCtrl,
+                                                onSubmitted: (value) =>
+                                                    search(),
+                                              ),
+                                            ),
+                                            SizedBox(width: 12),
+                                            Expanded(
+                                              child: _buildTextField(
+                                                label: "นามสกุล",
+                                                controller: lastNameCtrl,
+                                                onSubmitted: (value) =>
+                                                    search(),
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                        SizedBox(height: 16),
                                       ],
                                     ),
-                                  ),
-                                ),
 
-                                // Search Button
-                                GestureDetector(
-                                  onTap: search,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.indigo[700],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                  if (selectedCustomerType?.code == 'company')
+                                    Column(
                                       children: [
-                                        Icon(Icons.search, color: Colors.white, size: 16),
-                                        SizedBox(width: 6),
-                                        Text(
-                                          'ค้นหา',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                        _buildTextField(
+                                          label: "ชื่อบริษัท",
+                                          controller: companyNameCtrl,
+                                          onSubmitted: (value) => search(),
                                         ),
+                                        SizedBox(height: 16),
                                       ],
                                     ),
+
+                                  // Email and Phone
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildTextField(
+                                          label: "อีเมล",
+                                          controller: emailCtrl,
+                                          onSubmitted: (value) => search(),
+                                        ),
+                                      ),
+                                      SizedBox(width: 12),
+                                      Expanded(
+                                        child: _buildTextField(
+                                          label: "โทรศัพท์",
+                                          controller: phoneCtrl,
+                                          onSubmitted: (value) => search(),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
+
+                                  SizedBox(height: 16),
+
+                                  // Action Buttons - Custom Compact Design
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Reset Button
+                                      GestureDetector(
+                                        onTap: _resetFilters,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.redAccent,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.refresh,
+                                                  color: Colors.white,
+                                                  size: 16),
+                                              SizedBox(width: 6),
+                                              Text(
+                                                'รีเซ็ต',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Search Button
+                                      GestureDetector(
+                                        onTap: search,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.indigo[700],
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.search,
+                                                  color: Colors.white,
+                                                  size: 16),
+                                              SizedBox(width: 6),
+                                              Text(
+                                                'ค้นหา',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
                           : SizedBox(),
                     ),
                   ],
@@ -586,15 +595,15 @@ class _CustomerScreenState extends State<CustomerScreen> {
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               suffixIcon: controller.text.isNotEmpty
                   ? IconButton(
-                icon: Icon(Icons.clear, size: 18),
-                onPressed: () {
-                  controller.clear();
-                  setState(() {});
-                  if (onSubmitted != null) {
-                    onSubmitted(''); // Trigger search when cleared
-                  }
-                },
-              )
+                      icon: Icon(Icons.clear, size: 18),
+                      onPressed: () {
+                        controller.clear();
+                        setState(() {});
+                        if (onSubmitted != null) {
+                          onSubmitted(''); // Trigger search when cleared
+                        }
+                      },
+                    )
                   : null,
             ),
             style: TextStyle(fontSize: 14),
@@ -626,7 +635,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: Offset(0, 2),
           ),
@@ -662,7 +671,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                           children: [
                             // Customer Number Badge (top-left)
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.indigo[700],
                                 borderRadius: BorderRadius.circular(6),
@@ -699,12 +709,15 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: _getCustomerTypeColor(customer).withOpacity(0.1),
+                              color: _getCustomerTypeColor(customer)
+                                  .withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: _getCustomerTypeColor(customer).withOpacity(0.3),
+                                color: _getCustomerTypeColor(customer)
+                                    .withOpacity(0.3),
                                 width: 1,
                               ),
                             ),
@@ -730,42 +743,41 @@ class _CustomerScreenState extends State<CustomerScreen> {
                   // Action Buttons (right side)
                   Column(
                     children: [
-                        Row(
-                          children: [
-                            if (widget.selected == true)
-                              _buildActionButton(
-                                icon: Icons.check,
-                                label: 'เลือก',
-                                color: Colors.teal[700]!,
-                                onTap: () {
-                                  setState(() {
-                                    Global.customer = customer;
-                                  });
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            SizedBox(width: 8),
+                      Row(
+                        children: [
+                          if (widget.selected == true)
                             _buildActionButton(
-                              icon: Icons.edit,
-                              label: 'แก้ไข',
-                              color: Colors.blue[700]!,
+                              icon: Icons.check,
+                              label: 'เลือก',
+                              color: Colors.teal[700]!,
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditCustomerScreen(c: customer),
-                                    fullscreenDialog: true,
-                                  ),
-                                ).whenComplete(() {
-                                  loadData();
-                                  setState(() {});
+                                setState(() {
+                                  Global.customer = customer;
                                 });
+                                Navigator.of(context).pop();
                               },
                             ),
-                            if (widget.selected != true)
-                            SizedBox(width: 8),
-                            if (widget.selected != true)
+                          SizedBox(width: 8),
+                          _buildActionButton(
+                            icon: Icons.edit,
+                            label: 'แก้ไข',
+                            color: Colors.blue[700]!,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditCustomerScreen(c: customer),
+                                  fullscreenDialog: true,
+                                ),
+                              ).whenComplete(() {
+                                loadData();
+                                setState(() {});
+                              });
+                            },
+                          ),
+                          if (widget.selected != true) SizedBox(width: 8),
+                          if (widget.selected != true)
                             _buildActionButton(
                               icon: Icons.delete,
                               label: 'ลบ',
@@ -773,8 +785,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                               onTap: () =>
                                   deleteCustomer(context, customer.id!, index),
                             ),
-                          ],
-                        ),
+                        ],
+                      ),
                     ],
                   ),
                 ],
@@ -799,11 +811,14 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildContactRow(Icons.email_outlined, customer.email ?? 'ไม่ระบุ'),
+                    _buildContactRow(
+                        Icons.email_outlined, customer.email ?? 'ไม่ระบุ'),
                     SizedBox(height: 8),
-                    _buildContactRow(Icons.phone_outlined, customer.phoneNumber ?? 'ไม่ระบุ'),
+                    _buildContactRow(Icons.phone_outlined,
+                        customer.phoneNumber ?? 'ไม่ระบุ'),
                     SizedBox(height: 8),
-                    _buildContactRow(Icons.schedule_outlined, 'อัปเดต: ${Global.formatDate(customer.updatedDate.toString())}'),
+                    _buildContactRow(Icons.schedule_outlined,
+                        'อัปเดต: ${Global.formatDate(customer.updatedDate.toString())}'),
                   ],
                 ),
               ),
@@ -816,7 +831,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
   // Helper method to build identification cards for Thai/Foreigner
   Widget _buildModernIdentificationCards(CustomerModel customer) {
-    if (customer.nationality == "Foreigner") {
+    if (customer.nationality != "Thai") {
       // Company + Foreigner: Only show Tax ID (เลขประจำตัวผู้เสียภาษี)
       if (customer.customerType == 'company') {
         return _buildIdentificationCard(
@@ -973,7 +988,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha:0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 4,
               offset: Offset(0, 2),
             ),
@@ -1002,34 +1017,34 @@ class _CustomerScreenState extends State<CustomerScreen> {
     motivePrint('deleted'); // Keep original debug print
     Alert.info(context, 'ต้องการลบข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
-          final ProgressDialog pr = ProgressDialog(context,
-              type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
-          await pr.show();
-          pr.update(message: 'processing'.tr());
-          try {
-            var result = await ApiServices.delete('/customer', id, queryParams: {
-              'userId': Global.user?.id,
-              'companyId': Global.company?.id ?? Global.user?.companyId,
-              'branchId': Global.branch?.id ?? Global.user?.branchId,
-            });
-            await pr.hide();
-            if (result?.status == "success") {
-              filterList!.removeAt(i);
-              setState(() {});
-              // Keep original Alert.warning pattern but also add modern SnackBar
-            } else {
-              if (mounted) {
-                Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
-                    action: () {});
-              }
-            }
-          } catch (e) {
-            await pr.hide();
-            if (mounted) {
-              Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
-                  action: () {});
-            }
-          }
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'processing'.tr());
+      try {
+        var result = await ApiServices.delete('/customer', id, queryParams: {
+          'userId': Global.user?.id,
+          'companyId': Global.company?.id ?? Global.user?.companyId,
+          'branchId': Global.branch?.id ?? Global.user?.branchId,
         });
+        await pr.hide();
+        if (result?.status == "success") {
+          filterList!.removeAt(i);
+          setState(() {});
+          // Keep original Alert.warning pattern but also add modern SnackBar
+        } else {
+          if (mounted) {
+            Alert.warning(context, 'Warning'.tr(), result!.message!, 'OK'.tr(),
+                action: () {});
+          }
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'Warning'.tr(), e.toString(), 'OK'.tr(),
+              action: () {});
+        }
+      }
+    });
   }
 }

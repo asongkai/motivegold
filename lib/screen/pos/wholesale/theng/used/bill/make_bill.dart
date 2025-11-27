@@ -356,8 +356,7 @@ Future<Uint8List> makeSellUsedThengBill(Invoice invoice,
                           Text(
                               'หมายเหตุ : สินค้าทองคำแท่ง บริษัทฯได้รับการยกเว้นภาษีมูลค่าเพิ่ม ',
                               style: const TextStyle(fontSize: 10)),
-                          Text(
-                              '${invoice.order.remark ?? ''}       บันทึกเข้าระบบ ${Global.formatDateNT(invoice.order.createdDate.toString())}',
+                          Text(invoice.order.remark ?? '',
                               style: const TextStyle(fontSize: 10),
                               overflow: TextOverflow.span),
                         ])),
@@ -462,7 +461,9 @@ Future<Uint8List> makeSellUsedThengBill(Invoice invoice,
                             Expanded(
                                 flex: 2,
                                 child: Text(
-                                    invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    invoice.order.orderStatus == 'CANCEL'
+                                        ? "0.00 บาท"
+                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 10,

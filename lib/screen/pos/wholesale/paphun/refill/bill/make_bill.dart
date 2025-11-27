@@ -488,7 +488,7 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
             Expanded(
               flex: 3,
               child: Container(
-                  height: 55,
+                  height: 65,
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -501,10 +501,10 @@ Future<Uint8List> makeRefillBill(Invoice invoice, {int option = 1}) async {
                         Spacer(),
                         Text('${Global.branch?.name}',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 12)),
+                            style: const TextStyle(fontSize: 10)),
                         Text('ผู้ซื้อ / ผู้รับทอง / ผู้บันทึกรายการ',
                             style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.bold)),
+                                fontSize: 10, fontWeight: FontWeight.bold)),
                       ])),
             ),
           ])),
