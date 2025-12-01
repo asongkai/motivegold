@@ -95,13 +95,13 @@ int? filterChungVatById(int? id) {
     var provinces = Global.provinceList.where((e) => e.id == id).toList();
     if (provinces.isNotEmpty) {
       Global.provinceModel = provinces.first;
-      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      // Update the value of existing notifier instead of creating a new one
+      Global.provinceNotifier?.value = provinces.first;
       return provinces.first.id;
     } else {
       Global.provinceModel = null;
-      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      // Update to placeholder value
+      Global.provinceNotifier?.value = ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด');
     }
   }
   return 0;
@@ -112,13 +112,13 @@ int? filterChungVatByName(String? name) {
     var provinces = Global.provinceList.where((e) => e.nameTh == name).toList();
     if (provinces.isNotEmpty) {
       Global.provinceModel = provinces.first;
-      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      // Update the value of existing notifier instead of creating a new one
+      Global.provinceNotifier?.value = provinces.first;
       return provinces.first.id;
     } else {
       Global.provinceModel = null;
-      Global.provinceNotifier = ValueNotifier<ProvinceModel>(
-          Global.provinceModel ?? ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+      // Update to placeholder value
+      Global.provinceNotifier?.value = ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด');
     }
   }
   return 0;
@@ -128,13 +128,13 @@ int? filterAmpheryId(int? id) {
   var amphures = Global.amphureList.where((e) => e.id == id).toList();
   if (amphures.isNotEmpty) {
     Global.amphureModel = amphures.first;
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(
-        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    // Update the value of existing notifier instead of creating a new one
+    Global.amphureNotifier?.value = amphures.first;
     return amphures.first.id;
   } else {
     Global.amphureModel = null;
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(
-        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    // Update to placeholder value
+    Global.amphureNotifier?.value = AmphureModel(id: 0, nameTh: 'เลือกอำเภอ');
   }
   return 0;
 }
@@ -143,13 +143,13 @@ int? filterAmpheryName(String? name) {
   var amphures = Global.amphureList.where((e) => e.nameTh == name).toList();
   if (amphures.isNotEmpty) {
     Global.amphureModel = amphures.first;
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(
-        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    // Update the value of existing notifier instead of creating a new one
+    Global.amphureNotifier?.value = amphures.first;
     return amphures.first.id;
   } else {
     Global.amphureModel = null;
-    Global.amphureNotifier = ValueNotifier<AmphureModel>(
-        Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+    // Update to placeholder value
+    Global.amphureNotifier?.value = AmphureModel(id: 0, nameTh: 'เลือกอำเภอ');
   }
   return 0;
 }
@@ -159,13 +159,13 @@ int? filterTambonById(int? id) {
   var tambons = Global.tambonList.where((e) => e.id == id).toList();
   if (tambons.isNotEmpty) {
     Global.tambonModel = tambons.first;
-    Global.tambonNotifier = ValueNotifier<TambonModel>(
-        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    // Update the value of existing notifier instead of creating a new one
+    Global.tambonNotifier?.value = tambons.first;
     return tambons.first.id;
   } else {
     Global.tambonModel = null;
-    Global.tambonNotifier = ValueNotifier<TambonModel>(
-        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    // Update to placeholder value
+    Global.tambonNotifier?.value = TambonModel(id: 0, nameTh: 'เลือกตำบล');
   }
   return 0;
 }
@@ -174,13 +174,13 @@ int? filterTambonByName(String? name) {
   var tambons = Global.tambonList.where((e) => e.nameTh == name).toList();
   if (tambons.isNotEmpty) {
     Global.tambonModel = tambons.first;
-    Global.tambonNotifier = ValueNotifier<TambonModel>(
-        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    // Update the value of existing notifier instead of creating a new one
+    Global.tambonNotifier?.value = tambons.first;
     return tambons.first.id;
   } else {
     Global.tambonModel = null;
-    Global.tambonNotifier = ValueNotifier<TambonModel>(
-        Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+    // Update to placeholder value
+    Global.tambonNotifier?.value = TambonModel(id: 0, nameTh: 'เลือกตำบล');
   }
   return 0;
 }

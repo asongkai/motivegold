@@ -45,6 +45,13 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
   }
 
   void loadProducts() async {

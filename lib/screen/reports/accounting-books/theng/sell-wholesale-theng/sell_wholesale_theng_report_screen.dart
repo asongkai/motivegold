@@ -84,6 +84,13 @@ class _SellWholesaleThengReportScreenState
 
     yearNotifier = ValueNotifier<dynamic>(null);
     monthNotifier = ValueNotifier<dynamic>(null);
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
+
     // resetFilter();
     // search();
   }

@@ -21,6 +21,7 @@ import 'package:motivegold/model/title_name.dart';
 import 'package:motivegold/model/occupation.dart';
 import 'package:motivegold/model/card_type.dart';
 import 'package:motivegold/model/nationality.dart';
+import 'package:motivegold/screen/customer/ocr/id_data_screen.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/config.dart';
 import 'package:motivegold/utils/constants.dart';
@@ -537,6 +538,82 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
+  /// Parse Thai address string into separate components
+  /// Based on common Thai address keywords:
+  /// - House number: เลขที่, บ้านเลขที่, or leading number
+  /// - Moo: หมู่, ม.
+  /// - Road: ถ., ถนน
+  /// - Soi: ซอย, ซ.
+  Map<String, String> _parseThaiAddress(String address) {
+    Map<String, String> result = {
+      "houseNumber": "",
+      "moo": "",
+      "soi": "",
+      "road": "",
+      "village": "",
+    };
+
+    if (address.isEmpty) return result;
+
+    // Extract house number (บ้านเลขที่)
+    // Pattern: เลขที่ X, บ้านเลขที่ X, or leading number at the start
+    RegExp houseNumberPattern = RegExp(
+      r'(?:เลขที่|บ้านเลขที่)\s*([^\s]+)|^(\d+[/\-\d]*)',
+      caseSensitive: false,
+    );
+    Match? houseMatch = houseNumberPattern.firstMatch(address);
+    if (houseMatch != null) {
+      result["houseNumber"] =
+          (houseMatch.group(1) ?? houseMatch.group(2) ?? "").trim();
+    }
+
+    // Extract moo (หมู่)
+    // Pattern: หมู่ที่ X, หมู่ X, or ม. X (order matters - longest first)
+    RegExp mooPattern = RegExp(
+      r'(?:หมู่ที่|หมู่|ม\.)\s*(\d+)',
+      caseSensitive: false,
+    );
+    Match? mooMatch = mooPattern.firstMatch(address);
+    if (mooMatch != null) {
+      result["moo"] = mooMatch.group(1)?.trim() ?? "";
+    }
+
+    // Extract soi (ซอย)
+    // Pattern: ซอย X or ซ. X (captures including แยก if present)
+    // Example: "ซ.เพชรเกษม 48 แยก 16-1" -> "เพชรเกษม 48 แยก 16-1"
+    RegExp soiPattern = RegExp(
+      r'(?:ซอย|ซ\.)\s*([^\s]+(?:\s+[\d]+)?(?:\s+แยก\s*[\d\-]+)?)',
+      caseSensitive: false,
+    );
+    Match? soiMatch = soiPattern.firstMatch(address);
+    if (soiMatch != null) {
+      result["soi"] = soiMatch.group(1)?.trim() ?? "";
+    }
+
+    // Extract road (ถนน)
+    // Pattern: ถ. X or ถนน X
+    RegExp roadPattern = RegExp(
+      r'(?:ถนน|ถ\.)\s*([^\s]+(?:\s+\d+)?)',
+      caseSensitive: false,
+    );
+    Match? roadMatch = roadPattern.firstMatch(address);
+    if (roadMatch != null) {
+      result["road"] = roadMatch.group(1)?.trim() ?? "";
+    }
+
+    // Extract village (หมู่บ้าน) - optional
+    RegExp villagePattern = RegExp(
+      r'(?:หมู่บ้าน)\s*([^\s]+(?:\s+[^\s]+)?)',
+      caseSensitive: false,
+    );
+    Match? villageMatch = villagePattern.firstMatch(address);
+    if (villageMatch != null) {
+      result["village"] = villageMatch.group(1)?.trim() ?? "";
+    }
+
+    return result;
+  }
+
   Widget buildTextFieldBig({
     required String labelText,
     String? validator,
@@ -800,11 +877,132 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           backButton: true,
           title: Padding(
             padding: const EdgeInsets.only(left: 18.0, right: 20),
-            child: Text("เพิ่มลูกค้า",
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("เพิ่มลูกค้า",
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900)),
+                GestureDetector(
+                  onTap: () async {
+                    Map<String, dynamic>? ocrResult =
+                        await Navigator.of(context)
+                            .push(
+                      MaterialPageRoute(
+                        builder: (context) => const IDCardOCRScreen(),
+                      ),
+                    )
+                            .whenComplete(() {
+                      setState(() {});
+                    });
+
+                    if (ocrResult != null) {
+                      idCardCtrl.text = ocrResult["id_number"] ?? "";
+
+                      // Get title name from OCR
+                      String? titleFromOCR;
+                      if (ocrResult["th_fname"] != null) {
+                        titleFromOCR = ocrResult["th_init"];
+                        firstNameCtrl.text = ocrResult["th_fname"] ?? "";
+                        lastNameCtrl.text = ocrResult["th_lname"] ?? "";
+                      } else {
+                        titleFromOCR = ocrResult["en_init"];
+                        firstNameCtrl.text = ocrResult["en_fname"] ?? "";
+                        lastNameCtrl.text = ocrResult["en_lname"] ?? "";
+                      }
+
+                      // Auto-select title name from OCR
+                      if (titleFromOCR != null && titleNames.isNotEmpty) {
+                        try {
+                          selectedTitleName = titleNames.firstWhere(
+                            (title) =>
+                                title.name?.trim() == titleFromOCR?.trim(),
+                          );
+                          if (selectedTitleName != null) {
+                            titleNameNotifier?.value = selectedTitleName!;
+                          }
+                        } catch (e) {
+                          // Title not found, leave as is
+                        }
+                      }
+
+                      emailAddressCtrl.text = "";
+                      phoneCtrl.text = "";
+                      birthDateCtrl.text =
+                          Global.formatDateThai(ocrResult["en_dob"]);
+
+                      // Set nationality to Thai
+                      if (nationalities.isNotEmpty) {
+                        try {
+                          selectedNationality = nationalities.firstWhere(
+                            (nat) => nat.iso == 'TH',
+                          );
+                          if (selectedNationality != null) {
+                            nationalityNotifier?.value = selectedNationality!;
+                          }
+                        } catch (e) {
+                          // If Thai nationality not found, use first one
+                          selectedNationality = nationalities.first;
+                          if (selectedNationality != null) {
+                            nationalityNotifier?.value = selectedNationality!;
+                          }
+                        }
+                      }
+
+                      postalCodeCtrl.text = ocrResult["postal_code"] ?? "";
+
+                      // Parse Thai address into separate fields
+                      String fullAddress =
+                          ocrResult["address"]?.toString() ?? "";
+                      Map<String, String> parsedAddress =
+                          _parseThaiAddress(fullAddress);
+
+                      // Populate parsed address fields
+                      Global.addressCtrl.text =
+                          parsedAddress["houseNumber"] ?? "";
+                      mooCtrl.text = parsedAddress["moo"] ?? "";
+                      soiCtrl.text = parsedAddress["soi"] ?? "";
+                      roadCtrl.text = parsedAddress["road"] ?? "";
+                      villageCtrl.text = parsedAddress["village"] ?? "";
+
+                      // Populate remaining address (before ต.)
+                      addressCtrl.text = fullAddress.split("ต.")[0].trim();
+                    }
+
+                    setState(() {});
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.teal[900],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.search,
+                            size: 16.sp,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'แสดงตนลูกค้า',
+                            style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

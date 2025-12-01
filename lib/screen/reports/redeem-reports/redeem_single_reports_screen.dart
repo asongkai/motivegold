@@ -1375,8 +1375,13 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
     toDateNotifier = ValueNotifier<dynamic>("");
     yearCtrl.text = "";
     monthCtrl.text = "";
-    fromDateCtrl.text = "";
-    toDateCtrl.text = "";
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    fromDateCtrl.text = firstDayOfMonth.toString().split(' ')[0];
+    toDateCtrl.text = now.toString().split(' ')[0];
+
     fromDate = null;
     toDate = null;
     productNotifier =

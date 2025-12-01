@@ -547,7 +547,7 @@ Future<Uint8List> makeRefillThengBill(Invoice invoice, {int option = 1}) async {
                             Expanded(
                                 flex: 2,
                                 child: Text(
-                                    invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                    invoice.order.orderStatus == 'CANCEL' ? "0.00 บาท" : "${(invoice.payments![i].amount ?? 0) == 0 ? "0.00" : Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 10,

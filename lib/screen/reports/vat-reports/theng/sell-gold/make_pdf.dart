@@ -341,9 +341,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
               decoration: BoxDecoration(
-                  color: orders[i]!.status == "2"
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
@@ -368,7 +366,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
                     align: TextAlign.center),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall(
-                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)} ',
+                    '${orders[i]!.status == "2" ? "ยกเลิกเอกสาร***" : getCustomerName(orders[i]!.customer!)} ',
                     style: TextStyle(
                         fontSize: 10,
                         color:
@@ -477,9 +475,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
               decoration: BoxDecoration(
-                  color: list[i].status == "2"
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
@@ -603,9 +599,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
               decoration: BoxDecoration(
-                  color: list3[i].status == "2"
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
@@ -732,9 +726,7 @@ Future<Uint8List> makeSellThengVatReportPdf(List<OrderModel?> orders, int type,
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
               decoration: BoxDecoration(
-                  color: orders[i]?.status == "2"
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(

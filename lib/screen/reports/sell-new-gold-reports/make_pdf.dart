@@ -120,7 +120,7 @@ Future<Uint8List> makeNewGoldReportPdf(
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
-                color: orders[i]!.status == "2" ? PdfColors.red100 : PdfColors.white
+                color: PdfColors.white
             ),
             children: [
               paddedTextSmall('${i + 1}', style: TextStyle(
@@ -141,7 +141,7 @@ Future<Uint8List> makeNewGoldReportPdf(
               //         fontSize: 10,
               //         color: orders[i]!.status == "2" ? PdfColors.red900 : null
               //     )),
-              paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)}',
+              paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร***" : getCustomerName(orders[i]!.customer!)}',
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : null

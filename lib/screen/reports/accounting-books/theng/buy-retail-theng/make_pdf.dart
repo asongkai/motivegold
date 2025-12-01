@@ -262,107 +262,134 @@ Future<Uint8List> makeBuyRetailThengReportPdf(List<OrderModel?> orders,
     ]);
   }
 
-  // Data rows - will be in the build section
-  List<Widget> dataRows = [];
+  // Build table for data rows with dynamic height
+  List<TableRow> tableRows = [];
+
+  // Define column widths to match header flex ratios using FlexColumnWidth
+  // For type 1: [3, 2, 4, 2, 2] total = 13
+  // For type 2/3: [3, 2, 2, 2] total = 9
+  Map<int, TableColumnWidth> columnWidths = type == 1
+      ? {
+          0: FlexColumnWidth(3),      // Order ID
+          1: FlexColumnWidth(2),      // Date
+          2: FlexColumnWidth(4),      // Customer Name
+          3: FlexColumnWidth(2),      // Purchase Amount
+          4: FlexColumnWidth(2),      // Cash/Bank
+        }
+      : {
+          0: FlexColumnWidth(3),      // Order ID
+          1: FlexColumnWidth(2),      // Date
+          2: FlexColumnWidth(2),      // Purchase Amount
+          3: FlexColumnWidth(2),      // Cash/Bank
+        };
 
   if (type == 1 || type == 2 || type == 3) {
     for (int i = 0; i < list.length; i++) {
-      dataRows.add(Container(
-        height: 24,
-        decoration: BoxDecoration(
-          color: (i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
-          border: Border(
-            top: BorderSide(color: PdfColors.grey400, width: 0.5),
-            left: BorderSide(color: PdfColors.grey400, width: 0.8),
-            right: BorderSide(color: PdfColors.grey400, width: 0.8),
-            bottom: BorderSide(color: PdfColors.grey400, width: 0.8),
+      final isCancel = list[i].status == "2";
+      final textColor = isCancel ? PdfColors.red900 : PdfColors.black;
+      final bgColor = i % 2 == 0 ? PdfColors.grey100 : PdfColors.white;
+
+      List<Widget> cells = [
+        // Order ID
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              list[i].orderId,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
           ),
         ),
-        child: Row(
-          children: [
-            Expanded(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(list[i].orderId,
-                      align: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            Expanded(
-                flex: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(
-                      type == 3
-                          ? Global.formatDateMFT(list[i].orderDate.toString())
-                          : Global.dateOnly(list[i].orderDate.toString()),
-                      align: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            if (type == 1)
-              Expanded(
-                  flex: 4,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.grey400, width: 0.5))),
-                    child: paddedTextSmall(
-                        list[i].status == "2"
-                            ? "ยกเลิกเอกสาร***"
-                            : '${getCustomerName(list[i].customer!, forReport: true)}',
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: list[i].status == "2"
-                                ? PdfColors.red900
-                                : null)),
-                  )),
-            Expanded(
-                flex: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(
-                      list[i].status == "2"
-                          ? "0.00"
-                          : Global.format(getPurchaseAmount(list[i])),
-                      align: TextAlign.right,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            Expanded(
-                flex: 2,
-                child: Container(
-                  child: paddedTextSmall(
-                      list[i].status == "2"
-                          ? "0.00"
-                          : Global.format(getCashBank(list[i])),
-                      align: TextAlign.right,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-          ],
+        // Date
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              type == 3
+                  ? Global.formatDateMFT(list[i].orderDate.toString())
+                  : Global.dateOnly(list[i].orderDate.toString()),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
         ),
-      ));
+      ];
+
+      // Customer name (only for type 1)
+      if (type == 1) {
+        cells.add(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                isCancel
+                    ? "ยกเลิกเอกสาร***"
+                    : getCustomerName(list[i].customer!, forReport: true),
+                maxLines: 2,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 14, color: textColor),
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Purchase Amount
+      cells.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              isCancel ? "0.00" : Global.format(getPurchaseAmount(list[i])),
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
+        ),
+      );
+
+      // Cash/Bank
+      cells.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              isCancel ? "0.00" : Global.format(getCashBank(list[i])),
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
+        ),
+      );
+
+      tableRows.add(
+        TableRow(
+          decoration: BoxDecoration(color: bgColor),
+          children: cells,
+        ),
+      );
     }
+  }
+
+  // Build table with borders
+  List<Widget> dataRows = [];
+  if (tableRows.isNotEmpty) {
+    dataRows.add(
+      Table(
+        border: TableBorder.all(
+          color: PdfColors.grey400,
+          width: 0.5,
+        ),
+        columnWidths: columnWidths,
+        children: tableRows,
+      ),
+    );
   }
 
   // Total row
@@ -382,62 +409,84 @@ Future<Uint8List> makeBuyRetailThengReportPdf(List<OrderModel?> orders,
         Expanded(
             flex: 3,
             child: Container(
+              margin: const EdgeInsets.symmetric(vertical: -2),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               decoration: BoxDecoration(
                   border: Border(
                       right: BorderSide(color: PdfColors.grey400, width: 0.5))),
-              child: Container(),
+              child: Center(
+                child: Container(),
+              ),
             )),
         if (type == 1)
           Expanded(
               flex: 2,
               child: Container(
+                margin: const EdgeInsets.symmetric(vertical: -2),
+                padding: const EdgeInsets.symmetric(vertical: 2),
                 decoration: BoxDecoration(
                     border: Border(
                         right:
                             BorderSide(color: PdfColors.grey400, width: 0.5))),
-                child: Container(),
+                child: Center(
+                  child: Container(),
+                ),
               )),
         Expanded(
             flex: type == 1 ? 4 : 2,
             child: Container(
+              margin: const EdgeInsets.symmetric(vertical: -2),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               decoration: BoxDecoration(
                   border: Border(
                       right: BorderSide(color: PdfColors.grey400, width: 0.5))),
-              child: paddedTextSmall('รวมท้ังหมด',
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              child: Center(
+                child: paddedTextSmall('รวมท้ังหมด',
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
         Expanded(
             flex: 2,
             child: Container(
+              margin: const EdgeInsets.symmetric(vertical: -2),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               decoration: BoxDecoration(
                   border: Border(
                       right: BorderSide(color: PdfColors.grey400, width: 0.5))),
-              child: paddedTextSmall(
-                  type == 1
-                      ? Global.formatTruncate(getPurchaseAmountTotal(orders))
-                      : Global.formatTruncate(getPurchaseAmountTotalB(list)),
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: paddedTextSmall(
+                    type == 1
+                        ? Global.formatTruncate(getPurchaseAmountTotal(orders))
+                        : Global.formatTruncate(getPurchaseAmountTotalB(list)),
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
         Expanded(
             flex: 2,
             child: Container(
-              child: paddedTextSmall(
-                  type == 1
-                      ? Global.formatTruncate(getCashBankTotal(orders))
-                      : Global.formatTruncate(getCashBankTotalB(list)),
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              margin: const EdgeInsets.symmetric(vertical: -2),
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: paddedTextSmall(
+                    type == 1
+                        ? Global.formatTruncate(getCashBankTotal(orders))
+                        : Global.formatTruncate(getCashBankTotalB(list)),
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
       ],
     ),

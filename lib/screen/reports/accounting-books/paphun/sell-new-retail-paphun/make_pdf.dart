@@ -89,7 +89,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
           children: [
             // Column 1: เลขที่ใบกํากับภาษี (spans 2 rows)
             Expanded(
-              flex: 3,
+              flex: 6,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -111,7 +111,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             ),
             // Column 2: วัน/เดือน/ปี (spans 2 rows)
             Expanded(
-              flex: 2,
+              flex: 5,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -134,7 +134,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             // Column 3: ชื่อผู้ซื้อ (spans 2 rows) - only for type 1
             if (type == 1)
               Expanded(
-                flex: 5,
+                flex: 8,
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border(
@@ -156,7 +156,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
               ),
             // เดบิต section (2 levels)
             Expanded(
-              flex: 3,
+              flex: 6,
               child: Column(
                 children: [
                   // Top level: เดบิต
@@ -207,7 +207,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             ),
             // เครดิต section (2 levels)
             Expanded(
-              flex: 6,
+              flex: 12,
               child: Column(
                 children: [
                   // Top level: เครดิต
@@ -236,6 +236,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                     child: Row(
                       children: [
                         Expanded(
+                          flex: 6,
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border(
@@ -257,6 +258,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                           ),
                         ),
                         Expanded(
+                          flex: 6,
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border(
@@ -289,126 +291,152 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
     ]);
   }
 
-  // Data rows - will be in the build section
-  List<Widget> dataRows = [];
+  // Build table for data rows with dynamic height
+  List<TableRow> tableRows = [];
+
+  // Define column widths to match header flex ratios using FlexColumnWidth
+  // For type 1: [6, 5, 8, 6, 6, 6] total = 37 (last 3 columns equal width)
+  // For type 2/3: [6, 5, 6, 6, 6] total = 29 (last 3 columns equal width)
+  // Using FlexColumnWidth instead of FractionColumnWidth for better alignment with Row/Expanded
+  Map<int, TableColumnWidth> columnWidths = type == 1
+      ? {
+          0: FlexColumnWidth(6),  // Order ID
+          1: FlexColumnWidth(5),  // Date
+          2: FlexColumnWidth(8),  // Customer Name
+          3: FlexColumnWidth(6),  // Cash/Bank
+          4: FlexColumnWidth(6),  // Sales Amount
+          5: FlexColumnWidth(6),  // VAT Amount
+        }
+      : {
+          0: FlexColumnWidth(6),  // Order ID
+          1: FlexColumnWidth(5),  // Date
+          2: FlexColumnWidth(6),  // Cash/Bank
+          3: FlexColumnWidth(6),  // Sales Amount
+          4: FlexColumnWidth(6),  // VAT Amount
+        };
 
   if (type == 1 || type == 2 || type == 3) {
     for (int i = 0; i < list.length; i++) {
-      dataRows.add(Container(
-        height: 24,
-        decoration: BoxDecoration(
-          color: (i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
-          border: Border(
-            top: BorderSide(color: PdfColors.grey400, width: 0.5),
-            left: BorderSide(color: PdfColors.grey400, width: 0.8),
-            right: BorderSide(color: PdfColors.grey400, width: 0.8),
-            bottom: BorderSide(color: PdfColors.grey400, width: 0.8),
+      final isCancel = list[i].status == "2";
+      final textColor = isCancel ? PdfColors.red900 : PdfColors.black;
+      final bgColor = i % 2 == 0 ? PdfColors.grey100 : PdfColors.white;
+
+      List<Widget> cells = [
+        // Order ID
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              list[i].orderId,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
           ),
         ),
-        child: Row(
-          children: [
-            Expanded(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(list[i].orderId,
-                      align: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: type == 1 ? 14 : 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            Expanded(
-                flex: 2,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: PdfColors.grey400, width: 0.5),
-                      right: BorderSide(color: PdfColors.grey400, width: 0.5),
-                    ),
-                  ),
-                  child: paddedTextSmall(
-                      type == 3
-                          ? Global.formatDateMFT(list[i].orderDate.toString())
-                          : Global.dateOnly(list[i].orderDate.toString()),
-                      align: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 15,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            if (type == 1)
-              Expanded(
-                  flex: 5,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: PdfColors.grey400, width: 0.5))),
-                    child: paddedTextSmall(
-                        list[i].status == "2"
-                            ? "ยกเลิกเอกสาร***"
-                            : '${getCustomerName(list[i].customer!, forReport: true)}',
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: list[i].status == "2"
-                                ? PdfColors.red900
-                                : null)),
-                  )),
-            Expanded(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(
-                      list[i].status == "2"
-                          ? "0.00"
-                          : Global.format(getCashBank(list[i])),
-                      align: TextAlign.right,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            Expanded(
-                flex: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: PdfColors.grey400, width: 0.5))),
-                  child: paddedTextSmall(
-                      list[i].status == "2"
-                          ? "0.00"
-                          : Global.format(getSalesAmount(list[i])),
-                      align: TextAlign.right,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-            Expanded(
-                flex: 3,
-                child: Container(
-                  child: paddedTextSmall(
-                      list[i].status == "2"
-                          ? "0.00"
-                          : Global.format(getVatAmount(list[i])),
-                      align: TextAlign.right,
-                      style: TextStyle(
-                          fontSize: 14,
-                          color:
-                              list[i].status == "2" ? PdfColors.red900 : null)),
-                )),
-          ],
+        // Date
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              type == 3
+                  ? Global.formatDateMFT(list[i].orderDate.toString())
+                  : Global.dateOnly(list[i].orderDate.toString()),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, color: textColor),
+            ),
+          ),
         ),
-      ));
+      ];
+
+      // Customer name (only for type 1)
+      if (type == 1) {
+        cells.add(
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                isCancel
+                    ? "ยกเลิกเอกสาร***"
+                    : getCustomerName(list[i].customer!, forReport: true),
+                maxLines: 2,
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 14, color: textColor),
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Cash/Bank
+      cells.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              isCancel ? "0.00" : Global.format(getCashBank(list[i])),
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
+        ),
+      );
+
+      // Sales Amount
+      cells.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              isCancel ? "0.00" : Global.format(getSalesAmount(list[i])),
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
+        ),
+      );
+
+      // VAT Amount
+      cells.add(
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              isCancel ? "0.00" : Global.format(getVatAmount(list[i])),
+              textAlign: TextAlign.right,
+              style: TextStyle(fontSize: 14, color: textColor),
+            ),
+          ),
+        ),
+      );
+
+      tableRows.add(
+        TableRow(
+          decoration: BoxDecoration(color: bgColor),
+          children: cells,
+        ),
+      );
     }
+  }
+
+  // Build table with borders
+  List<Widget> dataRows = [];
+  if (tableRows.isNotEmpty) {
+    dataRows.add(
+      Table(
+        border: TableBorder.all(
+          color: PdfColors.grey400,
+          width: 0.5,
+        ),
+        columnWidths: columnWidths,
+        children: tableRows,
+      ),
+    );
   }
 
   // Total row
@@ -426,7 +454,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
     child: Row(
       children: [
         Expanded(
-            flex: 3,
+            flex: 6,
             child: Container(
               decoration: BoxDecoration(
                   border: Border(
@@ -435,7 +463,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             )),
         if (type == 1)
           Expanded(
-              flex: 2,
+              flex: 5,
               child: Container(
                 decoration: BoxDecoration(
                     border: Border(
@@ -444,7 +472,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                 child: Container(),
               )),
         Expanded(
-            flex: type == 1 ? 5 : 2,
+            flex: type == 1 ? 8 : 5,
             child: Container(
               decoration: BoxDecoration(
                   border: Border(
@@ -457,49 +485,58 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                   )),
             )),
         Expanded(
-            flex: 3,
+            flex: 6,
             child: Container(
               decoration: BoxDecoration(
                   border: Border(
                       right: BorderSide(color: PdfColors.grey400, width: 0.5))),
-              child: paddedTextSmall(
-                  type == 1
-                      ? Global.formatTruncate(getCashBankTotal(orders))
-                      : Global.formatTruncate(getCashBankTotalB(list)),
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: paddedTextSmall(
+                    type == 1
+                        ? Global.formatTruncate(getCashBankTotal(orders))
+                        : Global.formatTruncate(getCashBankTotalB(list)),
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
         Expanded(
-            flex: 3,
+            flex: 6,
             child: Container(
               decoration: BoxDecoration(
                   border: Border(
                       right: BorderSide(color: PdfColors.grey400, width: 0.5))),
-              child: paddedTextSmall(
-                  type == 1
-                      ? Global.formatTruncate(getSalesAmountTotal(orders))
-                      : Global.formatTruncate(getSalesAmountTotalB(list)),
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: paddedTextSmall(
+                    type == 1
+                        ? Global.formatTruncate(getSalesAmountTotal(orders))
+                        : Global.formatTruncate(getSalesAmountTotalB(list)),
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
         Expanded(
-            flex: 3,
+            flex: 6,
             child: Container(
-              child: paddedTextSmall(
-                  type == 1
-                      ? Global.formatTruncate(getVatAmountTotal(orders))
-                      : Global.formatTruncate(getVatAmountTotalB(list)),
-                  align: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  )),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: paddedTextSmall(
+                    type == 1
+                        ? Global.formatTruncate(getVatAmountTotal(orders))
+                        : Global.formatTruncate(getVatAmountTotalB(list)),
+                    align: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
             )),
       ],
     ),

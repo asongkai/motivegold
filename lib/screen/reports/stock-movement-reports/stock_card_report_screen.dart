@@ -61,6 +61,14 @@ class _StockCardReportScreenState extends State<StockCardReportScreen> {
     super.initState();
     productNotifier = ValueNotifier<ProductModel>(ProductModel(name: 'เลือกสินค้า', id: 0));
     warehouseNotifier = ValueNotifier<WarehouseModel>(WarehouseModel(id: 0, name: 'เลือกคลังสินค้า'));
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
+
     loadProducts();
   }
 
@@ -254,7 +262,10 @@ class _StockCardReportScreenState extends State<StockCardReportScreen> {
 
     StockMovementModel? product;
     if (location?.status == "success") {
-      product = StockMovementModel.fromJson(location?.data);
+      // API returns a list, extract the first item if available
+      if (location?.data is List && (location?.data as List).isNotEmpty) {
+        product = StockMovementModel.fromJson((location?.data as List).first);
+      }
       setState(() {});
     }
 

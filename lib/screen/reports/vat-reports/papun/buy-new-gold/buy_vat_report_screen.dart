@@ -1668,10 +1668,10 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
     yearCtrl.text = "";
     monthCtrl.text = "";
 
-    // Set default dates to current month
+    // Set default date range: 1st of current month to today
     DateTime now = DateTime.now();
     fromDate = DateTime(now.year, now.month, 1);
-    toDate = DateTime(now.year, now.month + 1, 0);
+    toDate = now;
     fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(fromDate!);
     toDateCtrl.text = DateFormat('yyyy-MM-dd').format(toDate!);
 

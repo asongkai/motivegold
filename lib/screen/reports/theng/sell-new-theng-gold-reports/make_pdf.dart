@@ -177,9 +177,7 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
               decoration: BoxDecoration(
-                  color: orders[i]!.status == "2"
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
@@ -203,7 +201,7 @@ Future<Uint8List> makeSellThengReportPdf(List<OrderModel?> orders, int type,
                             ? PdfColors.red900
                             : null)),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
-                paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร" : getCustomerName(orders[i]!.customer!)} ',
+                paddedTextSmall('${orders[i]!.status == "2" ? "ยกเลิกเอกสาร***" : getCustomerName(orders[i]!.customer!)} ',
                     style: TextStyle(
                         fontSize: 10,
                         color: orders[i]!.status == "2"

@@ -479,7 +479,7 @@ Future<Uint8List> makeSellUsedBill(Invoice invoice, {int option = 1}) async {
                                 child: Text(
                                     invoice.order.orderStatus == 'CANCEL'
                                         ? "0.00 บาท"
-                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                        : "${(invoice.payments![i].amount ?? 0) == 0 ? "0.00" : Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 10,

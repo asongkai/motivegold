@@ -47,6 +47,13 @@ class _ThengMoneyMovementReportScreenState extends State<ThengMoneyMovementRepor
   @override
   void initState() {
     super.initState();
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+    fromDateCtrl.text = firstDayOfMonth.toString().split(' ')[0];
+    toDateCtrl.text = now.toString().split(' ')[0];
   }
 
   void loadProducts() async {

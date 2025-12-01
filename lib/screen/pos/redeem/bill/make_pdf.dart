@@ -443,7 +443,7 @@ Future<Uint8List> makeRedeemSingleBillPdf(InvoiceRedeem invoice,
                             Expanded(
                                 flex: 6,
                                 child: Text(
-                                    "${formatWith2Decimals((invoice.order.redeemStatus == 'CANCEL' || invoice.order.status == 2) ? 0 : (invoice.payments![i].amount ?? 0))} บาท",
+                                    "${(invoice.order.redeemStatus == 'CANCEL' || invoice.order.status == 2) ? "0.00" : ((invoice.payments![i].amount ?? 0) == 0 ? "0.00" : formatWith2Decimals(invoice.payments![i].amount ?? 0))} บาท",
                                     textAlign: TextAlign.left,
                                     style: const TextStyle(
                                         fontSize: 10,

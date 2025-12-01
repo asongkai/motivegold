@@ -239,9 +239,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
           TableRow(
             decoration: BoxDecoration(
                 // 4. STRIPED ROW LOGIC
-                color: orders[i]!.status == "2"
-                    ? PdfColors.red100
-                    : (i % 2 == 0 ? PdfColors.white : PdfColors.grey100)),
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
               paddedTextSmall('${i + 1}',
                   align: TextAlign.center,
@@ -273,7 +271,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
               if (type == 1)
                 paddedTextSmall(
                     orders[i]!.status == "2"
-                        ? "ยกเลิกเอกสาร"
+                        ? "ยกเลิกเอกสาร***"
                         : getCustomerNameForWholesaleReports(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,

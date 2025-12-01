@@ -175,9 +175,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
-                color: orders[i]!.status == "2"
-                    ? PdfColors.red100
-                    : PdfColors.white),
+                color: PdfColors.white),
             children: [
               paddedTextSmall('${i + 1}',
                   style: TextStyle(
@@ -203,7 +201,7 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
               if (type == 1)
                 paddedTextSmall(
                     orders[i]!.status == "2"
-                        ? "ยกเลิกเอกสาร"
+                        ? "ยกเลิกเอกสาร***"
                         : type == 1
                             ? '${getCustomerName(orders[i]!.customer!)}'
                             : 'รวมรายการทองเก่า\nประจําวัน',

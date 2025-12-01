@@ -56,7 +56,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
         redeemId: orders[i]!.id,
         redeemDate: orders[i]?.redeemDate,
         customerName: orders[i]!.redeemStatus == 'CANCEL'
-            ? 'ยกเลิกเอกสาร'
+            ? 'ยกเลิกเอกสาร***'
             : (orders[i]!.customer != null
                 ? getCustomerNameForReports(orders[i]!.customer!)
                 : ''),
@@ -78,7 +78,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
         orders[i]!.details![j].redeemDate = orders[i]?.redeemDate;
         orders[i]!.details![j].customerName =
             orders[i]!.redeemStatus == 'CANCEL'
-                ? 'ยกเลิกเอกสาร'
+                ? 'ยกเลิกเอกสาร***'
                 : (orders[i]!.customer != null
                     ? getCustomerNameForReports(orders[i]!.customer!)
                     : '');
@@ -394,13 +394,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           for (int i = 0; i < details.length; i++)
             TableRow(
               decoration: BoxDecoration(
-                color: orders
-                            .firstWhere(
-                                (item) => item?.id == details[i].redeemId)
-                            ?.redeemStatus ==
-                        'CANCEL'
-                    ? PdfColors.red100
-                    : PdfColors.white,
+                color: PdfColors.white,
               ),
               children: [
                 paddedTextSmall(
@@ -641,9 +635,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
             if (orders[i]!.details == null || orders[i]!.details!.isEmpty)
               TableRow(
                 decoration: BoxDecoration(
-                    color: orders[i]!.status == 2
-                        ? PdfColors.red100
-                        : PdfColors.white),
+                    color: PdfColors.white),
                 children: [
                   // COLUMN 1: Date
                   paddedTextSmall(
@@ -668,7 +660,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   // COLUMN 3: Customer Name
                   paddedTextSmall(
                     orders[i]!.redeemStatus == 'CANCEL'
-                        ? 'ยกเลิกเอกสาร'
+                        ? 'ยกเลิกเอกสาร***'
                         : '${orders[i]?.customer?.firstName} ${orders[i]?.customer?.lastName}',
                     style: TextStyle(
                         fontSize: 11,
@@ -753,9 +745,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
               for (int j = 0; j < orders[i]!.details!.length; j++)
                 TableRow(
                   decoration: BoxDecoration(
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red100
-                          : PdfColors.white),
+                      color: PdfColors.white),
                   children: [
                     // COLUMN 1: Date
                     paddedTextSmall(
@@ -785,7 +775,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                     paddedTextSmall(
                       isFirstRowForOrderId(orders[i]!.details!, j)
                           ? (orders[i]!.redeemStatus == 'CANCEL'
-                              ? 'ยกเลิกเอกสาร'
+                              ? 'ยกเลิกเอกสาร***'
                               : '${orders[i]?.details![j].customerName}')
                           : '',
                       style: TextStyle(
@@ -967,9 +957,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           for (int i = 0; i < orders.length; i++)
             TableRow(
               decoration: BoxDecoration(
-                  color: orders[i]!.status == 2
-                      ? PdfColors.red100
-                      : PdfColors.white),
+                  color: PdfColors.white),
               children: [
                 // COLUMN 1: Date
                 paddedTextSmall(
@@ -992,7 +980,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 // COLUMN 3: Customer Name
                 paddedTextSmall(
                   orders[i]!.redeemStatus == 'CANCEL'
-                      ? 'ยกเลิกเอกสาร'
+                      ? 'ยกเลิกเอกสาร***'
                       : getCustomerNameForReports(orders[i]!.customer!),
                   style: TextStyle(
                       fontSize: 11,

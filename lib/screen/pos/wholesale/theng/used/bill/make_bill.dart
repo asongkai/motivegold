@@ -463,7 +463,7 @@ Future<Uint8List> makeSellUsedThengBill(Invoice invoice,
                                 child: Text(
                                     invoice.order.orderStatus == 'CANCEL'
                                         ? "0.00 บาท"
-                                        : "${Global.format(invoice.payments![i].amount ?? 0)} บาท",
+                                        : "${(invoice.payments![i].amount ?? 0) == 0 ? "0.00" : Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
                                         fontSize: 10,

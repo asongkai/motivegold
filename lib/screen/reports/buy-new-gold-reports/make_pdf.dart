@@ -191,9 +191,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
         for (int i = 0; i < orders.length; i++)
           TableRow(
             decoration: BoxDecoration(
-                color: orders[i]!.status == "2"
-                    ? PdfColors.red100
-                    : PdfColors.white),
+                color: PdfColors.white),
             children: [
               paddedTextSmall('${i + 1}',
                   style: TextStyle(
@@ -219,7 +217,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
 
               paddedTextSmall(
                   orders[i]!.status == "2"
-                      ? "ยกเลิกเอกสาร"
+                      ? "ยกเลิกเอกสาร***"
                       : getCustomerNameForWholesaleReports(orders[i]!.customer!),
                   style: TextStyle(
                       fontSize: 11,

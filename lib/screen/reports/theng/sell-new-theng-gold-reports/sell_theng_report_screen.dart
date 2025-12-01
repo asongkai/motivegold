@@ -1436,8 +1436,13 @@ class _SellThengReportScreenState extends State<SellThengReportScreen> {
     toDateNotifier = ValueNotifier<dynamic>("");
     yearCtrl.text = "";
     monthCtrl.text = "";
-    fromDateCtrl.text = "";
-    toDateCtrl.text = "";
+
+    // Set default date range: 1st of current month to today
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
+
     fromDate = null;
     toDate = null;
     productNotifier =
