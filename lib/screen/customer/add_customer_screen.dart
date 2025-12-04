@@ -47,6 +47,7 @@ import 'package:sizer/sizer.dart';
 import 'package:motivegold/widget/customer/download_helper_mobile.dart'
     if (dart.library.html) 'package:motivegold/widget/customer/download_helper_web.dart'
     as download_helper;
+import 'package:motivegold/screen/customer/widget/card_reader_info.dart';
 
 // Helper class to store file with timestamp
 class FileWithTimestamp {
@@ -121,6 +122,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   bool loading = false;
   CustomerModel? selectedCustomer;
   String? nationality;
+
+  // Card reader state
+  bool _isCardReaderConnected = false;
+  String? _cardReaderStatus;
 
   List<TitleNameModel> titleNames = [];
   TitleNameModel? selectedTitleName;
@@ -226,13 +231,377 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     Global.tambonNotifier =
         ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
 
-    // Start animations
+    // Start animations and card reader
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _fadeController?.forward();
         _slideController?.forward();
+        // Auto-try to read card on init
+        _tryReadCard();
       }
     });
+  }
+
+  // Try to read card from card reader service
+  Future<void> _tryReadCard() async {
+    motivePrint("========================================");
+    motivePrint("CARD READER: Starting card read attempt");
+    motivePrint("========================================");
+
+    try {
+      motivePrint(
+          "CARD READER: Setting status to 'กำลังตรวจสอบเครื่องอ่านบัตร...'");
+      setState(() {
+        _cardReaderStatus = "กำลังตรวจสอบเครื่องอ่านบัตร...";
+      });
+
+      motivePrint(
+          "CARD READER: Sending POST request to http://127.0.0.1:8765/read");
+      motivePrint("CARD READER: Request headers:");
+      motivePrint("  - Content-Type: application/json");
+      motivePrint("  - x-api-key: local_services_key");
+      motivePrint("CARD READER: Timeout: 3 seconds");
+
+      final response = await http.post(
+        Uri.parse('http://127.0.0.1:8765/read'),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'local_services_key'
+        },
+      ).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          motivePrint("CARD READER ERROR: Request timed out after 3 seconds");
+          throw TimeoutException('Card reader service not responding');
+        },
+      );
+
+      motivePrint("CARD READER: Response received");
+      motivePrint("CARD READER: Status code: ${response.statusCode}");
+      motivePrint("CARD READER: Response headers: ${response.headers}");
+      motivePrint(
+          "CARD READER: Response body length: ${response.body.length} characters");
+
+      if (response.statusCode == 200) {
+        motivePrint("CARD READER: Status 200 - Success!");
+        motivePrint("CARD READER: Response body: ${response.body}");
+
+        try {
+          final data = jsonDecode(response.body);
+          motivePrint("CARD READER: JSON decoded successfully");
+          motivePrint("CARD READER: Data keys: ${data.keys.toList()}");
+          motivePrint("CARD READER: Full data:");
+          data.forEach((key, value) {
+            motivePrint("  - $key: $value");
+          });
+
+          setState(() {
+            _isCardReaderConnected = true;
+            _cardReaderStatus = "อ่านบัตรสำเร็จ";
+          });
+          motivePrint("CARD READER: Status updated to 'อ่านบัตรสำเร็จ'");
+
+          // Auto-populate fields like OCR
+          motivePrint("CARD READER: Calling _populateFieldsFromCard...");
+          await _populateFieldsFromCard(data);
+          motivePrint("CARD READER: Field population completed");
+        } catch (jsonError) {
+          motivePrint("CARD READER ERROR: Failed to parse JSON response");
+          motivePrint("CARD READER ERROR: JSON error: $jsonError");
+          motivePrint("CARD READER ERROR: Response body was: ${response.body}");
+          setState(() {
+            _isCardReaderConnected = false;
+            _cardReaderStatus = "เกิดข้อผิดพลาดในการแปลงข้อมูล";
+          });
+        }
+      } else {
+        motivePrint(
+            "CARD READER ERROR: Non-200 status code: ${response.statusCode}");
+        motivePrint("CARD READER ERROR: Response body: ${response.body}");
+        setState(() {
+          _isCardReaderConnected = false;
+          _cardReaderStatus = null;
+        });
+      }
+    } on TimeoutException catch (e) {
+      motivePrint("CARD READER ERROR: Timeout exception caught");
+      motivePrint("CARD READER ERROR: Message: ${e.message}");
+      motivePrint("CARD READER ERROR: Duration: ${e.duration}");
+      motivePrint(
+          "CARD READER: Service is likely not running at http://127.0.0.1:8765");
+      setState(() {
+        _isCardReaderConnected = false;
+        _cardReaderStatus = null;
+      });
+    } on http.ClientException catch (e) {
+      motivePrint("CARD READER ERROR: HTTP Client exception");
+      motivePrint("CARD READER ERROR: Message: ${e.message}");
+      motivePrint("CARD READER ERROR: URI: ${e.uri}");
+      motivePrint(
+          "CARD READER: Cannot connect to service - check if it's running");
+      setState(() {
+        _isCardReaderConnected = false;
+        _cardReaderStatus = null;
+      });
+    } on SocketException catch (e) {
+      motivePrint("CARD READER ERROR: Socket exception");
+      motivePrint("CARD READER ERROR: Message: ${e.message}");
+      motivePrint("CARD READER ERROR: Address: ${e.address}");
+      motivePrint("CARD READER ERROR: Port: ${e.port}");
+      motivePrint("CARD READER: Network issue or service not running");
+      setState(() {
+        _isCardReaderConnected = false;
+        _cardReaderStatus = null;
+      });
+    } catch (e, stackTrace) {
+      motivePrint("CARD READER ERROR: Unexpected error");
+      motivePrint("CARD READER ERROR: Type: ${e.runtimeType}");
+      motivePrint("CARD READER ERROR: Message: $e");
+      motivePrint("CARD READER ERROR: Stack trace:");
+      motivePrint("$stackTrace");
+      setState(() {
+        _isCardReaderConnected = false;
+        _cardReaderStatus = null;
+      });
+    }
+
+    motivePrint("========================================");
+    motivePrint("CARD READER: Card read attempt completed");
+    motivePrint(
+        "CARD READER: Final status - Connected: $_isCardReaderConnected");
+    motivePrint("CARD READER: Final status - Message: $_cardReaderStatus");
+    motivePrint("========================================");
+  }
+
+  // Populate fields from card reader data (similar to OCR)
+  Future<void> _populateFieldsFromCard(Map<String, dynamic> data) async {
+    motivePrint("----------------------------------------");
+    motivePrint("CARD READER: Starting field population");
+    motivePrint("----------------------------------------");
+
+    try {
+      // ID Card Number
+      motivePrint("CARD READER: Populating ID Card Number");
+      String cidValue = data['cid'] ?? '';
+      idCardCtrl.text = cidValue;
+      motivePrint("CARD READER: ID Card = '$cidValue'");
+
+      // Name (split full name)
+      motivePrint("CARD READER: Populating name fields");
+      String thFullName = data['th_fullname']?.toString() ?? '';
+      motivePrint("CARD READER: Full name from card = '$thFullName'");
+
+      if (thFullName.isNotEmpty) {
+        List<String> nameParts = thFullName.split(' ');
+        motivePrint(
+            "CARD READER: Name split into ${nameParts.length} parts: $nameParts");
+
+        if (nameParts.length >= 2) {
+          // First part is title, handle it
+          String titleFromCard = nameParts[0];
+          motivePrint("CARD READER: Title from card = '$titleFromCard'");
+
+          // Auto-select title name from card
+          if (titleNames.isNotEmpty) {
+            motivePrint(
+                "CARD READER: Available title names: ${titleNames.length}");
+            try {
+              selectedTitleName = titleNames.firstWhere(
+                (title) => title.name?.trim() == titleFromCard.trim(),
+              );
+              if (selectedTitleName != null) {
+                titleNameNotifier?.value = selectedTitleName!;
+                motivePrint(
+                    "CARD READER: Title auto-selected: ${selectedTitleName?.name}");
+              }
+            } catch (e) {
+              motivePrint(
+                  "CARD READER: Title not found in dropdown: $titleFromCard");
+              motivePrint(
+                  "CARD READER: Available titles: ${titleNames.map((t) => t.name).toList()}");
+            }
+          } else {
+            motivePrint("CARD READER WARNING: Title names list is empty");
+          }
+
+          firstNameCtrl.text = nameParts.length > 1 ? nameParts[1] : '';
+          lastNameCtrl.text = nameParts.length > 2 ? nameParts.last : '';
+          motivePrint("CARD READER: First name = '${firstNameCtrl.text}'");
+          motivePrint("CARD READER: Last name = '${lastNameCtrl.text}'");
+        }
+      } else {
+        motivePrint("CARD READER WARNING: Full name is empty");
+      }
+
+      // Birth Date
+      motivePrint("CARD READER: Populating birth date");
+      String birthValue = data['birth'] ?? '';
+      birthDateCtrl.text = birthValue;
+      motivePrint("CARD READER: Birth date = '$birthValue'");
+
+      // Address
+      motivePrint("CARD READER: Populating address");
+      String fullAddress = data['address']?.toString() ?? '';
+      Global.addressCtrl.text = fullAddress;
+      motivePrint("CARD READER: Full address = '$fullAddress'");
+
+      // Set nationality to Thai (from card reader)
+      motivePrint("CARD READER: Setting nationality to Thai");
+      if (nationalities.isNotEmpty) {
+        motivePrint(
+            "CARD READER: Available nationalities: ${nationalities.length}");
+        try {
+          selectedNationality = nationalities.firstWhere(
+            (nat) => nat.iso == 'TH',
+          );
+          if (selectedNationality != null) {
+            nationalityNotifier?.value = selectedNationality!;
+            motivePrint(
+                "CARD READER: Thai nationality auto-selected: ${selectedNationality?.nationalityTH}");
+          }
+        } catch (e) {
+          motivePrint("CARD READER ERROR: Thai nationality not found: $e");
+          motivePrint(
+              "CARD READER: Available nationalities: ${nationalities.map((n) => n.iso).toList()}");
+        }
+      } else {
+        motivePrint("CARD READER WARNING: Nationalities list is empty");
+      }
+
+      // Parse address from card reader
+      motivePrint("CARD READER: Parsing address components");
+      if (data['address_parsed'] != null) {
+        var addressParsed = data['address_parsed'];
+        motivePrint("CARD READER: Address parsed data: $addressParsed");
+
+        String? amphure = addressParsed['amphoe'];
+        String? tambon = addressParsed['tambon'];
+        motivePrint("CARD READER: Amphure from parsed = '$amphure'");
+        motivePrint("CARD READER: Tambon from parsed = '$tambon'");
+
+        // Search and load amphure
+        if (amphure != null && amphure.isNotEmpty) {
+          motivePrint(
+              "CARD READER: Searching amphure via API: /location/amphure/search/$amphure");
+          var result =
+              await ApiServices.get('/location/amphure/search/$amphure');
+          motivePrint(
+              "CARD READER: Amphure API result status: ${result?.status}");
+          if (result?.status == "success") {
+            Global.amphureModel = AmphureModel.fromJson(result?.data);
+            motivePrint(
+                "CARD READER: Amphure loaded: ${Global.amphureModel?.nameTh} (ID: ${Global.amphureModel?.id})");
+          } else {
+            motivePrint("CARD READER WARNING: Amphure not found in database");
+          }
+        } else {
+          motivePrint("CARD READER WARNING: Amphure is empty");
+        }
+
+        // Search and load tambon
+        if (tambon != null && tambon.isNotEmpty) {
+          motivePrint(
+              "CARD READER: Searching tambon via API: /location/tambon/search/$tambon");
+          var result = await ApiServices.get('/location/tambon/search/$tambon');
+          motivePrint(
+              "CARD READER: Tambon API result status: ${result?.status}");
+          if (result?.status == "success") {
+            Global.tambonModel = TambonModel.fromJson(result?.data);
+            motivePrint(
+                "CARD READER: Tambon loaded: ${Global.tambonModel?.nameTh} (ID: ${Global.tambonModel?.id})");
+          } else {
+            motivePrint("CARD READER WARNING: Tambon not found in database");
+          }
+        } else {
+          motivePrint("CARD READER WARNING: Tambon is empty");
+        }
+
+        // Load province from amphure
+        motivePrint("CARD READER: Loading province from amphure");
+        if (Global.amphureModel != null) {
+          motivePrint(
+              "CARD READER: Amphure province ID: ${Global.amphureModel?.provinceId}");
+          var provinces = Global.provinceList
+              .where((e) => e.id == Global.amphureModel?.provinceId);
+          if (provinces.isNotEmpty) {
+            Global.provinceModel = provinces.first;
+            motivePrint(
+                "CARD READER: Province loaded: ${Global.provinceModel?.nameTh} (ID: ${Global.provinceModel?.id})");
+          } else {
+            motivePrint(
+                "CARD READER WARNING: Province not found for ID ${Global.amphureModel?.provinceId}");
+          }
+        } else {
+          motivePrint(
+              "CARD READER WARNING: Amphure model is null, cannot load province");
+        }
+
+        // Load dependent data
+        motivePrint(
+            "CARD READER: Loading amphures for province ${Global.provinceModel?.id}");
+        await loadAmphureByProvince(Global.provinceModel?.id);
+        motivePrint(
+            "CARD READER: Amphures loaded: ${Global.amphureList.length} items");
+
+        motivePrint(
+            "CARD READER: Loading tambons for amphure ${Global.amphureModel?.id}");
+        await loadTambonByAmphure(Global.amphureModel?.id);
+        motivePrint(
+            "CARD READER: Tambons loaded: ${Global.tambonList.length} items");
+
+        // Update notifiers
+        motivePrint("CARD READER: Updating ValueNotifiers for dropdowns");
+        setState(() {
+          Global.provinceNotifier = ValueNotifier<ProvinceModel>(
+              Global.provinceModel ??
+                  ProvinceModel(id: 0, nameTh: 'เลือกจังหวัด'));
+          Global.amphureNotifier = ValueNotifier<AmphureModel>(
+              Global.amphureModel ?? AmphureModel(id: 0, nameTh: 'เลือกอำเภอ'));
+          Global.tambonNotifier = ValueNotifier<TambonModel>(
+              Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
+
+          motivePrint(
+              "CARD READER: Province notifier set to: ${Global.provinceModel?.nameTh ?? 'เลือกจังหวัด'}");
+          motivePrint(
+              "CARD READER: Amphure notifier set to: ${Global.amphureModel?.nameTh ?? 'เลือกอำเภอ'}");
+          motivePrint(
+              "CARD READER: Tambon notifier set to: ${Global.tambonModel?.nameTh ?? 'เลือกตำบล'}");
+
+          // Remove tambon/amphure prefix from address
+          String cleanedAddress = fullAddress.split('ตำบล').first.trim();
+          Global.addressCtrl.text = cleanedAddress;
+          motivePrint("CARD READER: Cleaned address = '$cleanedAddress'");
+        });
+      } else {
+        motivePrint(
+            "CARD READER WARNING: address_parsed is null, skipping location lookup");
+      }
+
+      motivePrint("CARD READER: Calling final setState to refresh UI");
+      setState(() {});
+
+      motivePrint("----------------------------------------");
+      motivePrint("CARD READER: Field population SUCCESS");
+      motivePrint("CARD READER: Summary:");
+      motivePrint("  - ID Card: ${idCardCtrl.text}");
+      motivePrint("  - Name: ${firstNameCtrl.text} ${lastNameCtrl.text}");
+      motivePrint("  - Birth: ${birthDateCtrl.text}");
+      motivePrint("  - Province: ${Global.provinceModel?.nameTh ?? 'Not set'}");
+      motivePrint("  - Amphure: ${Global.amphureModel?.nameTh ?? 'Not set'}");
+      motivePrint("  - Tambon: ${Global.tambonModel?.nameTh ?? 'Not set'}");
+      motivePrint("----------------------------------------");
+    } catch (e, stackTrace) {
+      motivePrint("========================================");
+      motivePrint("CARD READER ERROR: Exception in field population");
+      motivePrint("CARD READER ERROR: Type: ${e.runtimeType}");
+      motivePrint("CARD READER ERROR: Message: $e");
+      motivePrint("CARD READER ERROR: Stack trace:");
+      motivePrint("$stackTrace");
+      motivePrint("========================================");
+      setState(() {
+        _cardReaderStatus = "เกิดข้อผิดพลาดในการอ่านข้อมูล";
+      });
+    }
   }
 
   @override
@@ -885,121 +1254,162 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                         fontSize: 14.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.w900)),
-                GestureDetector(
-                  onTap: () async {
-                    Map<String, dynamic>? ocrResult =
-                        await Navigator.of(context)
-                            .push(
-                      MaterialPageRoute(
-                        builder: (context) => const IDCardOCRScreen(),
-                      ),
-                    )
-                            .whenComplete(() {
-                      setState(() {});
-                    });
-
-                    if (ocrResult != null) {
-                      idCardCtrl.text = ocrResult["id_number"] ?? "";
-
-                      // Get title name from OCR
-                      String? titleFromOCR;
-                      if (ocrResult["th_fname"] != null) {
-                        titleFromOCR = ocrResult["th_init"];
-                        firstNameCtrl.text = ocrResult["th_fname"] ?? "";
-                        lastNameCtrl.text = ocrResult["th_lname"] ?? "";
-                      } else {
-                        titleFromOCR = ocrResult["en_init"];
-                        firstNameCtrl.text = ocrResult["en_fname"] ?? "";
-                        lastNameCtrl.text = ocrResult["en_lname"] ?? "";
-                      }
-
-                      // Auto-select title name from OCR
-                      if (titleFromOCR != null && titleNames.isNotEmpty) {
-                        try {
-                          selectedTitleName = titleNames.firstWhere(
-                            (title) =>
-                                title.name?.trim() == titleFromOCR?.trim(),
-                          );
-                          if (selectedTitleName != null) {
-                            titleNameNotifier?.value = selectedTitleName!;
-                          }
-                        } catch (e) {
-                          // Title not found, leave as is
-                        }
-                      }
-
-                      emailAddressCtrl.text = "";
-                      phoneCtrl.text = "";
-                      birthDateCtrl.text =
-                          Global.formatDateThai(ocrResult["en_dob"]);
-
-                      // Set nationality to Thai
-                      if (nationalities.isNotEmpty) {
-                        try {
-                          selectedNationality = nationalities.firstWhere(
-                            (nat) => nat.iso == 'TH',
-                          );
-                          if (selectedNationality != null) {
-                            nationalityNotifier?.value = selectedNationality!;
-                          }
-                        } catch (e) {
-                          // If Thai nationality not found, use first one
-                          selectedNationality = nationalities.first;
-                          if (selectedNationality != null) {
-                            nationalityNotifier?.value = selectedNationality!;
-                          }
-                        }
-                      }
-
-                      postalCodeCtrl.text = ocrResult["postal_code"] ?? "";
-
-                      // Parse Thai address into separate fields
-                      String fullAddress =
-                          ocrResult["address"]?.toString() ?? "";
-                      Map<String, String> parsedAddress =
-                          _parseThaiAddress(fullAddress);
-
-                      // Populate parsed address fields
-                      Global.addressCtrl.text =
-                          parsedAddress["houseNumber"] ?? "";
-                      mooCtrl.text = parsedAddress["moo"] ?? "";
-                      soiCtrl.text = parsedAddress["soi"] ?? "";
-                      roadCtrl.text = parsedAddress["road"] ?? "";
-                      villageCtrl.text = parsedAddress["village"] ?? "";
-
-                      // Populate remaining address (before ต.)
-                      addressCtrl.text = fullAddress.split("ต.")[0].trim();
-                    }
-
-                    setState(() {});
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.teal[900],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search,
-                            size: 16.sp,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'แสดงตนลูกค้า',
-                            style: TextStyle(
-                                fontSize: 14.sp,
+                Row(
+                  children: [
+                    // Card reader status indicator (minimal)
+                    if (_cardReaderStatus != null)
+                      Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: _isCardReaderConnected
+                              ? Colors.green[700]
+                              : Colors.orange[700],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isCardReaderConnected
+                                  ? Icons.credit_card
+                                  : Icons.pending,
+                              size: 14.sp,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _cardReaderStatus!,
+                              style: TextStyle(
+                                fontSize: 12.sp,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w500),
-                          )
-                        ],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // OCR Button
+                    GestureDetector(
+                      onTap: () async {
+                        Map<String, dynamic>? ocrResult =
+                            await Navigator.of(context)
+                                .push(
+                          MaterialPageRoute(
+                            builder: (context) => const IDCardOCRScreen(),
+                          ),
+                        )
+                                .whenComplete(() {
+                          setState(() {});
+                        });
+
+                        if (ocrResult != null) {
+                          idCardCtrl.text = ocrResult["id_number"] ?? "";
+
+                          // Get title name from OCR
+                          String? titleFromOCR;
+                          if (ocrResult["th_fname"] != null) {
+                            titleFromOCR = ocrResult["th_init"];
+                            firstNameCtrl.text = ocrResult["th_fname"] ?? "";
+                            lastNameCtrl.text = ocrResult["th_lname"] ?? "";
+                          } else {
+                            titleFromOCR = ocrResult["en_init"];
+                            firstNameCtrl.text = ocrResult["en_fname"] ?? "";
+                            lastNameCtrl.text = ocrResult["en_lname"] ?? "";
+                          }
+
+                          // Auto-select title name from OCR
+                          if (titleFromOCR != null && titleNames.isNotEmpty) {
+                            try {
+                              selectedTitleName = titleNames.firstWhere(
+                                (title) =>
+                                    title.name?.trim() == titleFromOCR?.trim(),
+                              );
+                              if (selectedTitleName != null) {
+                                titleNameNotifier?.value = selectedTitleName!;
+                              }
+                            } catch (e) {
+                              // Title not found, leave as is
+                            }
+                          }
+
+                          emailAddressCtrl.text = "";
+                          phoneCtrl.text = "";
+                          birthDateCtrl.text =
+                              Global.formatDateThai(ocrResult["en_dob"]);
+
+                          // Set nationality to Thai
+                          if (nationalities.isNotEmpty) {
+                            try {
+                              selectedNationality = nationalities.firstWhere(
+                                (nat) => nat.iso == 'TH',
+                              );
+                              if (selectedNationality != null) {
+                                nationalityNotifier?.value =
+                                    selectedNationality!;
+                              }
+                            } catch (e) {
+                              // If Thai nationality not found, use first one
+                              selectedNationality = nationalities.first;
+                              if (selectedNationality != null) {
+                                nationalityNotifier?.value =
+                                    selectedNationality!;
+                              }
+                            }
+                          }
+
+                          postalCodeCtrl.text = ocrResult["postal_code"] ?? "";
+
+                          // Parse Thai address into separate fields
+                          String fullAddress =
+                              ocrResult["address"]?.toString() ?? "";
+                          Map<String, String> parsedAddress =
+                              _parseThaiAddress(fullAddress);
+
+                          // Populate parsed address fields
+                          Global.addressCtrl.text =
+                              parsedAddress["houseNumber"] ?? "";
+                          mooCtrl.text = parsedAddress["moo"] ?? "";
+                          soiCtrl.text = parsedAddress["soi"] ?? "";
+                          roadCtrl.text = parsedAddress["road"] ?? "";
+                          villageCtrl.text = parsedAddress["village"] ?? "";
+
+                          // Populate remaining address (before ต.)
+                          addressCtrl.text = fullAddress.split("ต.")[0].trim();
+                        }
+
+                        setState(() {});
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.teal[900],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'แสดงตนลูกค้า',
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
