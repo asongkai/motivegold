@@ -57,7 +57,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
             3: FixedColumnWidth(50),
             4: FixedColumnWidth(80),
             5: FixedColumnWidth(60),
-            6: FixedColumnWidth(50),
+            6: FixedColumnWidth(80),  // Tax ID - increased from 50 to 80 for 13 digits
             7: FixedColumnWidth(70),
             8: FixedColumnWidth(70),
             9: FixedColumnWidth(60),
@@ -178,7 +178,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
         3: FixedColumnWidth(50),
         4: FixedColumnWidth(80),
         5: FixedColumnWidth(60),
-        6: FixedColumnWidth(50),
+        6: FixedColumnWidth(80),  // Tax ID - increased from 50 to 80 for 13 digits
         7: FixedColumnWidth(70),
         8: FixedColumnWidth(70),
         9: FixedColumnWidth(60),
@@ -208,7 +208,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                           orders[i]!.status == "2" ? PdfColors.red900 : null),
                   align: TextAlign.center),
               paddedTextSmall(
-                  Global.dateOnly(orders[i]!.createdDate.toString()),
+                  Global.dateOnly(orders[i]!.orderDate.toString()),
                   style: TextStyle(
                       fontSize: 11,
                       color:

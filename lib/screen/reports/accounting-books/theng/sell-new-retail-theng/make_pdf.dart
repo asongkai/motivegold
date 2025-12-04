@@ -381,7 +381,6 @@ Future<Uint8List> makeSellNewRetailThengReportPdf(List<OrderModel?> orders,
                 isCancel
                     ? "ยกเลิกเอกสาร***"
                     : getCustomerName(list[i].customer!, forReport: true),
-                maxLines: 2,
                 textAlign: TextAlign.left,
                 style: TextStyle(fontSize: 12, color: textColor),
               ),

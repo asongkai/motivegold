@@ -203,7 +203,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                               fontWeight: FontWeight.bold,
                               color: PdfColors.white),
                           align: TextAlign.center),
-                      paddedTextSmall('วันที่',
+                      paddedTextSmall('เดือน',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -318,8 +318,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
           for (int i = 0; i < orders.length; i++)
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
-              decoration: BoxDecoration(
-                  color: PdfColors.white),
+              decoration: BoxDecoration(color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
@@ -443,8 +442,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
           for (int i = 0; i < list.length; i++)
             TableRow(
               verticalAlignment: TableCellVerticalAlignment.middle,
-              decoration: BoxDecoration(
-                  color: PdfColors.white),
+              decoration: BoxDecoration(color: PdfColors.white),
               children: [
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(

@@ -360,7 +360,6 @@ Future<Uint8List> makeRefillWholesalePaphunReportPdf(List<OrderModel?> orders,
                 isCancel
                     ? "ยกเลิกเอกสาร***"
                     : getCustomerName(list[i].customer!, forReport: true),
-                maxLines: 2,
                 textAlign: TextAlign.left,
                 style: TextStyle(fontSize: 14, color: textColor),
               ),

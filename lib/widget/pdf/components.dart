@@ -432,7 +432,7 @@ Widget docNoRedeem(RedeemModel order, {required CustomerModel customer}) {
         Positioned.fill(
           child: Center(
             child: Container(
-              width: 100,
+              width: 120,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: PdfColors.black,
@@ -590,7 +590,7 @@ Widget buyerSellerInfo(CustomerModel customer, OrderModel order) {
           Positioned.fill(
             child: Center(
               child: Container(
-                width: 90,
+                width: 120,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: PdfColors.black,
@@ -717,7 +717,7 @@ Widget buyerSellerInfoRedeem(
           Positioned.fill(
             child: Center(
               child: Container(
-                width: 90,
+                width: 120,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: PdfColors.black,
@@ -864,7 +864,7 @@ Widget buyerSellerInfoRefill(
           Positioned.fill(
             child: Center(
               child: Container(
-                width: 90,
+                width: 120,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: PdfColors.black,
@@ -1008,7 +1008,7 @@ Widget buyerSellerInfoSellUsedWholeSale(
           Positioned.fill(
             child: Center(
               child: Container(
-                width: 90,
+                width: 120,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: PdfColors.black,
@@ -1136,7 +1136,7 @@ Widget buyerSellerInfoBuySellTheng(CustomerModel customer, OrderModel order) {
           Positioned.fill(
             child: Center(
               child: Container(
-                width: 90,
+                width: 120,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: PdfColors.black,
