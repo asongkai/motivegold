@@ -19,9 +19,9 @@ PdfColor getMovementTypeColor(String? type) {
 
   String lowerType = type.toLowerCase();
   if (lowerType.contains('in')) {
-    return PdfColors.green600;
+    return PdfColors.green600;  // Stock IN = green
   } else if (lowerType.contains('out') || lowerType.contains('sale')) {
-    return PdfColors.red600;
+    return PdfColors.red600;    // Stock OUT = red
   } else {
     return PdfColors.grey600;
   }
@@ -105,8 +105,8 @@ Future<Uint8List> makeStockCardReportPdf(
       children: [
         // Clean header row with rounded top corners
         TableRow(
-            decoration: BoxDecoration(
-              color: PdfColors.blue600,
+            decoration: const BoxDecoration(
+              color: PdfColors.white,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(11),
                 topRight: Radius.circular(11),
@@ -211,7 +211,7 @@ Future<Uint8List> makeStockCardReportPdf(
         // Starting balance row with clean styling
         TableRow(
             decoration: BoxDecoration(
-              color: PdfColors.blue50,
+              color: PdfColors.white,
             ),
             children: [
               paddedTextSmall(''),
@@ -220,7 +220,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.blue800
+                      color: PdfColors.black
                   )
               ),
               paddedTextSmall(''),
@@ -229,7 +229,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.blue700
+
                   ),
                   align: TextAlign.right),
               paddedTextSmall(''),
@@ -238,7 +238,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.orange700
+
                   ),
                   align: TextAlign.right),
               paddedTextSmall(''),
@@ -247,7 +247,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.green700
+
                   ),
                   align: TextAlign.right),
             ]
@@ -258,9 +258,9 @@ Future<Uint8List> makeStockCardReportPdf(
         // Ending balance row with clean styling
         TableRow(
             decoration: BoxDecoration(
-              color: PdfColors.blue50,
+              color: PdfColors.white,
               border: Border(
-                top: BorderSide(color: PdfColors.blue200, width: 1),
+                top: BorderSide(color: PdfColors.grey400, width: 0.5),
               ),
             ),
             children: [
@@ -270,7 +270,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.blue800
+                      color: PdfColors.black
                   )
               ),
               paddedTextSmall(''),
@@ -279,7 +279,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.blue700
+
                   ),
                   align: TextAlign.right),
               paddedTextSmall(''),
@@ -288,7 +288,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.orange700
+
                   ),
                   align: TextAlign.right),
               paddedTextSmall(''),
@@ -297,7 +297,7 @@ Future<Uint8List> makeStockCardReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.green700
+
                   ),
                   align: TextAlign.right),
             ]
@@ -342,53 +342,53 @@ TableRow lineItem(StockMovementModel list, StockMovementModel? movement, Product
       ),
       if (list.weight! > 0)
         paddedTextSmall(' ${product?.type == 'BAR' ? Global.format4(list.weight ?? 0) : Global.format(list.weight ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10),
             align: TextAlign.right),
       if (list.weight! < 0) paddedTextSmall(''),
       if (list.weight! < 0)
         paddedTextSmall(' ${product?.type == 'BAR' ? Global.format4(list.weight ?? 0) : Global.format(list.weight ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: null),
             align: TextAlign.right),
       if (list.weight! > 0) paddedTextSmall(''),
       paddedTextSmall('${product?.type == 'BAR' ? Global.format4(weightLineTotal) : Global.format(weightLineTotal)}',
           style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: PdfColors.blue700
+
           ),
           align: TextAlign.right),
       if (list.unitCost! > 0)
         paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10),
             align: TextAlign.right),
       if (list.unitCost! < 0) paddedTextSmall(''),
       if (list.unitCost! < 0)
         paddedTextSmall(' ${Global.format6(list.unitCost ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: null),
             align: TextAlign.right),
       if (list.unitCost! > 0) paddedTextSmall(''),
       paddedTextSmall(' ${Global.format6(unitCostLineTotal)}',
           style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: PdfColors.orange700
+
           ),
           align: TextAlign.right),
       if (list.price! > 0)
         paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.green600),
+            style: TextStyle(fontSize: 10),
             align: TextAlign.right),
       if (list.price! < 0) paddedTextSmall(''),
       if (list.price! < 0)
         paddedTextSmall(' ${Global.format6(list.price ?? 0)}',
-            style: TextStyle(fontSize: 10, color: PdfColors.red600),
+            style: TextStyle(fontSize: 10, color: null),
             align: TextAlign.right),
       if (list.price! > 0) paddedTextSmall(''),
       paddedTextSmall(' ${Global.format6(priceLineTotal)}',
           style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: PdfColors.green700
+
           ),
           align: TextAlign.right),
     ],

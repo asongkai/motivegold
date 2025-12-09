@@ -77,7 +77,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
       Container(
         height: 90,
         decoration: BoxDecoration(
-          // color: PdfColors.blue600,
+          //,
           border: Border(
             left: BorderSide(color: PdfColors.grey400, width: 0.5),
             top: BorderSide(color: PdfColors.grey400, width: 0.5),
@@ -318,8 +318,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
   if (type == 1 || type == 2 || type == 3) {
     for (int i = 0; i < list.length; i++) {
       final isCancel = list[i].status == "2";
-      final textColor = isCancel ? PdfColors.red900 : PdfColors.black;
-      final bgColor = i % 2 == 0 ? PdfColors.grey100 : PdfColors.white;
+      final bgColor = i % 2 == 0 ? PdfColors.white : PdfColors.grey100;
 
       List<Widget> cells = [
         // Order ID
@@ -330,7 +329,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             child: Text(
               list[i].orderId,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: textColor),
+              style: TextStyle(
+                fontSize: 14,
+                color: isCancel ? PdfColors.red900 : null,
+              ),
             ),
           ),
         ),
@@ -344,7 +346,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                   ? Global.formatDateMFT(list[i].orderDate.toString())
                   : Global.dateOnly(list[i].orderDate.toString()),
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: textColor),
+              style: TextStyle(
+                fontSize: 15,
+                color: isCancel ? PdfColors.red900 : null,
+              ),
             ),
           ),
         ),
@@ -362,7 +367,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
                     ? "ยกเลิกเอกสาร***"
                     : getCustomerName(list[i].customer!, forReport: true),
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 14, color: textColor),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isCancel ? PdfColors.red900 : null,
+                ),
               ),
             ),
           ),
@@ -378,7 +386,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             child: Text(
               isCancel ? "0.00" : Global.format(getCashBank(list[i])),
               textAlign: TextAlign.right,
-              style: TextStyle(fontSize: 14, color: textColor),
+              style: TextStyle(
+                fontSize: 14,
+                color: isCancel ? PdfColors.red900 : null,
+              ),
             ),
           ),
         ),
@@ -393,7 +404,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             child: Text(
               isCancel ? "0.00" : Global.format(getSalesAmount(list[i])),
               textAlign: TextAlign.right,
-              style: TextStyle(fontSize: 14, color: textColor),
+              style: TextStyle(
+                fontSize: 14,
+                color: isCancel ? PdfColors.red900 : null,
+              ),
             ),
           ),
         ),
@@ -408,7 +422,10 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
             child: Text(
               isCancel ? "0.00" : Global.format(getVatAmount(list[i])),
               textAlign: TextAlign.right,
-              style: TextStyle(fontSize: 14, color: textColor),
+              style: TextStyle(
+                fontSize: 14,
+                color: isCancel ? PdfColors.red900 : null,
+              ),
             ),
           ),
         ),
@@ -442,7 +459,7 @@ Future<Uint8List> makeSellNewRetailPaphunReportPdf(List<OrderModel?> orders,
   dataRows.add(Container(
     height: 24,
     decoration: BoxDecoration(
-      color: PdfColors.blue50,
+      color: PdfColors.white,
       border: Border(
         top: BorderSide(color: PdfColors.grey400, width: 0.5),
         left: BorderSide(color: PdfColors.grey400, width: 0.8),

@@ -13,9 +13,9 @@ PdfColor getMovementTypeColor(String? type) {
 
   String lowerType = type.toLowerCase();
   if (lowerType.contains('in')) {
-    return PdfColors.green600;
+    return PdfColors.green600;  // Stock IN = green
   } else if (lowerType.contains('out') || lowerType.contains('sale')) {
-    return PdfColors.red600;
+    return PdfColors.red600;    // Stock OUT = red
   } else {
     return PdfColors.grey600;
   }
@@ -68,15 +68,15 @@ Future<Uint8List> makeStockMovementReportPdf(
         ],
       ),
       Container(height: 10),
-      // Table column headers with blue background
+      // Table column headers with white background
       Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
           horizontalInside: BorderSide.none,
-          verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: const {
           0: FixedColumnWidth(70),
@@ -92,7 +92,7 @@ Future<Uint8List> makeStockMovementReportPdf(
         children: [
           TableRow(
             decoration: BoxDecoration(
-              color: PdfColors.blue600,
+              color: PdfColors.white,
             ),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
@@ -100,7 +100,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -108,7 +108,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -116,7 +116,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -124,7 +124,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -132,7 +132,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -140,7 +140,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.center
               ),
@@ -148,7 +148,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.right
               ),
@@ -156,7 +156,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.right
               ),
@@ -164,7 +164,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white
+                      color: PdfColors.black
                   ),
                   align: TextAlign.right
               ),
@@ -180,7 +180,7 @@ Future<Uint8List> makeStockMovementReportPdf(
   // Mobile-inspired clean table design with smaller fonts
   dataRows.add(Container(
     decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey300, width: 1),
+      border: Border.all(color: PdfColors.grey400, width: 0.5),
     ),
     child: Table(
       border: TableBorder(
@@ -188,7 +188,7 @@ Future<Uint8List> makeStockMovementReportPdf(
         bottom: BorderSide.none,
         left: BorderSide.none,
         right: BorderSide.none,
-        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         verticalInside: BorderSide.none,
       ),
       columnWidths: const {
@@ -204,16 +204,18 @@ Future<Uint8List> makeStockMovementReportPdf(
       },
       children: [
         // Clean data rows with color coding for movement type and numbers
-        ...list.map((e) {
+        ...list.asMap().entries.map((entry) {
+          final i = entry.key;
+          final e = entry.value;
           final movementColor = getMovementTypeColor(e.type);
 
           return TableRow(
-            decoration: const BoxDecoration(),
+            decoration: BoxDecoration(color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
-              paddedTextSmall(e.orderId!),
-              paddedTextSmall(Global.dateOnly(e.createdDate.toString())),
-              paddedTextSmall(e.product == null ? "" : e.product!.name),
-              paddedTextSmall(e.binLocation == null ? "" : e.binLocation!.name),
+              paddedTextSmall(e.orderId!, style: TextStyle(fontSize: 11)),
+              paddedTextSmall(Global.dateOnly(e.createdDate.toString()), style: TextStyle(fontSize: 11)),
+              paddedTextSmall(e.product == null ? "" : e.product!.name, style: TextStyle(fontSize: 11)),
+              paddedTextSmall(e.binLocation == null ? "" : e.binLocation!.name, style: TextStyle(fontSize: 11)),
               paddedTextSmall('${e.type!} ',
                   style: TextStyle(
                       fontSize: 11,
@@ -221,7 +223,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                       color: movementColor
                   )
               ),
-              paddedTextSmall('${e.docType!} '),
+              paddedTextSmall('${e.docType!} ', style: TextStyle(fontSize: 11)),
               paddedTextSmall('${e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0)}',
                   style: TextStyle(fontSize: 11, color: movementColor),
                   align: TextAlign.right),
@@ -239,9 +241,9 @@ Future<Uint8List> makeStockMovementReportPdf(
         // Clean summary row
         TableRow(
           decoration: BoxDecoration(
-            color: PdfColors.blue50,
+            color: PdfColors.white,
             border: Border(
-              top: BorderSide(color: PdfColors.blue200, width: 1),
+              top: BorderSide(color: PdfColors.grey400, width: 0.5),
             ),
           ),
           children: [
@@ -264,7 +266,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800
+                    color: PdfColors.black
                 ),
                 align: TextAlign.center
             ),
@@ -273,7 +275,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),
@@ -282,7 +284,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.orange700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),
@@ -291,7 +293,7 @@ Future<Uint8List> makeStockMovementReportPdf(
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.green700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),

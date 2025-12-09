@@ -46,12 +46,12 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
       height(),
       Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.white, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.white, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(25),
@@ -73,7 +73,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         children: [
           TableRow(
             decoration: BoxDecoration(
-              color: PdfColors.blue600,
+              color: PdfColors.white,
             ),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
@@ -81,91 +81,91 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('เลขที่ลำดับ\nตรงกับสิ่งของ',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ประเภท',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ลักษณะ',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ตำหนิ\nรูปพรรณ',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ขนาด',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('น้ำหนักหรือ\nจำนวน',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('หน่วย',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('รับซื้อของจาก',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('วัน/เดือน/ปี\nที่รับซื้อ',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ราคารับซื้อ\n(บาท)',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('จำหน่ายให้แก่ใคร',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('ราคาจำหน่าย\n(บาท)',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('วัน/เดือน/ปี\nที่จำหน่าย',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall('หมายเหตุ',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white),
+                      color: PdfColors.black),
                   align: TextAlign.center),
             ],
           ),
@@ -183,12 +183,12 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
     ),
     child: Table(
       border: TableBorder(
-        top: BorderSide(color: PdfColors.grey200, width: 0.5),
-        bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-        left: BorderSide(color: PdfColors.grey200, width: 0.5),
-        right: BorderSide(color: PdfColors.grey200, width: 0.5),
-        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        top: BorderSide(color: PdfColors.grey400, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+        left: BorderSide(color: PdfColors.grey400, width: 0.5),
+        right: BorderSide(color: PdfColors.grey400, width: 0.5),
+        horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+        verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
       ),
       columnWidths: {
         0: const FixedColumnWidth(25),
@@ -211,7 +211,8 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         // Data rows with color coding
         for (int i = 0; i < orders.length; i++)
           TableRow(
-            decoration: const BoxDecoration(),
+            decoration: BoxDecoration(
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
               paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 10)),
               paddedTextSmall(orders[i]!.orderId,
@@ -219,7 +220,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
               paddedTextSmall('ทองรูปพรรณ 96.5%',
                   style: TextStyle(
                       fontSize: 10,
-                      color: PdfColors.red600,
+                      color: null,
                       fontWeight: FontWeight.bold),
                   align: TextAlign.center),
               paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
@@ -227,7 +228,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
               paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
               paddedTextSmall(
                   '${type == 1 ? Global.format(getWeight(orders[i])) : Global.format(orders[i]!.weight ?? 0)}',
-                  style: TextStyle(fontSize: 10, color: PdfColors.blue600),
+                  style: TextStyle(fontSize: 10),
                   align: TextAlign.right),
               paddedTextSmall('กรัม',
                   style: TextStyle(fontSize: 10), align: TextAlign.center),
@@ -238,7 +239,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                       children: [
                         Text(getCustomerName(orders[i]!.customer!),
                             style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold)),
+                                fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
                         for (String line in getCustomerAddressLines(
                             orders[i]!.customer!,
                             includePhone: false))
@@ -253,7 +254,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
               paddedTextSmall(Global.dateOnly(orders[i]!.orderDate.toString()),
                   style: TextStyle(fontSize: 10), align: TextAlign.center),
               paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
-                  style: TextStyle(fontSize: 10, color: PdfColors.red600),
+                  style: TextStyle(fontSize: 10, color: null),
                   align: TextAlign.right),
               paddedTextSmall('',
                   style: TextStyle(fontSize: 10), align: TextAlign.center),
@@ -268,9 +269,9 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
         // Summary row with clean styling
         TableRow(
           decoration: BoxDecoration(
-            color: PdfColors.blue50,
+            color: PdfColors.white,
             border: Border(
-              top: BorderSide(color: PdfColors.blue200, width: 1),
+              top: BorderSide(color: PdfColors.grey400, width: 0.5),
             ),
           ),
           children: [
@@ -283,7 +284,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800),
+                    color: PdfColors.black),
                 align: TextAlign.right),
             paddedTextSmall(
                 type == 1
@@ -294,13 +295,13 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue700),
+                    color: PdfColors.black),
                 align: TextAlign.right),
             paddedTextSmall('กรัม',
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800),
+                    color: PdfColors.black),
                 align: TextAlign.center),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
@@ -310,7 +311,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
                 style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.red700),
+                    color: PdfColors.black),
                 align: TextAlign.right),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),
             paddedTextSmall('', style: const TextStyle(fontSize: 10)),

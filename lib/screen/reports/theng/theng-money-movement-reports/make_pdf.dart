@@ -12,15 +12,8 @@ import 'package:motivegold/utils/helps/common_function.dart';
 
 // Helper function to get order type color for PDF
 PdfColor getOrderTypeColor(int? orderTypeId) {
-  if (orderTypeId == null) return PdfColors.grey600;
-
-  if (orderTypeId == 4) {
-    return PdfColors.green600; // Sale (selling to customer)
-  } else if (orderTypeId == 44) {
-    return PdfColors.red600; // Buy (buying from customer)
-  } else {
-    return PdfColors.grey600;
-  }
+  // All order types use default black color
+  return PdfColors.black;
 }
 
 Future<Uint8List> makeThengMoneyMovementReportPdf(
@@ -55,7 +48,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
       height(h: 2),
       // Table column headers
       Table(
-        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+        border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
         columnWidths: {
           0: const FixedColumnWidth(25),
           1: const FixedColumnWidth(60),
@@ -77,7 +70,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
         },
         children: [
           TableRow(
-            decoration: const BoxDecoration(color: PdfColors.blue600),
+            decoration: const BoxDecoration(color: PdfColors.white),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
               paddedTextSmall('ลำดับ',
@@ -85,104 +78,104 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('เลขที่ใบกํากับภาษี',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ชื่อลูกค้า',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('วันที่',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('นน.ทองคำแท่ง\nขายออก (กรัม)',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('นน.ทองคำแท่ง\nรับซื้อ (กรัม)',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('จำนวนเงินสุทธิ \n(บาท)',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall(
                   'เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองแท่ง',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ร้านทองรับเงิน/\nร้านทองจ่ายเงิน',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ยอดรับเงิน',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ยอดจ่ายเงิน',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ร้านทองรับ\n(จ่าย)เงินสุทธิ',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('ร้านทองเพิ่ม/\nลดให้',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('เงินสดรับ\n(จ่าย)',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('เงินโอน/\nฝากธนาคาร',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('บัตรเครดิต',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
               paddedTextSmall('อื่นๆ',
                   align: TextAlign.center,
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.white)),
+                      color: PdfColors.black)),
             ],
           ),
         ],
@@ -195,7 +188,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
   // Apply modern design pattern
   dataRows.add(Container(
     child: Table(
-      border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+      border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
       columnWidths: {
         0: const FixedColumnWidth(25),
         1: const FixedColumnWidth(60),
@@ -219,7 +212,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
         // Data rows with color coding
         for (int i = 0; i < orders!.length; i++)
           TableRow(
-            decoration: const BoxDecoration(),
+            decoration: BoxDecoration(
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
               paddedTextSmall('${i + 1}',
                   style: TextStyle(fontSize: 8), align: TextAlign.center),
@@ -235,13 +229,13 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   (orders[i].orderTypeId == 4)
                       ? Global.format4(getWeight(orders[i]))
                       : "",
-                  style: TextStyle(fontSize: 8, color: PdfColors.black),
+                  style: TextStyle(fontSize: 8),
                   align: TextAlign.right),
               paddedTextSmall(
                   (orders[i].orderTypeId == 44)
                       ? Global.format4(getWeight(orders[i]))
                       : "",
-                  style: TextStyle(fontSize: 8, color: PdfColors.black),
+                  style: TextStyle(fontSize: 8),
                   align: TextAlign.right),
               if (orders[i].orderTypeId == 4)
                 paddedTextSmall(Global.format(orders[i].priceIncludeTax ?? 0),
@@ -266,13 +260,13 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   (orders[i].orderTypeId == 4)
                       ? Global.format(orders[i].priceIncludeTax ?? 0)
                       : "",
-                  style: TextStyle(fontSize: 8, color: PdfColors.green600),
+                  style: TextStyle(fontSize: 8),
                   align: TextAlign.right),
               paddedTextSmall(
                   (orders[i].orderTypeId == 44)
                       ? '(${Global.format(orders[i].priceIncludeTax ?? 0)})'
                       : "",
-                  style: TextStyle(fontSize: 8, color: PdfColors.red600),
+                  style: TextStyle(fontSize: 8, color: null),
                   align: TextAlign.right),
               paddedTextSmall(
                   payToCustomerOrShopValue(orders, orders[i]) > 0
@@ -282,8 +276,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 8,
                       color: payToCustomerOrShopValue(orders, orders[i]) > 0
-                          ? PdfColors.green600
-                          : PdfColors.red600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   addDisValue(orders[i].discount ?? 0,
@@ -298,8 +292,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                       color: addDisValue(orders[i].discount ?? 0,
                                   orders[i].addPrice ?? 0) <
                               0
-                          ? PdfColors.red600
-                          : PdfColors.green600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCashPayment(orders, orders[i]) == 0
@@ -310,8 +304,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 8,
                       color: orders[i].orderTypeId == 4
-                          ? PdfColors.green600
-                          : PdfColors.red600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getTransferPayment(orders, orders[i]) == 0
@@ -322,8 +316,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 8,
                       color: orders[i].orderTypeId == 4
-                          ? PdfColors.green600
-                          : PdfColors.red600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCreditPayment(orders, orders[i]) == 0
@@ -334,8 +328,8 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 8,
                       color: orders[i].orderTypeId == 4
-                          ? PdfColors.green600
-                          : PdfColors.red600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getOtherPayment(orders, orders[i]) == 0
@@ -346,17 +340,17 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 8,
                       color: orders[i].orderTypeId == 4
-                          ? PdfColors.green600
-                          : PdfColors.red600),
+                          ? null
+                          : null),
                   align: TextAlign.right),
             ],
           ),
         // Summary row with clean styling
         TableRow(
             decoration: BoxDecoration(
-              color: PdfColors.blue50,
+              color: PdfColors.white,
               border: Border(
-                top: BorderSide(color: PdfColors.blue200, width: 1),
+                top: BorderSide(color: PdfColors.grey400, width: 0.5),
               ),
             ),
             children: [
@@ -367,7 +361,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.blue800)),
+                      color: PdfColors.black)),
               paddedTextSmall(Global.format4(getWeightTotalSN(orders)),
                   style: TextStyle(
                       fontSize: 9,
@@ -387,9 +381,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: priceIncludeTaxTotalMovement(orders) > 0
-                          ? PdfColors.blue700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
@@ -397,14 +389,14 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.green700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   '(${Global.format(priceIncludeTaxTotalSN(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   payToCustomerOrShopValueTotalAlternative(orders) == 0
@@ -415,10 +407,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color:
-                          payToCustomerOrShopValueTotalAlternative(orders) > 0
-                              ? PdfColors.green700
-                              : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   discountTotal(orders) == 0
@@ -429,9 +418,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: discountTotal(orders) > 0
-                          ? PdfColors.green700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCashPaymentTotal(orders) == 0
@@ -442,9 +429,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getCashPaymentTotal(orders) > 0
-                          ? PdfColors.green700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getTransferPaymentTotal(orders) == 0
@@ -455,9 +440,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getTransferPaymentTotal(orders) > 0
-                          ? PdfColors.green700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCreditPaymentTotal(orders) == 0
@@ -468,9 +451,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getCreditPaymentTotal(orders) > 0
-                          ? PdfColors.green700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getOtherPaymentTotal(orders) == 0
@@ -481,9 +462,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getOtherPaymentTotal(orders) > 0
-                          ? PdfColors.green700
-                          : PdfColors.red700),
+                      color: PdfColors.black),
                   align: TextAlign.right),
             ]),
       ],

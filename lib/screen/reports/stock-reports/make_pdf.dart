@@ -55,7 +55,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
       height(h: 2),
       // Table column headers
       Table(
-        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+        border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
         columnWidths: {
           0: const FixedColumnWidth(150),
           1: const FixedColumnWidth(200),
@@ -65,14 +65,14 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
         },
         children: [
           TableRow(
-            decoration: const BoxDecoration(color: PdfColors.blue600),
+            decoration: const BoxDecoration(color: PdfColors.white),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
-              paddedTextBigXL('สินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
-              paddedTextBigXL('คลังสินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
-              paddedTextBigXL('น้ำหนักรวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
-              paddedTextBigXL('ราคาต่อหน่วย', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
-              paddedTextBigXL('ราคารวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.white)),
+              paddedTextBigXL('สินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
+              paddedTextBigXL('คลังสินค้า', align: TextAlign.center, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
+              paddedTextBigXL('น้ำหนักรวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
+              paddedTextBigXL('ราคาต่อหน่วย', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
+              paddedTextBigXL('ราคารวม', align: TextAlign.right, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
             ],
           ),
         ],
@@ -85,7 +85,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
   // Mobile-inspired clean table design
   dataRows.add(Container(
     child: Table(
-      border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+      border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       columnWidths: {
         0: const FixedColumnWidth(150),
@@ -95,34 +95,40 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
         4: const FixedColumnWidth(150),
       },
       children: [
-        // Clean white data rows
-        ...list.map((e) => TableRow(
-          decoration: const BoxDecoration(),
-          children: [
-            paddedTextBigXL(
-                e.product == null ? "" : e.product!.name),
-            paddedTextBigXL(e.binLocation == null
-                ? ""
-                : e.binLocation!.name),
-            paddedTextBigXL(e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0),
-                style: const TextStyle(fontSize: 12),
-                align: TextAlign.right),
-            paddedTextBigXL(
-                Global.format6(e.unitCost ?? 0),
-                style: const TextStyle(fontSize: 12),
-                align: TextAlign.right),
-            paddedTextBigXL(
-                Global.format6(e.price ?? 0),
-                style: const TextStyle(fontSize: 12),
-                align: TextAlign.right),
-          ],
-        )),
+        // Clean data rows with striped pattern
+        ...list.asMap().entries.map((entry) {
+          final i = entry.key;
+          final e = entry.value;
+          return TableRow(
+            decoration: BoxDecoration(color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
+            children: [
+              paddedTextBigXL(
+                  e.product == null ? "" : e.product!.name,
+                  style: const TextStyle(fontSize: 12)),
+              paddedTextBigXL(e.binLocation == null
+                  ? ""
+                  : e.binLocation!.name,
+                  style: const TextStyle(fontSize: 12)),
+              paddedTextBigXL(e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0),
+                  style: const TextStyle(fontSize: 12),
+                  align: TextAlign.right),
+              paddedTextBigXL(
+                  Global.format6(e.unitCost ?? 0),
+                  style: const TextStyle(fontSize: 12),
+                  align: TextAlign.right),
+              paddedTextBigXL(
+                  Global.format6(e.price ?? 0),
+                  style: const TextStyle(fontSize: 12),
+                  align: TextAlign.right),
+            ],
+          );
+        }),
         // Clean summary row
         TableRow(
           decoration: BoxDecoration(
-            color: PdfColors.blue50,
+            color: PdfColors.white,
             border: Border(
-              top: BorderSide(color: PdfColors.blue200, width: 1),
+              top: BorderSide(color: PdfColors.grey400, width: 0.5),
             ),
           ),
           children: [
@@ -133,7 +139,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue800
+                    color: PdfColors.black
                 ),
                 align: TextAlign.center
             ),
@@ -142,7 +148,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.blue700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),
@@ -151,7 +157,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.orange700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),
@@ -160,7 +166,7 @@ Future<Uint8List> makeStockReportPdf(List<QtyLocationModel> list,int type) async
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: PdfColors.green700
+                    color: PdfColors.black
                 ),
                 align: TextAlign.right
             ),

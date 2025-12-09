@@ -43,7 +43,7 @@ Future<Uint8List> makeAuthLogPdf(
         height(h: 2),
         // Table column headers
         Table(
-          border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+          border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
           columnWidths: {
             0: const FixedColumnWidth(60),  // วันที่
             1: const FixedColumnWidth(40),  // เวลา
@@ -54,7 +54,7 @@ Future<Uint8List> makeAuthLogPdf(
           },
           children: [
             TableRow(
-              decoration: const BoxDecoration(color: PdfColors.blue600),
+              decoration: const BoxDecoration(color: PdfColors.white),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 paddedText('วันที่',
@@ -62,37 +62,37 @@ Future<Uint8List> makeAuthLogPdf(
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('เวลา',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('ประเภท',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('User ID',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('Username',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('รายละเอียดอุปกรณ์',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
               ],
             ),
           ],
@@ -107,7 +107,7 @@ Future<Uint8List> makeAuthLogPdf(
   for (int i = 0; i < authLogs.length; i++) {
     dataRows.add(Container(
       child: Table(
-        border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+        border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
         columnWidths: {
           0: const FixedColumnWidth(60),  // วันที่
           1: const FixedColumnWidth(40),  // เวลา
@@ -118,6 +118,7 @@ Future<Uint8List> makeAuthLogPdf(
         },
         children: [
           TableRow(
+            decoration: BoxDecoration(color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
               paddedText(

@@ -110,8 +110,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
         productList = [];
       }
 
-      var warehouse = await ApiServices.post(
-          '/binlocation/all/branch', Global.requestObj({"branchId": Global.branch?.id}));
+      var warehouse = await ApiServices.post('/binlocation/all/branch',
+          Global.requestObj({"branchId": Global.branch?.id}));
       if (warehouse?.status == "success") {
         var data = jsonEncode(warehouse?.data);
         List<WarehouseModel> warehouses = warehouseListModelFromJson(data);
@@ -224,7 +224,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           children: [
             _buildFilterSection(),
             Expanded(
-              child: loading ? const LoadingProgress() : _buildEnhancedDataTable(),
+              child:
+                  loading ? const LoadingProgress() : _buildEnhancedDataTable(),
             ),
           ],
         ),
@@ -260,7 +261,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                 type: 1,
                 fromDate: printFromDate,
                 toDate: printToDate,
-                date: '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
+                date:
+                    '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
               ),
             ),
           );
@@ -279,7 +281,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             printToDate = toDate!;
           }
 
-          List<OrderModel> dailyList = genDailyList(filterList!.reversed.toList());
+          List<OrderModel> dailyList =
+              genDailyList(filterList!.reversed.toList());
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -291,18 +294,18 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                 type: value,
                 fromDate: printFromDate,
                 toDate: printToDate,
-                date: '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
+                date:
+                    '${Global.formatDateNT(printFromDate.toString())} - ${Global.formatDateNT(printToDate.toString())}',
               ),
             ),
           );
         }
 
         if (value == 4) {
-
-          if (yearCtrl.text.isEmpty) {
-            Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
-            return;
-          }
+          // if (yearCtrl.text.isEmpty) {
+          //   Alert.warning(context, 'คำเตือน', 'กรุณาเลือกปี', 'OK');
+          //   return;
+          // }
 
           DateTime now = DateTime.now();
           fromDate = DateTime(now.year, 1, 1);
@@ -310,7 +313,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
 
           // await search();
 
-          List<OrderModel> monthlyList = genMonthlyList(filterList!.reversed.toList());
+          List<OrderModel> monthlyList =
+              genMonthlyList(filterList!.reversed.toList());
           if (monthlyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK');
             return;
@@ -322,7 +326,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                 type: value,
                 fromDate: fromDate,
                 toDate: toDate,
-                date: '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
+                date:
+                    '${Global.formatDateNT(fromDate.toString())} - ${Global.formatDateNT(toDate.toString())}',
               ),
             ),
           );
@@ -333,21 +338,24 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           value: 1,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
+            title:
+                Text('เรียงเลขที่ใบกำกับภาษี', style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
           value: 2,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('สรุปรายวัน(แสดงทุกวัน)', style: TextStyle(fontSize: 14)),
+            title:
+                Text('สรุปรายวัน(แสดงทุกวัน)', style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
           value: 3,
           child: ListTile(
             leading: Icon(Icons.print, size: 16),
-            title: Text('สรุปรายวัน(แสดงวันที่มีรายการ)', style: TextStyle(fontSize: 14)),
+            title: Text('สรุปรายวัน(แสดงวันที่มีรายการ)',
+                style: TextStyle(fontSize: 14)),
           ),
         ),
         PopupMenuItem(
@@ -370,7 +378,11 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           children: [
             const Icon(Icons.print_rounded, size: 20, color: Colors.white),
             const SizedBox(width: 6),
-            Text('พิมพ์', style: TextStyle(fontSize: 14.sp, color: Colors.white, fontWeight: FontWeight.w500)),
+            Text('พิมพ์',
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500)),
             const SizedBox(width: 4),
             Icon(Icons.arrow_drop_down_outlined, color: Colors.white, size: 16),
           ],
@@ -411,22 +423,32 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                       color: Colors.indigo.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(Icons.filter_alt_rounded, color: Colors.indigo[600], size: 20),
+                    child: Icon(Icons.filter_alt_rounded,
+                        color: Colors.indigo[600], size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ตัวกรองข้อมูล', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
-                        Text(_buildFilterSummary(), style: TextStyle(fontSize: 14, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                        Text('ตัวกรองข้อมูล',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2D3748))),
+                        Text(_buildFilterSummary(),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),
                   AnimatedRotation(
                     turns: isFilterExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 300),
-                    child: Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey[600], size: 24),
+                    child: Icon(Icons.keyboard_arrow_down_rounded,
+                        color: Colors.grey[600], size: 24),
                   ),
                 ],
               ),
@@ -439,182 +461,215 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
               opacity: isFilterExpanded ? 1.0 : 0.0,
-              child: isFilterExpanded ? Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.4,
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: Column(
-                      children: [
-                        Container(width: double.infinity, height: 1, color: Colors.grey[200]),
-                        const SizedBox(height: 16),
+              child: isFilterExpanded
+                  ? Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.4,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: Column(
+                            children: [
+                              Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: Colors.grey[200]),
+                              const SizedBox(height: 16),
 
-                        // First row - Product, Warehouse, From Date
-                        Row(
-                          children: [
-                            Expanded(child: _buildCompactDropdownField(
-                                label: 'สินค้า',
-                                icon: Icons.inventory_2_rounded,
-                                notifier: productNotifier!,
-                                items: productList,
-                                onChanged: (ProductModel value) {
-                                  selectedProduct = value;
-                                  productNotifier!.value = value;
-                                  search();
-                                }
-                            )),
-                            const SizedBox(width: 12),
-                            Expanded(child: _buildCompactDropdownField(
-                                label: 'คลังสินค้า',
-                                icon: Icons.warehouse_rounded,
-                                notifier: warehouseNotifier!,
-                                items: warehouseList,
-                                onChanged: (WarehouseModel value) {
-                                  selectedWarehouse = value;
-                                  warehouseNotifier!.value = value;
-                                  search();
-                                }
-                            )),
-
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Second row - Month and Year
-                        Row(
-                          children: [
-                            Expanded(child: _buildCompactDropdownField<ThaiMonth>(
-                                label: 'เดือน',
-                                icon: Icons.calendar_month,
-                                notifier: monthNotifier!,
-                                items: thaiMonths,
-                                onChanged: (ThaiMonth value) {
-                                  setState(() {
-                                    monthCtrl.text = value.value.toString();
-                                    monthNotifier!.value = value;
-
-                                    // Set date range to selected month
-                                    int year = yearCtrl.text.isEmpty
-                                        ? DateTime.now().year
-                                        : int.parse(yearCtrl.text);
-                                    DateTime firstDay = DateTime(year, value.value, 1);
-                                    DateTime lastDay = DateTime(year, value.value + 1, 0);
-
-                                    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
-                                  });
-                                  search();
-                                }
-                            )),
-                            const SizedBox(width: 12),
-                            Expanded(child: _buildCompactDropdownField<int>(
-                                label: 'ปี',
-                                icon: Icons.date_range,
-                                notifier: yearNotifier!,
-                                items: Global.genYear(),
-                                onChanged: (int value) {
-                                  setState(() {
-                                    yearCtrl.text = value.toString();
-                                    yearNotifier!.value = value;
-
-                                    // Set date range to selected year
-                                    DateTime firstDay = DateTime(value, 1, 1);
-                                    DateTime lastDay = DateTime(value, 12, 31);
-
-                                    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDay);
-                                    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(lastDay);
-
-                                    // Clear month selection when year changes
-                                    monthCtrl.text = "";
-                                    monthNotifier!.value = null;
-                                  });
-                                  search();
-                                }
-                            )),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Third row - Date range
-                        Row(
-                          children: [
-                            Expanded(child: _buildDateField(
-                              label: 'จากวันที่',
-                              icon: Icons.calendar_today,
-                              controller: fromDateCtrl,
-                              onClear: () {
-                                setState(() {
-                                  fromDateCtrl.text = "";
-                                  toDateCtrl.text = "";
-                                  filterList = orders;
-                                });
-                              },
-                            )),
-                            const SizedBox(width: 12),
-                            Expanded(child: _buildDateField(
-                              label: 'ถึงวันที่',
-                              icon: Icons.calendar_today,
-                              controller: toDateCtrl,
-                              onClear: () {
-                                setState(() {
-                                  fromDateCtrl.text = "";
-                                  toDateCtrl.text = "";
-                                  filterList = orders;
-                                });
-                              },
-                            )),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Action buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: SizedBox(
-                                height: 48,
-                                child: OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.red, width: 1.5),
-                                    foregroundColor: Colors.red,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  ),
-                                  onPressed: () {
-                                    resetFilter();
-                                  },
-                                  icon: const Icon(Icons.clear_rounded, size: 20),
-                                  label: const Text('Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                              // First row - Product, Warehouse, From Date
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildCompactDropdownField(
+                                          label: 'สินค้า',
+                                          icon: Icons.inventory_2_rounded,
+                                          notifier: productNotifier!,
+                                          items: productList,
+                                          onChanged: (ProductModel value) {
+                                            selectedProduct = value;
+                                            productNotifier!.value = value;
+                                            search();
+                                          })),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _buildCompactDropdownField(
+                                          label: 'คลังสินค้า',
+                                          icon: Icons.warehouse_rounded,
+                                          notifier: warehouseNotifier!,
+                                          items: warehouseList,
+                                          onChanged: (WarehouseModel value) {
+                                            selectedWarehouse = value;
+                                            warehouseNotifier!.value = value;
+                                            search();
+                                          })),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 7,
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.indigo,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    elevation: 2,
-                                  ),
-                                  onPressed: search,
-                                  icon: const Icon(Icons.search_rounded, size: 20),
-                                  label: const Text('ค้นหา', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                              const SizedBox(height: 16),
+
+                              // Second row - Month and Year
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildCompactDropdownField<
+                                              ThaiMonth>(
+                                          label: 'เดือน',
+                                          icon: Icons.calendar_month,
+                                          notifier: monthNotifier!,
+                                          items: thaiMonths,
+                                          onChanged: (ThaiMonth value) {
+                                            setState(() {
+                                              monthCtrl.text =
+                                                  value.value.toString();
+                                              monthNotifier!.value = value;
+
+                                              // Set date range to selected month
+                                              int year = yearCtrl.text.isEmpty
+                                                  ? DateTime.now().year
+                                                  : int.parse(yearCtrl.text);
+                                              DateTime firstDay = DateTime(
+                                                  year, value.value, 1);
+                                              DateTime lastDay = DateTime(
+                                                  year, value.value + 1, 0);
+
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+                                            });
+                                            search();
+                                          })),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _buildCompactDropdownField<int>(
+                                          label: 'ปี',
+                                          icon: Icons.date_range,
+                                          notifier: yearNotifier!,
+                                          items: Global.genYear(),
+                                          onChanged: (int value) {
+                                            setState(() {
+                                              yearCtrl.text = value.toString();
+                                              yearNotifier!.value = value;
+
+                                              // Set date range to selected year
+                                              DateTime firstDay =
+                                                  DateTime(value, 1, 1);
+                                              DateTime lastDay =
+                                                  DateTime(value, 12, 31);
+
+                                              fromDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(firstDay);
+                                              toDateCtrl.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(lastDay);
+
+                                              // Clear month selection when year changes
+                                              monthCtrl.text = "";
+                                              monthNotifier!.value = null;
+                                            });
+                                            search();
+                                          })),
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 16),
+
+                              // Third row - Date range
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'จากวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: fromDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                        filterList = orders;
+                                      });
+                                    },
+                                  )),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _buildDateField(
+                                    label: 'ถึงวันที่',
+                                    icon: Icons.calendar_today,
+                                    controller: toDateCtrl,
+                                    onClear: () {
+                                      setState(() {
+                                        fromDateCtrl.text = "";
+                                        toDateCtrl.text = "";
+                                        filterList = orders;
+                                      });
+                                    },
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Action buttons
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: OutlinedButton.icon(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(
+                                              color: Colors.red, width: 1.5),
+                                          foregroundColor: Colors.red,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                        ),
+                                        onPressed: () {
+                                          resetFilter();
+                                        },
+                                        icon: const Icon(Icons.clear_rounded,
+                                            size: 20),
+                                        label: const Text('Reset',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: 7,
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.indigo,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          elevation: 2,
+                                        ),
+                                        onPressed: search,
+                                        icon: const Icon(Icons.search_rounded,
+                                            size: 20),
+                                        label: const Text('ค้นหา',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ) : const SizedBox(),
+                      ),
+                    )
+                  : const SizedBox(),
             ),
           ),
         ],
@@ -657,12 +712,16 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.timeline_rounded, color: Colors.indigo[600], size: 20),
+                Icon(Icons.timeline_rounded,
+                    color: Colors.indigo[600], size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'รายงานภาษีขายทองคำรูปพรรณใหม่ 96.5% (${filterList!.length} รายการ)',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.indigo[700]),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.indigo[700]),
                   ),
                 ),
               ],
@@ -675,7 +734,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width - 32, // Full width minus margins
+                  minWidth: MediaQuery.of(context).size.width -
+                      32, // Full width minus margins
                 ),
                 child: IntrinsicWidth(
                   child: Column(
@@ -694,12 +754,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.tag, size: 14, color: Colors.grey[600]),
+                                    Icon(Icons.tag,
+                                        size: 14, color: Colors.grey[600]),
                                     const SizedBox(width: 2),
                                     const Flexible(
                                       child: Text(
                                         'ลำดับ',
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 11),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -713,12 +776,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.calendar_today,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'วัน/เดือน/ปี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -733,12 +799,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.receipt_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'เลขที่ใบกํากับภาษี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -753,12 +822,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.person, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.person,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ชื่อ',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -773,12 +845,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.badge, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.badge,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'เลขประจําตัวลูกค้า',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -794,12 +869,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.scale_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.scale_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'น้ําหนัก',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -815,12 +893,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.category, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.category,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'หน่วย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -836,12 +917,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.monetization_on_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.monetization_on_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ยอดขายรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -858,12 +942,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.attach_money_rounded, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.attach_money_rounded,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'มูลค่ายกเว้น',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -880,12 +967,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.trending_up, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.trending_up,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ผลต่างรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -902,12 +992,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.calculate, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.calculate,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ฐานภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -924,12 +1017,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.percent, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.percent,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -946,12 +1042,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.money_off, size: 14, color: Colors.grey[600]),
+                                      Icon(Icons.money_off,
+                                          size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
                                           'ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -977,8 +1076,13 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                 return Container(
                                   height: 64,
                                   decoration: BoxDecoration(
-                                    color: index % 2 == 0 ? Colors.grey[50] : Colors.white,
-                                    border: Border(bottom: BorderSide(color: Colors.grey[200]!, width: 0.5)),
+                                    color: index % 2 == 0
+                                        ? Colors.grey[50]
+                                        : Colors.white,
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey[200]!,
+                                            width: 0.5)),
                                   ),
                                   child: IntrinsicHeight(
                                     child: Row(
@@ -988,10 +1092,13 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           width: 60,
                                           padding: const EdgeInsets.all(8),
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color:
+                                                  Colors.grey.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
@@ -1010,8 +1117,10 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.dateOnly(item!.orderDate.toString()),
-                                              style: const TextStyle(fontSize: 11),
+                                              Global.dateOnly(
+                                                  item!.orderDate.toString()),
+                                              style:
+                                                  const TextStyle(fontSize: 11),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -1022,10 +1131,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.blue
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 item.orderId ?? '',
@@ -1046,10 +1160,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 6,
+                                                      vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.green.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.green
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 'เงินสด',
@@ -1070,8 +1189,12 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.company != null ? Global.company!.taxNumber ?? '' : '',
-                                              style: const TextStyle(fontSize: 10),
+                                              Global.company != null
+                                                  ? Global.company!.taxNumber ??
+                                                      ''
+                                                  : '',
+                                              style:
+                                                  const TextStyle(fontSize: 10),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
@@ -1100,10 +1223,15 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4,
+                                                      vertical: 2),
                                               decoration: BoxDecoration(
-                                                color: Colors.purple.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.purple
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
                                               child: Text(
                                                 'กรัม',
@@ -1124,7 +1252,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceIncludeTax ?? 0),
+                                              Global.format(
+                                                  item.priceIncludeTax ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1141,7 +1270,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.purchasePrice ?? 0),
+                                              Global.format(
+                                                  item.purchasePrice ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1158,7 +1288,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceDiff ?? 0),
+                                              Global.format(
+                                                  item.priceDiff ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1192,7 +1323,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxAmount ?? 0),
+                                              Global.format(
+                                                  item.taxAmount ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1209,7 +1341,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceExcludeTax ?? 0),
+                                              Global.format(
+                                                  item.priceExcludeTax ?? 0),
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
@@ -1231,13 +1364,18 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                 height: 64,
                                 decoration: BoxDecoration(
                                   color: Colors.indigo[50],
-                                  border: Border(top: BorderSide(color: Colors.indigo[200]!, width: 2)),
+                                  border: Border(
+                                      top: BorderSide(
+                                          color: Colors.indigo[200]!,
+                                          width: 2)),
                                 ),
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
                                       // Empty for row number
-                                      Container(width: 60, padding: const EdgeInsets.all(8)),
+                                      Container(
+                                          width: 60,
+                                          padding: const EdgeInsets.all(8)),
                                       // Empty for date
                                       Expanded(flex: 1, child: Container()),
                                       // Empty for order ID
@@ -1267,7 +1405,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(getWeightTotal(filterList!)),
+                                            Global.format(
+                                                getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1286,7 +1425,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceIncludeTaxTotal(filterList!)),
+                                            Global.format(priceIncludeTaxTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1303,7 +1443,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(purchasePriceTotal(filterList!)),
+                                            Global.format(purchasePriceTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1320,7 +1461,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceDiffTotal(filterList!)),
+                                            Global.format(
+                                                priceDiffTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1337,7 +1479,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(taxBaseTotal(filterList!)),
+                                            Global.format(
+                                                taxBaseTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1354,7 +1497,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(taxAmountTotal(filterList!)),
+                                            Global.format(
+                                                taxAmountTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1371,7 +1515,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceExcludeTaxTotal(filterList!)),
+                                            Global.format(priceExcludeTaxTotal(
+                                                filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
@@ -1486,7 +1631,11 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
           children: [
             Icon(icon, size: 14, color: Colors.grey[600]),
             const SizedBox(width: 4),
-            Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+            Text(label,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700])),
           ],
         ),
         const SizedBox(height: 6),
@@ -1501,7 +1650,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
             selectedItemBackgroundColor: Colors.transparent,
             emptyListMessage: 'ไม่มีข้อมูล',
             showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (int index, T? project, {bool isItemSelected = false}) {
+            itemWidgetBuilder: (int index, T? project,
+                {bool isItemSelected = false}) {
               return DropDownItemWidget(
                 project: project,
                 isItemSelected: isItemSelected,
@@ -1552,9 +1702,10 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
 
       // Get all orders for this specific date
       var dateList = filterList
-          ?.where((element) => element != null &&
-          Global.dateOnly(element.createdDate.toString()) ==
-              Global.dateOnly(monthDate.toString()))
+          ?.where((element) =>
+              element != null &&
+              Global.dateOnly(element.createdDate.toString()) ==
+                  Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 
@@ -1605,7 +1756,8 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
     List<OrderModel> orderList = [];
 
     // Calculate months between fromDate and toDate
-    int monthsDiff = ((toDate!.year - fromDate!.year) * 12) + (toDate!.month - fromDate!.month);
+    int monthsDiff = ((toDate!.year - fromDate!.year) * 12) +
+        (toDate!.month - fromDate!.month);
 
     for (int i = 0; i <= monthsDiff; i++) {
       // Get the first day of each month
@@ -1613,9 +1765,10 @@ class _SellVatReportScreenState extends State<SellVatReportScreen> {
 
       // Get all orders for this specific month and year
       var monthList = filterList
-          ?.where((element) => element != null &&
-          element.createdDate?.year == monthDate.year &&
-          element.createdDate?.month == monthDate.month)
+          ?.where((element) =>
+              element != null &&
+              element.createdDate?.year == monthDate.year &&
+              element.createdDate?.month == monthDate.month)
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 

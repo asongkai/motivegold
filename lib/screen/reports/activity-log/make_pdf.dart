@@ -43,7 +43,7 @@ Future<Uint8List> makeActivityLogPdf(
         height(h: 2),
         // Table column headers
         Table(
-          border: TableBorder.all(color: PdfColors.grey200, width: 0.5),
+          border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
           columnWidths: {
             0: const FixedColumnWidth(50), // วันที่
             1: const FixedColumnWidth(40), // เวลา
@@ -54,7 +54,7 @@ Future<Uint8List> makeActivityLogPdf(
           },
           children: [
             TableRow(
-              decoration: const BoxDecoration(color: PdfColors.blue600),
+              decoration: const BoxDecoration(color: PdfColors.white),
               verticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 paddedText('วันที่',
@@ -62,37 +62,37 @@ Future<Uint8List> makeActivityLogPdf(
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('เวลา',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('ผู้ใช้',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('ลักษณะ',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('รายละเอียด',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
                 paddedText('ผลลัพธ์',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: PdfColors.white)),
+                        color: PdfColors.black)),
               ],
             ),
           ],
@@ -107,7 +107,7 @@ Future<Uint8List> makeActivityLogPdf(
   // Build data table
   dataRows.add(Container(
     decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey300, width: 1),
+      border: Border.all(color: PdfColors.grey400, width: 0.5),
     ),
     child: Table(
       border: TableBorder(
@@ -115,8 +115,8 @@ Future<Uint8List> makeActivityLogPdf(
         bottom: BorderSide.none,
         left: BorderSide.none,
         right: BorderSide.none,
-        horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-        verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+        horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+        verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
       ),
       columnWidths: {
         0: const FixedColumnWidth(50), // วันที่
@@ -131,7 +131,8 @@ Future<Uint8List> makeActivityLogPdf(
         for (int i = 0; i < activities.length; i++)
           TableRow(
             verticalAlignment: TableCellVerticalAlignment.middle,
-            decoration: const BoxDecoration(color: PdfColors.white),
+            decoration: BoxDecoration(
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
               paddedText(
                   activities[i].actionDate != null
@@ -160,7 +161,7 @@ Future<Uint8List> makeActivityLogPdf(
                   style: TextStyle(
                       fontSize: 10,
                       color: activities[i].result == 'SUCCESS'
-                          ? PdfColors.green700
+                          ? null
                           : PdfColors.red700),
                   align: TextAlign.center),
             ],
