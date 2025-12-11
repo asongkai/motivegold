@@ -91,7 +91,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.center),
-              paddedTextSmall('ชื่อผู้ซื้อ',
+              paddedTextSmall('ชื่อลูกค้า',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -121,7 +121,8 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.center),
-              paddedTextSmall('เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองเก่า',
+              paddedTextSmall(
+                  'เลขที่อ้างอิง\nใบส่งของ/ใบ\nเสร็จรับเงิน\nใบรับซื้อทองเก่า',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -224,10 +225,13 @@ Future<Uint8List> makeMoneyMovementReportPdf(
         // Data rows with color coding
         for (int i = 0; i < orders!.length; i++)
           TableRow(
-            decoration: BoxDecoration(color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
+            decoration: BoxDecoration(
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
-              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 8), align: TextAlign.center),
-              paddedTextSmall(orders[i].orderId, style: TextStyle(fontSize: 8), align: TextAlign.center),
+              paddedTextSmall('${i + 1}',
+                  style: TextStyle(fontSize: 8), align: TextAlign.center),
+              paddedTextSmall(orders[i].orderId,
+                  style: TextStyle(fontSize: 8), align: TextAlign.center),
               paddedTextSmall('${getCustomerName(orders[i].customer!)}',
                   style: TextStyle(fontSize: 8)),
               paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
@@ -312,9 +316,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                           : '(${Global.format(getCashPayment(orders, orders[i]))})',
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1
-                          ? null
-                          : null),
+                      color: orders[i].orderTypeId == 1 ? null : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getTransferPayment(orders, orders[i]) == 0
@@ -324,9 +326,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                           : '(${Global.format(getTransferPayment(orders, orders[i]))})',
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1
-                          ? null
-                          : null),
+                      color: orders[i].orderTypeId == 1 ? null : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCreditPayment(orders, orders[i]) == 0
@@ -336,9 +336,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                           : '(${Global.format(getCreditPayment(orders, orders[i]))})',
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1
-                          ? null
-                          : null),
+                      color: orders[i].orderTypeId == 1 ? null : null),
                   align: TextAlign.right),
               paddedTextSmall(
                   getOtherPayment(orders, orders[i]) == 0
@@ -348,9 +346,7 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                           : '(${Global.format(getOtherPayment(orders, orders[i]))})',
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1
-                          ? null
-                          : null),
+                      color: orders[i].orderTypeId == 1 ? null : null),
                   align: TextAlign.right),
             ],
           ),
@@ -399,48 +395,79 @@ Future<Uint8List> makeMoneyMovementReportPdf(
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall(Global.format(priceIncludeTaxTotalBU(orders)),
                   style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-),
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
                   align: TextAlign.right),
-              paddedTextSmall('(${Global.format(priceIncludeTaxTotalSN(orders))})',
+              paddedTextSmall(
+                  '(${Global.format(priceIncludeTaxTotalSN(orders))})',
+                  style: TextStyle(
+                      fontSize: 9, fontWeight: FontWeight.bold, color: null),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  payToCustomerOrShopValueTotalAlternative(orders) == 0
+                      ? ""
+                      : payToCustomerOrShopValueTotalAlternative(orders) > 0
+                          ? '${Global.format(payToCustomerOrShopValueTotalAlternative(orders))}'
+                          : '(${payToCustomerOrShopValueTotalAlternative(orders)})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: null),
+                      color:
+                          payToCustomerOrShopValueTotalAlternative(orders) > 0
+                              ? null
+                              : null),
                   align: TextAlign.right),
-              paddedTextSmall(payToCustomerOrShopValueTotalAlternative(orders) == 0 ? "" : payToCustomerOrShopValueTotalAlternative(orders) > 0 ?
-                  '${Global.format(payToCustomerOrShopValueTotalAlternative(orders))}' : '(${payToCustomerOrShopValueTotalAlternative(orders)})',
-                  style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: payToCustomerOrShopValueTotalAlternative(orders) > 0 ? null : null),
-                  align: TextAlign.right),
-              paddedTextSmall(discountTotal(orders) == 0 ? "" : discountTotal(orders) > 0 ? Global.format(discountTotal(orders)) : '(${Global.format(-discountTotal(orders))})',
+              paddedTextSmall(
+                  discountTotal(orders) == 0
+                      ? ""
+                      : discountTotal(orders) > 0
+                          ? Global.format(discountTotal(orders))
+                          : '(${Global.format(-discountTotal(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: discountTotal(orders) > 0 ? null : null),
                   align: TextAlign.right),
-              paddedTextSmall(getCashPaymentTotal(orders) == 0 ? "" : getCashPaymentTotal(orders) > 0 ? Global.format(getCashPaymentTotal(orders)) : '(${Global.format(-getCashPaymentTotal(orders))})',
+              paddedTextSmall(
+                  getCashPaymentTotal(orders) == 0
+                      ? ""
+                      : getCashPaymentTotal(orders) > 0
+                          ? Global.format(getCashPaymentTotal(orders))
+                          : '(${Global.format(-getCashPaymentTotal(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: getCashPaymentTotal(orders) > 0 ? null : null),
                   align: TextAlign.right),
-              paddedTextSmall(getTransferPaymentTotal(orders) == 0 ? "" : getTransferPaymentTotal(orders) > 0 ? Global.format(getTransferPaymentTotal(orders)) : '(${Global.format(-getTransferPaymentTotal(orders))})',
+              paddedTextSmall(
+                  getTransferPaymentTotal(orders) == 0
+                      ? ""
+                      : getTransferPaymentTotal(orders) > 0
+                          ? Global.format(getTransferPaymentTotal(orders))
+                          : '(${Global.format(-getTransferPaymentTotal(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: getTransferPaymentTotal(orders) > 0 ? null : null),
                   align: TextAlign.right),
-              paddedTextSmall(getCreditPaymentTotal(orders) == 0 ? "" : getCreditPaymentTotal(orders) > 0 ? Global.format(getCreditPaymentTotal(orders)) : '(${Global.format(-getCreditPaymentTotal(orders))})',
+              paddedTextSmall(
+                  getCreditPaymentTotal(orders) == 0
+                      ? ""
+                      : getCreditPaymentTotal(orders) > 0
+                          ? Global.format(getCreditPaymentTotal(orders))
+                          : '(${Global.format(-getCreditPaymentTotal(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: getCreditPaymentTotal(orders) > 0 ? null : null),
                   align: TextAlign.right),
-              paddedTextSmall(getOtherPaymentTotal(orders) == 0 ? "" : getOtherPaymentTotal(orders) > 0 ? Global.format(getOtherPaymentTotal(orders)) : '(${Global.format(-getOtherPaymentTotal(orders))})',
+              paddedTextSmall(
+                  getOtherPaymentTotal(orders) == 0
+                      ? ""
+                      : getOtherPaymentTotal(orders) > 0
+                          ? Global.format(getOtherPaymentTotal(orders))
+                          : '(${Global.format(-getOtherPaymentTotal(orders))})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -631,7 +658,8 @@ double payToCustomerOrShopValueTotal(List<OrderModel> orders) {
   Set<int> processedPairs = {};
 
   for (OrderModel order in orders) {
-    if (order.pairId != null && order.pairId != 0) { // Fixed: Changed == 0 to != 0
+    if (order.pairId != null && order.pairId != 0) {
+      // Fixed: Changed == 0 to != 0
       // For paired orders, calculate once per pair
       if (!processedPairs.contains(order.pairId)) {
         processedPairs.add(order.pairId!);

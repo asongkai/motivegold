@@ -263,7 +263,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       motivePrint("CARD READER: Timeout: 3 seconds");
 
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8765/read'),
+        Uri.parse('https://127.0.0.1:8765/read'),
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': 'local_services_key'
