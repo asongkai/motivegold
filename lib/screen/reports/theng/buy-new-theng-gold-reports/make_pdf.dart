@@ -45,7 +45,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
         reportsCompanyTitle(),
         Center(
           child: Text(
-            'รายงานซื้อทองคำแท่ง',
+            'รายงานซื้อทองคำแท่งจากร้านทองค้าส่ง',
             style: TextStyle(
                 decoration: TextDecoration.none,
                 fontSize: 20,
@@ -80,20 +80,21 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
           ),
           columnWidths: type == 1
               ? {
-                  0: const FixedColumnWidth(25),
-                  1: const FixedColumnWidth(70),
-                  2: const FixedColumnWidth(45),
-                  3: const FixedColumnWidth(75),
-                  4: const FixedColumnWidth(60),
+                  0: const FixedColumnWidth(27),
+                  1: const FixedColumnWidth(55),
+                  2: const FixedColumnWidth(68),
+                  3: const FixedColumnWidth(45),
+                  4: const FixedColumnWidth(70),
                   5: const FixedColumnWidth(50),
-                  6: const FixedColumnWidth(45),
-                  7: const FixedColumnWidth(70),
-                  8: const FixedColumnWidth(55),
-                  9: const FixedColumnWidth(60),
-                  10: const FixedColumnWidth(65),
-                  11: const FixedColumnWidth(60),
-                  12: const FixedColumnWidth(65),
-                  13: const FixedColumnWidth(65),
+                  6: const FixedColumnWidth(75),
+                  7: const FixedColumnWidth(47),
+                  8: const FixedColumnWidth(47),
+                  9: const FixedColumnWidth(63),
+                  10: const FixedColumnWidth(63),
+                  11: const FixedColumnWidth(63),
+                  12: const FixedColumnWidth(63),
+                  13: const FixedColumnWidth(63),
+                  14: const FixedColumnWidth(63),
                 }
               : {
                   0: const FixedColumnWidth(30),
@@ -124,6 +125,12 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                               color: PdfColors.black),
                           align: TextAlign.center),
                       paddedTextSmall('เลขที่\nใบกํากับภาษี',
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: PdfColors.black),
+                          align: TextAlign.center),
+                      paddedTextSmall('เลขที่\nใบรับทอง',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -166,7 +173,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                               color: PdfColors.black),
                           align: TextAlign.center),
                       paddedTextSmall(
-                          'ฐานภาษีมูลค่ายกเว้น\nราคาทองคําแท่ง(บาท)',
+                          'ฐานภาษี\nมูลค่ายกเว้น\nราคาทองคําแท่ง\n(บาท)',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -184,7 +191,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                               fontWeight: FontWeight.bold,
                               color: PdfColors.black),
                           align: TextAlign.center),
-                      paddedTextSmall('รวมมูลค่าฐานภาษี',
+                      paddedTextSmall('รวมมูลค่า\nฐานภาษี',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -196,7 +203,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                               fontWeight: FontWeight.bold,
                               color: PdfColors.black),
                           align: TextAlign.center),
-                      paddedTextSmall('ราคาขาย\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
+                      paddedTextSmall('ราคาขาย\nรวมภาษี\nมูลค่าเพิ่ม\n(บาท)',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -302,20 +309,21 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
       ),
       columnWidths: type == 1
           ? {
-              0: const FixedColumnWidth(25),
-              1: const FixedColumnWidth(70),
-              2: const FixedColumnWidth(45),
-              3: const FixedColumnWidth(75),
-              4: const FixedColumnWidth(60),
+              0: const FixedColumnWidth(27),
+              1: const FixedColumnWidth(55),
+              2: const FixedColumnWidth(68),
+              3: const FixedColumnWidth(45),
+              4: const FixedColumnWidth(70),
               5: const FixedColumnWidth(50),
-              6: const FixedColumnWidth(45),
-              7: const FixedColumnWidth(70),
-              8: const FixedColumnWidth(55),
-              9: const FixedColumnWidth(60),
-              10: const FixedColumnWidth(65),
-              11: const FixedColumnWidth(60),
-              12: const FixedColumnWidth(65),
-              13: const FixedColumnWidth(65),
+              6: const FixedColumnWidth(75),
+              7: const FixedColumnWidth(47),
+              8: const FixedColumnWidth(47),
+              9: const FixedColumnWidth(63),
+              10: const FixedColumnWidth(63),
+              11: const FixedColumnWidth(63),
+              12: const FixedColumnWidth(63),
+              13: const FixedColumnWidth(63),
+              14: const FixedColumnWidth(63),
             }
           : {
               0: const FixedColumnWidth(30),
@@ -343,8 +351,16 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall('${i + 1}',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
+                    align: TextAlign.center),
+                paddedTextSmall(orders[i]!.referenceNo ?? '',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
                 paddedTextSmall(orders[i]!.orderId,
                     style: TextStyle(
@@ -357,8 +373,9 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                     Global.dateOnly(orders[i]!.orderDate.toString()),
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
                 // paddedTextSmall(Global.timeOnly(orders[i]!.orderDate.toString()), style: TextStyle(fontSize: 10)),
                 paddedTextSmall(
@@ -374,8 +391,9 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                         : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
@@ -385,8 +403,9 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                             : '',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
                 paddedTextSmall(
                     orders[i]!.status == "2"
@@ -457,9 +476,8 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                             getVatValue()),
                     style: TextStyle(
                         fontSize: 10,
-                        color: orders[i]!.status == "2"
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == "2" ? PdfColors.red900 : null),
                     align: TextAlign.right),
                 paddedTextSmall(
                     orders[i]!.status == "2"
@@ -492,6 +510,8 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 2 || type == 3 || type == 4)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('รวมท้ังหมด',
@@ -503,7 +523,7 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall(
                   type == 1
                       ? Global.format(getWeightBahtTotal(orders))
-                      : Global.format(getWeightTotalBaht(orders)),
+                      : Global.format(getWeightTotalBahtTheng(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -594,7 +614,8 @@ Future<Uint8List> makeBuyThengReportPdf(List<OrderModel?> orders, int type,
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5%'),
+                Text(
+                    'หมายเหตุ : ร้านทองค้าส่ง รวมถึง ร้านทองค้าส่งนำไปหลอม ร้านทองนำไปขายต่อ และหรือช่างทอง และหรือช่างจัดทำกรอบพระและบุคคลอื่นๆ'),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

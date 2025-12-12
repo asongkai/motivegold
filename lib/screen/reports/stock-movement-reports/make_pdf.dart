@@ -96,7 +96,7 @@ Future<Uint8List> makeStockMovementReportPdf(
             ),
             verticalAlignment: TableCellVerticalAlignment.middle,
             children: [
-              paddedTextSmall('เลขที่ใบ\nกํากับภาษ',
+              paddedTextSmall('เลขที่ใบ\nกํากับภาษี',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,

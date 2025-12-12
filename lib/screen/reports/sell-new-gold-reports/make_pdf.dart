@@ -131,7 +131,7 @@ Future<Uint8List> makeNewGoldReportPdf(
                   fontSize: 10,
                   color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black
               ), align: TextAlign.center),
-              paddedTextSmall(Global.dateOnly(orders[i]!.createdDate.toString()),
+              paddedTextSmall(Global.dateOnly(orders[i]!.orderDate.toString()),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black

@@ -26,7 +26,7 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
         reportsCompanyTitle(),
         Center(
           child: Text(
-            'รายงานขายทองคำแท่งเก่า',
+            'รายงานขายทองคำแท่งให้ร้านทองค้าส่ง',
             style: TextStyle(
                 decoration: TextDecoration.none,
                 fontSize: 20,
@@ -61,11 +61,9 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                   4: FixedColumnWidth(60), // Name
                   5: FixedColumnWidth(50), // Branch
                   6: FixedColumnWidth(45), // Tax
-                  7: FixedColumnWidth(45), // Product
-                  8: FixedColumnWidth(70), // Weight Baht
-                  9: FixedColumnWidth(55), // Weight Gram
-                  10: FixedColumnWidth(
-                      55), // Amount (THIS WAS MISSING IN YOUR ORIGINAL CODE)
+                  7: FixedColumnWidth(80), // Weight Baht
+                  8: FixedColumnWidth(60), // Weight Gram
+                  9: FixedColumnWidth(60), // Amount
                 }
               : {
                   0: const FixedColumnWidth(30),
@@ -101,7 +99,7 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                           fontWeight: FontWeight.bold,
                           color: PdfColors.black)),
                 paddedTextSmall(
-                    type == 1 ? 'เลขที่ใบกำกับภาษี' : 'เลขที่ใบสำคัญจ่าย',
+                    type == 1 ? 'เลขที่ใบสำคัญจ่าย' : 'เลขที่ใบสำคัญจ่าย',
                     align: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
@@ -128,12 +126,6 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                           color: PdfColors.black)),
-                paddedTextSmall('รายการสินค้า',
-                    align: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.black)),
                 paddedTextSmall('น้ําหนัก\n(บาท)',
                     align: TextAlign.center,
                     style: TextStyle(
@@ -174,11 +166,9 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
               4: FixedColumnWidth(60), // Name
               5: FixedColumnWidth(50), // Branch
               6: FixedColumnWidth(45), // Tax
-              7: FixedColumnWidth(45), // Product
-              8: FixedColumnWidth(70), // Weight Baht
-              9: FixedColumnWidth(55), // Weight Gram
-              10: FixedColumnWidth(
-                  55), // Amount (THIS WAS MISSING IN YOUR ORIGINAL CODE)
+              7: FixedColumnWidth(80), // Weight Baht
+              8: FixedColumnWidth(60), // Weight Gram
+              9: FixedColumnWidth(60), // Amount
             }
           : {
               0: const FixedColumnWidth(30),
@@ -199,8 +189,9 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
               paddedTextSmall('${i + 1}',
                   style: TextStyle(
                       fontSize: 10,
-                      color:
-                          orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.black),
                   align: TextAlign.center),
               paddedTextSmall(
                   type == 2
@@ -208,33 +199,37 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                       : Global.dateOnly(orders[i]!.orderDate.toString()),
                   style: TextStyle(
                       fontSize: 10,
-                      color:
-                          orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.black),
                   align: TextAlign.center),
               if (type == 1)
                 paddedTextSmall(orders[i]!.referenceNo ?? '',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
               paddedTextSmall(orders[i]!.orderId,
                   style: TextStyle(
                       fontSize: 10,
-                      color:
-                          orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                      color: orders[i]!.status == "2"
+                          ? PdfColors.red900
+                          : PdfColors.black),
                   align: TextAlign.center),
               if (type == 1)
                 paddedTextSmall(
                     orders[i]!.status == "2"
                         ? "ยกเลิกเอกสาร***"
                         : type == 1
-                            ? '${getCustomerNameForWholesaleReports(orders[i]!.customer!)}'
+                            ? getCustomerNameForWholesaleReports(orders[i]!.customer!)
                             : 'รวมรายการทองเก่า\nประจําวัน',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
               if (type == 1)
                 paddedTextSmall(
@@ -243,8 +238,9 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                         : getCustomerBranchCode(orders[i]!.customer!),
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
               if (type == 1)
                 paddedTextSmall(
@@ -255,17 +251,10 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
                             : orders[i]!.customer?.idCard ?? '',
                     style: TextStyle(
                         fontSize: 10,
-                        color:
-                            orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
                     align: TextAlign.center),
-              paddedTextSmall('ทองคำแท่ง',
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2"
-                          ? PdfColors.red900
-                          : PdfColors.black,
-                      fontWeight: FontWeight.bold),
-                  align: TextAlign.center),
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
@@ -307,7 +296,6 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
               ),
             ),
             children: [
-              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
@@ -363,7 +351,8 @@ Future<Uint8List> makeSellUsedThengGoldReportPdf(List<OrderModel?> orders,
           return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('หมายเหตุ : น้ำหนักจะเป็นน้ำหนักในหน่วยของทอง 96.5%'),
+                Text(
+                    'หมายเหตุ : ร้านทองค้าส่ง รวมถึง ร้านทองค้าส่งนำไปหลอม ร้านทองนำไปขายต่อ และหรือช่างทอง และหรือช่างจัดทำกรอบพระและบุคคลอื่นๆ'),
                 Text('${context.pageNumber} / ${context.pagesCount}')
               ]);
         }),

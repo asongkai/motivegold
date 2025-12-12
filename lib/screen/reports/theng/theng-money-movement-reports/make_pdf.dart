@@ -221,7 +221,7 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                   style: TextStyle(fontSize: 8), align: TextAlign.center),
               paddedTextSmall('${getCustomerName(orders[i].customer!)}',
                   style: TextStyle(fontSize: 8)),
-              paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
+              paddedTextSmall(Global.dateOnly(orders[i].orderDate.toString()),
                   style: TextStyle(fontSize: 8)),
               // paddedTextSmall(Global.timeOnly(orders[i].createdDate.toString()),
               //     style: TextStyle(fontSize: 8)),

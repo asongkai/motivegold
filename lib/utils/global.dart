@@ -821,19 +821,19 @@ class Global {
 
   static dynamic getPayTittle(double amount) {
     return amount > 0
-        ? 'ลูกค้าจ่าย - ร้านรับเงิน (สุทธิ)'
+        ? 'ลูกค้าจ่าย - ร้านทองรับเงิน (สุทธิ)'
         : amount == 0
             ? ""
-            : 'ลูกค้ารับ - ร้านจ่ายเงิน (สุทธิ)';
+            : 'ลูกค้ารับ - ร้านทองจ่ายเงิน (สุทธิ)';
   }
 
   static dynamic getRefillPayTittle(double amount) {
     // motivePrint(amount);
     return amount > 0
-        ? 'ร้านค้าส่งจ่าย - ร้านรับเงิน (สุทธิ)'
+        ? 'ร้านค้าส่งจ่าย - ร้านทองรับเงิน (สุทธิ)'
         : amount == 0
             ? ""
-            : 'ร้านค้าส่งรับ - ร้านจ่ายเงิน (สุทธิ)';
+            : 'ร้านค้าส่งรับ - ร้านทองจ่ายเงิน (สุทธิ)';
   }
 
   static dynamic payToBrokerOrShop(double discount, double addPrice) {

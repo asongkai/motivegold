@@ -24,7 +24,7 @@ Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
 
     // Find all orders for this specific day
     var ordersForDay =
-        orders.where((order) => order!.createdDate == indexDay).toList();
+        orders.where((order) => order!.orderDate == indexDay).toList();
 
     if (ordersForDay.isNotEmpty) {
       // Add all orders for this day

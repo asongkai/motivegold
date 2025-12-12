@@ -32,8 +32,7 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
               Text(
                   'บัญชีสำหรับผู้ทำการค้าของเก่า (ประเภททองรูปพรรณและทองคำแท่ง)',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              Text(
-                  'สถานประกอบอาชีพ : ${Global.company?.name} (${Global.branch!.name})',
+              Text('สถานประกอบอาชีพ : ${Global.branch!.name}',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               Text('ที่อยู่ : ${getFullAddress()}',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
@@ -214,56 +213,110 @@ Future<Uint8List> makeBuyUsedGoldGovReportPdf(
             decoration: BoxDecoration(
                 color: i % 2 == 0 ? PdfColors.white : PdfColors.grey100),
             children: [
-              paddedTextSmall('${i + 1}', style: TextStyle(fontSize: 10)),
+              paddedTextSmall('${i + 1}',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black)),
               paddedTextSmall(orders[i]!.orderId,
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
               paddedTextSmall('ทองรูปพรรณ 96.5%',
                   style: TextStyle(
                       fontSize: 10,
-                      color: null,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black,
                       fontWeight: FontWeight.bold),
                   align: TextAlign.center),
-              paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
-              paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
-              paddedTextSmall(' ', style: TextStyle(fontSize: 10)),
+              paddedTextSmall(' ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black)),
+              paddedTextSmall(' ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black)),
+              paddedTextSmall(' ',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black)),
               paddedTextSmall(
-                  '${type == 1 ? Global.format(getWeight(orders[i])) : Global.format(orders[i]!.weight ?? 0)}',
-                  style: TextStyle(fontSize: 10),
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : '${type == 1 ? Global.format(getWeight(orders[i])) : Global.format(orders[i]!.weight ?? 0)}',
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('กรัม',
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
               Container(
                   padding: EdgeInsets.all(4),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(getCustomerName(orders[i]!.customer!),
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold, color: PdfColors.black)),
-                        for (String line in getCustomerAddressLines(
-                            orders[i]!.customer!,
-                            includePhone: false))
-                          Text(line, style: TextStyle(fontSize: 10)),
-                        Text('Tel : ${orders[i]!.customer?.phoneNumber}',
-                            style: TextStyle(fontSize: 10)),
-                        Text(
-                            getWorkId(orders[i]!.customer!,
-                                forOldGoldGov: true),
-                            style: TextStyle(fontSize: 10)),
-                      ])),
+                  child: orders[i]!.status == "2"
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ยกเลิกเอกสาร***',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: PdfColors.red900)),
+                          ])
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(getCustomerName(orders[i]!.customer!),
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: PdfColors.black)),
+                            for (String line in getCustomerAddressLines(
+                                orders[i]!.customer!,
+                                includePhone: false))
+                              Text(line, style: TextStyle(fontSize: 10)),
+                            Text('Tel : ${orders[i]!.customer?.phoneNumber}',
+                                style: TextStyle(fontSize: 10)),
+                            Text(
+                                getWorkId(orders[i]!.customer!,
+                                    forOldGoldGov: true),
+                                style: TextStyle(fontSize: 10)),
+                          ])),
               paddedTextSmall(Global.dateOnly(orders[i]!.orderDate.toString()),
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
-              paddedTextSmall(Global.format(orders[i]!.priceIncludeTax ?? 0),
-                  style: TextStyle(fontSize: 10, color: null),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
+              paddedTextSmall(
+                  orders[i]!.status == "2"
+                      ? "0.00"
+                      : Global.format(orders[i]!.priceIncludeTax ?? 0),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
               paddedTextSmall('',
-                  style: TextStyle(fontSize: 10), align: TextAlign.center),
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: orders[i]!.status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
             ],
           ),
         // Summary row with clean styling

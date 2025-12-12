@@ -677,6 +677,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                         buyTPrice: Global.ordersPapun![widget.index]
                                             .details![widget.j!].buyTPrice,
                                         goldDataModel: Global.ordersPapun![widget.index].details![widget.j!].goldDataModel))));
+                                // Note: When EDITING existing items, we preserve the original orderDate (Case 1)
                                 sumBuyTotal();
                                 setState(() {});
                                 Navigator.of(context).pop();
@@ -734,6 +735,7 @@ class _EditBuyDialogState extends State<EditBuyDialog> {
                                   buyTPrice: Global.ordersPapun![widget.index]
                                       .details![widget.j!].buyTPrice,
                                   goldDataModel: Global.ordersPapun![widget.index].details![widget.j!].goldDataModel))));
+                          // Note: When EDITING existing items, we preserve the original orderDate (Case 1)
                           sumBuyTotal();
                           setState(() {});
                           Navigator.of(context).pop();

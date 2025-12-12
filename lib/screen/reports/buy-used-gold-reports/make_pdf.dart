@@ -65,9 +65,8 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
                   2: FixedColumnWidth(80),
                   3: FixedColumnWidth(100),
                   4: FixedColumnWidth(80),
-                  5: FixedColumnWidth(100),
-                  6: FixedColumnWidth(60),
-                  7: FixedColumnWidth(80),
+                  5: FixedColumnWidth(60),
+                  6: FixedColumnWidth(80),
                 }
               : {
                   0: FixedColumnWidth(50),
@@ -116,12 +115,6 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
                           fontWeight: FontWeight.bold,
                           color: PdfColors.black),
                       align: TextAlign.center),
-                paddedTextSmall('รายการสินค้า',
-                    style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: PdfColors.black),
-                    align: TextAlign.center),
                 paddedTextSmall('น้ําหนัก\n(กรัม)',
                     style: TextStyle(
                         fontSize: 11,
@@ -161,9 +154,8 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
               2: FixedColumnWidth(80),
               3: FixedColumnWidth(100),
               4: FixedColumnWidth(80),
-              5: FixedColumnWidth(100),
-              6: FixedColumnWidth(60),
-              7: FixedColumnWidth(80),
+              5: FixedColumnWidth(60),
+              6: FixedColumnWidth(80),
             }
           : {
               0: FixedColumnWidth(50),
@@ -230,14 +222,6 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
                             ? PdfColors.red900
                             : PdfColors.black),
                     align: TextAlign.center),
-              paddedTextSmall('ทองรูปพรรณเก่า',
-                  style: TextStyle(
-                      fontSize: 11,
-                      color: orders[i]!.status == "2"
-                          ? PdfColors.red900
-                          : PdfColors.black,
-                      fontWeight: FontWeight.bold),
-                  align: TextAlign.center),
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
@@ -272,8 +256,6 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
               paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               paddedTextSmall('', style: const TextStyle(fontSize: 11)),
-              if (type == 1)
-                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               paddedTextSmall('รวมท้ังหมด',

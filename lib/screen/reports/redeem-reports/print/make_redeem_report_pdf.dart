@@ -137,8 +137,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
               Text(
                   'เลขประจําตัวผู้เสียภาษี/Tax ID : ${Global.company?.taxNumber} โทรศัพท์/Phone : ${Global.branch?.phone}',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              Text(
-                  'รายงานภาษีมูลค่าเพิ่มจากการไถ่ถอนตามสัญญาขายฝาก (${getOrderTypeTitle(type)})',
+              Text('รายงานภาษีขายจากการไถ่ถอน (${getOrderTypeTitle(type)})',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               Text('รายงานภาษีขาย',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -204,12 +203,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       height(h: 2),
       Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: type == 4
             ? {
@@ -246,49 +245,49 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('เลขที่ใบกำกับภาษี',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('รายการ',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                   ]
                 : [
@@ -296,64 +295,64 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall(
                         type == 1 ? 'เลขที่ตั๋ว' : 'เลขที่ใบกำกับภาษี',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall(type == 1 ? 'เลขที่ใบกำกับภาษี' : 'ลูกค้า',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall(
                         type == 1 ? 'ลูกค้า' : 'เลขประจำตัว\nผู้เสียภาษี',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall(
                         type == 1 ? 'เลขประจำตัว\nผู้เสียภาษี' : 'เลขที่ตั๋ว',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาตามจำนวน\nสินไถ่ รวมภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาตาม\nจำนวนสินไถ่',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ราคาขายฝาก\nที่กำหนดใน\nสัญญา',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ฐานภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                     paddedTextSmall('ภาษี\nมูลค่าเพิ่ม',
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: PdfColors.white),
+                            color: PdfColors.black),
                         align: TextAlign.center),
                   ],
           ),
@@ -371,12 +370,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -394,7 +393,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           for (int i = 0; i < details.length; i++)
             TableRow(
               decoration: BoxDecoration(
-                color: PdfColors.white,
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey50,
               ),
               children: [
                 paddedTextSmall(
@@ -536,23 +535,23 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 paddedTextSmall(
                     '${Global.format(getRedemptionVatTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getRedemptionValueTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getDepositAmountTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(getTaxBaseTotal(details))}',
                     style: TextStyle(
@@ -603,18 +602,19 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
   }
 
   if (type == 2) {
+    int rowIndex = 0;
     dataRows.add(Container(
       decoration: BoxDecoration(
         border: Border.all(color: PdfColors.grey300, width: 1),
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -635,7 +635,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
             if (orders[i]!.details == null || orders[i]!.details!.isEmpty)
               TableRow(
                 decoration: BoxDecoration(
-                    color: PdfColors.white),
+                  color: rowIndex++ % 2 == 0 ? PdfColors.white : PdfColors.grey50,
+                ),
                 children: [
                   // COLUMN 1: Date
                   paddedTextSmall(
@@ -686,9 +687,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                     '',
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.center,
                   ),
 
@@ -697,45 +697,40 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                     Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.right,
                   ),
                   paddedTextSmall(
                     Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.right,
                   ),
                   paddedTextSmall(
                     Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.right,
                   ),
                   paddedTextSmall(
                     Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.right,
                   ),
                   paddedTextSmall(
                     Global.format(0),
                     style: TextStyle(
                         fontSize: 11,
-                        color: orders[i]!.status == 2
-                            ? PdfColors.red900
-                            : null),
+                        color:
+                            orders[i]!.status == 2 ? PdfColors.red900 : null),
                     align: TextAlign.right,
                   ),
                 ],
@@ -745,7 +740,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
               for (int j = 0; j < orders[i]!.details!.length; j++)
                 TableRow(
                   decoration: BoxDecoration(
-                      color: PdfColors.white),
+                    color: rowIndex++ % 2 == 0 ? PdfColors.white : PdfColors.grey50,
+                  ),
                   children: [
                     // COLUMN 1: Date
                     paddedTextSmall(
@@ -804,9 +800,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       orders[i]!.details![j].referenceNo ?? '',
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.center,
                     ),
 
@@ -815,9 +810,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       Global.format(orders[i]!.details![j].redemptionVat ?? 0),
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.right,
                     ),
 
@@ -827,9 +821,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                           orders[i]!.details![j].redemptionValue ?? 0),
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.right,
                     ),
 
@@ -838,9 +831,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       Global.format(orders[i]!.details![j].depositAmount ?? 0),
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.right,
                     ),
 
@@ -849,9 +841,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       Global.format(orders[i]!.details![j].taxBase ?? 0),
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.right,
                     ),
 
@@ -860,9 +851,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       Global.format(orders[i]!.details![j].taxAmount ?? 0),
                       style: TextStyle(
                           fontSize: 11,
-                          color: orders[i]!.status == 2
-                              ? PdfColors.red900
-                              : null),
+                          color:
+                              orders[i]!.status == 2 ? PdfColors.red900 : null),
                       align: TextAlign.right,
                     ),
                   ],
@@ -890,23 +880,23 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 paddedTextSmall(
                     '${Global.format(getRedemptionVatTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getRedemptionValueTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getDepositAmountTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(getTaxBaseTotal(details))}',
                     style: TextStyle(
@@ -933,12 +923,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(30),
@@ -957,7 +947,8 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           for (int i = 0; i < orders.length; i++)
             TableRow(
               decoration: BoxDecoration(
-                  color: PdfColors.white),
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey50,
+              ),
               children: [
                 // COLUMN 1: Date
                 paddedTextSmall(
@@ -1008,9 +999,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                       .join(','),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.center,
                 ),
 
@@ -1019,9 +1008,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   Global.format(getRedemptionVatTotal(orders[i]!.details!)),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.right,
                 ),
 
@@ -1030,9 +1017,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   Global.format(getRedemptionValueTotal(orders[i]!.details!)),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.right,
                 ),
 
@@ -1041,9 +1026,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   Global.format(getDepositAmountTotal(orders[i]!.details!)),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.right,
                 ),
 
@@ -1052,9 +1035,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   Global.format(getTaxBaseTotal(orders[i]!.details!)),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.right,
                 ),
 
@@ -1063,9 +1044,7 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                   Global.format(getTaxAmountTotal(orders[i]!.details!)),
                   style: TextStyle(
                       fontSize: 11,
-                      color: orders[i]!.status == 2
-                          ? PdfColors.red900
-                          : null),
+                      color: orders[i]!.status == 2 ? PdfColors.red900 : null),
                   align: TextAlign.right,
                 ),
               ],
@@ -1093,23 +1072,23 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 paddedTextSmall(
                     '${Global.format(getRedemptionVatTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getRedemptionValueTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getDepositAmountTotal(details))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall('${Global.format(getTaxBaseTotal(details))}',
                     style: TextStyle(
@@ -1136,12 +1115,12 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
       ),
       child: Table(
         border: TableBorder(
-          top: BorderSide(color: PdfColors.grey200, width: 0.5),
-          bottom: BorderSide(color: PdfColors.grey200, width: 0.5),
-          left: BorderSide(color: PdfColors.grey200, width: 0.5),
-          right: BorderSide(color: PdfColors.grey200, width: 0.5),
-          horizontalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
-          verticalInside: BorderSide(color: PdfColors.grey200, width: 0.5),
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
           0: const FixedColumnWidth(25),
@@ -1157,7 +1136,9 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
           // Data Rows
           for (int i = 0; i < daily.length; i++)
             TableRow(
-              decoration: BoxDecoration(color: PdfColors.white),
+              decoration: BoxDecoration(
+                color: i % 2 == 0 ? PdfColors.white : PdfColors.grey50,
+              ),
               children: [
                 // COLUMN 1: Date
                 paddedTextSmall(
@@ -1236,23 +1217,23 @@ Future<Uint8List> makeRedeemReportPdf(List<RedeemModel?> orders, int type,
                 paddedTextSmall(
                     '${Global.format(getRedemptionVatTotalFromRedeems(daily))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getRedemptionValueTotalFromRedeems(daily))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getDepositAmountTotalFromRedeems(daily))}',
                     style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                     align: TextAlign.right),
                 paddedTextSmall(
                     '${Global.format(getTaxBaseTotalFromRedeems(daily))}',

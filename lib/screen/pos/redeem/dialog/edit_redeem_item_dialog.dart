@@ -730,118 +730,19 @@ class _EditRedeemItemDialogState extends State<EditRedeemItemDialog> {
                         return;
                       }
 
+                      if (referenceNumberCtrl.text.isEmpty) {
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', 'ไม่มีการระบุเลขที่ขายฝาก ต้องการบันทึกหรือไม่', 'ตกลง',
+                            action: () async {
+                          saveRedeemItem();
+                        });
+                        return;
+                      }
+
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
-                        if (widget.j == null) {
-                          Global.redeemSingleDetail![widget.index] =
-                              RedeemDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                RedeemDetailModel(
-                                  productId: selectedProduct?.id,
-                                  weight: Global.toNumber(weightGramCtrl.text),
-                                  weightBath:
-                                      Global.toNumber(weightBahtCtrl.text),
-                                  taxBase: Global.toNumber(
-                                          redeemValueCtrl.text) -
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  taxAmount:
-                                      (Global.toNumber(redeemValueCtrl.text) -
-                                              Global.toNumber(
-                                                  depositAmountCtrl.text)) *
-                                          getVatValue(),
-                                  depositAmount:
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  redemptionValue:
-                                      Global.toNumber(redeemValueCtrl.text),
-                                  redemptionVat:
-                                      ((Global.toNumber(redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()) +
-                                          Global.toNumber(redeemValueCtrl.text),
-                                  benefitAmount: Global.toNumber(
-                                              benefitReceiveCtrl.text) !=
-                                          0
-                                      ? Global.toNumber(benefitReceiveCtrl.text)
-                                      : Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text),
-                                  paymentAmount: totalAmount,
-                                  taxBaseAmount: widget.vatOption == 'Include'
-                                      ? Global.toNumber(benefitTotalCtrl.text)
-                                      : (Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text) +
-                                          (Global.toNumber(
-                                                      redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()),
-                                  qty: 1,
-                                  referenceNo: referenceNumberCtrl.text,
-                                  vatOption: widget.vatOption,
-                                ),
-                              ),
-                            ),
-                          );
-                        } else {
-                          Global.redeems![widget.index].details![widget.j!] =
-                              RedeemDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                RedeemDetailModel(
-                                  productId: selectedProduct?.id,
-                                  weight: Global.toNumber(weightGramCtrl.text),
-                                  weightBath:
-                                      Global.toNumber(weightBahtCtrl.text),
-                                  taxBase: Global.toNumber(
-                                          redeemValueCtrl.text) -
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  taxAmount:
-                                      (Global.toNumber(redeemValueCtrl.text) -
-                                              Global.toNumber(
-                                                  depositAmountCtrl.text)) *
-                                          getVatValue(),
-                                  depositAmount:
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  redemptionValue:
-                                      Global.toNumber(redeemValueCtrl.text),
-                                  redemptionVat:
-                                      ((Global.toNumber(redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()) +
-                                          Global.toNumber(redeemValueCtrl.text),
-                                  benefitAmount: Global.toNumber(
-                                              benefitReceiveCtrl.text) !=
-                                          0
-                                      ? Global.toNumber(benefitReceiveCtrl.text)
-                                      : Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text),
-                                  paymentAmount: totalAmount,
-                                  taxBaseAmount: widget.vatOption == 'Include'
-                                      ? Global.toNumber(benefitTotalCtrl.text)
-                                      : (Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text) +
-                                          (Global.toNumber(
-                                                      redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()),
-                                  qty: 1,
-                                  referenceNo: referenceNumberCtrl.text,
-                                  vatOption: widget.vatOption,
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        setState(() {});
-                        Navigator.of(context).pop();
+                        saveRedeemItem();
                       });
                     },
                   ),
@@ -912,6 +813,90 @@ class _EditRedeemItemDialogState extends State<EditRedeemItemDialog> {
           Global.toNumber(benefitReceiveCtrl.text);
     }
     setState(() {});
+  }
+
+  void saveRedeemItem() {
+    if (widget.j == null) {
+      Global.redeemSingleDetail![widget.index] =
+          RedeemDetailModel.fromJson(
+        jsonDecode(
+          jsonEncode(
+            RedeemDetailModel(
+              productId: selectedProduct?.id,
+              weight: Global.toNumber(weightGramCtrl.text),
+              weightBath: Global.toNumber(weightBahtCtrl.text),
+              taxBase: Global.toNumber(redeemValueCtrl.text) -
+                  Global.toNumber(depositAmountCtrl.text),
+              taxAmount: (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text)) *
+                  getVatValue(),
+              depositAmount: Global.toNumber(depositAmountCtrl.text),
+              redemptionValue: Global.toNumber(redeemValueCtrl.text),
+              redemptionVat: ((Global.toNumber(redeemValueCtrl.text) -
+                          Global.toNumber(depositAmountCtrl.text)) *
+                      getVatValue()) +
+                  Global.toNumber(redeemValueCtrl.text),
+              benefitAmount: Global.toNumber(benefitReceiveCtrl.text) != 0
+                  ? Global.toNumber(benefitReceiveCtrl.text)
+                  : Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text),
+              paymentAmount: totalAmount,
+              taxBaseAmount: widget.vatOption == 'Include'
+                  ? Global.toNumber(benefitTotalCtrl.text)
+                  : (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text) +
+                      (Global.toNumber(redeemValueCtrl.text) -
+                              Global.toNumber(depositAmountCtrl.text)) *
+                          getVatValue()),
+              qty: 1,
+              referenceNo: referenceNumberCtrl.text,
+              vatOption: widget.vatOption,
+            ),
+          ),
+        ),
+      );
+    } else {
+      Global.redeems![widget.index].details![widget.j!] =
+          RedeemDetailModel.fromJson(
+        jsonDecode(
+          jsonEncode(
+            RedeemDetailModel(
+              productId: selectedProduct?.id,
+              weight: Global.toNumber(weightGramCtrl.text),
+              weightBath: Global.toNumber(weightBahtCtrl.text),
+              taxBase: Global.toNumber(redeemValueCtrl.text) -
+                  Global.toNumber(depositAmountCtrl.text),
+              taxAmount: (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text)) *
+                  getVatValue(),
+              depositAmount: Global.toNumber(depositAmountCtrl.text),
+              redemptionValue: Global.toNumber(redeemValueCtrl.text),
+              redemptionVat: ((Global.toNumber(redeemValueCtrl.text) -
+                          Global.toNumber(depositAmountCtrl.text)) *
+                      getVatValue()) +
+                  Global.toNumber(redeemValueCtrl.text),
+              benefitAmount: Global.toNumber(benefitReceiveCtrl.text) != 0
+                  ? Global.toNumber(benefitReceiveCtrl.text)
+                  : Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text),
+              paymentAmount: totalAmount,
+              taxBaseAmount: widget.vatOption == 'Include'
+                  ? Global.toNumber(benefitTotalCtrl.text)
+                  : (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text) +
+                      (Global.toNumber(redeemValueCtrl.text) -
+                              Global.toNumber(depositAmountCtrl.text)) *
+                          getVatValue()),
+              qty: 1,
+              referenceNo: referenceNumberCtrl.text,
+              vatOption: widget.vatOption,
+            ),
+          ),
+        ),
+      );
+    }
+    setState(() {});
+    Navigator.of(context).pop();
   }
 
   resetText() {

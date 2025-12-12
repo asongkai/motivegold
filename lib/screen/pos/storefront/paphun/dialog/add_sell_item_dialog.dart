@@ -1060,6 +1060,9 @@ class _AddSellItemDialogState extends State<AddSellItemDialog> {
           ),
         ),
       );
+
+      // Update order date when new items are added (Case 2: user adds items on different day)
+      Global.ordersPapun![widget.index].orderDate = DateTime.now();
     } else {
       Global.sellOrderDetail!.add(
         OrderDetailModel(

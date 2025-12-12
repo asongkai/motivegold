@@ -11,6 +11,7 @@ import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
+import 'package:motivegold/widget/filter/compact_report_filter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
@@ -37,7 +38,6 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
   String? selectedType;
-  bool showFilters = false;
 
   final List<String> authTypes = [
     'ทั้งหมด',
@@ -87,10 +87,6 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _buildFilterButton(),
-                      const SizedBox(width: 8),
-                      _buildSearchButton(),
-                      const SizedBox(width: 8),
                       _buildPrintButton(),
                     ],
                   ),
@@ -103,7 +99,27 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            if (showFilters) _buildFilterPanel(),
+            CompactReportFilter(
+              fromDateController: fromDateCtrl,
+              toDateController: toDateCtrl,
+              onSearch: applyFilters,
+              onReset: () {
+                setState(() {
+                  final now = DateTime.now();
+                  final firstDayOfMonth = DateTime(now.year, now.month, 1);
+                  fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+                  toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
+                  selectedType = null;
+                });
+                loadAuthLogs();
+              },
+              filterSummary: _buildFilterSummary(),
+              initiallyExpanded: false,
+              autoCollapseOnSearch: true,
+              additionalFilters: [
+                _buildAuthTypeDropdown(),
+              ],
+            ),
             Expanded(
               child: loading
                   ? const LoadingProgress()
@@ -121,45 +137,6 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
                             },
                           ),
                         ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterButton() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          showFilters = !showFilters;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: showFilters
-              ? Colors.white.withOpacity(0.3)
-              : Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              showFilters ? Icons.filter_alt_off : Icons.filter_alt,
-              size: 20,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              showFilters ? 'ซ่อนตัวกรอง' : 'ค้นหา',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
             ),
           ],
         ),
@@ -262,6 +239,83 @@ class _AuthHistoryScreenState extends State<AuthHistoryScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildAuthTypeDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 2, bottom: 6),
+          child: Row(
+            children: [
+              Icon(Icons.category, size: 13, color: Colors.grey[600]),
+              const SizedBox(width: 5),
+              Text(
+                'ประเภทการเข้าใช้',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 42,
+          child: DropdownButtonFormField<String>(
+            value: selectedType,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.login, size: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              hintText: 'เลือกประเภท',
+              hintStyle: TextStyle(fontSize: 13, color: Colors.grey[400]),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.indigo[600]!, width: 1.5),
+              ),
+            ),
+            items: authTypes.map((String type) {
+              return DropdownMenuItem<String>(
+                value: type == 'ทั้งหมด' ? null : type,
+                child: Text(type, style: const TextStyle(fontSize: 13)),
+              );
+            }).toList(),
+            onChanged: (String? value) {
+              setState(() {
+                selectedType = value;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _buildFilterSummary() {
+    List<String> filters = [];
+    if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
+      filters.add(
+          'วันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
+    }
+    if (selectedType != null) {
+      filters.add('ประเภท: $selectedType');
+    }
+    return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
+  }
+
+  void applyFilters() {
+    loadAuthLogs();
   }
 
   Widget _buildFilterPanel() {

@@ -620,6 +620,8 @@ class _AddBuyItemDialogState extends State<AddBuyItemDialog> {
                               ),
                             ),
                           );
+                          // Update order date when new items are added (Case 2: user adds items on different day)
+                          Global.ordersPapun![widget.index].orderDate = DateTime.now();
                           sumBuyTotal();
                           setState(() {});
                           Navigator.of(context).pop();
@@ -657,6 +659,8 @@ class _AddBuyItemDialogState extends State<AddBuyItemDialog> {
                             ),
                           ),
                         );
+                        // Update order date when new items are added (Case 2: user adds items on different day)
+                        Global.ordersPapun![widget.index].orderDate = DateTime.now();
                         sumBuyTotal();
                         setState(() {});
                         Navigator.of(context).pop();

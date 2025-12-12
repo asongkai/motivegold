@@ -2,37 +2,21 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/model/order_detail.dart';
 import 'package:motivegold/screen/reports/accounting-books/theng/refill-wholesale-theng/preview.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
+import 'package:motivegold/widget/filter/compact_report_filter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
-import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
-
-// Simple class for Thai month
-class ThaiMonth {
-  final int value;
-  final String name;
-
-  ThaiMonth(this.value, this.name);
-
-  @override
-  String toString() => name;
-
-  Map<String, dynamic> toJson() => {'value': value, 'name': name};
-}
 
 class RefillWholesaleThengReportScreen extends StatefulWidget {
   const RefillWholesaleThengReportScreen({super.key});
@@ -48,42 +32,13 @@ class _RefillWholesaleThengReportScreenState
   List<OrderModel>? orders = [];
   List<OrderModel?>? filterList = [];
   Screen? size;
-  bool isFilterExpanded = true;
-
-  final TextEditingController yearCtrl = TextEditingController();
-  final TextEditingController monthCtrl = TextEditingController();
-  ValueNotifier<dynamic>? yearNotifier;
-  ValueNotifier<dynamic>? monthNotifier;
 
   final TextEditingController fromDateCtrl = TextEditingController();
   final TextEditingController toDateCtrl = TextEditingController();
-  DateTime? fromDate;
-  DateTime? toDate;
-
-  late List<ThaiMonth> thaiMonths;
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize Thai months list
-    thaiMonths = [
-      ThaiMonth(1, 'มกราคม'),
-      ThaiMonth(2, 'กุมภาพันธ์'),
-      ThaiMonth(3, 'มีนาคม'),
-      ThaiMonth(4, 'เมษายน'),
-      ThaiMonth(5, 'พฤษภาคม'),
-      ThaiMonth(6, 'มิถุนายน'),
-      ThaiMonth(7, 'กรกฎาคม'),
-      ThaiMonth(8, 'สิงหาคม'),
-      ThaiMonth(9, 'กันยายน'),
-      ThaiMonth(10, 'ตุลาคม'),
-      ThaiMonth(11, 'พฤศจิกายน'),
-      ThaiMonth(12, 'ธันวาคม'),
-    ];
-
-    yearNotifier = ValueNotifier<dynamic>(null);
-    monthNotifier = ValueNotifier<dynamic>(null);
 
     // Set default date range: 1st of current month to today
     final now = DateTime.now();
@@ -91,8 +46,8 @@ class _RefillWholesaleThengReportScreenState
     fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
     toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
 
-    // resetFilter();
-    // search();
+    // Auto-load data on init
+    search();
   }
 
   Future<void> search() async {
@@ -104,8 +59,6 @@ class _RefillWholesaleThengReportScreenState
       var result = await ApiServices.post(
           '/order/all/type/10',
           Global.reportRequestObj({
-            "year": yearCtrl.text == "" ? 0 : yearCtrl.text,
-            "month": monthCtrl.text == "" ? 0 : monthCtrl.text,
             "fromDate": fromDateCtrl.text.isNotEmpty
                 ? DateTime.parse(fromDateCtrl.text).toString()
                 : null,
@@ -293,258 +246,14 @@ class _RefillWholesaleThengReportScreenState
   }
 
   Widget _buildFilterSection() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isFilterExpanded = !isFilterExpanded;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.indigo.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.filter_alt_rounded,
-                        color: Colors.indigo[600], size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('ตัวกรองข้อมูล',
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2D3748))),
-                        Text(_buildFilterSummary(),
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: isFilterExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Colors.grey[600], size: 24),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            height: isFilterExpanded ? null : 0,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: isFilterExpanded ? 1.0 : 0.0,
-              child: isFilterExpanded
-                  ? Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.4,
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: Colors.grey[200]),
-                              const SizedBox(height: 16),
-
-                              // First row - Month and Year
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildCompactDropdownField<
-                                              ThaiMonth>(
-                                          label: 'เดือน',
-                                          icon: Icons.calendar_month,
-                                          notifier: monthNotifier!,
-                                          items: thaiMonths,
-                                          onChanged: (ThaiMonth value) {
-                                            setState(() {
-                                              monthCtrl.text =
-                                                  value.value.toString();
-                                              monthNotifier!.value = value;
-
-                                              // Set date range to selected month
-                                              int year = yearCtrl.text.isEmpty
-                                                  ? DateTime.now().year
-                                                  : int.parse(yearCtrl.text);
-                                              DateTime firstDay = DateTime(
-                                                  year, value.value, 1);
-                                              DateTime lastDay = DateTime(
-                                                  year, value.value + 1, 0);
-
-                                              fromDateCtrl.text =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(firstDay);
-                                              toDateCtrl.text =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(lastDay);
-                                            });
-                                            search();
-                                          })),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildCompactDropdownField<int>(
-                                          label: 'ปี',
-                                          icon: Icons.date_range,
-                                          notifier: yearNotifier!,
-                                          items: Global.genYear(),
-                                          onChanged: (int value) {
-                                            setState(() {
-                                              yearCtrl.text = value.toString();
-                                              yearNotifier!.value = value;
-
-                                              // Set date range to selected year
-                                              DateTime firstDay =
-                                                  DateTime(value, 1, 1);
-                                              DateTime lastDay =
-                                                  DateTime(value, 12, 31);
-
-                                              fromDateCtrl.text =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(firstDay);
-                                              toDateCtrl.text =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(lastDay);
-
-                                              // Clear month selection when year changes
-                                              monthCtrl.text = "";
-                                              monthNotifier!.value = null;
-                                            });
-                                            search();
-                                          })),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-
-                              // Second row - Date range
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'จากวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: fromDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                        filterList = orders;
-                                      });
-                                    },
-                                  )),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'ถึงวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: toDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                        filterList = orders;
-                                      });
-                                    },
-                                  )),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Action buttons
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: OutlinedButton.icon(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                              color: Colors.red, width: 1.5),
-                                          foregroundColor: Colors.red,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                        ),
-                                        onPressed: () {
-                                          resetFilter();
-                                        },
-                                        icon: const Icon(Icons.clear_rounded,
-                                            size: 20),
-                                        label: const Text('Reset',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    flex: 7,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.indigo,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          elevation: 2,
-                                        ),
-                                        onPressed: search,
-                                        icon: const Icon(Icons.search_rounded,
-                                            size: 20),
-                                        label: const Text('ค้นหา',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox(),
-            ),
-          ),
-        ],
-      ),
+    return CompactReportFilter(
+      fromDateController: fromDateCtrl,
+      toDateController: toDateCtrl,
+      onSearch: search,
+      onReset: resetFilter,
+      filterSummary: _buildFilterSummary(),
+      initiallyExpanded: false,
+      autoCollapseOnSearch: true,
     );
   }
 
@@ -968,145 +677,11 @@ class _RefillWholesaleThengReportScreenState
     );
   }
 
-  Widget _buildDateField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    required VoidCallback onClear,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 6),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
-          ],
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 48,
-          child: TextField(
-            controller: controller,
-            style: TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.calendar_today, size: 18),
-              suffixIcon: controller.text.isNotEmpty
-                  ? GestureDetector(
-                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
-                  : null,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-              hintText: label,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.indigo[600]!),
-              ),
-            ),
-            readOnly: true,
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (_) => SfDatePickerDialog(
-                  initialDate: DateTime.now(),
-                  onDateSelected: (date) {
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(date);
-                    setState(() {
-                      controller.text = formattedDate;
-                    });
-                    search();
-                  },
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCompactDropdownField<T>({
-    required String label,
-    required IconData icon,
-    required ValueNotifier notifier,
-    required List<T> items,
-    required Function(T) onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 14, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
-          ],
-        ),
-        const SizedBox(height: 6),
-        SizedBox(
-          height: 42,
-          child: MiraiDropDownMenu<T>(
-            key: UniqueKey(),
-            children: items,
-            space: 4,
-            maxHeight: 300,
-            showSearchTextField: true,
-            selectedItemBackgroundColor: Colors.transparent,
-            emptyListMessage: 'ไม่มีข้อมูล',
-            showSelectedItemBackgroundColor: true,
-            itemWidgetBuilder: (int index, T? project,
-                {bool isItemSelected = false}) {
-              return DropDownItemWidget(
-                project: project,
-                isItemSelected: isItemSelected,
-                firstSpace: 8,
-                fontSize: 14.sp,
-              );
-            },
-            onChanged: onChanged,
-            child: DropDownObjectChildWidget(
-              key: GlobalKey(),
-              fontSize: 14.sp,
-              projectValueNotifier: notifier,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   String _buildFilterSummary() {
-    List<String> filters = [];
-    if (monthNotifier?.value != null && monthNotifier?.value is ThaiMonth) {
-      ThaiMonth month = monthNotifier!.value as ThaiMonth;
-      filters.add('เดือน: ${month.name}');
-    }
-    if (yearCtrl.text.isNotEmpty) {
-      filters.add('ปี: ${yearCtrl.text}');
-    }
     if (fromDateCtrl.text.isNotEmpty && toDateCtrl.text.isNotEmpty) {
-      filters.add(
-          'ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}');
+      return 'ช่วงวันที่: ${Global.formatDateNT(fromDateCtrl.text)} - ${Global.formatDateNT(toDateCtrl.text)}';
     }
-    return filters.isEmpty ? 'ทั้งหมด' : filters.join(' | ');
+    return 'ทั้งหมด';
   }
 
   List<OrderModel> genDailyList(List<OrderModel?>? filterList) {
@@ -1260,14 +835,10 @@ class _RefillWholesaleThengReportScreenState
   }
 
   void resetFilter() {
-    yearCtrl.text = "";
-    monthCtrl.text = "";
-    yearNotifier!.value = null;
-    monthNotifier!.value = null;
-    fromDateCtrl.text = "";
-    toDateCtrl.text = "";
-    fromDate = null;
-    toDate = null;
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
     search();
     setState(() {});
   }

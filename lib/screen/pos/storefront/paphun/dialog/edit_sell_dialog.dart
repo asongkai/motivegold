@@ -1164,6 +1164,8 @@ class _EditSaleDialogState extends State<EditSaleDialog> {
       goldDataModel:
           Global.ordersPapun![widget.index].details![widget.j!].goldDataModel,
     );
+    // Note: When EDITING existing items, we preserve the original orderDate (Case 1)
+    // Only when ADDING new items should orderDate be updated (Case 2) - see add_sell_item_dialog.dart
   }
 
   double _getCommission() {

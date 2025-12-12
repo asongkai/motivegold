@@ -702,64 +702,19 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
                         return;
                       }
 
+                      if (referenceNumberCtrl.text.isEmpty) {
+                        Alert.info(
+                            context, 'ต้องการบันทึกข้อมูลหรือไม่?', 'ไม่มีการระบุเลขที่ขายฝาก ต้องการบันทึกหรือไม่', 'ตกลง',
+                            action: () async {
+                          saveRedeemItem();
+                        });
+                        return;
+                      }
+
                       Alert.info(
                           context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
                           action: () async {
-                        Global.redeemSingleDetail!.add(
-                          RedeemDetailModel.fromJson(
-                            jsonDecode(
-                              jsonEncode(
-                                RedeemDetailModel(
-                                  productId: selectedProduct?.id,
-                                  weight: Global.toNumber(weightGramCtrl.text),
-                                  weightBath:
-                                      Global.toNumber(weightBahtCtrl.text),
-                                  taxBase: Global.toNumber(
-                                          redeemValueCtrl.text) -
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  taxAmount:
-                                      (Global.toNumber(redeemValueCtrl.text) -
-                                              Global.toNumber(
-                                                  depositAmountCtrl.text)) *
-                                          getVatValue(),
-                                  depositAmount:
-                                      Global.toNumber(depositAmountCtrl.text),
-                                  redemptionValue:
-                                      Global.toNumber(redeemValueCtrl.text),
-                                  redemptionVat:
-                                      ((Global.toNumber(redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()) +
-                                          Global.toNumber(redeemValueCtrl.text),
-                                  benefitAmount: Global.toNumber(
-                                              benefitReceiveCtrl.text) !=
-                                          0
-                                      ? Global.toNumber(benefitReceiveCtrl.text)
-                                      : Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text),
-                                  paymentAmount: totalAmount,
-                                  taxBaseAmount: widget.vatOption == 'Include'
-                                      ? Global.toNumber(benefitTotalCtrl.text)
-                                      : (Global.toNumber(redeemValueCtrl.text) -
-                                          Global.toNumber(
-                                              depositAmountCtrl.text) +
-                                          (Global.toNumber(
-                                                      redeemValueCtrl.text) -
-                                                  Global.toNumber(
-                                                      depositAmountCtrl.text)) *
-                                              getVatValue()),
-                                  qty: 1,
-                                  referenceNo: referenceNumberCtrl.text,
-                                  vatOption: widget.vatOption,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                        setState(() {});
-                        Navigator.of(context).pop();
+                        saveRedeemItem();
                       });
                     },
                   ),
@@ -770,6 +725,50 @@ class _AddRedeemItemDialogState extends State<AddRedeemItemDialog> {
         )
       ],
     );
+  }
+
+  void saveRedeemItem() {
+    Global.redeemSingleDetail!.add(
+      RedeemDetailModel.fromJson(
+        jsonDecode(
+          jsonEncode(
+            RedeemDetailModel(
+              productId: selectedProduct?.id,
+              weight: Global.toNumber(weightGramCtrl.text),
+              weightBath: Global.toNumber(weightBahtCtrl.text),
+              taxBase: Global.toNumber(redeemValueCtrl.text) -
+                  Global.toNumber(depositAmountCtrl.text),
+              taxAmount: (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text)) *
+                  getVatValue(),
+              depositAmount: Global.toNumber(depositAmountCtrl.text),
+              redemptionValue: Global.toNumber(redeemValueCtrl.text),
+              redemptionVat: ((Global.toNumber(redeemValueCtrl.text) -
+                          Global.toNumber(depositAmountCtrl.text)) *
+                      getVatValue()) +
+                  Global.toNumber(redeemValueCtrl.text),
+              benefitAmount: Global.toNumber(benefitReceiveCtrl.text) != 0
+                  ? Global.toNumber(benefitReceiveCtrl.text)
+                  : Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text),
+              paymentAmount: totalAmount,
+              taxBaseAmount: widget.vatOption == 'Include'
+                  ? Global.toNumber(benefitTotalCtrl.text)
+                  : (Global.toNumber(redeemValueCtrl.text) -
+                      Global.toNumber(depositAmountCtrl.text) +
+                      (Global.toNumber(redeemValueCtrl.text) -
+                              Global.toNumber(depositAmountCtrl.text)) *
+                          getVatValue()),
+              qty: 1,
+              referenceNo: referenceNumberCtrl.text,
+              vatOption: widget.vatOption,
+            ),
+          ),
+        ),
+      ),
+    );
+    setState(() {});
+    Navigator.of(context).pop();
   }
 
   void gramChanged() {

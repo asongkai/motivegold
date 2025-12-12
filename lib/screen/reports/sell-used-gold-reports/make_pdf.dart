@@ -39,20 +39,18 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
     13: FixedColumnWidth(75), // Price Ex Tax (was column 14)
   };
 
-  // Type 2 has 12 Columns (Indices 0-11)
+  // Type 2 has 10 Columns (Indices 0-9) - removed Tax Invoice column
   const columnWidthsType2 = <int, TableColumnWidth>{
-    0: FixedColumnWidth(30), // Seq
-    1: FixedColumnWidth(50), // Month
-    2: FixedColumnWidth(70), // Tax Invoice
-    3: FixedColumnWidth(70), // Receipt Nor
-    4: FixedColumnWidth(80), // Product
-    5: FixedColumnWidth(45), // Weight
-    6: FixedColumnWidth(80), // Price Inc Tax
-    7: FixedColumnWidth(80), // Tax Base Exempt
-    8: FixedColumnWidth(85), // Diff Base < Buy
-    9: FixedColumnWidth(80), // Diff Base VAT
-    10: FixedColumnWidth(65), // VAT Amount
-    11: FixedColumnWidth(80), // Price Ex Tax
+    0: FixedColumnWidth(35), // Seq
+    1: FixedColumnWidth(60), // Month
+    2: FixedColumnWidth(75), // Receipt No
+    3: FixedColumnWidth(50), // Weight
+    4: FixedColumnWidth(85), // Price Inc Tax
+    5: FixedColumnWidth(85), // Tax Base Exempt
+    6: FixedColumnWidth(95), // Diff Base < Buy
+    7: FixedColumnWidth(85), // Diff Base VAT
+    8: FixedColumnWidth(70), // VAT Amount
+    9: FixedColumnWidth(85), // Price Ex Tax
   };
 
   Widget buildHeader() {
@@ -116,13 +114,14 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                       color: PdfColors.black,
                     ),
                     align: TextAlign.center),
-                paddedTextSmall('เลขที่\nใบกำกับภาษี',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: PdfColors.black,
-                    ),
-                    align: TextAlign.center),
+                if (type == 1)
+                  paddedTextSmall('เลขที่\nใบกำกับภาษี',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: PdfColors.black,
+                      ),
+                      align: TextAlign.center),
                 paddedTextSmall('เลขท่ีใบสําคัญ\nรับเงิน',
                     style: TextStyle(
                       fontSize: 11,
@@ -252,13 +251,14 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                           ? PdfColors.red900
                           : PdfColors.black),
                   align: TextAlign.center),
-              paddedTextSmall(orders[i]!.referenceNo ?? '',
-                  style: TextStyle(
-                      fontSize: 10,
-                      color: orders[i]!.status == "2"
-                          ? PdfColors.red900
-                          : PdfColors.black),
-                  align: TextAlign.center),
+              if (type == 1)
+                paddedTextSmall(orders[i]!.referenceNo ?? '',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: orders[i]!.status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.black),
+                    align: TextAlign.center),
               paddedTextSmall(orders[i]!.orderId,
                   style: TextStyle(
                       fontSize: 10,
@@ -397,11 +397,12 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
             children: [
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 10)),
-              // 5. FIXED SUMMARY PADDING
-              // 4 columns above + 2 extra = 6 columns (removed Product column).
-              // Total columns before "Weight" (now index 7) is 7 (0-6).
+              // For type 1: need 4 empty cells before customer columns
+              // For type 2: need 2 empty cells (removed Tax Invoice column)
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 10)),
               if (type == 1)

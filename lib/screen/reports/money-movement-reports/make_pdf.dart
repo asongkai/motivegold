@@ -231,122 +231,206 @@ Future<Uint8List> makeMoneyMovementReportPdf(
               paddedTextSmall('${i + 1}',
                   style: TextStyle(fontSize: 8), align: TextAlign.center),
               paddedTextSmall(orders[i].orderId,
-                  style: TextStyle(fontSize: 8), align: TextAlign.center),
-              paddedTextSmall('${getCustomerName(orders[i].customer!)}',
-                  style: TextStyle(fontSize: 8)),
-              paddedTextSmall(Global.dateOnly(orders[i].createdDate.toString()),
-                  style: TextStyle(fontSize: 8)),
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.center),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "***ยกเลิกเอกสาร"
+                      : '${getCustomerName(orders[i].customer!)}',
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black)),
+              paddedTextSmall(Global.dateOnly(orders[i].orderDate.toString()),
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black)),
               // paddedTextSmall(Global.timeOnly(orders[i].createdDate.toString()),
               //     style: TextStyle(fontSize: 8)),
               paddedTextSmall(
-                  (orders[i].orderTypeId == 1)
-                      ? Global.format(getWeight(orders[i]))
-                      : "",
-                  style: TextStyle(fontSize: 8),
-                  align: TextAlign.right),
-              paddedTextSmall(
-                  (orders[i].orderTypeId == 2)
-                      ? Global.format(getWeight(orders[i]))
-                      : "",
-                  style: TextStyle(fontSize: 8),
-                  align: TextAlign.right),
-              if (orders[i].orderTypeId == 1)
-                paddedTextSmall(Global.format(orders[i].priceIncludeTax ?? 0),
-                    style: TextStyle(
-                        fontSize: 8,
-                        color: getOrderTypeColor(orders[i].orderTypeId)),
-                    align: TextAlign.right),
-              if (orders[i].orderTypeId == 2)
-                paddedTextSmall(
-                    '(${Global.format(orders[i].priceIncludeTax ?? 0)})',
-                    style: TextStyle(
-                        fontSize: 8,
-                        color: getOrderTypeColor(orders[i].orderTypeId)),
-                    align: TextAlign.right),
-              paddedTextSmall(getReferenceNumber(orders, orders[i]),
-                  style: TextStyle(fontSize: 8)),
-              paddedTextSmall(
-                  Global.getPayTittle(
-                      payToCustomerOrShopValue(orders, orders[i])),
-                  style: TextStyle(fontSize: 8)),
-              paddedTextSmall(
-                  (orders[i].orderTypeId == 1)
-                      ? Global.format(orders[i].priceIncludeTax ?? 0)
-                      : "",
-                  style: TextStyle(fontSize: 8),
-                  align: TextAlign.right),
-              paddedTextSmall(
-                  (orders[i].orderTypeId == 2)
-                      ? '(${Global.format(orders[i].priceIncludeTax ?? 0)})'
-                      : "",
-                  style: TextStyle(fontSize: 8, color: null),
-                  align: TextAlign.right),
-              paddedTextSmall(
-                  payToCustomerOrShopValue(orders, orders[i]) > 0
-                      ? Global.format(
-                          payToCustomerOrShopValue(orders, orders[i]))
-                      : '(${Global.format(-payToCustomerOrShopValue(orders, orders[i]))})',
-                  style: TextStyle(
-                      fontSize: 8,
-                      color: payToCustomerOrShopValue(orders, orders[i]) > 0
-                          ? null
-                          : null),
-                  align: TextAlign.right),
-              paddedTextSmall(
-                  addDisValue(orders[i].discount ?? 0,
-                              orders[i].addPrice ?? 0) ==
-                          0
-                      ? ""
+                  orders[i].status == "2"
+                      ? "0.00"
                       : (orders[i].orderTypeId == 1)
-                          ? "${addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0) < 0 ? "(${-addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0)})" : addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0)}"
+                          ? Global.format(getWeight(orders[i]))
                           : "",
                   style: TextStyle(
                       fontSize: 8,
-                      color: addDisValue(orders[i].discount ?? 0,
-                                  orders[i].addPrice ?? 0) <
-                              0
-                          ? null
-                          : null),
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
-                  getCashPayment(orders, orders[i]) == 0
-                      ? ""
-                      : orders[i].orderTypeId == 1
-                          ? Global.format(getCashPayment(orders, orders[i]))
-                          : '(${Global.format(getCashPayment(orders, orders[i]))})',
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : (orders[i].orderTypeId == 2)
+                          ? Global.format(getWeight(orders[i]))
+                          : "",
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1 ? null : null),
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black),
+                  align: TextAlign.right),
+              if (orders[i].orderTypeId == 1)
+                paddedTextSmall(
+                    orders[i].status == "2"
+                        ? "0.00"
+                        : Global.format(orders[i].priceIncludeTax ?? 0),
+                    style: TextStyle(
+                        fontSize: 8,
+                        color: orders[i].status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.green),
+                    align: TextAlign.right),
+              if (orders[i].orderTypeId == 2)
+                paddedTextSmall(
+                    orders[i].status == "2"
+                        ? "0.00"
+                        : '(${Global.format(orders[i].priceIncludeTax ?? 0)})',
+                    style: TextStyle(
+                        fontSize: 8,
+                        color: orders[i].status == "2"
+                            ? PdfColors.red900
+                            : PdfColors.red),
+                    align: TextAlign.right),
+              paddedTextSmall(
+                  orders[i].status == "2" ? "" : getReferenceNumber(orders, orders[i]),
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black)),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? ""
+                      : Global.getPayTittle(
+                          payToCustomerOrShopValue(orders, orders[i])),
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.black)),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : (orders[i].orderTypeId == 1)
+                          ? Global.format(orders[i].priceIncludeTax ?? 0)
+                          : "",
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : orders[i].orderTypeId == 1
+                              ? PdfColors.green
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
-                  getTransferPayment(orders, orders[i]) == 0
-                      ? ""
-                      : orders[i].orderTypeId == 1
-                          ? Global.format(getTransferPayment(orders, orders[i]))
-                          : '(${Global.format(getTransferPayment(orders, orders[i]))})',
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : (orders[i].orderTypeId == 2)
+                          ? '(${Global.format(orders[i].priceIncludeTax ?? 0)})'
+                          : "",
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1 ? null : null),
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : orders[i].orderTypeId == 2
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
-                  getCreditPayment(orders, orders[i]) == 0
-                      ? ""
-                      : orders[i].orderTypeId == 1
-                          ? Global.format(getCreditPayment(orders, orders[i]))
-                          : '(${Global.format(getCreditPayment(orders, orders[i]))})',
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : payToCustomerOrShopValue(orders, orders[i]) > 0
+                          ? Global.format(
+                              payToCustomerOrShopValue(orders, orders[i]))
+                          : payToCustomerOrShopValue(orders, orders[i]) < 0
+                              ? '(${Global.format(-payToCustomerOrShopValue(orders, orders[i]))})'
+                              : '',
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1 ? null : null),
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : payToCustomerOrShopValue(orders, orders[i]) > 0
+                              ? PdfColors.green
+                              : payToCustomerOrShopValue(orders, orders[i]) < 0
+                                  ? PdfColors.red
+                                  : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
-                  getOtherPayment(orders, orders[i]) == 0
-                      ? ""
-                      : orders[i].orderTypeId == 1
-                          ? Global.format(getOtherPayment(orders, orders[i]))
-                          : '(${Global.format(getOtherPayment(orders, orders[i]))})',
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : getDiscountAddValueForPair(orders, orders[i]) == 0
+                          ? ""
+                          : "(${Global.format(getDiscountAddValueForPair(orders, orders[i]).abs())})",
                   style: TextStyle(
                       fontSize: 8,
-                      color: orders[i].orderTypeId == 1 ? null : null),
+                      color: orders[i].status == "2" ? PdfColors.red900 : PdfColors.red),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : getCashPayment(orders, orders[i]) == 0
+                          ? ""
+                          : orders[i].orderTypeId == 1
+                              ? Global.format(getCashPayment(orders, orders[i]))
+                              : '(${Global.format(getCashPayment(orders, orders[i]))})',
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : getCashPayment(orders, orders[i]) == 0
+                              ? PdfColors.black
+                              : orders[i].orderTypeId == 1
+                                  ? PdfColors.green
+                                  : PdfColors.red),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : getTransferPayment(orders, orders[i]) == 0
+                          ? ""
+                          : orders[i].orderTypeId == 1
+                              ? Global.format(getTransferPayment(orders, orders[i]))
+                              : '(${Global.format(getTransferPayment(orders, orders[i]))})',
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : getTransferPayment(orders, orders[i]) == 0
+                              ? PdfColors.black
+                              : orders[i].orderTypeId == 1
+                                  ? PdfColors.green
+                                  : PdfColors.red),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : getCreditPayment(orders, orders[i]) == 0
+                          ? ""
+                          : orders[i].orderTypeId == 1
+                              ? Global.format(getCreditPayment(orders, orders[i]))
+                              : '(${Global.format(getCreditPayment(orders, orders[i]))})',
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : getCreditPayment(orders, orders[i]) == 0
+                              ? PdfColors.black
+                              : orders[i].orderTypeId == 1
+                                  ? PdfColors.green
+                                  : PdfColors.red),
+                  align: TextAlign.right),
+              paddedTextSmall(
+                  orders[i].status == "2"
+                      ? "0.00"
+                      : getOtherPayment(orders, orders[i]) == 0
+                          ? ""
+                          : orders[i].orderTypeId == 1
+                              ? Global.format(getOtherPayment(orders, orders[i]))
+                              : '(${Global.format(getOtherPayment(orders, orders[i]))})',
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: orders[i].status == "2"
+                          ? PdfColors.red900
+                          : getOtherPayment(orders, orders[i]) == 0
+                              ? PdfColors.black
+                              : orders[i].orderTypeId == 1
+                                  ? PdfColors.green
+                                  : PdfColors.red),
                   align: TextAlign.right),
             ],
           ),
@@ -383,51 +467,58 @@ Future<Uint8List> makeMoneyMovementReportPdf(
               paddedTextSmall(
                   priceIncludeTaxTotalMovement(orders) > 0
                       ? Global.format(priceIncludeTaxTotalMovement(orders))
-                      : '(${Global.format(-priceIncludeTaxTotalMovement(orders))})',
+                      : priceIncludeTaxTotalMovement(orders) < 0
+                          ? '(${Global.format(-priceIncludeTaxTotalMovement(orders))})'
+                          : '',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color: priceIncludeTaxTotalMovement(orders) > 0
-                          ? null
-                          : null),
+                          ? PdfColors.green
+                          : priceIncludeTaxTotalMovement(orders) < 0
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
               paddedTextSmall('', style: const TextStyle(fontSize: 8)),
-              paddedTextSmall(Global.format(priceIncludeTaxTotalBU(orders)),
+              paddedTextSmall(Global.format(priceIncludeTaxTotalSN(orders)),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
+                    color: PdfColors.green,
                   ),
                   align: TextAlign.right),
               paddedTextSmall(
-                  '(${Global.format(priceIncludeTaxTotalSN(orders))})',
+                  priceIncludeTaxTotalBU(orders) == 0
+                      ? ""
+                      : '(${Global.format(priceIncludeTaxTotalBU(orders))})',
                   style: TextStyle(
-                      fontSize: 9, fontWeight: FontWeight.bold, color: null),
+                      fontSize: 9, fontWeight: FontWeight.bold, color: PdfColors.red),
                   align: TextAlign.right),
               paddedTextSmall(
                   payToCustomerOrShopValueTotalAlternative(orders) == 0
                       ? ""
                       : payToCustomerOrShopValueTotalAlternative(orders) > 0
-                          ? '${Global.format(payToCustomerOrShopValueTotalAlternative(orders))}'
-                          : '(${payToCustomerOrShopValueTotalAlternative(orders)})',
+                          ? Global.format(payToCustomerOrShopValueTotalAlternative(orders))
+                          : '(${Global.format(payToCustomerOrShopValueTotalAlternative(orders).abs())})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
                       color:
                           payToCustomerOrShopValueTotalAlternative(orders) > 0
-                              ? null
-                              : null),
+                              ? PdfColors.green
+                              : payToCustomerOrShopValueTotalAlternative(orders) < 0
+                                  ? PdfColors.red
+                                  : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   discountTotal(orders) == 0
                       ? ""
-                      : discountTotal(orders) > 0
-                          ? Global.format(discountTotal(orders))
-                          : '(${Global.format(-discountTotal(orders))})',
+                      : '(${Global.format(discountTotal(orders).abs())})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: discountTotal(orders) > 0 ? null : null),
+                      color: PdfColors.red),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCashPaymentTotal(orders) == 0
@@ -438,7 +529,11 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getCashPaymentTotal(orders) > 0 ? null : null),
+                      color: getCashPaymentTotal(orders) > 0
+                          ? PdfColors.green
+                          : getCashPaymentTotal(orders) < 0
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getTransferPaymentTotal(orders) == 0
@@ -449,7 +544,11 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getTransferPaymentTotal(orders) > 0 ? null : null),
+                      color: getTransferPaymentTotal(orders) > 0
+                          ? PdfColors.green
+                          : getTransferPaymentTotal(orders) < 0
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getCreditPaymentTotal(orders) == 0
@@ -460,7 +559,11 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getCreditPaymentTotal(orders) > 0 ? null : null),
+                      color: getCreditPaymentTotal(orders) > 0
+                          ? PdfColors.green
+                          : getCreditPaymentTotal(orders) < 0
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
                   getOtherPaymentTotal(orders) == 0
@@ -471,7 +574,11 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: getOtherPaymentTotal(orders) > 0 ? null : null),
+                      color: getOtherPaymentTotal(orders) > 0
+                          ? PdfColors.green
+                          : getOtherPaymentTotal(orders) < 0
+                              ? PdfColors.red
+                              : PdfColors.black),
                   align: TextAlign.right),
             ]),
       ],
@@ -501,13 +608,56 @@ Future<Uint8List> makeMoneyMovementReportPdf(
 }
 
 double getCashPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's cash payment
+      if (order.orderTypeId == 1) {
+        return order.cashPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 1,
+          orElse: () => order
+        );
+        return sellOrder.cashPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's cash payment
+      if (order.orderTypeId == 2) {
+        return order.cashPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 2,
+          orElse: () => order
+        );
+        return buyOrder.cashPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
-    if (order.orderTypeId == 1) {
+    if (order.orderTypeId == 1 || order.orderTypeId == 4) {
       return order.cashPayment ?? 0;
     }
     return 0;
   } else {
-    if (order.orderTypeId == 2) {
+    if (order.orderTypeId == 2 || order.orderTypeId == 44) {
       return order.cashPayment != null ? order.cashPayment ?? 0 : 0;
     }
     return 0;
@@ -531,13 +681,56 @@ double getCashPaymentTotal(List<OrderModel> orders) {
 }
 
 double getTransferPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's transfer payment
+      if (order.orderTypeId == 1) {
+        return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 1,
+          orElse: () => order
+        );
+        return (sellOrder.transferPayment ?? 0) + (sellOrder.depositPayment ?? 0);
+      }
+    } else {
+      // Net is negative, show buy order's transfer payment
+      if (order.orderTypeId == 2) {
+        return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 2,
+          orElse: () => order
+        );
+        return (buyOrder.transferPayment ?? 0) + (buyOrder.depositPayment ?? 0);
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
-    if (order.orderTypeId == 1) {
+    if (order.orderTypeId == 1 || order.orderTypeId == 4) {
       return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
     }
     return 0;
   } else {
-    if (order.orderTypeId == 2) {
+    if (order.orderTypeId == 2 || order.orderTypeId == 44) {
       return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
     }
     return 0;
@@ -549,11 +742,11 @@ double getTransferPaymentTotal(List<OrderModel> orders) {
   for (int i = 0; i < orders.length; i++) {
     if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
       if (orders[i].orderTypeId == 1) {
-        total += orders[i].transferPayment ?? 0;
+        total += (orders[i].transferPayment ?? 0) + (orders[i].depositPayment ?? 0);
       }
     } else {
       if (orders[i].orderTypeId == 2) {
-        total -= orders[i].transferPayment ?? 0;
+        total -= (orders[i].transferPayment ?? 0) + (orders[i].depositPayment ?? 0);
       }
     }
   }
@@ -561,13 +754,56 @@ double getTransferPaymentTotal(List<OrderModel> orders) {
 }
 
 double getCreditPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's credit payment
+      if (order.orderTypeId == 1) {
+        return order.creditPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 1,
+          orElse: () => order
+        );
+        return sellOrder.creditPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's credit payment
+      if (order.orderTypeId == 2) {
+        return order.creditPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 2,
+          orElse: () => order
+        );
+        return buyOrder.creditPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
-    if (order.orderTypeId == 1) {
+    if (order.orderTypeId == 1 || order.orderTypeId == 4) {
       return order.creditPayment ?? 0;
     }
     return 0;
   } else {
-    if (order.orderTypeId == 2) {
+    if (order.orderTypeId == 2 || order.orderTypeId == 44) {
       return order.creditPayment != null ? order.creditPayment ?? 0 : 0;
     }
     return 0;
@@ -591,13 +827,56 @@ double getCreditPaymentTotal(List<OrderModel> orders) {
 }
 
 double getOtherPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's other payment
+      if (order.orderTypeId == 1) {
+        return order.otherPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 1,
+          orElse: () => order
+        );
+        return sellOrder.otherPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's other payment
+      if (order.orderTypeId == 2) {
+        return order.otherPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 2,
+          orElse: () => order
+        );
+        return buyOrder.otherPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
-    if (order.orderTypeId == 1) {
+    if (order.orderTypeId == 1 || order.orderTypeId == 4) {
       return order.otherPayment ?? 0;
     }
     return 0;
   } else {
-    if (order.orderTypeId == 2) {
+    if (order.orderTypeId == 2 || order.orderTypeId == 44) {
       return order.otherPayment != null ? order.otherPayment ?? 0 : 0;
     }
     return 0;
@@ -629,28 +908,89 @@ double payToCustomerOrShopValue(List<OrderModel> orders, OrderModel order) {
   double sell = 0;
   if (orders0.isNotEmpty) {
     orders0.add(order);
-    for (int i = 0; i < orders0.length; i++) {
-      for (int j = 0; j < orders0[i].details!.length; j++) {
-        int type = orders0[i].orderTypeId!;
-        double price = orders0[i].details![j].priceIncludeTax!;
 
-        if (type == 2) {
-          buy += -price;
-        }
-        if (type == 1) {
-          sell += price;
-        }
+    // Find which order has higher priceIncludeTax - only that row should display the value
+    OrderModel? higherOrder;
+    double maxPrice = 0;
+    for (var o in orders0) {
+      double price = o.priceIncludeTax ?? 0;
+      if (price > maxPrice) {
+        maxPrice = price;
+        higherOrder = o;
       }
     }
-    double discount = order.discount ?? 0;
-    amount = sell + buy;
-    amount = amount < 0 ? -amount : amount;
-    amount = discount != 0 ? amount - discount : amount;
-    amount = (sell + buy) < 0 ? -amount : amount;
+
+    // If current order is not the higher one, return 0 (don't display in this row)
+    if (higherOrder?.orderId != order.orderId) {
+      return 0;
+    }
+
+    // Calculate net amount using Cash Received - Cash Paid
+    for (int i = 0; i < orders0.length; i++) {
+      int type = orders0[i].orderTypeId!;
+      double price = orders0[i].priceIncludeTax!;
+
+      if (type == 1) {
+        // Sell - this is cash received
+        sell += price;
+      }
+      if (type == 2) {
+        // Buy - this is cash paid
+        buy += price;
+      }
+    }
+
+    // Net = Received - Paid
+    amount = sell - buy;
+
     return amount;
   }
 
+  // For non-paired transactions
+  // Buy orders (orderTypeId 2, 44) should return negative value
+  // Sell orders (orderTypeId 1, 4) should return positive value
+  if (order.orderTypeId == 2 || order.orderTypeId == 44) {
+    return -(order.priceIncludeTax ?? 0);
+  }
   return order.priceIncludeTax ?? 0;
+}
+
+// Get discount/add value for paired transactions - sum both orders' values
+double getDiscountAddValueForPair(List<OrderModel> orders, OrderModel order) {
+  var orders0 = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (orders0.isNotEmpty) {
+    orders0.add(order);
+
+    // Find which order has higher priceIncludeTax - only that row should display the value
+    OrderModel? higherOrder;
+    double maxPrice = 0;
+    for (var o in orders0) {
+      double price = o.priceIncludeTax ?? 0;
+      if (price > maxPrice) {
+        maxPrice = price;
+        higherOrder = o;
+      }
+    }
+
+    // If current order is not the higher one, return 0 (don't display in this row)
+    if (higherOrder?.orderId != order.orderId) {
+      return 0;
+    }
+
+    // Sum discount/add values from both orders
+    double totalDiscountAdd = 0;
+    for (var o in orders0) {
+      totalDiscountAdd += addDisValue(o.discount ?? 0, o.addPrice ?? 0);
+    }
+
+    return totalDiscountAdd;
+  }
+
+  // For non-paired transactions, return the single order's discount/add value
+  return addDisValue(order.discount ?? 0, order.addPrice ?? 0);
 }
 
 double payToCustomerOrShopValueTotal(List<OrderModel> orders) {

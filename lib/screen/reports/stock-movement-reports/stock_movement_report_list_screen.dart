@@ -9,21 +9,17 @@ import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_c
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
+import 'package:motivegold/widget/filter/compact_report_filter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:motivegold/api/api_services.dart';
-import 'package:motivegold/constants/colors.dart';
 import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-import 'package:motivegold/widget/pdf/components.dart';
-import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 import 'package:sizer/sizer.dart';
 
 class StockMovementReportListScreen extends StatefulWidget {
@@ -44,7 +40,6 @@ class _StockMovementReportListScreenState
   ProductModel? selectedProduct;
   WarehouseModel? selectedWarehouse;
   Screen? size;
-  bool isFilterExpanded = true;
   String searchQuery = '';
 
   final TextEditingController productCtrl = TextEditingController();
@@ -71,10 +66,11 @@ class _StockMovementReportListScreenState
     final now = DateTime.now();
     final firstDayOfMonth = DateTime(now.year, now.month, 1);
 
-    fromDateCtrl.text = firstDayOfMonth.toString().split(' ')[0];
-    toDateCtrl.text = now.toString().split(' ')[0];
+    fromDateCtrl.text = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    toDateCtrl.text = DateFormat('yyyy-MM-dd').format(now);
 
     loadProducts();
+    search();
   }
 
   void loadProducts() async {
@@ -342,223 +338,49 @@ class _StockMovementReportListScreenState
   }
 
   Widget _buildFilterSection() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isFilterExpanded = !isFilterExpanded;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.indigo.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.filter_alt_rounded,
-                        color: Colors.indigo[600], size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('ตัวกรองข้อมูล',
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2D3748))),
-                        if (selectedProduct != null ||
-                            selectedWarehouse != null ||
-                            fromDateCtrl.text.isNotEmpty)
-                          Text(_buildFilterSummary(),
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: isFilterExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Colors.grey[600], size: 24),
-                  ),
-                ],
+    return CompactReportFilter(
+      fromDateController: fromDateCtrl,
+      toDateController: toDateCtrl,
+      onSearch: search,
+      onReset: resetFilters,
+      filterSummary: _buildFilterSummary(),
+      initiallyExpanded: false,
+      autoCollapseOnSearch: true,
+      additionalFilters: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildDropdownField(
+                label: 'สินค้า',
+                icon: Icons.inventory_2_rounded,
+                notifier: productNotifier!,
+                items: productList,
+                onChanged: (ProductModel value) {
+                  productCtrl.text = value.name;
+                  selectedProduct = value;
+                  productNotifier!.value = value;
+                  setState(() {});
+                },
               ),
             ),
-          ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            height: isFilterExpanded ? null : 0,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: isFilterExpanded ? 1.0 : 0.0,
-              child: isFilterExpanded
-                  ? Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height * 0.5,
-                      ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                          child: Column(
-                            children: [
-                              Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                  color: Colors.grey[200]),
-                              const SizedBox(height: 20),
-
-                              // First row - Product and Warehouse
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildDropdownField(
-                                          label: 'สินค้า',
-                                          icon: Icons.inventory_2_rounded,
-                                          notifier: productNotifier!,
-                                          items: productList,
-                                          onChanged: (ProductModel value) {
-                                            productCtrl.text = value.name;
-                                            selectedProduct = value;
-                                            productNotifier!.value = value;
-                                            search();
-                                          })),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildDropdownField(
-                                          label: 'คลังสินค้า',
-                                          icon: Icons.warehouse_rounded,
-                                          notifier: warehouseNotifier!,
-                                          items: warehouseList,
-                                          onChanged: (WarehouseModel value) {
-                                            warehouseCtrl.text =
-                                                value.name.toString();
-                                            selectedWarehouse = value;
-                                            warehouseNotifier!.value = value;
-                                            search();
-                                          })),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Second row - Date range
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'จากวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: fromDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                      });
-                                      search();
-                                    },
-                                  )),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                      child: _buildDateField(
-                                    label: 'ถึงวันที่',
-                                    icon: Icons.calendar_today,
-                                    controller: toDateCtrl,
-                                    onClear: () {
-                                      setState(() {
-                                        fromDateCtrl.text = "";
-                                        toDateCtrl.text = "";
-                                      });
-                                      search();
-                                    },
-                                  )),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Action buttons
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.indigo,
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                          elevation: 2,
-                                        ),
-                                        onPressed: search,
-                                        icon: const Icon(Icons.search_rounded,
-                                            size: 20),
-                                        label: const Text('ค้นหา',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    flex: 3,
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: OutlinedButton.icon(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                              color: Colors.red, width: 1.5),
-                                          foregroundColor: Colors.red,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12)),
-                                        ),
-                                        onPressed: resetFilters,
-                                        icon: const Icon(Icons.clear_rounded,
-                                            size: 20),
-                                        label: const Text('Reset',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox(),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildDropdownField(
+                label: 'คลังสินค้า',
+                icon: Icons.warehouse_rounded,
+                notifier: warehouseNotifier!,
+                items: warehouseList,
+                onChanged: (WarehouseModel value) {
+                  warehouseCtrl.text = value.name.toString();
+                  selectedWarehouse = value;
+                  warehouseNotifier!.value = value;
+                  setState(() {});
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1337,21 +1159,27 @@ class _StockMovementReportListScreenState
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 6),
-            Text(label,
+        Padding(
+          padding: const EdgeInsets.only(left: 2, bottom: 6),
+          child: Row(
+            children: [
+              Icon(icon, size: 13, color: Colors.grey[600]),
+              const SizedBox(width: 5),
+              Text(
+                label,
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
-          ],
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 8),
         SizedBox(
-          height: 56,
+          height: 42,
           child: MiraiDropDownMenu<T>(
             key: UniqueKey(),
             children: items,
@@ -1367,86 +1195,15 @@ class _StockMovementReportListScreenState
                 project: project,
                 isItemSelected: isItemSelected,
                 firstSpace: 10,
-                fontSize: 16.sp,
+                fontSize: 13,
               );
             },
             onChanged: onChanged,
             child: DropDownObjectChildWidget(
               key: GlobalKey(),
-              fontSize: 16.sp,
+              fontSize: 13,
               projectValueNotifier: notifier,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    required VoidCallback onClear,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 6),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
-          ],
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 48,
-          child: TextField(
-            controller: controller,
-            style: TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.calendar_today, size: 18),
-              suffixIcon: controller.text.isNotEmpty
-                  ? GestureDetector(
-                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
-                  : null,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-              hintText: label,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.indigo[600]!),
-              ),
-            ),
-            readOnly: true,
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (_) => SfDatePickerDialog(
-                  initialDate: DateTime.now(),
-                  onDateSelected: (date) {
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(date);
-                    setState(() {
-                      controller.text = formattedDate;
-                    });
-                    search();
-                  },
-                ),
-              );
-            },
           ),
         ),
       ],
