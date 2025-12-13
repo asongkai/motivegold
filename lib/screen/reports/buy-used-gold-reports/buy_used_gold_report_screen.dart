@@ -17,6 +17,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:sizer/sizer.dart';
 
 class BuyUsedGoldReportScreen extends StatefulWidget {
@@ -392,7 +393,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                 child: IntrinsicWidth(
                   child: Column(
                     children: [
-                      // Sticky Header
+                      // Sticky Header - Matches PDF Type 1: ลำดับ, วันที่, เลขที่ใบสำคัญรับเงิน, ผู้ขาย, เลขประจำตัวผู้เสียภาษี, น้ำหนัก (กรัม), จำนวนเงิน (บาท)
                       Container(
                         color: Colors.grey[50],
                         height: 56,
@@ -421,9 +422,9 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ],
                                 ),
                               ),
-                              // Date - Small flex
+                              // Date
                               Expanded(
-                                flex: 1,
+                                flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
@@ -433,7 +434,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
-                                          'วัน/เดือน/ปี',
+                                          'วันที่',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 11),
@@ -444,7 +445,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Receipt ID - Large flex for receipt numbers
+                              // Receipt ID
                               Expanded(
                                 flex: 3,
                                 child: Container(
@@ -467,7 +468,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Seller Name - Large flex for names
+                              // Seller Name
                               Expanded(
                                 flex: 3,
                                 child: Container(
@@ -490,9 +491,9 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Tax Number - Medium flex
+                              // Tax Number
                               Expanded(
-                                flex: 2,
+                                flex: 3,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
@@ -505,7 +506,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                           'เลขประจำตัวผู้เสียภาษี',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 9),
+                                              fontSize: 10),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -513,32 +514,9 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Product Type - Medium flex
+                              // Weight
                               Expanded(
                                 flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.inventory_2_rounded,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'รายการสินค้า',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Weight - Small flex for numbers
-                              Expanded(
-                                flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
@@ -561,7 +539,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Amount - Medium flex for currency
+                              // Amount
                               Expanded(
                                 flex: 2,
                                 child: Container(
@@ -595,10 +573,12 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              // Regular data rows
+                              // Regular data rows - Matches PDF Type 1 structure
                               ...filterList!.asMap().entries.map((entry) {
                                 int index = entry.key;
                                 OrderModel? item = entry.value;
+                                final bool isCancelled = item?.status == "2";
+                                final Color textColor = isCancelled ? Colors.red[900]! : Colors.black;
 
                                 return Container(
                                   height: 64,
@@ -622,17 +602,18 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Colors.grey.withOpacity(0.1),
+                                              color: isCancelled
+                                                  ? Colors.red.withOpacity(0.1)
+                                                  : Colors.grey.withOpacity(0.1),
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
-                                                color: Colors.grey,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
@@ -640,14 +621,15 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                         ),
                                         // Date
                                         Expanded(
-                                          flex: 1,
+                                          flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.dateOnly(
                                                   item!.orderDate.toString()),
-                                              style:
-                                                  const TextStyle(fontSize: 11),
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: textColor),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -663,8 +645,9 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                                       horizontal: 6,
                                                       vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue
-                                                    .withOpacity(0.1),
+                                                color: isCancelled
+                                                    ? Colors.red.withOpacity(0.1)
+                                                    : Colors.blue.withOpacity(0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(4),
                                               ),
@@ -673,7 +656,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: 11,
-                                                  color: Colors.blue[700],
+                                                  color: isCancelled ? Colors.red[900] : Colors.blue[700],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
@@ -686,53 +669,63 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                           flex: 3,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 20,
-                                                  height: 20,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.orange
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                  ),
-                                                  child: Icon(Icons.store,
-                                                      size: 12,
-                                                      color:
-                                                          Colors.orange[600]),
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${item.customer?.firstName ?? ''} ${item.customer?.lastName ?? ''}',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 11),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                            child: isCancelled
+                                                ? Text(
+                                                    'ยกเลิกเอกสาร***',
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 11,
+                                                        color: Colors.red[900]),
+                                                    overflow: TextOverflow.ellipsis,
                                                     maxLines: 1,
+                                                  )
+                                                : Row(
+                                                    children: [
+                                                      Container(
+                                                        width: 20,
+                                                        height: 20,
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.orange
+                                                              .withOpacity(0.2),
+                                                          borderRadius:
+                                                              BorderRadius.circular(4),
+                                                        ),
+                                                        child: Icon(Icons.store,
+                                                            size: 12,
+                                                            color: Colors.orange[600]),
+                                                      ),
+                                                      const SizedBox(width: 6),
+                                                      Expanded(
+                                                        child: Text(
+                                                          item.customer != null
+                                                              ? getCustomerName(item.customer!)
+                                                              : '',
+                                                          style: TextStyle(
+                                                              fontWeight: FontWeight.w500,
+                                                              fontSize: 11,
+                                                              color: textColor),
+                                                          overflow: TextOverflow.ellipsis,
+                                                          maxLines: 1,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                              ],
-                                            ),
                                           ),
                                         ),
                                         // Tax Number
                                         Expanded(
-                                          flex: 2,
+                                          flex: 3,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              item.customer?.taxNumber != ''
-                                                  ? item.customer?.taxNumber ??
-                                                      ''
-                                                  : item.customer?.idCard ?? '',
+                                              isCancelled
+                                                  ? ''
+                                                  : item.customer?.taxNumber != ''
+                                                      ? item.customer?.taxNumber ?? ''
+                                                      : item.customer?.idCard ?? '',
                                               style: TextStyle(
                                                 fontSize: 10,
-                                                color: Colors.grey[700],
+                                                color: textColor,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -740,47 +733,19 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                             ),
                                           ),
                                         ),
-                                        // Product
+                                        // Weight
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4,
-                                                      vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.amber
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                'ทองเก่า',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.amber[700],
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Weight
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              '${Global.format(getWeight(item))}/${Global.format(getWeight(item))}',
-                                              style: const TextStyle(
+                                              isCancelled
+                                                  ? '0.00'
+                                                  : Global.format(getWeight(item)),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
-                                                color: Colors.orange,
+                                                color: isCancelled ? Colors.red[900] : Colors.orange,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -793,12 +758,13 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(
-                                                  item.priceIncludeTax ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled
+                                                  ? '0.00'
+                                                  : Global.format(item.priceIncludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
-                                                color: Colors.green,
+                                                color: isCancelled ? Colors.red[900] : Colors.green,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -811,7 +777,7 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                 );
                               }).toList(),
 
-                              // Summary row
+                              // Summary row - Matches PDF Type 1 structure
                               Container(
                                 height: 64,
                                 decoration: BoxDecoration(
@@ -824,15 +790,16 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
-                                      // Empty cells for alignment
+                                      // Empty cells for alignment (ลำดับ, วันที่, เลขที่ใบสำคัญรับเงิน, ผู้ขาย)
                                       Container(
                                           width: 60,
                                           padding: const EdgeInsets.all(8)),
-                                      Expanded(flex: 1, child: Container()),
+                                      Expanded(flex: 2, child: Container()),
                                       Expanded(flex: 3, child: Container()),
                                       Expanded(flex: 3, child: Container()),
+                                      // รวมทั้งหมด label (in Tax Number column)
                                       Expanded(
-                                        flex: 2,
+                                        flex: 3,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
@@ -847,14 +814,13 @@ class _BuyUsedGoldReportScreenState extends State<BuyUsedGoldReportScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(flex: 2, child: Container()),
                                       // Weight total
                                       Expanded(
-                                        flex: 1,
+                                        flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            '${Global.format(getWeightTotal(filterList!))}/${Global.format(getWeightTotal(filterList!))}',
+                                            Global.format(getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,

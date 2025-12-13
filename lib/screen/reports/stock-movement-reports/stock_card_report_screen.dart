@@ -8,7 +8,6 @@ import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_c
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
-import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/empty_data.dart';
 import 'package:motivegold/widget/filter/compact_report_filter.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
@@ -17,7 +16,6 @@ import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -135,8 +133,8 @@ class _StockCardReportScreenState extends State<StockCardReportScreen> {
       filterList = List.from(dataList!);
     } else {
       filterList = dataList!.where((item) {
-        return (item.product?.name?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
-            (item.binLocation?.name?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+        return (item.product?.name.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
+            (item.binLocation?.name.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
             (item.orderId?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
             (item.type?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false) ||
             (item.docType?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
@@ -1122,72 +1120,6 @@ class _StockCardReportScreenState extends State<StockCardReportScreen> {
               fontSize: 16.sp,
               projectValueNotifier: notifier,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    required VoidCallback onClear,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 16, color: Colors.grey[600]),
-            const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey[700])),
-          ],
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 48,
-          child: TextField(
-            controller: controller,
-            style: TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.calendar_today, size: 18),
-              suffixIcon: controller.text.isNotEmpty
-                  ? GestureDetector(
-                  onTap: onClear,
-                  child: const Icon(Icons.clear, size: 18))
-                  : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-              hintText: label,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.indigo[600]!),
-              ),
-            ),
-            readOnly: true,
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (_) => SfDatePickerDialog(
-                  initialDate: DateTime.now(),
-                  onDateSelected: (date) {
-                    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-                    setState(() {
-                      controller.text = formattedDate;
-                    });
-                    search();
-                  },
-                ),
-              );
-            },
           ),
         ),
       ],

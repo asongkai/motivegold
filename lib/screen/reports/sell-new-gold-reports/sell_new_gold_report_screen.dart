@@ -19,6 +19,7 @@ import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:sizer/sizer.dart';
 
 class SellNewGoldReportScreen extends StatefulWidget {
@@ -109,13 +110,13 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
         dynamic aValue, bValue;
 
         switch (columnIndex) {
-          case 0: // Date
-            aValue = a!.orderDate ?? DateTime.now();
-            bValue = b!.orderDate ?? DateTime.now();
-            break;
-          case 1: // Order ID
+          case 0: // Order ID (swapped with date to match PDF)
             aValue = a!.orderId ?? '';
             bValue = b!.orderId ?? '';
+            break;
+          case 1: // Date (swapped with orderId to match PDF)
+            aValue = a!.orderDate ?? DateTime.now();
+            bValue = b!.orderDate ?? DateTime.now();
             break;
           case 2: // Customer Name
             aValue = '${a!.customer?.firstName ?? ''} ${a.customer?.lastName ?? ''}';
@@ -129,27 +130,27 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
             aValue = getWeight(a!);
             bValue = getWeight(b!);
             break;
-          case 5: // Price Include Tax
+          case 5: // Price Include Tax (was 6, now 5 after removing Unit column)
             aValue = a!.priceIncludeTax ?? 0;
             bValue = b!.priceIncludeTax ?? 0;
             break;
-          case 6: // Purchase Price
+          case 6: // Purchase Price (was 7, now 6)
             aValue = a!.purchasePrice ?? 0;
             bValue = b!.purchasePrice ?? 0;
             break;
-          case 7: // Price Diff
+          case 7: // Price Diff (was 8, now 7)
             aValue = a!.priceDiff ?? 0;
             bValue = b!.priceDiff ?? 0;
             break;
-          case 8: // Tax Base
+          case 8: // Tax Base (was 9, now 8)
             aValue = a!.taxBase ?? 0;
             bValue = b!.taxBase ?? 0;
             break;
-          case 9: // Tax Amount
+          case 9: // Tax Amount (was 10, now 9)
             aValue = a!.taxAmount ?? 0;
             bValue = b!.taxAmount ?? 0;
             break;
-          case 10: // Price Exclude Tax
+          case 10: // Price Exclude Tax (was 11, now 10)
             aValue = a!.priceExcludeTax ?? 0;
             bValue = b!.priceExcludeTax ?? 0;
             break;
@@ -365,21 +366,21 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                   ],
                                 ),
                               ),
-                              // Date - Small flex
+                              // Order ID - Large flex for invoice numbers (moved before date to match PDF)
                               Expanded(
-                                flex: 1,
+                                flex: 3,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: GestureDetector(
                                     onTap: () => _sortData(0, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'วัน/เดือน/ปี',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                            'เลขที่ใบกำกับภาษี',
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -394,21 +395,21 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Order ID - Large flex for invoice numbers
+                              // Date - Small flex (moved after orderId to match PDF)
                               Expanded(
-                                flex: 3,
+                                flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: GestureDetector(
                                     onTap: () => _sortData(1, !isAscending),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
+                                        Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'เลขที่ใบกำกับภาษี',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                            'วันที่',
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -495,8 +496,8 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'น้ำหนัก',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                            'น้ำหนักรวม\n(กรัม)',
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
@@ -512,27 +513,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                   ),
                                 ),
                               ),
-                              // Unit - Small flex
-                              Expanded(
-                                flex: 1,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.category, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'หน่วย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Price Include Tax - Medium flex
+                              // Price Include Tax - Medium flex (removed Unit column to match PDF)
                               Expanded(
                                 flex: 2,
                                 child: Container(
@@ -546,7 +527,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'ยอดขายรวม\nภาษีมูลค่าเพิ่ม',
+                                            'ยอดขายรวม\nภาษีมูลค่าเพิ่ม\n(บาท)',
                                             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 8),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
@@ -577,8 +558,8 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'มูลค่ายกเว้น',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                            'มูลค่าฐานภาษี\nยกเว้น\n(บาท)',
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 8),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
@@ -608,8 +589,8 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'ผลต่างรวม\nภาษีมูลค่าเพิ่ม',
-                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 8),
+                                            'ผลต่าง\nรวมภาษีมูลค่าเพิ่ม\n(บาท)',
+                                            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 7),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
                                           ),
@@ -639,7 +620,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'ฐานภาษีมูลค่าเพิ่ม',
+                                            'ฐานภาษีมูลค่าเพิ่ม\n(บาท)',
                                             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 8),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
@@ -670,7 +651,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                         const SizedBox(width: 4),
                                         const Flexible(
                                           child: Text(
-                                            'ภาษีมูลค่าเพิ่ม',
+                                            'ภาษี\nมูลค่าเพิ่ม',
                                             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.right,
@@ -732,6 +713,10 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                 int index = entry.key;
                                 OrderModel? item = entry.value;
 
+                                // Check if order is cancelled (status == "2")
+                                final isCancelled = item!.status == "2";
+                                final textColor = isCancelled ? Colors.red[900] : Colors.black;
+
                                 return Container(
                                   height: 64,
                                   decoration: BoxDecoration(
@@ -748,33 +733,21 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.1),
+                                              color: isCancelled ? Colors.red.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
-                                                color: Colors.grey,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-                                        // Date
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                              Global.dateOnly(item!.orderDate.toString()),
-                                              style: const TextStyle(fontSize: 10),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        // Order ID
+                                        // Order ID (moved before date to match PDF)
                                         Expanded(
                                           flex: 3,
                                           child: Container(
@@ -782,7 +755,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.1),
+                                                color: isCancelled ? Colors.red.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
                                               child: Text(
@@ -790,11 +763,23 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: 10,
-                                                  color: Colors.blue[700],
+                                                  color: isCancelled ? Colors.red[900] : Colors.blue[700],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                               ),
+                                            ),
+                                          ),
+                                        ),
+                                        // Date (moved after orderId to match PDF)
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              Global.dateOnly(item.orderDate.toString()),
+                                              style: TextStyle(fontSize: 10, color: textColor),
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
@@ -809,16 +794,16 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                                   width: 16,
                                                   height: 16,
                                                   decoration: BoxDecoration(
-                                                    color: Colors.green.withOpacity(0.2),
+                                                    color: isCancelled ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2),
                                                     borderRadius: BorderRadius.circular(4),
                                                   ),
-                                                  child: Icon(Icons.person, size: 10, color: Colors.green[600]),
+                                                  child: Icon(Icons.person, size: 10, color: isCancelled ? Colors.red[600] : Colors.green[600]),
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Expanded(
                                                   child: Text(
-                                                    '${item.customer?.firstName ?? ''} ${item.customer?.lastName ?? ''}',
-                                                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 10),
+                                                    isCancelled ? 'ยกเลิกเอกสาร***' : getCustomerName(item.customer!),
+                                                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 10, color: textColor),
                                                     overflow: TextOverflow.ellipsis,
                                                     maxLines: 1,
                                                   ),
@@ -833,12 +818,12 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              item.customer?.taxNumber != ''
+                                              isCancelled ? '' : (item.customer?.taxNumber != ''
                                                   ? item.customer?.taxNumber ?? ''
-                                                  : item.customer?.idCard ?? '',
+                                                  : item.customer?.idCard ?? ''),
                                               style: TextStyle(
                                                 fontSize: 9,
-                                                color: Colors.grey[700],
+                                                color: textColor,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -846,44 +831,20 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                             ),
                                           ),
                                         ),
-                                        // Weight
+                                        // Weight (removed Unit column to match PDF)
                                         Expanded(
                                           flex: 1,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(getWeight(item)),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(getWeight(item)),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.orange,
+                                                color: isCancelled ? textColor : Colors.orange,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        // Unit
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.purple.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                'กรัม',
-                                                style: TextStyle(
-                                                  fontSize: 9,
-                                                  color: Colors.purple[700],
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
                                             ),
                                           ),
                                         ),
@@ -893,11 +854,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceIncludeTax ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.priceIncludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.green,
+                                                color: isCancelled ? textColor : Colors.green,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -910,11 +871,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.purchasePrice ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.purchasePrice ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.blue,
+                                                color: isCancelled ? textColor : Colors.blue,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -927,11 +888,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceDiff ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.priceDiff ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.red,
+                                                color: isCancelled ? textColor : Colors.red,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -944,11 +905,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxBase ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.taxBase ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.purple,
+                                                color: isCancelled ? textColor : Colors.purple,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -961,11 +922,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxAmount ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.taxAmount ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.amber,
+                                                color: isCancelled ? textColor : Colors.amber,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -978,11 +939,11 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceExcludeTax ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.priceExcludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 10,
-                                                color: Colors.indigo,
+                                                color: isCancelled ? textColor : Colors.indigo,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -995,7 +956,7 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                 );
                               }).toList(),
 
-                              // Summary row
+                              // Summary row (removed Unit column to match PDF)
                               Container(
                                 height: 64,
                                 decoration: BoxDecoration(
@@ -1005,10 +966,12 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
-                                      // Empty cells for alignment
+                                      // Empty cells for alignment (orderId, date, customer name)
                                       Container(width: 60, padding: const EdgeInsets.all(8)),
-                                      Expanded(flex: 1, child: Container()),
                                       Expanded(flex: 3, child: Container()),
+                                      Expanded(flex: 1, child: Container()),
+                                      Expanded(flex: 2, child: Container()),
+                                      // รวมทั้งหมด label in tax number column
                                       Expanded(
                                         flex: 2,
                                         child: Container(
@@ -1025,7 +988,6 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(flex: 2, child: Container()),
                                       // Weight total
                                       Expanded(
                                         flex: 1,
@@ -1043,7 +1005,6 @@ class _SellNewGoldReportScreenState extends State<SellNewGoldReportScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(flex: 1, child: Container()),
                                       // Price Include Tax total
                                       Expanded(
                                         flex: 2,

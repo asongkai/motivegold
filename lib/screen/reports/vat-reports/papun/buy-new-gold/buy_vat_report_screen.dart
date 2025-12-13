@@ -19,8 +19,8 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
-import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
 
@@ -515,283 +515,164 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                 child: IntrinsicWidth(
                   child: Column(
                     children: [
-                      // Sticky Header
+                      // Sticky Header - 13 columns matching PDF Type 1
                       Container(
                         color: Colors.grey[50],
                         height: 56,
                         child: IntrinsicHeight(
                           child: Row(
                             children: [
-                              // Row number - Fixed small width
+                              // 1. ลำดับ
                               Container(
-                                width: 60,
+                                width: 50,
                                 padding: const EdgeInsets.all(8),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.tag, size: 14, color: Colors.grey[600]),
-                                    const SizedBox(width: 2),
-                                    const Flexible(
-                                      child: Text(
-                                        'ลำดับ',
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
+                                child: const Text(
+                                  'ลำดับ',
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                              // Date - Small flex
+                              // 2. เลขที่ใบกำกับภาษี (referenceNo)
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'เลขที่ใบกำกับ\nภาษี',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 3. เลขที่ใบรับทอง (orderId)
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'เลขที่ใบรับทอง',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 4. วันที่
                               Expanded(
                                 flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'วัน/เดือน/ปี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'วันที่',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                              // Order ID - Large flex for order numbers
+                              // 5. ชื่อผู้ขาย
                               Expanded(
-                                flex: 3,
+                                flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.receipt_rounded, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'เลขที่ใบกํากับภาษี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ชื่อผู้ขาย',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                              // Seller - Small flex
+                              // 6. รหัสสำนักงานใหญ่/สาขา
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'รหัสสำนักงาน\nใหญ่/สาขา',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 7. เลขประจําตัวผู้เสียภาษี
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'เลขประจําตัว\nผู้เสียภาษี',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 8. น้ำหนักรวม(กรัม)
                               Expanded(
                                 flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.store, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ผู้ขาย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'น้ำหนักรวม\n(กรัม)',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
-                              // Tax Number - Medium flex
+                              // 9. ราคาซื้อไม่รวมภาษี
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.badge, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'เลขประจําตัวผู้เสียภาษี',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ราคาซื้อ\nไม่รวมภาษี',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
-                              // Weight - Small flex
-                              Expanded(
-                                flex: 1,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.scale_rounded, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'น้ําหนัก',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Unit - Small flex
-                              Expanded(
-                                flex: 1,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.category, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'หน่วย',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Price Include Tax - Medium flex
+                              // 10. มูลค่าฐานภาษียกเว้น
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.monetization_on_rounded, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ยอดขายรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'มูลค่าฐานภาษี\nยกเว้น',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
-                              // Purchase Price - Medium flex
+                              // 11. ผลต่างฐานภาษี
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.attach_money_rounded, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'มูลค่ายกเว้น',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ผลต่าง\nฐานภาษี',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
-                              // Price Diff - Medium flex
+                              // 12. ภาษีมูลค่าเพิ่ม
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.trending_up, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ผลต่างรวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ภาษีมูลค่าเพิ่ม',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
-                              // Tax Base - Medium flex
+                              // 13. ราคาซื้อรวมภาษี
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.calculate, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ฐานภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Tax Amount - Medium flex
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.percent, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Price Exclude Tax - Medium flex
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.money_off, size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ยอดขายที่ไม่รวม\nภาษีมูลค่าเพิ่ม',
-                                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ราคาซื้อ\nรวมภาษี',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
@@ -804,10 +685,11 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
-                              // Regular data rows
+                              // Regular data rows - 13 columns matching PDF Type 1
                               ...filterList!.asMap().entries.map((entry) {
                                 int index = entry.key;
                                 OrderModel? item = entry.value;
+                                bool isCancelled = item!.status == "2";
 
                                 return Container(
                                   height: 64,
@@ -818,240 +700,199 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                                   child: IntrinsicHeight(
                                     child: Row(
                                       children: [
-                                        // Row number
+                                        // 1. ลำดับ
                                         Container(
-                                          width: 60,
+                                          width: 50,
                                           padding: const EdgeInsets.all(8),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(4),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11,
+                                              color: isCancelled ? Colors.red[900] : Colors.black,
                                             ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        // 2. เลขที่ใบกำกับภาษี (referenceNo)
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                                color: Colors.grey,
+                                              item.referenceNo ?? '',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-                                        // Date
+                                        // 3. เลขที่ใบรับทอง (orderId)
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              item.orderId,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                        // 4. วันที่
                                         Expanded(
                                           flex: 1,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.dateOnly(item!.orderDate.toString()),
-                                              style: const TextStyle(fontSize: 11),
-                                              overflow: TextOverflow.ellipsis,
+                                              Global.dateOnly(item.orderDate.toString()),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-                                        // Order ID
-                                        Expanded(
-                                          flex: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                item.orderId ?? '',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 11,
-                                                  color: Colors.blue[700],
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Seller
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.orange.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                'เงินสด',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 10,
-                                                  color: Colors.orange[700],
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Tax Number
+                                        // 5. ชื่อผู้ขาย
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.company != null ? Global.company!.taxNumber ?? '' : '',
-                                              style: const TextStyle(fontSize: 10),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
+                                              isCancelled
+                                                  ? 'ยกเลิกเอกสาร***'
+                                                  : getCustomerNameForWholesaleReports(item.customer!),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                        // Weight
+                                        // 6. รหัสสำนักงานใหญ่/สาขา
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              isCancelled ? '' : getCustomerBranchCode(item.customer!),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                        // 7. เลขประจําตัวผู้เสียภาษี
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              isCancelled
+                                                  ? ''
+                                                  : item.customer?.taxNumber ?? item.customer?.idCard ?? '',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        // 8. น้ำหนักรวม(กรัม)
                                         Expanded(
                                           flex: 1,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(getWeight(item)),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.orange,
+                                              isCancelled ? '0.00' : Global.format(getWeight(item)),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Unit
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.purple.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                'กรัม',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.purple[700],
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Price Include Tax
+                                        // 9. ราคาซื้อไม่รวมภาษี (priceExcludeTax)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceIncludeTax ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.green,
+                                              isCancelled ? '0.00' : Global.format(item.priceExcludeTax ?? 0),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Purchase Price
+                                        // 10. มูลค่าฐานภาษียกเว้น (purchasePrice)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.purchasePrice ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.blue,
+                                              isCancelled ? '0.00' : Global.format(item.purchasePrice ?? 0),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Price Diff
+                                        // 11. ผลต่างฐานภาษี (taxBase)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.priceDiff ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.red,
+                                              isCancelled ? '0.00' : Global.format(item.taxBase ?? 0),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Tax Base
+                                        // 12. ภาษีมูลค่าเพิ่ม (taxAmount)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxBase ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.purple,
+                                              isCancelled ? '0.00' : Global.format(item.taxAmount ?? 0),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Tax Amount
+                                        // 13. ราคาซื้อรวมภาษี (priceIncludeTax)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(item.taxAmount ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.amber,
+                                              isCancelled ? '0.00' : Global.format(item.priceIncludeTax ?? 0),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: isCancelled ? Colors.red[900] : Colors.black,
                                               ),
                                               textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        // Price Exclude Tax
-                                        Expanded(
-                                          flex: 2,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                              Global.format(item.priceExcludeTax ?? 0),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.indigo,
-                                              ),
-                                              textAlign: TextAlign.right,
-                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
@@ -1061,7 +902,7 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                                 );
                               }).toList(),
 
-                              // Summary row
+                              // Summary row - 13 columns matching PDF Type 1
                               Container(
                                 height: 64,
                                 decoration: BoxDecoration(
@@ -1071,32 +912,35 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
-                                      // Empty for row number
-                                      Container(width: 60, padding: const EdgeInsets.all(8)),
-                                      // Empty for date
+                                      // 1. ลำดับ - empty
+                                      Container(width: 50, padding: const EdgeInsets.all(8)),
+                                      // 2. เลขที่ใบกำกับภาษี - empty
+                                      Expanded(flex: 2, child: Container()),
+                                      // 3. เลขที่ใบรับทอง - empty
+                                      Expanded(flex: 2, child: Container()),
+                                      // 4. วันที่ - empty
                                       Expanded(flex: 1, child: Container()),
-                                      // Empty for order ID
-                                      Expanded(flex: 3, child: Container()),
-                                      // Total label
+                                      // 5. ชื่อผู้ขาย - empty
+                                      Expanded(flex: 2, child: Container()),
+                                      // 6. รหัสสำนักงานใหญ่/สาขา - empty
+                                      Expanded(flex: 2, child: Container()),
+                                      // 7. เลขประจําตัวผู้เสียภาษี - Total label
                                       Expanded(
-                                        flex: 1,
+                                        flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
                                             'รวมท้ังหมด',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 10,
+                                              fontSize: 11,
                                               color: Colors.indigo[700],
                                             ),
                                             textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
-                                      // Empty for tax number
-                                      Expanded(flex: 2, child: Container()),
-                                      // Weight total
+                                      // 8. น้ำหนักรวม(กรัม) total
                                       Expanded(
                                         flex: 1,
                                         child: Container(
@@ -1106,101 +950,13 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 11,
-                                              color: Colors.orange[700],
+                                              color: Colors.indigo[700],
                                             ),
                                             textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
-                                      // Empty for unit
-                                      Expanded(flex: 1, child: Container()),
-                                      // Price Include Tax total
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            Global.format(priceIncludeTaxTotal(filterList!)),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: Colors.green[700],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      // Purchase Price total
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            Global.format(purchasePriceTotal(filterList!)),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: Colors.blue[700],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      // Price Diff total
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            Global.format(priceDiffTotal(filterList!)),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: Colors.red[700],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      // Tax Base total
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            Global.format(taxBaseTotal(filterList!)),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: Colors.purple[700],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      // Tax Amount total
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Text(
-                                            Global.format(taxAmountTotal(filterList!)),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: Colors.amber[700],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                      // Price Exclude Tax total
+                                      // 9. ราคาซื้อไม่รวมภาษี total (priceExcludeTax)
                                       Expanded(
                                         flex: 2,
                                         child: Container(
@@ -1213,7 +969,70 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
                                               color: Colors.indigo[700],
                                             ),
                                             textAlign: TextAlign.right,
-                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+                                      // 10. มูลค่าฐานภาษียกเว้น total (purchasePrice)
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            Global.format(purchasePriceTotal(filterList!)),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ),
+                                      // 11. ผลต่างฐานภาษี total (taxBase)
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            Global.format(taxBaseTotal(filterList!)),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ),
+                                      // 12. ภาษีมูลค่าเพิ่ม total (taxAmount)
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            Global.format(taxAmountTotal(filterList!)),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ),
+                                      // 13. ราคาซื้อรวมภาษี total (priceIncludeTax)
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            Global.format(priceIncludeTaxTotal(filterList!)),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
+                                            ),
+                                            textAlign: TextAlign.right,
                                           ),
                                         ),
                                       ),
@@ -1233,77 +1052,6 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDateField({
-    required String label,
-    required IconData icon,
-    required TextEditingController controller,
-    required VoidCallback onClear,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 14, color: Colors.grey[600]),
-            const SizedBox(width: 4),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
-          ],
-        ),
-        const SizedBox(height: 6),
-        SizedBox(
-          height: 42,
-          child: TextField(
-            controller: controller,
-            style: TextStyle(fontSize: 14),
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.calendar_today, size: 18),
-              suffixIcon: controller.text.isNotEmpty
-                  ? GestureDetector(
-                      onTap: onClear, child: const Icon(Icons.clear, size: 18))
-                  : null,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-              hintText: label,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.indigo[600]!),
-              ),
-            ),
-            readOnly: true,
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (_) => SfDatePickerDialog(
-                  initialDate: DateTime.now(),
-                  onDateSelected: (date) {
-                    String formattedDate =
-                        DateFormat('yyyy-MM-dd').format(date);
-                    setState(() {
-                      controller.text = formattedDate;
-                    });
-                    search();
-                  },
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/stockmovement.dart';
 import 'package:motivegold/screen/reports/stock-movement-reports/preview.dart';
-import 'package:motivegold/screen/reports/stock-movement-reports/preview_stock_card.dart';
 import 'package:motivegold/utils/responsive_screen.dart';
 import 'package:motivegold/widget/appbar/appbar.dart';
 import 'package:motivegold/widget/appbar/title_content.dart';
@@ -17,7 +16,6 @@ import 'package:motivegold/model/product.dart';
 import 'package:motivegold/model/warehouseModel.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
@@ -147,11 +145,11 @@ class _StockMovementReportListScreenState
     } else {
       filterList = dataList!.where((item) {
         return (item.product?.name
-                    ?.toLowerCase()
+                    .toLowerCase()
                     .contains(searchQuery.toLowerCase()) ??
                 false) ||
             (item.binLocation?.name
-                    ?.toLowerCase()
+                    .toLowerCase()
                     .contains(searchQuery.toLowerCase()) ??
                 false) ||
             (item.orderId?.toLowerCase().contains(searchQuery.toLowerCase()) ??

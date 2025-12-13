@@ -6,20 +6,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/screen/gold/gold_price_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
-import 'package:motivegold/screen/pos/wholesale/paphun/refill/dialog/refill_dialog.dart';
-import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/cart/cart.dart';
-import 'package:motivegold/utils/config.dart';
-import 'package:motivegold/utils/drag/drag_area.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 import 'package:motivegold/utils/helps/numeric_formatter.dart';
 import 'package:motivegold/constants/colors.dart';
@@ -35,7 +28,6 @@ import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/date/date_picker.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
-import 'package:motivegold/widget/list_tile_data.dart';
 import 'package:motivegold/widget/loading/loading_progress.dart';
 import 'package:sizer/sizer.dart';
 
@@ -1333,6 +1325,7 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
 
   void _handleSave() async {
     if (!_validateFields()) return;
+    if (!validatePrice()) return;
 
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
@@ -1387,6 +1380,20 @@ class _EditRefillGoldStockScreenState extends State<EditRefillGoldStockScreen> {
       return false;
     }
 
+    return true;
+  }
+
+  bool validatePrice() {
+    if (Global.toNumber(priceIncludeTaxCtrl.text) <
+        Global.toNumber(purchasePriceCtrl.text)) {
+      Alert.warning(
+          context,
+          'คำเตือน',
+          'จำนวนเงินสุทธิต่ำกว่าราคารับซื้อคืน กรุณาตรวจสอบและกรอกข้อมูลใหม่',
+          'OK',
+          action: () {});
+      return false;
+    }
     return true;
   }
 

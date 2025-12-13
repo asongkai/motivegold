@@ -445,7 +445,7 @@ Future<Uint8List> makeBuyUsedThengBill(Invoice invoice,
                         Expanded(
                           flex: 2,
                           child: Text(
-                              '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) == 0 ? "0.00" : (addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)})" : addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} บาท',
+                              '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) == 0 ? "0.00" : (addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${Global.format(-addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))})" : Global.format(addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)))} บาท',
                               textAlign: TextAlign.right,
                               style: TextStyle(
                                   fontSize: 12,

@@ -432,7 +432,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.right),
-              paddedTextSmall('(${Global.format(-priceDiffTotalM(orders))})',
+              paddedTextSmall('(${Global.format(priceDiffTotalM(orders))})',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,

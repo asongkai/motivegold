@@ -4,7 +4,6 @@ import 'package:motivegold/model/invoice.dart';
 import 'package:motivegold/model/order.dart';
 import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
-import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
 import 'package:pdf/pdf.dart';

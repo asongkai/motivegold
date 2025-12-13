@@ -10,11 +10,9 @@ import 'package:masked_text/masked_text.dart';
 import 'package:mirai_dropdown_menu/mirai_dropdown_menu.dart';
 import 'package:motivegold/model/qty_location.dart';
 import 'package:motivegold/screen/pos/wholesale/wholesale_checkout_screen.dart';
-import 'package:motivegold/utils/calculator/calc.dart';
 import 'package:motivegold/utils/calculator/manager.dart';
 import 'package:motivegold/utils/cart/cart.dart';
 import 'package:motivegold/utils/config.dart';
-import 'package:motivegold/utils/drag/drag_area.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/screen_utils.dart';
 
@@ -1559,28 +1557,40 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
   }
 
   // Keep all original calculation and data methods unchanged
-  void priceIncludeTaxChanged() {
+  // ฟังก์ชันกลางสำหรับคำนวณ (เพื่อลดการเขียนซ้ำ)
+  void calculatePriceDifference() {
     if (purchasePriceCtrl.text.isNotEmpty &&
         priceIncludeTaxCtrl.text.isNotEmpty) {
-      priceDiffCtrl.text = Global.format(
-          (Global.toNumber(priceIncludeTaxCtrl.text) -
-              Global.toNumber(purchasePriceCtrl.text)));
+      double netAmount =
+          Global.toNumber(priceIncludeTaxCtrl.text); // จำนวนเงินสุทธิ
+      double purchasePrice =
+          Global.toNumber(purchasePriceCtrl.text); // หักราคารับซื้อทองประจำวัน
+      double result = 0;
+
+      if (netAmount > purchasePrice) {
+        // สูตร: (สุทธิ - รับซื้อ) * 100 / 107
+        result = (netAmount - purchasePrice) * 100 / 107;
+      } else {
+        // สูตร: สุทธิ - รับซื้อ
+        result = netAmount - purchasePrice;
+      }
+
+      priceDiffCtrl.text = Global.format(result);
     } else {
       priceDiffCtrl.text = "";
     }
+
     getOtherAmount();
   }
 
+// ฟังก์ชันเมื่อมีการเปลี่ยนค่าใน "จำนวนเงินสุทธิ"
+  void priceIncludeTaxChanged() {
+    calculatePriceDifference();
+  }
+
+// ฟังก์ชันเมื่อมีการเปลี่ยนค่าใน "ราคารับซื้อ"
   void purchasePriceChanged() {
-    if (purchasePriceCtrl.text.isNotEmpty &&
-        priceIncludeTaxCtrl.text.isNotEmpty) {
-      priceDiffCtrl.text = Global.format(
-          (Global.toNumber(priceIncludeTaxCtrl.text) -
-              Global.toNumber(purchasePriceCtrl.text)));
-    } else {
-      priceDiffCtrl.text = "";
-    }
-    getOtherAmount();
+    calculatePriceDifference();
   }
 
   void gramChanged() {
@@ -1603,7 +1613,7 @@ class _SellUsedGoldScreenState extends State<SellUsedGoldScreen> {
     if (priceDiff <= 0) {
       taxAmountCtrl.text = '0';
     } else {
-      taxAmountCtrl.text = Global.format(priceDiff * 7 / 107);
+      taxAmountCtrl.text = Global.format(priceDiff * getVatValue());
     }
 
     priceExcludeTaxCtrl.text =

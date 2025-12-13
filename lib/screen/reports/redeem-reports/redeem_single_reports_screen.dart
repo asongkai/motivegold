@@ -171,21 +171,27 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
               }
             }
 
-            // Sort details by referenceNo (same logic as PDF)
+            // Sort details by referenceNo (same logic as PDF Type 1)
             detailsList!.sort((a, b) {
+              // Handle null values - put them at the end
               if (a.referenceNo == null && b.referenceNo == null) return 0;
               if (a.referenceNo == null) return 1;
               if (b.referenceNo == null) return -1;
 
-              // Try parsing as numbers first
-              final numA = int.tryParse(a.referenceNo!);
-              final numB = int.tryParse(b.referenceNo!);
+              // Try to parse as numbers first
+              final aNum = int.tryParse(a.referenceNo!);
+              final bNum = int.tryParse(b.referenceNo!);
 
-              if (numA != null && numB != null) {
-                return numA.compareTo(numB);
+              // If both are numbers, compare numerically
+              if (aNum != null && bNum != null) {
+                return aNum.compareTo(bNum);
               }
 
-              // Fall back to string comparison
+              // If one is a number and one is not, put numbers first
+              if (aNum != null && bNum == null) return -1;
+              if (aNum == null && bNum != null) return 1;
+
+              // If both are strings, compare alphabetically
               return a.referenceNo!.compareTo(b.referenceNo!);
             });
           } else {
@@ -277,35 +283,52 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
       sortColumnIndex = columnIndex;
       isAscending = ascending;
 
-      filterList!.sort((a, b) {
+      // Sort detailsList to match the displayed data (matching PDF Type 1 structure)
+      detailsList!.sort((a, b) {
         dynamic aValue, bValue;
 
         switch (columnIndex) {
           case 0: // Date
-            aValue = a?.redeemDate ?? DateTime.now();
-            bValue = b?.redeemDate ?? DateTime.now();
+            aValue = a.redeemDate ?? DateTime.now();
+            bValue = b.redeemDate ?? DateTime.now();
             break;
-          case 1: // Redeem ID
-            aValue = a?.redeemId ?? '';
-            bValue = b?.redeemId ?? '';
+          case 1: // Reference No (Ticket Number)
+            // Handle numeric vs string sorting for reference numbers
+            final aNum = int.tryParse(a.referenceNo ?? '');
+            final bNum = int.tryParse(b.referenceNo ?? '');
+            if (aNum != null && bNum != null) {
+              aValue = aNum;
+              bValue = bNum;
+            } else {
+              aValue = a.referenceNo ?? '';
+              bValue = b.referenceNo ?? '';
+            }
             break;
-          case 2: // Customer Name
-            aValue =
-                '${a?.customer?.firstName ?? ''} ${a?.customer?.lastName ?? ''}';
-            bValue =
-                '${b?.customer?.firstName ?? ''} ${b?.customer?.lastName ?? ''}';
+          case 2: // Redeem ID (Tax Invoice) - Need to look up from parent order
+            String aRedeemId = '';
+            String bRedeemId = '';
+            try {
+              final aOrder = orders?.firstWhere((order) => order.id == a.redeemId);
+              aRedeemId = aOrder?.redeemId ?? '';
+            } catch (e) {
+              aRedeemId = '';
+            }
+            try {
+              final bOrder = orders?.firstWhere((order) => order.id == b.redeemId);
+              bRedeemId = bOrder?.redeemId ?? '';
+            } catch (e) {
+              bRedeemId = '';
+            }
+            aValue = aRedeemId;
+            bValue = bRedeemId;
             break;
-          case 3: // Tax Number
-            aValue = Global.company?.taxNumber ?? '';
-            bValue = Global.company?.taxNumber ?? '';
+          case 3: // Customer Name
+            aValue = a.customerName ?? '';
+            bValue = b.customerName ?? '';
             break;
-          case 4: // Weight
-            aValue = getWeight(a);
-            bValue = getWeight(b);
-            break;
-          case 5: // Payment Amount
-            aValue = a?.paymentAmount ?? 0;
-            bValue = b?.paymentAmount ?? 0;
+          case 4: // Tax Number
+            aValue = a.taxNumber ?? '';
+            bValue = b.taxNumber ?? '';
             break;
           default:
             return 0;
@@ -946,15 +969,21 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                 int index = entry.key;
                                 RedeemDetailModel detail = entry.value;
 
-                                // Find the parent redeem order for this detail (for redeemId lookup)
+                                // Find the parent redeem order for this detail (for redeemId lookup and cancelled status)
                                 String? redeemIdFromParent;
+                                bool isCancelled = false;
                                 try {
-                                  redeemIdFromParent = orders?.firstWhere(
-                                    (order) => order?.id == detail.redeemId
-                                  )?.redeemId;
+                                  final parentOrder = orders?.firstWhere(
+                                    (order) => order.id == detail.redeemId
+                                  );
+                                  redeemIdFromParent = parentOrder?.redeemId;
+                                  isCancelled = parentOrder?.redeemStatus == 'CANCEL';
                                 } catch (e) {
                                   redeemIdFromParent = '';
                                 }
+
+                                // Set text color based on cancelled status (matching PDF)
+                                final textColor = isCancelled ? Colors.red[900] : Colors.black;
 
                                 return Container(
                                   height: 64,
@@ -978,17 +1007,18 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 4, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Colors.grey.withOpacity(0.1),
+                                              color: isCancelled
+                                                  ? Colors.red.withOpacity(0.1)
+                                                  : Colors.grey.withOpacity(0.1),
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
                                             child: Text(
                                               '${index + 1}',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
-                                                color: Colors.grey,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
@@ -1002,8 +1032,9 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             child: Text(
                                               Global.dateOnly(
                                                   detail.redeemDate.toString()),
-                                              style:
-                                                  const TextStyle(fontSize: 11),
+                                              style: TextStyle(
+                                                  fontSize: 11,
+                                                  color: textColor),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -1015,9 +1046,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               detail.referenceNo ?? '',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 11,
+                                                color: textColor,
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                               textAlign: TextAlign.center,
@@ -1035,8 +1067,9 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                                       horizontal: 6,
                                                       vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.blue
-                                                    .withOpacity(0.1),
+                                                color: isCancelled
+                                                    ? Colors.red.withOpacity(0.1)
+                                                    : Colors.blue.withOpacity(0.1),
                                                 borderRadius:
                                                     BorderRadius.circular(4),
                                               ),
@@ -1045,7 +1078,7 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: 11,
-                                                  color: Colors.blue[700],
+                                                  color: isCancelled ? Colors.red[900] : Colors.blue[700],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
@@ -1061,10 +1094,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               detail.customerName ?? '',
-                                              style: const TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.w500,
-                                                  fontSize: 11),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 11,
+                                                  color: textColor),
                                               overflow:
                                                   TextOverflow.ellipsis,
                                               maxLines: 1,
@@ -1080,7 +1113,7 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                               detail.taxNumber ?? '',
                                               style: TextStyle(
                                                 fontSize: 10,
-                                                color: Colors.grey[700],
+                                                color: isCancelled ? Colors.red[900] : Colors.grey[700],
                                                 fontWeight: FontWeight.w500,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -1095,9 +1128,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.format(detail.redemptionVat ?? 0),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -1111,9 +1145,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.format(detail.redemptionValue ?? 0),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -1127,9 +1162,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.format(detail.depositAmount ?? 0),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -1143,9 +1179,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.format(detail.taxBase ?? 0),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -1159,10 +1196,10 @@ class _RedeemSingleReportScreenState extends State<RedeemSingleReportScreen> {
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
                                               Global.format(detail.taxAmount ?? 0),
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
-                                                color: Colors.green,
+                                                color: isCancelled ? Colors.red[900] : Colors.green,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,

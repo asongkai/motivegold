@@ -17,6 +17,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
@@ -369,11 +370,15 @@ class _SellNewRetailPaphunReportScreenState
     }
 
     // Calculate totals
-    double totalWeight = 0;
-    double totalAmount = 0;
+    double totalCashBank = 0;
+    double totalSalesAmount = 0;
+    double totalVatAmount = 0;
     for (var item in filterList!) {
-      totalWeight += getWeight(item);
-      totalAmount += item?.priceIncludeTax ?? 0;
+      if (item?.status != "2") {
+        totalCashBank += item?.priceIncludeTax ?? 0;
+        totalSalesAmount += item?.priceExcludeTax ?? 0;
+        totalVatAmount += item?.taxAmount ?? 0;
+      }
     }
 
     return Container(
@@ -430,14 +435,14 @@ class _SellNewRetailPaphunReportScreenState
                 child: IntrinsicWidth(
                   child: Column(
                     children: [
-                      // Sticky Header
+                      // Sticky Header - matching PDF Type 1 structure
                       Container(
                         color: Colors.grey[50],
                         height: 56,
                         child: IntrinsicHeight(
                           child: Row(
                             children: [
-                              // Row number - Fixed width
+                              // 1. Row number - Fixed width
                               Container(
                                 width: 60,
                                 padding: const EdgeInsets.all(8),
@@ -459,32 +464,9 @@ class _SellNewRetailPaphunReportScreenState
                                   ],
                                 ),
                               ),
-                              // Date
+                              // 2. Order ID (เลขที่ใบกํากับภาษี)
                               Expanded(
-                                flex: 1,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.calendar_today,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'วันที่',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Invoice number
-                              Expanded(
-                                flex: 3,
+                                flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
                                   child: Row(
@@ -497,6 +479,52 @@ class _SellNewRetailPaphunReportScreenState
                                           'เลขที่ใบกํากับภาษี',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
+                                              fontSize: 10),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // 3. Date (วัน/เดือน/ปี)
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today,
+                                          size: 14, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      const Flexible(
+                                        child: Text(
+                                          'วัน/เดือน/ปี',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 10),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // 4. Customer Name (ชื่อผู้ซื้อ)
+                              Expanded(
+                                flex: 3,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.person,
+                                          size: 14, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      const Flexible(
+                                        child: Text(
+                                          'ชื่อผู้ซื้อ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
                                               fontSize: 11),
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -505,7 +533,7 @@ class _SellNewRetailPaphunReportScreenState
                                   ),
                                 ),
                               ),
-                              // Weight
+                              // 5. Debit - Cash/Bank (เดบิต: เงินสด/ธนาคาร)
                               Expanded(
                                 flex: 2,
                                 child: Container(
@@ -513,15 +541,15 @@ class _SellNewRetailPaphunReportScreenState
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.scale_rounded,
+                                      Icon(Icons.arrow_upward,
                                           size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
-                                          'น้ำหนัก (กรัม)',
+                                          'เดบิต\nเงินสด/ธนาคาร',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 11),
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -530,7 +558,7 @@ class _SellNewRetailPaphunReportScreenState
                                   ),
                                 ),
                               ),
-                              // Amount
+                              // 6. Credit - Sell Gold (เครดิต: ขายทองรูปพรรณใหม่)
                               Expanded(
                                 flex: 2,
                                 child: Container(
@@ -538,15 +566,40 @@ class _SellNewRetailPaphunReportScreenState
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      Icon(Icons.monetization_on_rounded,
+                                      Icon(Icons.arrow_downward,
                                           size: 14, color: Colors.grey[600]),
                                       const SizedBox(width: 4),
                                       const Flexible(
                                         child: Text(
-                                          'จำนวนเงิน',
+                                          'เครดิต\nขายทองรูปพรรณใหม่',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 11),
+                                              fontSize: 9),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.right,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // 7. Credit - VAT (เครดิต: ภาษีขาย)
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Icon(Icons.receipt_long,
+                                          size: 14, color: Colors.grey[600]),
+                                      const SizedBox(width: 4),
+                                      const Flexible(
+                                        child: Text(
+                                          'เครดิต\nภาษีขาย',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9),
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.right,
                                         ),
@@ -583,7 +636,7 @@ class _SellNewRetailPaphunReportScreenState
                                   child: IntrinsicHeight(
                                     child: Row(
                                       children: [
-                                        // Row number
+                                        // 1. Row number
                                         Container(
                                           width: 60,
                                           padding: const EdgeInsets.all(8),
@@ -607,23 +660,9 @@ class _SellNewRetailPaphunReportScreenState
                                             ),
                                           ),
                                         ),
-                                        // Date
+                                        // 2. Order ID (เลขที่ใบกํากับภาษี)
                                         Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                              Global.dateOnly(
-                                                  item!.orderDate.toString()),
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        // Invoice number
-                                        Expanded(
-                                          flex: 3,
+                                          flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Container(
@@ -638,10 +677,10 @@ class _SellNewRetailPaphunReportScreenState
                                                     BorderRadius.circular(4),
                                               ),
                                               child: Text(
-                                                item.orderId ?? '',
+                                                item!.orderId ?? '',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w500,
-                                                  fontSize: 12,
+                                                  fontSize: 11,
                                                   color: Colors.blue[700],
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
@@ -650,35 +689,89 @@ class _SellNewRetailPaphunReportScreenState
                                             ),
                                           ),
                                         ),
-                                        // Weight
+                                        // 3. Date (วัน/เดือน/ปี)
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              Global.dateOnly(
+                                                  item.orderDate.toString()),
+                                              style:
+                                                  const TextStyle(fontSize: 11),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        // 4. Customer Name (ชื่อผู้ซื้อ)
+                                        Expanded(
+                                          flex: 3,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              item.status == "2"
+                                                  ? "ยกเลิกเอกสาร***"
+                                                  : getCustomerName(item.customer!, forReport: true),
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: item.status == "2" ? Colors.red : null,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        // 5. Debit - Cash/Bank (เดบิต: เงินสด/ธนาคาร)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format4(getWeight(item)),
-                                              style: const TextStyle(
+                                              item.status == "2"
+                                                  ? "0.00"
+                                                  : Global.format(item.priceIncludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                                color: Colors.orange,
+                                                fontSize: 11,
+                                                color: item.status == "2" ? Colors.red : Colors.orange,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Amount
+                                        // 6. Credit - Sell Gold (เครดิต: ขายทองรูปพรรณใหม่)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(
-                                                  item.priceIncludeTax ?? 0),
-                                              style: const TextStyle(
+                                              item.status == "2"
+                                                  ? "0.00"
+                                                  : Global.format(item.priceExcludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                                color: Colors.green,
+                                                fontSize: 11,
+                                                color: item.status == "2" ? Colors.red : Colors.green,
+                                              ),
+                                              textAlign: TextAlign.right,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        // 7. Credit - VAT (เครดิต: ภาษีขาย)
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              item.status == "2"
+                                                  ? "0.00"
+                                                  : Global.format(item.taxAmount ?? 0),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 11,
+                                                color: item.status == "2" ? Colors.red : Colors.teal,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -704,13 +797,15 @@ class _SellNewRetailPaphunReportScreenState
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
-                                      // Empty for row number
+                                      // 1. Empty for row number
                                       Container(
                                           width: 60,
                                           padding: const EdgeInsets.all(8)),
-                                      // Empty for date
+                                      // 2. Empty for Order ID
+                                      Expanded(flex: 2, child: Container()),
+                                      // 3. Empty for Date
                                       Expanded(flex: 1, child: Container()),
-                                      // Total label
+                                      // 4. Total label (Customer Name column)
                                       Expanded(
                                         flex: 3,
                                         child: Container(
@@ -727,13 +822,13 @@ class _SellNewRetailPaphunReportScreenState
                                           ),
                                         ),
                                       ),
-                                      // Weight total
+                                      // 5. Debit - Cash/Bank total
                                       Expanded(
                                         flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format4(totalWeight),
+                                            Global.format(totalCashBank),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
@@ -744,17 +839,34 @@ class _SellNewRetailPaphunReportScreenState
                                           ),
                                         ),
                                       ),
-                                      // Amount total
+                                      // 6. Credit - Sales Amount total
                                       Expanded(
                                         flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(totalAmount),
+                                            Global.format(totalSalesAmount),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
                                               color: Colors.green[700],
+                                            ),
+                                            textAlign: TextAlign.right,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+                                      // 7. Credit - VAT total
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            Global.format(totalVatAmount),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 12,
+                                              color: Colors.teal[700],
                                             ),
                                             textAlign: TextAlign.right,
                                             overflow: TextOverflow.ellipsis,

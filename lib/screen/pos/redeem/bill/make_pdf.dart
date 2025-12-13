@@ -2,13 +2,10 @@ import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:motivegold/model/invoice.dart';
-import 'package:motivegold/model/order.dart';
-import 'package:motivegold/utils/classes/number_to_thai_words.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
 import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/pdf/components.dart';
-import 'package:motivegold/widget/ui/line.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:flutter/services.dart' show rootBundle;

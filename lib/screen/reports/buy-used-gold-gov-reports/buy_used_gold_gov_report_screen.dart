@@ -20,6 +20,7 @@ import 'package:motivegold/api/api_services.dart';
 import 'package:motivegold/utils/alert.dart';
 import 'package:motivegold/utils/global.dart';
 import 'package:motivegold/utils/helps/common_function.dart';
+import 'package:motivegold/utils/util.dart';
 import 'package:motivegold/widget/dropdown/DropDownItemWidget.dart';
 import 'package:motivegold/widget/dropdown/DropDownObjectChildWidget.dart';
 import 'package:sizer/sizer.dart';
@@ -478,197 +479,108 @@ class _BuyUsedGoldGovReportScreenState
                 child: IntrinsicWidth(
                   child: Column(
                     children: [
-                      // Sticky Header
+                      // Sticky Header - Matching PDF structure for บัญชีสำหรับผู้ทำการค้าของเก่า
                       Container(
                         color: Colors.grey[50],
                         height: 56,
                         child: IntrinsicHeight(
                           child: Row(
                             children: [
-                              // Row number
+                              // 1. ลำดับ
                               Container(
-                                width: 60,
+                                width: 40,
                                 padding: const EdgeInsets.all(8),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.tag,
-                                        size: 14, color: Colors.grey[600]),
-                                    const SizedBox(width: 2),
-                                    const Flexible(
-                                      child: Text(
-                                        'ลำดับ',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 11),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
+                                child: const Text(
+                                  'ลำดับ',
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
-                              // Date
+                              // 2. เลขที่ลำดับตรงกับสิ่งของ (orderId)
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'เลขที่ลำดับ\nตรงกับสิ่งของ',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ),
+                              // 3. ประเภท
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'ประเภท',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 4. น้ำหนักหรือจำนวน
                               Expanded(
                                 flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.calendar_today,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'วัน/เดือน/ปี',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'น้ำหนัก\nหรือจำนวน',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                    textAlign: TextAlign.right,
+                                    maxLines: 2,
                                   ),
                                 ),
                               ),
-                              // Receipt ID
+                              // 5. หน่วย
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: const Text(
+                                    'หน่วย',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              // 6. รับซื้อของจาก
                               Expanded(
                                 flex: 3,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.receipt_rounded,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'เลขท่ีใบสําคัญรับเงิน',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'รับซื้อของจาก',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 10),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                              // Customer Name
+                              // 7. วัน/เดือน/ปี ที่รับซื้อ
                               Expanded(
-                                flex: 3,
+                                flex: 1,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.person,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'ผู้ซื้อ',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'วัน/เดือน/ปี\nที่รับซื้อ',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
                                   ),
                                 ),
                               ),
-                              // Tax Number
+                              // 8. ราคารับซื้อ (บาท)
                               Expanded(
                                 flex: 2,
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.badge,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'เลขประจําตัวผู้เสียภาษี',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Product
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.inventory_2_rounded,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'รายการสินค้า',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Weight
-                              Expanded(
-                                flex: 3,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.scale_rounded,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'น้ําหนัก (กรัม)\n(น.น.สินค้า/น.น.96.5)',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 9),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // Amount
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.monetization_on_rounded,
-                                          size: 14, color: Colors.grey[600]),
-                                      const SizedBox(width: 4),
-                                      const Flexible(
-                                        child: Text(
-                                          'จํานวนเงิน (บาท)',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 10),
-                                          overflow: TextOverflow.ellipsis,
-                                          textAlign: TextAlign.right,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Text(
+                                    'ราคารับซื้อ\n(บาท)',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 9),
+                                    textAlign: TextAlign.right,
+                                    maxLines: 2,
                                   ),
                                 ),
                               ),
@@ -676,7 +588,7 @@ class _BuyUsedGoldGovReportScreenState
                           ),
                         ),
                       ),
-                      // Data Rows
+                      // Data Rows - Matching PDF structure
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
@@ -685,6 +597,8 @@ class _BuyUsedGoldGovReportScreenState
                               ...filterList!.asMap().entries.map((entry) {
                                 int index = entry.key;
                                 OrderModel? item = entry.value;
+                                final isCancelled = item!.status == "2";
+                                final textColor = isCancelled ? Colors.red[900] : Colors.black;
 
                                 return Container(
                                   height: 64,
@@ -700,186 +614,133 @@ class _BuyUsedGoldGovReportScreenState
                                   child: IntrinsicHeight(
                                     child: Row(
                                       children: [
-                                        // Row number
+                                        // 1. ลำดับ
                                         Container(
-                                          width: 60,
+                                          width: 40,
                                           padding: const EdgeInsets.all(8),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 4, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.grey.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11,
+                                              color: textColor,
                                             ),
-                                            child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                                color: Colors.grey,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
-                                        // Date
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Text(
-                                              Global.dateOnly(
-                                                  item!.orderDate.toString()),
-                                              style:
-                                                  const TextStyle(fontSize: 11),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ),
-                                        // Receipt ID
-                                        Expanded(
-                                          flex: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                item.orderId ?? '',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 11,
-                                                  color: Colors.blue[700],
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        // Customer Name
-                                        Expanded(
-                                          flex: 3,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 20,
-                                                  height: 20,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.green
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4),
-                                                  ),
-                                                  child: Icon(Icons.person,
-                                                      size: 12,
-                                                      color: Colors.green[600]),
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Expanded(
-                                                  child: Text(
-                                                    '${item.customer?.firstName ?? ''} ${item.customer?.lastName ?? ''}',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 11),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        // Tax Number
+                                        // 2. เลขที่ลำดับตรงกับสิ่งของ (orderId)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.company != null
-                                                  ? Global.company!.taxNumber ??
-                                                      ''
-                                                  : '',
-                                              style:
-                                                  const TextStyle(fontSize: 10),
+                                              item.orderId ?? '',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: textColor,
+                                              ),
+                                              textAlign: TextAlign.center,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                             ),
                                           ),
                                         ),
-                                        // Product
+                                        // 3. ประเภท
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.amber
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
+                                            child: Text(
+                                              'ทองรูปพรรณ 96.5%',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: textColor,
                                               ),
-                                              child: Text(
-                                                'ทองเก่า',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.amber[700],
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Weight
+                                        // 4. น้ำหนักหรือจำนวน
                                         Expanded(
-                                          flex: 3,
+                                          flex: 1,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              '${Global.format(getWeight(item))}/${Global.format(getWeight(item))}',
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(getWeight(item)),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                fontSize: 11,
-                                                color: Colors.orange,
+                                                fontSize: 10,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         ),
-                                        // Amount
+                                        // 5. หน่วย
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              'กรัม',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: textColor,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        // 6. รับซื้อของจาก
+                                        Expanded(
+                                          flex: 3,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              isCancelled
+                                                  ? 'ยกเลิกเอกสาร***'
+                                                  : getCustomerName(item.customer!),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 10,
+                                                color: textColor,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
+                                            ),
+                                          ),
+                                        ),
+                                        // 7. วัน/เดือน/ปี ที่รับซื้อ
+                                        Expanded(
+                                          flex: 1,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Text(
+                                              Global.dateOnly(item.orderDate.toString()),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: textColor,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        // 8. ราคารับซื้อ (บาท)
                                         Expanded(
                                           flex: 2,
                                           child: Container(
                                             padding: const EdgeInsets.all(8),
                                             child: Text(
-                                              Global.format(
-                                                  item.priceIncludeTax ?? 0),
-                                              style: const TextStyle(
+                                              isCancelled ? '0.00' : Global.format(item.priceIncludeTax ?? 0),
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 11,
-                                                color: Colors.green,
+                                                color: textColor,
                                               ),
                                               textAlign: TextAlign.right,
                                               overflow: TextOverflow.ellipsis,
@@ -892,7 +753,7 @@ class _BuyUsedGoldGovReportScreenState
                                 );
                               }).toList(),
 
-                              // Summary row
+                              // Summary row - Matching PDF structure
                               Container(
                                 height: 64,
                                 decoration: BoxDecoration(
@@ -905,26 +766,20 @@ class _BuyUsedGoldGovReportScreenState
                                 child: IntrinsicHeight(
                                   child: Row(
                                     children: [
-                                      // Empty for row number
-                                      Container(
-                                          width: 60,
-                                          padding: const EdgeInsets.all(8)),
-                                      // Empty for date
-                                      Expanded(flex: 1, child: Container()),
-                                      // Empty for receipt ID
-                                      Expanded(flex: 3, child: Container()),
-                                      // Empty for customer name
-                                      Expanded(flex: 3, child: Container()),
-                                      // Total label
+                                      // 1. ลำดับ - empty
+                                      Container(width: 40, padding: const EdgeInsets.all(8)),
+                                      // 2. เลขที่ลำดับตรงกับสิ่งของ - empty
+                                      Expanded(flex: 2, child: Container()),
+                                      // 3. ประเภท - "รวมทั้งหมด" label
                                       Expanded(
                                         flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            'รวมท้ังหมด',
+                                            'รวมทั้งหมด',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 12,
+                                              fontSize: 11,
                                               color: Colors.indigo[700],
                                             ),
                                             textAlign: TextAlign.right,
@@ -932,36 +787,54 @@ class _BuyUsedGoldGovReportScreenState
                                           ),
                                         ),
                                       ),
-                                      // Empty for product
-                                      Expanded(flex: 2, child: Container()),
-                                      // Weight total
+                                      // 4. น้ำหนักหรือจำนวน total
                                       Expanded(
-                                        flex: 3,
+                                        flex: 1,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            '${Global.format(getWeightTotal(filterList!))}/${Global.format(getWeightTotal(filterList!))}',
+                                            Global.format(getWeightTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 12,
-                                              color: Colors.orange[700],
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
                                             ),
                                             textAlign: TextAlign.right,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ),
-                                      // Amount total
+                                      // 5. หน่วย
+                                      Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Text(
+                                            'กรัม',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 11,
+                                              color: Colors.indigo[700],
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+                                      // 6. รับซื้อของจาก - empty
+                                      Expanded(flex: 3, child: Container()),
+                                      // 7. วัน/เดือน/ปี ที่รับซื้อ - empty
+                                      Expanded(flex: 1, child: Container()),
+                                      // 8. ราคารับซื้อ (บาท) total
                                       Expanded(
                                         flex: 2,
                                         child: Container(
                                           padding: const EdgeInsets.all(8),
                                           child: Text(
-                                            Global.format(priceIncludeTaxTotal(
-                                                filterList!)),
+                                            Global.format(priceIncludeTaxTotal(filterList!)),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              fontSize: 12,
+                                              fontSize: 11,
                                               color: Colors.green[700],
                                             ),
                                             textAlign: TextAlign.right,

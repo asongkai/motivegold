@@ -137,7 +137,7 @@ class Constants {
     if (env == ENV.PRO) {
       return "http://203.154.2.96:5000";
     } else if (env == ENV.UAT) {
-      return "http://72.60.40.189:5000";
+      return "https://srv1104428.hstgr.cloud"; // HTTPS via nginx reverse proxy
     } else {
       // Check if running on web
       if (kIsWeb) {
