@@ -645,19 +645,45 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           motivePrint("CARD READER WARNING: Amphure is empty");
         }
 
-        // Search and load tambon
+        // Search and load tambon - use amphureId to avoid duplicate names
         if (tambon != null && tambon.isNotEmpty) {
-          motivePrint(
-              "CARD READER: Searching tambon via API: /location/tambon/search/$tambon");
-          var result = await ApiServices.get('/location/tambon/search/$tambon');
-          motivePrint(
-              "CARD READER: Tambon API result status: ${result?.status}");
-          if (result?.status == "success") {
-            Global.tambonModel = TambonModel.fromJson(result?.data);
+          int? amphureId = Global.amphureModel?.id;
+          if (amphureId != null && amphureId > 0) {
             motivePrint(
-                "CARD READER: Tambon loaded: ${Global.tambonModel?.nameTh} (ID: ${Global.tambonModel?.id})");
+                "CARD READER: Searching tambon via API: /location/tambon/search/$amphureId/$tambon");
+            var result = await ApiServices.get('/location/tambon/search/$amphureId/$tambon');
+            motivePrint(
+                "CARD READER: Tambon API result status: ${result?.status}");
+            if (result?.status == "success") {
+              Global.tambonModel = TambonModel.fromJson(result?.data);
+              motivePrint(
+                  "CARD READER: Tambon loaded: ${Global.tambonModel?.nameTh} (ID: ${Global.tambonModel?.id})");
+            } else {
+              motivePrint("CARD READER WARNING: Tambon not found with amphureId, trying fallback");
+              // Fallback to old search without amphureId
+              var fallbackResult = await ApiServices.get('/location/tambon/search/$tambon');
+              if (fallbackResult?.status == "success") {
+                Global.tambonModel = TambonModel.fromJson(fallbackResult?.data);
+                motivePrint(
+                    "CARD READER: Tambon loaded (fallback): ${Global.tambonModel?.nameTh} (ID: ${Global.tambonModel?.id})");
+              } else {
+                motivePrint("CARD READER WARNING: Tambon not found in database");
+              }
+            }
           } else {
-            motivePrint("CARD READER WARNING: Tambon not found in database");
+            // Fallback to old search if amphure not found
+            motivePrint(
+                "CARD READER: Searching tambon via API (no amphure): /location/tambon/search/$tambon");
+            var result = await ApiServices.get('/location/tambon/search/$tambon');
+            motivePrint(
+                "CARD READER: Tambon API result status: ${result?.status}");
+            if (result?.status == "success") {
+              Global.tambonModel = TambonModel.fromJson(result?.data);
+              motivePrint(
+                  "CARD READER: Tambon loaded: ${Global.tambonModel?.nameTh} (ID: ${Global.tambonModel?.id})");
+            } else {
+              motivePrint("CARD READER WARNING: Tambon not found in database");
+            }
           }
         } else {
           motivePrint("CARD READER WARNING: Tambon is empty");

@@ -456,9 +456,19 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen>
         if (result?.status == "success") {
           Global.amphureModel = AmphureModel.fromJson(result?.data);
         }
-        var result2 = await ApiServices.get('/location/tambon/search/${ocrResult?["sub_district"]}');
-        if (result2?.status == "success") {
-          Global.tambonModel = TambonModel.fromJson(result2?.data);
+        // Use amphureId in tambon search to avoid duplicate names across amphures
+        int? amphureId = Global.amphureModel?.id;
+        if (amphureId != null && amphureId > 0) {
+          var result2 = await ApiServices.get('/location/tambon/search/$amphureId/${ocrResult?["sub_district"]}');
+          if (result2?.status == "success") {
+            Global.tambonModel = TambonModel.fromJson(result2?.data);
+          }
+        } else {
+          // Fallback to old search if amphure not found
+          var result2 = await ApiServices.get('/location/tambon/search/${ocrResult?["sub_district"]}');
+          if (result2?.status == "success") {
+            Global.tambonModel = TambonModel.fromJson(result2?.data);
+          }
         }
         var provinces = Global.provinceList
             .where((e) => e.id == Global.amphureModel?.provinceId);

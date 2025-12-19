@@ -127,7 +127,7 @@ class Constants {
 
   static getBackendUrl() {
     if (env == ENV.PRO) {
-      return "https://app.quickgoldthai.com"; // Production HTTPS
+      return "https://app.quickgoldthai.com"; // Production via domain
     } else if (env == ENV.UAT) {
       return "https://srv1104428.hstgr.cloud"; // HTTPS via nginx reverse proxy
     } else {

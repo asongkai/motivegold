@@ -270,11 +270,23 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
               'DATA Card success ampohoe /location/amphure/search/$ampher ${result?.data}');
           Global.amphureModel = AmphureModel.fromJson(result?.data);
         }
-        var result2 = await ApiServices.get('/location/tambon/search/$tambon');
-        if (result2?.status == "success") {
-          print(
-              'DATA Card success tambon /location/amphure/search/$tambon ${result2?.data}');
-          Global.tambonModel = TambonModel.fromJson(result2?.data);
+        // Use amphureId in tambon search to avoid duplicate names across amphures
+        int? amphureId = Global.amphureModel?.id;
+        if (amphureId != null && amphureId > 0) {
+          var result2 = await ApiServices.get('/location/tambon/search/$amphureId/$tambon');
+          if (result2?.status == "success") {
+            print(
+                'DATA Card success tambon /location/tambon/search/$amphureId/$tambon ${result2?.data}');
+            Global.tambonModel = TambonModel.fromJson(result2?.data);
+          }
+        } else {
+          // Fallback to old search if amphure not found
+          var result2 = await ApiServices.get('/location/tambon/search/$tambon');
+          if (result2?.status == "success") {
+            print(
+                'DATA Card success tambon /location/tambon/search/$tambon ${result2?.data}');
+            Global.tambonModel = TambonModel.fromJson(result2?.data);
+          }
         }
         var provinces = Global.provinceList
             .where((e) => e.id == Global.amphureModel?.provinceId);

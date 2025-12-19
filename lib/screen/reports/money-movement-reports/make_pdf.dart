@@ -512,9 +512,9 @@ Future<Uint8List> makeMoneyMovementReportPdf(
                                   : PdfColors.black),
                   align: TextAlign.right),
               paddedTextSmall(
-                  discountTotal(orders) == 0
+                  getDiscountAddValueForPairTotal(orders) == 0
                       ? ""
-                      : '(${Global.format(discountTotal(orders).abs())})',
+                      : '(${Global.format(getDiscountAddValueForPairTotal(orders).abs())})',
                   style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
@@ -1105,6 +1105,17 @@ double payToCustomerOrShopValue(List<OrderModel> orders, OrderModel order) {
     return -(order.priceIncludeTax ?? 0);
   }
   return order.priceIncludeTax ?? 0;
+}
+
+// Sum of all discount/add values displayed in each row
+double getDiscountAddValueForPairTotal(List<OrderModel> orders) {
+  double total = 0;
+  for (var order in orders) {
+    if (order.status != "2") {
+      total += getDiscountAddValueForPair(orders, order);
+    }
+  }
+  return total;
 }
 
 // Get discount/add value for paired transactions - only from the display order

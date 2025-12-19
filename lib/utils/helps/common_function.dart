@@ -182,6 +182,9 @@ double discountTotal(List<dynamic> orders) {
   Set<int> processedPairs = {};
 
   for (int i = 0; i < orders.length; i++) {
+    // Skip cancelled orders
+    if (orders[i].status == "2") continue;
+
     // For paired transactions, only count once per pair
     if (orders[i].pairId != null && orders[i].pairId != 0) {
       if (processedPairs.contains(orders[i].pairId)) {
@@ -189,22 +192,34 @@ double discountTotal(List<dynamic> orders) {
       }
       processedPairs.add(orders[i].pairId);
 
-      // For paired transactions, find the sell order (orderTypeId == 1) and use its discount/addPrice
-      // The discount/addPrice is applied to the transaction, not individual orders
-      if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
-        amount += addDisValue(orders[i]!.discount ?? 0, orders[i]!.addPrice ?? 0);
-      } else {
-        // Current order is buy, find the paired sell order
-        var sellOrder = orders.firstWhere(
-          (e) => e.pairId == orders[i].pairId && (e.orderTypeId == 1 || e.orderTypeId == 4),
-          orElse: () => null
-        );
-        if (sellOrder != null) {
-          amount += addDisValue(sellOrder.discount ?? 0, sellOrder.addPrice ?? 0);
+      // Find all orders with the same pairId in this list
+      var pairedOrders = orders.where((e) => e.pairId == orders[i].pairId && e.orderId != orders[i].orderId).toList();
+
+      if (pairedOrders.isNotEmpty) {
+        // Multiple orders with same pairId exist in list
+        // Find the order with the highest priceIncludeTax and use its discount
+        pairedOrders.add(orders[i]); // Include current order
+
+        dynamic higherOrder;
+        double maxPrice = 0;
+        for (var o in pairedOrders) {
+          double price = o.priceIncludeTax ?? 0;
+          if (price > maxPrice) {
+            maxPrice = price;
+            higherOrder = o;
+          }
         }
+
+        if (higherOrder != null) {
+          amount += addDisValue(higherOrder.discount ?? 0, higherOrder.addPrice ?? 0);
+        }
+      } else {
+        // Only one order with this pairId in list (paired order may be on different day)
+        // Use this order's discount value directly
+        amount += addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0);
       }
     } else {
-      // Non-paired orders
+      // Non-paired orders - only count sell orders (orderTypeId 1 or 4)
       if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
         amount += addDisValue(orders[i]!.discount ?? 0, orders[i]!.addPrice ?? 0);
       }
