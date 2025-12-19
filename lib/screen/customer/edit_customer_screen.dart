@@ -133,6 +133,9 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
   CustomerModel? selectedCustomer;
   String? nationality;
 
+  // OCR source tracking: 'manual', 'ocr_api', 'ocr_card_reader'
+  String? _idCardSource;
+
   List<TitleNameModel> titleNames = [];
   TitleNameModel? selectedTitleName;
   ValueNotifier<dynamic>? titleNameNotifier;
@@ -268,6 +271,10 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
           '${idCard.substring(0, 1)}-${idCard.substring(1, 5)}-${idCard.substring(5, 10)}-${idCard.substring(10, 12)}-${idCard.substring(12, 13)}';
     }
     idCardCtrl.text = idCard;
+
+    // Load OCR source - if set, ID card field will be read-only
+    _idCardSource = widget.c.idCardSource;
+
     companyNameCtrl.text = widget.c.companyName ?? '';
     firstNameCtrl.text = widget.c.firstName ?? '';
     middleNameCtrl.text = widget.c.middleName ?? '';
@@ -1095,6 +1102,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
     Widget? prefixIcon,
     int maxLines = 1,
     List<TextInputFormatter>? inputFormatters,
+    bool readOnly = false,
+    FocusNode? focusNode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1124,14 +1133,19 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
             keyboardType: inputType,
             maxLines: maxLines,
             inputFormatters: inputFormatters,
-            style: TextStyle(fontSize: 14.sp),
+            readOnly: readOnly,
+            focusNode: focusNode,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: readOnly ? Colors.grey[600] : null,
+            ),
             decoration: InputDecoration(
               hintText: hintText ?? labelText,
               prefixIcon: prefixIcon,
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: readOnly ? Colors.grey[100] : Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -1199,6 +1213,26 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
         ),
       ),
     );
+  }
+
+  /// Safely parse date string, returns ISO format string for API
+  String? _tryParseDate(String dateStr) {
+    if (dateStr.isEmpty) return null;
+    try {
+      // Try standard ISO format first (yyyy-MM-dd or yyyy-MM-dd HH:mm:ss)
+      DateTime parsed = DateTime.parse(dateStr);
+      return parsed.toIso8601String();
+    } catch (e) {
+      // Try Thai display format (dd/MM/yyyy)
+      try {
+        DateFormat thaiFormat = DateFormat('dd/MM/yyyy');
+        DateTime parsed = thaiFormat.parse(dateStr);
+        return parsed.toIso8601String();
+      } catch (e2) {
+        motivePrint("WARNING: Invalid date format: '$dateStr' (tried ISO and dd/MM/yyyy)");
+        return null;
+      }
+    }
   }
 
   Widget _buildDateField({
@@ -1828,6 +1862,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
                                     prefixIcon:
                                         Icon(Icons.credit_card, size: 14.sp),
                                     inputFormatters: [ThaiIdCardFormatter()],
+                                    readOnly: _idCardSource != null && _idCardSource!.isNotEmpty,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -4207,7 +4242,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
           companyOfficeType, // 'head' or 'branch' maps to HeadquartersOrBranch
       "registrationDate": registrationDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(registrationDateCtrl.text).toString(),
+          : _tryParseDate(registrationDateCtrl.text),
       "businessType": selectedType?.code == "company"
           ? selectedBusinessTypeOccupation?.name
           : null,
@@ -4221,8 +4256,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       // Contact info
       "email": emailAddressCtrl.text,
       "doB": birthDateCtrl.text.isEmpty
-          ? ""
-          : DateTime.parse(birthDateCtrl.text).toString(),
+          ? null
+          : _tryParseDate(birthDateCtrl.text),
       "phoneNumber": phoneCtrl.text,
       "username": generateRandomString(8),
       "password": generateRandomString(10),
@@ -4253,18 +4288,18 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
           : "",
       "idCardIssueDate": issueDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(issueDateCtrl.text).toString(),
+          : _tryParseDate(issueDateCtrl.text),
       "idCardExpiryDate": expiryDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(expiryDateCtrl.text).toString(),
+          : _tryParseDate(expiryDateCtrl.text),
 
       // Foreign national fields
       "entryDate": entryDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(entryDateCtrl.text).toString(),
+          : _tryParseDate(entryDateCtrl.text),
       "exitDate": exitDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(exitDateCtrl.text).toString(),
+          : _tryParseDate(exitDateCtrl.text),
       "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
       "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
 
@@ -4295,6 +4330,9 @@ class _EditCustomerScreenState extends State<EditCustomerScreen>
       // Other
       "photoUrl": '',
       "remark": remarkCtrl.text,
+
+      // OCR source tracking - preserve existing value
+      "idCardSource": _idCardSource,
     });
 
     final ProgressDialog pr = ProgressDialog(context,

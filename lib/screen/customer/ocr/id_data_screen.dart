@@ -476,6 +476,9 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen>
         Global.tambonNotifier = ValueNotifier<TambonModel>(
             Global.tambonModel ?? TambonModel(id: 0, nameTh: 'เลือกตำบล'));
 
+        // Auto-check for duplicate ID card after OCR
+        await _checkDuplicateIdCard(ocrResult?["id_number"]);
+
         setState(() {
           isLoading = false;
         });
@@ -494,6 +497,37 @@ class IDCardOCRScreenState extends State<IDCardOCRScreen>
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  // Check for duplicate ID card after OCR
+  Future<void> _checkDuplicateIdCard(String? idNumber) async {
+    if (idNumber == null || idNumber.isEmpty) return;
+
+    String idCard = idNumber.replaceAll('-', '');
+    if (idCard.length != 13) return; // Only check complete ID cards
+
+    try {
+      var result = await ApiServices.post('/customer/check-id-card',
+          Global.requestObj({"idCard": idCard}));
+
+      if (result?.status == "success" && result?.data != null) {
+        // Duplicate found - show warning
+        if (mounted) {
+          var data = result!.data;
+          String firstName = data['firstName'] ?? '';
+          String lastName = data['lastName'] ?? '';
+          Alert.warning(
+            context,
+            'เลขบัตรประชาชนซ้ำ',
+            'พบข้อมูลลูกค้าที่มีเลขบัตรประชาชนนี้อยู่แล้ว:\n$firstName $lastName',
+            'ตกลง',
+            action: () {},
+          );
+        }
+      }
+    } catch (e) {
+      print("Error checking duplicate ID card: $e");
     }
   }
 

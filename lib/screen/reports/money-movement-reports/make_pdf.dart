@@ -54,23 +54,23 @@ Future<Uint8List> makeMoneyMovementReportPdf(
           verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
         ),
         columnWidths: {
-          0: FixedColumnWidth(30),
-          1: FixedColumnWidth(60),
-          2: FixedColumnWidth(60),
-          3: FixedColumnWidth(45),
-          4: FixedColumnWidth(50),
-          5: FixedColumnWidth(50),
-          6: FixedColumnWidth(50),
-          7: FixedColumnWidth(60),
-          8: FixedColumnWidth(60),
-          9: FixedColumnWidth(50),
-          10: FixedColumnWidth(50),
-          11: FixedColumnWidth(50),
-          12: FixedColumnWidth(50),
-          13: FixedColumnWidth(50),
-          14: FixedColumnWidth(50),
-          15: FixedColumnWidth(50),
-          16: FixedColumnWidth(50),
+          0: FixedColumnWidth(25),   // ลำดับ
+          1: FixedColumnWidth(58),   // เลขที่ใบกํากับภาษี
+          2: FixedColumnWidth(55),   // ชื่อลูกค้า
+          3: FixedColumnWidth(42),   // วันที่
+          4: FixedColumnWidth(45),   // นน.ทองรูปพรรณ 96.5% ขายออก
+          5: FixedColumnWidth(45),   // นน.ทองรูปพรรณเก่า 96.5% รับซื้อ
+          6: FixedColumnWidth(55),   // จำนวนเงินสุทธิ
+          7: FixedColumnWidth(58),   // เลขที่อ้างอิง
+          8: FixedColumnWidth(55),   // ร้านทองรับเงิน/จ่ายเงิน
+          9: FixedColumnWidth(60),   // ยอดรับเงิน
+          10: FixedColumnWidth(60),  // ยอดจ่ายเงิน
+          11: FixedColumnWidth(55),  // ร้านทองรับ(จ่าย)เงินสุทธิ
+          12: FixedColumnWidth(45),  // ร้านทองเพิ่ม/ลดให้
+          13: FixedColumnWidth(55),  // เงินสดรับ(จ่าย)
+          14: FixedColumnWidth(55),  // เงินโอน/ฝากธนาคาร
+          15: FixedColumnWidth(50),  // บัตรเครดิต
+          16: FixedColumnWidth(50),  // อื่นๆ
         },
         children: [
           TableRow(
@@ -203,23 +203,23 @@ Future<Uint8List> makeMoneyMovementReportPdf(
         verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
       ),
       columnWidths: {
-        0: FixedColumnWidth(30),
-        1: FixedColumnWidth(60),
-        2: FixedColumnWidth(60),
-        3: FixedColumnWidth(45),
-        4: FixedColumnWidth(50),
-        5: FixedColumnWidth(50),
-        6: FixedColumnWidth(50),
-        7: FixedColumnWidth(60),
-        8: FixedColumnWidth(60),
-        9: FixedColumnWidth(50),
-        10: FixedColumnWidth(50),
-        11: FixedColumnWidth(50),
-        12: FixedColumnWidth(50),
-        13: FixedColumnWidth(50),
-        14: FixedColumnWidth(50),
-        15: FixedColumnWidth(50),
-        16: FixedColumnWidth(50),
+        0: FixedColumnWidth(25),   // ลำดับ
+        1: FixedColumnWidth(58),   // เลขที่ใบกํากับภาษี
+        2: FixedColumnWidth(55),   // ชื่อลูกค้า
+        3: FixedColumnWidth(42),   // วันที่
+        4: FixedColumnWidth(45),   // นน.ทองรูปพรรณ 96.5% ขายออก
+        5: FixedColumnWidth(45),   // นน.ทองรูปพรรณเก่า 96.5% รับซื้อ
+        6: FixedColumnWidth(55),   // จำนวนเงินสุทธิ
+        7: FixedColumnWidth(58),   // เลขที่อ้างอิง
+        8: FixedColumnWidth(55),   // ร้านทองรับเงิน/จ่ายเงิน
+        9: FixedColumnWidth(60),   // ยอดรับเงิน
+        10: FixedColumnWidth(60),  // ยอดจ่ายเงิน
+        11: FixedColumnWidth(55),  // ร้านทองรับ(จ่าย)เงินสุทธิ
+        12: FixedColumnWidth(45),  // ร้านทองเพิ่ม/ลดให้
+        13: FixedColumnWidth(55),  // เงินสดรับ(จ่าย)
+        14: FixedColumnWidth(55),  // เงินโอน/ฝากธนาคาร
+        15: FixedColumnWidth(50),  // บัตรเครดิต
+        16: FixedColumnWidth(50),  // อื่นๆ
       },
       children: [
         // Data rows with color coding
@@ -666,14 +666,52 @@ double getCashPayment(List<OrderModel> orders, OrderModel order) {
 
 double getCashPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 1) {
-        total += orders[i].cashPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellCash = 0;
+      double buyCash = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 1) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellCash += o.cashPayment ?? 0;
+        } else if (o.orderTypeId == 2) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyCash += o.cashPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's cash payment
+        total += sellCash;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's cash payment
+        total -= buyCash;
+      }
+      // If equal, no cash exchange
     } else {
-      if (orders[i].orderTypeId == 2) {
-        total -= orders[i].cashPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 1) {
+        total += order.cashPayment ?? 0;
+      } else if (order.orderTypeId == 2) {
+        total -= order.cashPayment ?? 0;
       }
     }
   }
@@ -739,14 +777,52 @@ double getTransferPayment(List<OrderModel> orders, OrderModel order) {
 
 double getTransferPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 1) {
-        total += (orders[i].transferPayment ?? 0) + (orders[i].depositPayment ?? 0);
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellTransfer = 0;
+      double buyTransfer = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 1) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellTransfer += (o.transferPayment ?? 0) + (o.depositPayment ?? 0);
+        } else if (o.orderTypeId == 2) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyTransfer += (o.transferPayment ?? 0) + (o.depositPayment ?? 0);
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's transfer payment
+        total += sellTransfer;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's transfer payment
+        total -= buyTransfer;
+      }
+      // If equal, no transfer exchange
     } else {
-      if (orders[i].orderTypeId == 2) {
-        total -= (orders[i].transferPayment ?? 0) + (orders[i].depositPayment ?? 0);
+      // Non-paired orders
+      if (order.orderTypeId == 1) {
+        total += (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else if (order.orderTypeId == 2) {
+        total -= (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
       }
     }
   }
@@ -812,14 +888,52 @@ double getCreditPayment(List<OrderModel> orders, OrderModel order) {
 
 double getCreditPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 1) {
-        total += orders[i].creditPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellCredit = 0;
+      double buyCredit = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 1) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellCredit += o.creditPayment ?? 0;
+        } else if (o.orderTypeId == 2) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyCredit += o.creditPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's credit payment
+        total += sellCredit;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's credit payment
+        total -= buyCredit;
+      }
+      // If equal, no credit exchange
     } else {
-      if (orders[i].orderTypeId == 2) {
-        total -= orders[i].creditPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 1) {
+        total += order.creditPayment ?? 0;
+      } else if (order.orderTypeId == 2) {
+        total -= order.creditPayment ?? 0;
       }
     }
   }
@@ -885,14 +999,52 @@ double getOtherPayment(List<OrderModel> orders, OrderModel order) {
 
 double getOtherPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 1) {
-        total += orders[i].otherPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellOther = 0;
+      double buyOther = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 1) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellOther += o.otherPayment ?? 0;
+        } else if (o.orderTypeId == 2) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyOther += o.otherPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's other payment
+        total += sellOther;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's other payment
+        total -= buyOther;
+      }
+      // If equal, no other exchange
     } else {
-      if (orders[i].orderTypeId == 2) {
-        total -= orders[i].otherPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 1) {
+        total += order.otherPayment ?? 0;
+      } else if (order.orderTypeId == 2) {
+        total -= order.otherPayment ?? 0;
       }
     }
   }
@@ -955,7 +1107,7 @@ double payToCustomerOrShopValue(List<OrderModel> orders, OrderModel order) {
   return order.priceIncludeTax ?? 0;
 }
 
-// Get discount/add value for paired transactions - sum both orders' values
+// Get discount/add value for paired transactions - only from the display order
 double getDiscountAddValueForPair(List<OrderModel> orders, OrderModel order) {
   var orders0 = orders
       .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
@@ -980,13 +1132,9 @@ double getDiscountAddValueForPair(List<OrderModel> orders, OrderModel order) {
       return 0;
     }
 
-    // Sum discount/add values from both orders
-    double totalDiscountAdd = 0;
-    for (var o in orders0) {
-      totalDiscountAdd += addDisValue(o.discount ?? 0, o.addPrice ?? 0);
-    }
-
-    return totalDiscountAdd;
+    // For paired transactions, return only the discount/add value from the higher order
+    // The discount/addPrice is applied once to the transaction, not to each order separately
+    return addDisValue(higherOrder?.discount ?? 0, higherOrder?.addPrice ?? 0);
   }
 
   // For non-paired transactions, return the single order's discount/add value

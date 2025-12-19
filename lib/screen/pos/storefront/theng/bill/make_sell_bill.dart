@@ -410,14 +410,14 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                             child: Text(
                                 'ค่าบริการ ค่าสินค้าที่มีภาษีมูลค่าเพิ่ม :',
                                 style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.normal))),
                       ],
                     ),
                     SizedBox(height: 18),
                     Text(
                         '(${NumberToThaiWords.convertDouble(invoice.order.priceIncludeTax ?? 0)})',
-                        style: TextStyle(fontSize: 12))
+                        style: TextStyle(fontSize: 10))
                   ]),
                 ),
 
@@ -439,14 +439,14 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                             child: Text(
                                 'รวมค่าบริการ/ค่าสินค้าก่อนภาษีมูลค่าเพิ่ม :',
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 12)),
+                                style: const TextStyle(fontSize: 10)),
                           ),
                           SizedBox(width: 30),
                           Expanded(
                             flex: 3,
                             child: Text(
                               '${Global.format(getCommissionNoVat(invoice.order) + getPackageNoVat(invoice.order))}',
-                              style: const TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 10),
                               textAlign: TextAlign.right,
                             ),
                           )
@@ -462,14 +462,14 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                             flex: 8,
                             child: Text('ภาษีมูลค่าเพิ่ม 7% :',
                                 textAlign: TextAlign.right,
-                                style: const TextStyle(fontSize: 12)),
+                                style: const TextStyle(fontSize: 10)),
                           ),
                           SizedBox(width: 30),
                           Expanded(
                             flex: 3,
                             child: Text(
                               '${Global.format(getVat(invoice.order))}',
-                              style: const TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 10),
                               textAlign: TextAlign.right,
                             ),
                           )
@@ -487,7 +487,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                                 'รวมสุทธิทองคำแท่ง และค่าบริการ/ค่าสินค้า (รวมภาษีมูลค่าเพิ่ม) :',
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.bold)),
+                                    fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
                           SizedBox(width: 30),
                           Expanded(
@@ -495,7 +495,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                               child: Text(
                                 '${Global.format(getTotalPayment(invoice.order))}',
                                 style: TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.bold),
+                                    fontSize: 10, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.right,
                               )),
                         ],
@@ -536,7 +536,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                           child: Text('ร้านทองเพิ่ม(ลด)ให้ :',
                               textAlign: TextAlign.right,
                               style: const TextStyle(
-                                  fontSize: 11, color: PdfColors.blue700)),
+                                  fontSize: 10, color: PdfColors.blue700)),
                         ),
                         Expanded(
                           flex: 2,
@@ -544,7 +544,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                               '${addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) == 0 ? "0.00" : (addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) < 0 ? "(${Global.format(-addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))})" : Global.format(addDisValue(invoice.order.discount ?? 0, invoice.order.addPrice ?? 0)))} บาท',
                               textAlign: TextAlign.right,
                               style: TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 10,
                                   color: addDisValue(
                                               invoice.order.discount ?? 0,
                                               invoice.order.addPrice ?? 0) <
@@ -562,7 +562,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                             '${Global.getRefillPayTittle(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} :',
                             textAlign: TextAlign.right,
                             style: const TextStyle(
-                                fontSize: 11, color: PdfColors.blue700),
+                                fontSize: 10, color: PdfColors.blue700),
                           ),
                         ),
                         Expanded(
@@ -571,7 +571,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                               '${Global.format(Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) >= 0 ? Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0) : -Global.payToCustomerOrShopValueWholeSale(invoice.orders, invoice.order.discount ?? 0, invoice.order.addPrice ?? 0))} บาท',
                               textAlign: TextAlign.right,
                               style: const TextStyle(
-                                  fontSize: 11, color: PdfColors.blue700)),
+                                  fontSize: 10, color: PdfColors.blue700)),
                         ),
                       ],
                     ),
@@ -587,7 +587,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                                     "${getPaymentType(invoice.payments![i].paymentMethod)} :",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
-                                        fontSize: 11,
+                                        fontSize: 10,
                                         color: PdfColors.blue700))),
                             Expanded(
                                 flex: 2,
@@ -597,7 +597,7 @@ Future<Uint8List> makeSellThengBill(Invoice invoice, {int option = 1}) async {
                                         : "${(invoice.payments![i].amount ?? 0) == 0 ? "0.00" : Global.format(invoice.payments![i].amount ?? 0)} บาท",
                                     textAlign: TextAlign.right,
                                     style: const TextStyle(
-                                        fontSize: 11,
+                                        fontSize: 10,
                                         color: PdfColors.blue700)))
                           ])))
                       ],
@@ -727,20 +727,20 @@ Widget sn(List<OrderModel>? orders) {
           Expanded(
             flex: 5,
             child: Text('ขายทองคำแท่ง : ${orders[i].orderId}',
-                style: const TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 10)),
           ),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 10))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 10))),
         ],
       );
     }
@@ -756,20 +756,20 @@ Widget bu(List<OrderModel>? orders) {
           Expanded(
             flex: 5,
             child: Text('รับซื้อทองแท่ง : ${orders[i].orderId}',
-                style: const TextStyle(fontSize: 11)),
+                style: const TextStyle(fontSize: 10)),
           ),
           Expanded(
               flex: 3,
               child: Text(
                   'วันที่ :     ${Global.formatDateNT(orders[i].orderDate.toString())}',
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 10))),
           Expanded(
               flex: 3,
               child: Text(
                   "มูลค่า :     ${Global.format(orders[i].priceIncludeTax ?? 0)} บาท",
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 11))),
+                  style: const TextStyle(fontSize: 10))),
         ],
       );
     }

@@ -1113,11 +1113,11 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
       DateTime monthDate =
           DateTime.parse(fromDateCtrl.text).add(Duration(days: i));
 
-      // Get all orders for this specific date
+      // Get all orders for this specific date (use orderDate, not createdDate)
       var dateList = filterList
           ?.where((element) =>
               element != null &&
-              Global.dateOnly(element.createdDate.toString()) ==
+              Global.dateOnly(element.orderDate.toString()) ==
                   Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
@@ -1128,6 +1128,35 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
             ? dateList.first.orderId
             : '${dateList.first.orderId} - ${dateList.last.orderId}';
 
+        // Calculate values using the same logic as PDF display
+        // taxBase = sum of abs(priceDiff) only when priceDiff < 0 (negative diff)
+        // priceDiff = sum of priceDiff only when priceDiff >= 0 (positive diff)
+        // taxAmount = sum of (priceDiff * vatValue) only when priceDiff >= 0
+        // priceExcludeTax = sum of (priceIncludeTax - calculated VAT for each order)
+        double negativePriceDiffSum = 0;
+        double positivePriceDiffSum = 0;
+        double vatSum = 0;
+        double priceExcludeTaxSum = 0;
+
+        for (var order in dateList) {
+          if (order.status != "2") {
+            // Skip cancelled orders
+            double priceDiff = order.priceDiff ?? 0;
+            double priceIncludeTax = order.priceIncludeTax ?? 0;
+
+            if (priceDiff < 0) {
+              negativePriceDiffSum += priceDiff.abs();
+            } else {
+              positivePriceDiffSum += priceDiff;
+              vatSum += priceDiff * getVatValue();
+            }
+
+            // priceExcludeTax = priceIncludeTax - VAT (VAT is 0 if priceDiff < 0)
+            double orderVat = priceDiff < 0 ? 0 : priceDiff * getVatValue();
+            priceExcludeTaxSum += priceIncludeTax - orderVat;
+          }
+        }
+
         var order = OrderModel(
             orderId: combinedOrderId, // Combined all order IDs
             orderDate: dateList.first.orderDate,
@@ -1136,10 +1165,10 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
             weight: getWeightTotal(dateList),
             priceIncludeTax: priceIncludeTaxTotal(dateList),
             purchasePrice: purchasePriceTotal(dateList),
-            priceDiff: priceDiffTotal(dateList),
-            taxBase: taxBaseTotal(dateList),
-            taxAmount: taxAmountTotal(dateList),
-            priceExcludeTax: priceExcludeTaxTotal(dateList));
+            priceDiff: positivePriceDiffSum, // Only positive priceDiff
+            taxBase: negativePriceDiffSum, // Absolute value of negative priceDiff
+            taxAmount: vatSum, // VAT calculated from positive priceDiff only
+            priceExcludeTax: priceExcludeTaxSum);
 
         orderList.add(order);
       } else {
@@ -1192,6 +1221,35 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
             ? monthList.first.orderId
             : '${monthList.first.orderId} - ${monthList.last.orderId}';
 
+        // Calculate values using the same logic as PDF display
+        // taxBase = sum of abs(priceDiff) only when priceDiff < 0 (negative diff)
+        // priceDiff = sum of priceDiff only when priceDiff >= 0 (positive diff)
+        // taxAmount = sum of (priceDiff * vatValue) only when priceDiff >= 0
+        // priceExcludeTax = sum of (priceIncludeTax - calculated VAT for each order)
+        double negativePriceDiffSum = 0;
+        double positivePriceDiffSum = 0;
+        double vatSum = 0;
+        double priceExcludeTaxSum = 0;
+
+        for (var order in monthList) {
+          if (order.status != "2") {
+            // Skip cancelled orders
+            double priceDiff = order.priceDiff ?? 0;
+            double priceIncludeTax = order.priceIncludeTax ?? 0;
+
+            if (priceDiff < 0) {
+              negativePriceDiffSum += priceDiff.abs();
+            } else {
+              positivePriceDiffSum += priceDiff;
+              vatSum += priceDiff * getVatValue();
+            }
+
+            // priceExcludeTax = priceIncludeTax - VAT (VAT is 0 if priceDiff < 0)
+            double orderVat = priceDiff < 0 ? 0 : priceDiff * getVatValue();
+            priceExcludeTaxSum += priceIncludeTax - orderVat;
+          }
+        }
+
         var order = OrderModel(
             orderId: combinedOrderId,
             orderDate: monthList.first.orderDate,
@@ -1200,10 +1258,10 @@ class _SellUsedGoldReportScreenState extends State<SellUsedGoldReportScreen> {
             weight: getWeightTotal(monthList),
             priceIncludeTax: priceIncludeTaxTotal(monthList),
             purchasePrice: purchasePriceTotal(monthList),
-            priceDiff: priceDiffTotal(monthList),
-            taxBase: taxBaseTotal(monthList),
-            taxAmount: taxAmountTotal(monthList),
-            priceExcludeTax: priceExcludeTaxTotal(monthList));
+            priceDiff: positivePriceDiffSum, // Only positive priceDiff
+            taxBase: negativePriceDiffSum, // Absolute value of negative priceDiff
+            taxAmount: vatSum, // VAT calculated from positive priceDiff only
+            priceExcludeTax: priceExcludeTaxSum);
 
         orderList.add(order);
       } else {

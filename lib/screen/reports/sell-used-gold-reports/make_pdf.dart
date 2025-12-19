@@ -23,13 +23,13 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
   // 1. DEFINE WIDTHS HERE TO ENSURE ALIGNMENT
   // Type 1 has 14 Columns (Indices 0-13) - removed Product column
   const columnWidthsType1 = <int, TableColumnWidth>{
-    0: FixedColumnWidth(25), // Seq
+    0: FixedColumnWidth(30), // Seq - increased from 25
     1: FixedColumnWidth(50), // Date
     2: FixedColumnWidth(60), // Tax Invoice
     3: FixedColumnWidth(60), // Receipt No
-    4: FixedColumnWidth(55), // Buyer Name
-    5: FixedColumnWidth(50), // Branch
-    6: FixedColumnWidth(75), // Tax ID - increased to 75 for 13 digits
+    4: FixedColumnWidth(70), // Buyer Name - increased from 55
+    5: FixedColumnWidth(45), // Branch - reduced to fit 6 chars
+    6: FixedColumnWidth(60), // Tax ID - reduced from 75
     7: FixedColumnWidth(50), // Weight (was column 8)
     8: FixedColumnWidth(75), // Price Inc Tax (was column 9)
     9: FixedColumnWidth(75), // Tax Base Exempt (was column 10)
@@ -138,7 +138,7 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                       ),
                       align: TextAlign.center),
                 if (type == 1)
-                  paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                  paddedTextSmall('รหัส\nสนญ/สาขา',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -332,52 +332,74 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                           ? PdfColors.red900
                           : PdfColors.black),
                   align: TextAlign.right),
+              // Column: ผลต่างฐานภาษีต่ำกว่าราคารับซื้อจำนวนเงิน(บาท) - negative diff
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
-                      : orders[i]!.priceDiff! < 0
-                          ? '(${Global.format(-(orders[i]!.priceDiff ?? 0))})'
-                          : "0.00",
+                      : type == 2
+                          // For type 2 (summary), use pre-calculated taxBase (absolute value of negative diff)
+                          ? (orders[i]!.taxBase ?? 0) > 0
+                              ? '(${Global.format(orders[i]!.taxBase ?? 0)})'
+                              : "0.00"
+                          // For type 1 (individual), calculate from priceDiff
+                          : orders[i]!.priceDiff! < 0
+                              ? '(${Global.format(-(orders[i]!.priceDiff ?? 0))})'
+                              : "0.00",
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2"
                           ? PdfColors.red900
-                          : orders[i]!.priceDiff! < 0
+                          : (type == 2 ? (orders[i]!.taxBase ?? 0) > 0 : orders[i]!.priceDiff! < 0)
                               ? PdfColors.red900 // Negative values in red
                               : null),
                   align: TextAlign.right),
+              // Column: ผลต่างฐานภาษีมูลค่าเพิ่มจำนวนเงิน(บาท) - positive diff
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
-                      : orders[i]!.priceDiff! >= 0
+                      : type == 2
+                          // For type 2 (summary), use pre-calculated priceDiff (positive diff only)
                           ? Global.format(orders[i]!.priceDiff ?? 0)
-                          : "0.00",
+                          // For type 1 (individual), show only if priceDiff >= 0
+                          : orders[i]!.priceDiff! >= 0
+                              ? Global.format(orders[i]!.priceDiff ?? 0)
+                              : "0.00",
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2"
                           ? PdfColors.red900
                           : PdfColors.black),
                   align: TextAlign.right),
+              // Column: ภาษีมูลค่าเพิ่มจำนวนเงิน(บาท) - VAT amount
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
-                      : orders[i]!.priceDiff! < 0
-                          ? "0.00"
-                          : Global.format(
-                              orders[i]!.priceDiff! * getVatValue()),
+                      : type == 2
+                          // For type 2 (summary), use pre-calculated taxAmount
+                          ? Global.format(orders[i]!.taxAmount ?? 0)
+                          // For type 1 (individual), calculate VAT only if priceDiff >= 0
+                          : orders[i]!.priceDiff! < 0
+                              ? "0.00"
+                              : Global.format(
+                                  orders[i]!.priceDiff! * getVatValue()),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2"
                           ? PdfColors.red900
                           : PdfColors.black),
                   align: TextAlign.right),
+              // Column: ราคาขายไม่รวมภาษีมูลค่าเพิ่มจำนวนเงิน(บาท) - price ex tax
               paddedTextSmall(
                   orders[i]!.status == "2"
                       ? "0.00"
-                      : Global.format((orders[i]!.priceIncludeTax ?? 0) -
-                          (orders[i]!.priceDiff! < 0
-                              ? 0
-                              : orders[i]!.priceDiff! * getVatValue())),
+                      : type == 2
+                          // For type 2 (summary), use pre-calculated priceExcludeTax
+                          ? Global.format(orders[i]!.priceExcludeTax ?? 0)
+                          // For type 1 (individual), calculate price ex tax
+                          : Global.format((orders[i]!.priceIncludeTax ?? 0) -
+                              (orders[i]!.priceDiff! < 0
+                                  ? 0
+                                  : orders[i]!.priceDiff! * getVatValue())),
                   style: TextStyle(
                       fontSize: 10,
                       color: orders[i]!.status == "2"
@@ -432,25 +454,49 @@ Future<Uint8List> makeSellUsedGoldReportPdf(List<OrderModel?> orders, int type,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.right),
-              paddedTextSmall('(${Global.format(priceDiffTotalM(orders))})',
+              // Column: ผลต่างฐานภาษีต่ำกว่าราคารับซื้อ (negative diff total)
+              paddedTextSmall(
+                  type == 2
+                      // For type 2, sum pre-calculated taxBase values
+                      ? '(${Global.format(taxBaseTotalForSummary(orders))})'
+                      // For type 1, use original calculation (absolute of negative diffs)
+                      : '(${Global.format(priceDiffTotalM(orders))})',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.red900), // Negative total in red
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceDiffTotalP(orders)),
+              // Column: ผลต่างฐานภาษีมูลค่าเพิ่ม (positive diff total)
+              paddedTextSmall(
+                  type == 2
+                      // For type 2, sum pre-calculated priceDiff values (already positive only)
+                      ? Global.format(priceDiffTotal(orders))
+                      // For type 1, use original calculation (sum of positive diffs)
+                      : Global.format(priceDiffTotalP(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(vatAmountTotal(orders)),
+              // Column: ภาษีมูลค่าเพิ่ม (VAT total)
+              paddedTextSmall(
+                  type == 2
+                      // For type 2, sum pre-calculated taxAmount values
+                      ? Global.format(taxAmountTotalForSummary(orders))
+                      // For type 1, recalculate VAT from positive priceDiff
+                      : Global.format(vatAmountTotal(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: PdfColors.black),
                   align: TextAlign.right),
-              paddedTextSmall(Global.format(priceExcludeVatTotal(orders)),
+              // Column: ราคาขายไม่รวมภาษีมูลค่าเพิ่ม (price ex tax total)
+              paddedTextSmall(
+                  type == 2
+                      // For type 2, sum pre-calculated priceExcludeTax values
+                      ? Global.format(priceExcludeTaxTotalForSummary(orders))
+                      // For type 1, recalculate price ex tax
+                      : Global.format(priceExcludeVatTotal(orders)),
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -501,6 +547,34 @@ double priceExcludeVatTotal(List<OrderModel?> orders) {
     double vatAmount =
         orders[i]!.priceDiff! < 0 ? 0 : orders[i]!.priceDiff! * getVatValue();
     total += (orders[i]!.priceIncludeTax ?? 0) - vatAmount;
+  }
+  return total;
+}
+
+// Helper functions for type 2 (summary) - use pre-calculated values from order model
+// Sum of taxBase values (absolute value of negative priceDiff)
+double taxBaseTotalForSummary(List<OrderModel?> orders) {
+  double total = 0;
+  for (int i = 0; i < orders.length; i++) {
+    total += orders[i]!.taxBase ?? 0;
+  }
+  return total;
+}
+
+// Sum of taxAmount values (VAT calculated from positive priceDiff only)
+double taxAmountTotalForSummary(List<OrderModel?> orders) {
+  double total = 0;
+  for (int i = 0; i < orders.length; i++) {
+    total += orders[i]!.taxAmount ?? 0;
+  }
+  return total;
+}
+
+// Sum of priceExcludeTax values (priceIncludeTax - VAT per order)
+double priceExcludeTaxTotalForSummary(List<OrderModel?> orders) {
+  double total = 0;
+  for (int i = 0; i < orders.length; i++) {
+    total += orders[i]!.priceExcludeTax ?? 0;
   }
   return total;
 }

@@ -287,7 +287,7 @@ class _SellThengVatReportScreenState extends State<SellThengVatReportScreen> {
             return;
           }
           List<OrderModel> dailyList =
-              genDailyList(filterList!.reversed.toList());
+              genDailyList(filterList!.reversed.toList(), value: value);
           if (dailyList.isEmpty) {
             Alert.warning(context, 'คำเตือน', 'ไม่มีข้อมูล', 'OK',
                 action: () {});

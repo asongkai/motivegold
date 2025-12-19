@@ -1121,8 +1121,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
 
     var object = Global.requestObj(requestData);
 
-    motivePrint(object);
-
     Alert.info(context, 'ต้องการบันทึกข้อมูลหรือไม่?', '', 'ตกลง',
         action: () async {
       final ProgressDialog pr = ProgressDialog(context,
@@ -1132,13 +1130,23 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
       try {
         var result = await ApiServices.put('/company', id, object);
         await pr.hide();
+
         if (result?.status == "success") {
           if (mounted) {
             var c = CompanyModel.fromJson(result?.data);
-            if (c.id == Global.company?.id) {
-              Global.company = CompanyModel.fromJson(result?.data);
-              setState(() {});
+
+            // Update local state with new logo
+            if (c.logo != null && c.logo!.isNotEmpty) {
+              setState(() {
+                logo = c.logo;
+                widget.company.logo = c.logo;
+              });
             }
+
+            if (c.id == Global.company?.id) {
+              Global.company = c;
+            }
+
             Alert.success(context, 'อัปเดตข้อมูลเรียบร้อยแล้ว', '', 'ตกลง',
                 action: () {
               Navigator.of(context).pop();
@@ -1229,11 +1237,117 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                     pickProfileImage(context, ImageSource.gallery);
                   },
                 ),
+                // Show delete button only if logo exists
+                if (_hasLogo())
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.delete, color: Colors.red[600]),
+                    ),
+                    title: const Text('ลบโลโก้'),
+                    subtitle: const Text('ลบโลโก้ปัจจุบัน'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _confirmDeleteLogo();
+                    },
+                  ),
                 const SizedBox(height: 20),
               ],
             ),
           );
         });
+  }
+
+  /// Check if company has a logo (either new or existing)
+  bool _hasLogo() {
+    // Check for newly selected image
+    if (file != null) return true;
+    // Check for new base64 logo
+    if (logo != null && logo!.isNotEmpty && logo != widget.company.logo) {
+      return true;
+    }
+    // Check for existing server logo
+    if (widget.company.logo != null && widget.company.logo!.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Show confirmation dialog before deleting logo
+  void _confirmDeleteLogo() {
+    Alert.info(context, 'ต้องการลบโลโก้หรือไม่?', '', 'ตกลง', action: () async {
+      final ProgressDialog pr = ProgressDialog(context,
+          type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
+      await pr.show();
+      pr.update(message: 'กำลังลบโลโก้...');
+
+      try {
+        // Send full company data with logo set to null/empty to delete
+        var object = Global.requestObj({
+          "id": id,
+          "name": nameCtrl.text,
+          "email": emailCtrl.text,
+          "phone": phoneCtrl.text,
+          "address": addressCtrl.text,
+          "village": villageCtrl.text,
+          "district":
+              Global.amphureModel?.nameTh ?? widget.company.district ?? "",
+          "province":
+              Global.provinceModel?.nameTh ?? widget.company.province ?? "",
+          "taxNumber": taxNumberCtrl.text,
+          "stock": nonStock ? 0 : 1,
+          "building": buildingCtrl.text,
+          "room": roomCtrl.text,
+          "floor": floorCtrl.text,
+          "villageNo": villageNoCtrl.text,
+          "alley": alleyCtrl.text,
+          "road": roadCtrl.text,
+          "subDistrict":
+              Global.tambonModel?.nameTh ?? widget.company.subDistrict ?? "",
+          "postalCode": postalCodeCtrl.text,
+          "tambonId": Global.tambonModel?.id ?? widget.company.tambonId,
+          "amphureId": Global.amphureModel?.id ?? widget.company.amphureId,
+          "provinceId": Global.provinceModel?.id ?? widget.company.provinceId,
+          "logo": null, // Set to null to delete logo
+        });
+
+        var result = await ApiServices.put('/company', id, object);
+        await pr.hide();
+
+        if (result?.status == "success") {
+          // Clear local logo state
+          setState(() {
+            logo = null;
+            file = null;
+            widget.company.logo = null;
+          });
+
+          // Also update Global.company if this is the current company
+          if (Global.company?.id == id) {
+            Global.company = CompanyModel.fromJson(result?.data);
+          }
+
+          if (mounted) {
+            Alert.success(context, 'ลบโลโก้เรียบร้อยแล้ว', '', 'ตกลง',
+                action: () {});
+          }
+        } else {
+          if (mounted) {
+            Alert.warning(
+                context, result?.message ?? 'เกิดข้อผิดพลาด', '', 'ตกลง');
+          }
+        }
+      } catch (e) {
+        await pr.hide();
+        if (mounted) {
+          Alert.warning(context, 'เกิดข้อผิดพลาด: ${e.toString()}', '', 'ตกลง');
+        }
+      }
+    });
   }
 
   void pickProfileImage(BuildContext context, ImageSource imageSource) async {

@@ -179,9 +179,35 @@ double discountTotal(List<dynamic> orders) {
     return 0;
   }
   double amount = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
-      amount += addDisValue(orders[i]!.discount, orders[i]!.addPrice);
+    // For paired transactions, only count once per pair
+    if (orders[i].pairId != null && orders[i].pairId != 0) {
+      if (processedPairs.contains(orders[i].pairId)) {
+        continue; // Skip if already processed this pair
+      }
+      processedPairs.add(orders[i].pairId);
+
+      // For paired transactions, find the sell order (orderTypeId == 1) and use its discount/addPrice
+      // The discount/addPrice is applied to the transaction, not individual orders
+      if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
+        amount += addDisValue(orders[i]!.discount ?? 0, orders[i]!.addPrice ?? 0);
+      } else {
+        // Current order is buy, find the paired sell order
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == orders[i].pairId && (e.orderTypeId == 1 || e.orderTypeId == 4),
+          orElse: () => null
+        );
+        if (sellOrder != null) {
+          amount += addDisValue(sellOrder.discount ?? 0, sellOrder.addPrice ?? 0);
+        }
+      }
+    } else {
+      // Non-paired orders
+      if (orders[i].orderTypeId == 1 || orders[i].orderTypeId == 4) {
+        amount += addDisValue(orders[i]!.discount ?? 0, orders[i]!.addPrice ?? 0);
+      }
     }
   }
   return amount;

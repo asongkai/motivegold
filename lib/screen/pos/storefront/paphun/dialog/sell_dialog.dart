@@ -1000,6 +1000,24 @@ class _SaleDialogState extends State<SaleDialog> {
       return false;
     }
 
+    // Check if total selling price is lower than purchase price (would cause negative tax)
+    final priceTotal = Global.toNumber(productPriceTotalCtrl.text);
+    final purchasePrice = Global.getBuyPrice(
+        Global.toNumber(productWeightGramCtrl.text),
+        Global.goldDataModel,
+        selectedProduct!.id!);
+
+    if (priceTotal < purchasePrice) {
+      Alert.warning(
+        context,
+        'คำเตือน',
+        'ราคาขายรวมต่ำกว่าราคาซื้อทองรูปพรรณเก่าทำให้ภาษีติดลบ กรุณาตรวจสอบและบันทึกรายการใหม่',
+        'OK',
+        action: () {},
+      );
+      return false;
+    }
+
     return true;
   }
 

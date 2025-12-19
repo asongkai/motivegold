@@ -13,24 +13,9 @@ import 'package:sizer/sizer.dart';
 
 Future<Uint8List> makeBuyThengVatReportPdf(List<OrderModel?> orders, int type,
     String date, DateTime fromDate, DateTime toDate) async {
-  List<OrderModel> list = [];
-
-  int days = Global.daysBetween(fromDate, toDate);
-
-  for (int j = 0; j <= days; j++) {
-    var indexDay = fromDate.add(Duration(days: j));
-
-    // Find all orders for this specific day
-    var ordersForDay =
-        orders.where((order) => order!.createdDate == indexDay).toList();
-
-    if (ordersForDay.isNotEmpty) {
-      // Add all orders for this day
-      for (var order in ordersForDay) {
-        list.add(order!);
-      }
-    }
-  }
+  // For types 2 and 3, the orders are already aggregated by genDailyList()
+  // so we use them directly
+  List<OrderModel> list = orders.whereType<OrderModel>().toList();
 
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),

@@ -1225,11 +1225,11 @@ class _BuyThengVatReportScreenState extends State<BuyThengVatReportScreen> {
     for (int i = 0; i <= days; i++) {
       DateTime monthDate = fromDate!.add(Duration(days: i));
 
-      // Get all orders for this specific date
+      // Get all orders for this specific date (use orderDate, not createdDate)
       var dateList = filterList
           ?.where((element) =>
               element != null &&
-              Global.dateOnly(element.createdDate.toString()) ==
+              Global.dateOnly(element.orderDate.toString()) ==
                   Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();

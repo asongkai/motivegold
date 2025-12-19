@@ -57,10 +57,9 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
             1: FixedColumnWidth(60),
             2: FixedColumnWidth(70),
             3: FixedColumnWidth(50),
-            4: FixedColumnWidth(80),
-            5: FixedColumnWidth(60),
-            6: FixedColumnWidth(
-                80), // Tax ID - increased from 50 to 80 for 13 digits
+            4: FixedColumnWidth(100), // ชื่อผู้ขาย - increased from 80
+            5: FixedColumnWidth(45), // รหัส สนญ/สาขา - reduced to fit 6 chars
+            6: FixedColumnWidth(65), // Tax ID - reduced from 80
             7: FixedColumnWidth(70),
             8: FixedColumnWidth(70),  // Last 5 columns same width
             9: FixedColumnWidth(70),  // Last 5 columns same width
@@ -105,7 +104,7 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
                         fontWeight: FontWeight.bold,
                         color: PdfColors.black),
                     align: TextAlign.center),
-                paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                paddedTextSmall('รหัส\nสนญ/สาขา',
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -179,10 +178,9 @@ Future<Uint8List> makeBuyNewGoldReportPdf(
         1: FixedColumnWidth(60),
         2: FixedColumnWidth(70),
         3: FixedColumnWidth(50),
-        4: FixedColumnWidth(80),
-        5: FixedColumnWidth(60),
-        6: FixedColumnWidth(
-            80), // Tax ID - increased from 50 to 80 for 13 digits
+        4: FixedColumnWidth(100), // ชื่อผู้ขาย - increased from 80
+        5: FixedColumnWidth(45), // รหัส สนญ/สาขา - reduced to fit 6 chars
+        6: FixedColumnWidth(65), // Tax ID - reduced from 80
         7: FixedColumnWidth(70),
         8: FixedColumnWidth(70),  // Last 5 columns same width
         9: FixedColumnWidth(70),  // Last 5 columns same width

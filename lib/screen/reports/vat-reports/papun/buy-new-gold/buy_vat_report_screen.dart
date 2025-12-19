@@ -1138,10 +1138,10 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
     for (int i = 0; i <= days; i++) {
       DateTime monthDate = fromDate!.add(Duration(days: i));
 
-      // Get all orders for this specific date
+      // Get all orders for this specific date (use orderDate, not createdDate)
       var dateList = filterList
           ?.where((element) => element != null &&
-          Global.dateOnly(element.createdDate.toString()) ==
+          Global.dateOnly(element.orderDate.toString()) ==
               Global.dateOnly(monthDate.toString()))
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
@@ -1199,11 +1199,11 @@ class _BuyVatReportScreenState extends State<BuyVatReportScreen> {
       // Get the first day of each month
       DateTime monthDate = DateTime(fromDate!.year, fromDate!.month + i, 1);
 
-      // Get all orders for this specific month and year
+      // Get all orders for this specific month and year (use orderDate, not createdDate)
       var monthList = filterList
           ?.where((element) => element != null &&
-          element.createdDate?.year == monthDate.year &&
-          element.createdDate?.month == monthDate.month)
+          element.orderDate?.year == monthDate.year &&
+          element.orderDate?.month == monthDate.month)
           .cast<OrderModel>() // Cast to non-nullable OrderModel
           .toList();
 

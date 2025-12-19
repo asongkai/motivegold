@@ -76,6 +76,9 @@ class CustomerModel {
   DateTime? registrationDate;
   String? businessType;
 
+  // OCR source tracking field
+  String? idCardSource;  // 'manual', 'ocr_api', 'ocr_card_reader'
+
   CustomerModel({
     this.id,
     this.companyName,
@@ -131,6 +134,7 @@ class CustomerModel {
     this.headquartersOrBranch,
     this.registrationDate,
     this.businessType,
+    this.idCardSource,
   });
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
@@ -202,6 +206,7 @@ class CustomerModel {
             ? null
             : DateTime.parse(json["registrationDate"]).toLocal(),
         businessType: json["businessType"],
+        idCardSource: json["idCardSource"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -259,6 +264,7 @@ class CustomerModel {
         "headquartersOrBranch": headquartersOrBranch,
         "registrationDate": registrationDate?.toIso8601String(),
         "businessType": businessType,
+        "idCardSource": idCardSource,
       };
 
   @override

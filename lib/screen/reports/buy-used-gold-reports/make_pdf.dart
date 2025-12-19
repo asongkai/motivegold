@@ -71,10 +71,9 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
               : {
                   0: FixedColumnWidth(50),
                   1: FixedColumnWidth(80),
-                  2: FixedColumnWidth(100),
-                  3: FixedColumnWidth(150),
-                  4: FixedColumnWidth(80),
-                  5: FixedColumnWidth(100),
+                  2: FixedColumnWidth(150),
+                  3: FixedColumnWidth(80),
+                  4: FixedColumnWidth(100),
                 },
           children: [
             TableRow(
@@ -160,10 +159,9 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
           : {
               0: FixedColumnWidth(50),
               1: FixedColumnWidth(80),
-              2: FixedColumnWidth(100),
-              3: FixedColumnWidth(150),
-              4: FixedColumnWidth(80),
-              5: FixedColumnWidth(100),
+              2: FixedColumnWidth(150),
+              3: FixedColumnWidth(80),
+              4: FixedColumnWidth(100),
             },
       children: [
         // Data rows with color coding
@@ -255,7 +253,8 @@ Future<Uint8List> makeBuyUsedGoldReportPdf(List<OrderModel?> orders, int type,
             children: [
               paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               paddedTextSmall('', style: const TextStyle(fontSize: 11)),
-              paddedTextSmall('', style: const TextStyle(fontSize: 11)),
+              if (type == 1)
+                paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               if (type == 1)
                 paddedTextSmall('', style: const TextStyle(fontSize: 11)),
               paddedTextSmall('รวมท้ังหมด',

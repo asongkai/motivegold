@@ -13,24 +13,9 @@ import 'package:sizer/sizer.dart';
 
 Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
     String date, DateTime fromDate, DateTime toDate) async {
-  List<OrderModel> list = [];
-
-  int days = Global.daysBetween(fromDate, toDate);
-
-  for (int j = 0; j <= days; j++) {
-    var indexDay = fromDate.add(Duration(days: j));
-
-    // Find all orders for this specific day
-    var ordersForDay =
-        orders.where((order) => order!.createdDate == indexDay).toList();
-
-    if (ordersForDay.isNotEmpty) {
-      // Add all orders for this day
-      for (var order in ordersForDay) {
-        list.add(order!);
-      }
-    }
-  }
+  // For types 2 and 3, the orders are already aggregated by genDailyList()
+  // so we use them directly
+  List<OrderModel> list = orders.whereType<OrderModel>().toList();
 
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
@@ -83,14 +68,12 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
               ? {
                   0: const FixedColumnWidth(25),
                   1: const FixedColumnWidth(55),
-                  2: const FixedColumnWidth(
-                      65), // เลขที่ใบรับทอง - increased from 50
+                  2: const FixedColumnWidth(65), // เลขที่ใบรับทอง
                   3: const FixedColumnWidth(45),
-                  4: const FixedColumnWidth(70),
-                  5: const FixedColumnWidth(60),
-                  6: const FixedColumnWidth(
-                      70), // เลขประจำตัวผู้เสียภาษี - increased from 50 to fit 13 digits
-                  7: const FixedColumnWidth(55), // น้ำหนักรวม - reduced from 70
+                  4: const FixedColumnWidth(90), // ชื่อผู้ขาย - increased from 70
+                  5: const FixedColumnWidth(45), // รหัส สนญ/สาขา - reduced to fit 6 chars
+                  6: const FixedColumnWidth(55), // เลขประจำตัวผู้เสียภาษี - reduced from 70
+                  7: const FixedColumnWidth(55), // น้ำหนักรวม
                   8: const FixedColumnWidth(70), // Last 5 columns same width
                   9: const FixedColumnWidth(70), // Last 5 columns same width
                   10: const FixedColumnWidth(70), // Last 5 columns same width
@@ -147,7 +130,7 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
                               fontWeight: FontWeight.bold,
                               color: PdfColors.black),
                           align: TextAlign.center),
-                      paddedTextSmall('รหัสสำนักงานใหญ่/สาขา',
+                      paddedTextSmall('รหัส\nสนญ/สาขา',
                           style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -290,14 +273,12 @@ Future<Uint8List> makeBuyVatReportPdf(List<OrderModel?> orders, int type,
           ? {
               0: const FixedColumnWidth(25),
               1: const FixedColumnWidth(55),
-              2: const FixedColumnWidth(
-                  65), // เลขที่ใบรับทอง - increased from 50
+              2: const FixedColumnWidth(65), // เลขที่ใบรับทอง
               3: const FixedColumnWidth(45),
-              4: const FixedColumnWidth(70),
-              5: const FixedColumnWidth(60),
-              6: const FixedColumnWidth(
-                  70), // เลขประจำตัวผู้เสียภาษี - increased from 50 to fit 13 digits
-              7: const FixedColumnWidth(55), // น้ำหนักรวม - reduced from 70
+              4: const FixedColumnWidth(90), // ชื่อผู้ขาย - increased from 70
+              5: const FixedColumnWidth(45), // รหัส สนญ/สาขา - reduced to fit 6 chars
+              6: const FixedColumnWidth(55), // เลขประจำตัวผู้เสียภาษี - reduced from 70
+              7: const FixedColumnWidth(55), // น้ำหนักรวม
               8: const FixedColumnWidth(70), // Last 5 columns same width
               9: const FixedColumnWidth(70), // Last 5 columns same width
               10: const FixedColumnWidth(70), // Last 5 columns same width

@@ -178,18 +178,14 @@ Future<Uint8List> makeStockMovementReportPdf(
   List<Widget> dataRows = [];
 
   // Mobile-inspired clean table design with smaller fonts
-  dataRows.add(Container(
-    decoration: BoxDecoration(
-      border: Border.all(color: PdfColors.grey400, width: 0.5),
-    ),
-    child: Table(
+  dataRows.add(Table(
       border: TableBorder(
-        top: BorderSide.none,
-        bottom: BorderSide.none,
-        left: BorderSide.none,
-        right: BorderSide.none,
+        top: BorderSide(color: PdfColors.grey400, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+        left: BorderSide(color: PdfColors.grey400, width: 0.5),
+        right: BorderSide(color: PdfColors.grey400, width: 0.5),
         horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
-        verticalInside: BorderSide.none,
+        verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
       ),
       columnWidths: const {
         0: FixedColumnWidth(70),
@@ -221,9 +217,10 @@ Future<Uint8List> makeStockMovementReportPdf(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       color: movementColor
-                  )
+                  ),
+                  align: TextAlign.center
               ),
-              paddedTextSmall('${e.docType!} ', style: TextStyle(fontSize: 11)),
+              paddedTextSmall('${e.docType!} ', style: TextStyle(fontSize: 11), align: TextAlign.center),
               paddedTextSmall('${e.product?.type == 'BAR' ? Global.format4(e.weight ?? 0) : Global.format(e.weight ?? 0)}',
                   style: TextStyle(fontSize: 11, color: movementColor),
                   align: TextAlign.right),
@@ -301,7 +298,7 @@ Future<Uint8List> makeStockMovementReportPdf(
         ),
       ],
     ),
-  ));
+  );
 
   pdf.addPage(
     MultiPage(

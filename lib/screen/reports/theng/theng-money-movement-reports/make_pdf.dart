@@ -48,25 +48,32 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
       height(h: 2),
       // Table column headers
       Table(
-        border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
+        border: TableBorder(
+          top: BorderSide(color: PdfColors.grey400, width: 0.5),
+          bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+          left: BorderSide(color: PdfColors.grey400, width: 0.5),
+          right: BorderSide(color: PdfColors.grey400, width: 0.5),
+          horizontalInside: BorderSide.none,
+          verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+        ),
         columnWidths: {
-          0: const FixedColumnWidth(25),
-          1: const FixedColumnWidth(60),
-          2: const FixedColumnWidth(70),
-          3: const FixedColumnWidth(45),
-          4: const FixedColumnWidth(55),
-          5: const FixedColumnWidth(55),
-          6: const FixedColumnWidth(60),
-          7: const FixedColumnWidth(65),
-          8: const FixedColumnWidth(65),
-          9: const FixedColumnWidth(50),
-          10: const FixedColumnWidth(50),
-          11: const FixedColumnWidth(60),
-          12: const FixedColumnWidth(60),
-          13: const FixedColumnWidth(50),
-          14: const FixedColumnWidth(60),
-          15: const FixedColumnWidth(50),
-          16: const FixedColumnWidth(40),
+          0: FixedColumnWidth(25),   // ลำดับ
+          1: FixedColumnWidth(58),   // เลขที่ใบกํากับภาษี
+          2: FixedColumnWidth(55),   // ชื่อลูกค้า
+          3: FixedColumnWidth(42),   // วันที่
+          4: FixedColumnWidth(45),   // นน.ทองคำแท่ง ขายออก
+          5: FixedColumnWidth(45),   // นน.ทองคำแท่ง รับซื้อ
+          6: FixedColumnWidth(55),   // จำนวนเงินสุทธิ
+          7: FixedColumnWidth(58),   // เลขที่อ้างอิง
+          8: FixedColumnWidth(55),   // ร้านทองรับเงิน/จ่ายเงิน
+          9: FixedColumnWidth(60),   // ยอดรับเงิน
+          10: FixedColumnWidth(60),  // ยอดจ่ายเงิน
+          11: FixedColumnWidth(55),  // ร้านทองรับ(จ่าย)เงินสุทธิ
+          12: FixedColumnWidth(45),  // ร้านทองเพิ่ม/ลดให้
+          13: FixedColumnWidth(55),  // เงินสดรับ(จ่าย)
+          14: FixedColumnWidth(55),  // เงินโอน/ฝากธนาคาร
+          15: FixedColumnWidth(50),  // บัตรเครดิต
+          16: FixedColumnWidth(50),  // อื่นๆ
         },
         children: [
           TableRow(
@@ -188,25 +195,32 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
   // Apply modern design pattern
   dataRows.add(Container(
     child: Table(
-      border: TableBorder.all(color: PdfColors.grey400, width: 0.5),
+      border: TableBorder(
+        top: BorderSide(color: PdfColors.grey400, width: 0.5),
+        bottom: BorderSide(color: PdfColors.grey400, width: 0.5),
+        left: BorderSide(color: PdfColors.grey400, width: 0.5),
+        right: BorderSide(color: PdfColors.grey400, width: 0.5),
+        horizontalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+        verticalInside: BorderSide(color: PdfColors.grey400, width: 0.5),
+      ),
       columnWidths: {
-        0: const FixedColumnWidth(25),
-        1: const FixedColumnWidth(60),
-        2: const FixedColumnWidth(70),
-        3: const FixedColumnWidth(45),
-        4: const FixedColumnWidth(55),
-        5: const FixedColumnWidth(55),
-        6: const FixedColumnWidth(60),
-        7: const FixedColumnWidth(65),
-        8: const FixedColumnWidth(65),
-        9: const FixedColumnWidth(50),
-        10: const FixedColumnWidth(50),
-        11: const FixedColumnWidth(60),
-        12: const FixedColumnWidth(60),
-        13: const FixedColumnWidth(50),
-        14: const FixedColumnWidth(60),
-        15: const FixedColumnWidth(50),
-        16: const FixedColumnWidth(40),
+        0: FixedColumnWidth(25),   // ลำดับ
+        1: FixedColumnWidth(58),   // เลขที่ใบกํากับภาษี
+        2: FixedColumnWidth(55),   // ชื่อลูกค้า
+        3: FixedColumnWidth(42),   // วันที่
+        4: FixedColumnWidth(45),   // นน.ทองคำแท่ง ขายออก
+        5: FixedColumnWidth(45),   // นน.ทองคำแท่ง รับซื้อ
+        6: FixedColumnWidth(55),   // จำนวนเงินสุทธิ
+        7: FixedColumnWidth(58),   // เลขที่อ้างอิง
+        8: FixedColumnWidth(55),   // ร้านทองรับเงิน/จ่ายเงิน
+        9: FixedColumnWidth(60),   // ยอดรับเงิน
+        10: FixedColumnWidth(60),  // ยอดจ่ายเงิน
+        11: FixedColumnWidth(55),  // ร้านทองรับ(จ่าย)เงินสุทธิ
+        12: FixedColumnWidth(45),  // ร้านทองเพิ่ม/ลดให้
+        13: FixedColumnWidth(55),  // เงินสดรับ(จ่าย)
+        14: FixedColumnWidth(55),  // เงินโอน/ฝากธนาคาร
+        15: FixedColumnWidth(50),  // บัตรเครดิต
+        16: FixedColumnWidth(50),  // อื่นๆ
       },
       children: [
         // Data rows with color coding
@@ -280,18 +294,12 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
                           : null),
                   align: TextAlign.right),
               paddedTextSmall(
-                  addDisValue(orders[i].discount ?? 0,
-                              orders[i].addPrice ?? 0) ==
-                          0
+                  getDiscountAddValueForPair(orders, orders[i]) == 0
                       ? ""
-                      : (orders[i].orderTypeId == 4)
-                          ? "${addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0) < 0 ? "(${-addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0)})" : addDisValue(orders[i].discount ?? 0, orders[i].addPrice ?? 0)}"
-                          : "",
+                      : "(${Global.format(getDiscountAddValueForPair(orders, orders[i]).abs())})",
                   style: TextStyle(
                       fontSize: 8,
-                      color: addDisValue(orders[i].discount ?? 0,
-                                  orders[i].addPrice ?? 0) <
-                              0
+                      color: getDiscountAddValueForPair(orders, orders[i]) < 0
                           ? null
                           : null),
                   align: TextAlign.right),
@@ -492,6 +500,49 @@ Future<Uint8List> makeThengMoneyMovementReportPdf(
 }
 
 double getCashPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's cash payment
+      if (order.orderTypeId == 4) {
+        return order.cashPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 4,
+          orElse: () => order
+        );
+        return sellOrder.cashPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's cash payment
+      if (order.orderTypeId == 44) {
+        return order.cashPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 44,
+          orElse: () => order
+        );
+        return buyOrder.cashPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
     if (order.orderTypeId == 4) {
       return order.cashPayment ?? 0;
@@ -507,14 +558,52 @@ double getCashPayment(List<OrderModel> orders, OrderModel order) {
 
 double getCashPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 4) {
-        total += orders[i].cashPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellCash = 0;
+      double buyCash = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 4) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellCash += o.cashPayment ?? 0;
+        } else if (o.orderTypeId == 44) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyCash += o.cashPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's cash payment
+        total += sellCash;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's cash payment
+        total -= buyCash;
+      }
+      // If equal, no cash exchange
     } else {
-      if (orders[i].orderTypeId == 44) {
-        total -= orders[i].cashPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 4) {
+        total += order.cashPayment ?? 0;
+      } else if (order.orderTypeId == 44) {
+        total -= order.cashPayment ?? 0;
       }
     }
   }
@@ -522,6 +611,49 @@ double getCashPaymentTotal(List<OrderModel> orders) {
 }
 
 double getTransferPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's transfer payment
+      if (order.orderTypeId == 4) {
+        return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 4,
+          orElse: () => order
+        );
+        return (sellOrder.transferPayment ?? 0) + (sellOrder.depositPayment ?? 0);
+      }
+    } else {
+      // Net is negative, show buy order's transfer payment
+      if (order.orderTypeId == 44) {
+        return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 44,
+          orElse: () => order
+        );
+        return (buyOrder.transferPayment ?? 0) + (buyOrder.depositPayment ?? 0);
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
     if (order.orderTypeId == 4) {
       return (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
@@ -537,14 +669,52 @@ double getTransferPayment(List<OrderModel> orders, OrderModel order) {
 
 double getTransferPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 4) {
-        total += orders[i].transferPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellTransfer = 0;
+      double buyTransfer = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 4) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellTransfer += (o.transferPayment ?? 0) + (o.depositPayment ?? 0);
+        } else if (o.orderTypeId == 44) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyTransfer += (o.transferPayment ?? 0) + (o.depositPayment ?? 0);
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's transfer payment
+        total += sellTransfer;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's transfer payment
+        total -= buyTransfer;
+      }
+      // If equal, no transfer exchange
     } else {
-      if (orders[i].orderTypeId == 44) {
-        total -= orders[i].transferPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 4) {
+        total += (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
+      } else if (order.orderTypeId == 44) {
+        total -= (order.transferPayment ?? 0) + (order.depositPayment ?? 0);
       }
     }
   }
@@ -552,6 +722,49 @@ double getTransferPaymentTotal(List<OrderModel> orders) {
 }
 
 double getCreditPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's credit payment
+      if (order.orderTypeId == 4) {
+        return order.creditPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 4,
+          orElse: () => order
+        );
+        return sellOrder.creditPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's credit payment
+      if (order.orderTypeId == 44) {
+        return order.creditPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 44,
+          orElse: () => order
+        );
+        return buyOrder.creditPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
     if (order.orderTypeId == 4) {
       return order.creditPayment ?? 0;
@@ -567,14 +780,52 @@ double getCreditPayment(List<OrderModel> orders, OrderModel order) {
 
 double getCreditPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 4) {
-        total += orders[i].creditPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellCredit = 0;
+      double buyCredit = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 4) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellCredit += o.creditPayment ?? 0;
+        } else if (o.orderTypeId == 44) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyCredit += o.creditPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's credit payment
+        total += sellCredit;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's credit payment
+        total -= buyCredit;
+      }
+      // If equal, no credit exchange
     } else {
-      if (orders[i].orderTypeId == 44) {
-        total -= orders[i].creditPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 4) {
+        total += order.creditPayment ?? 0;
+      } else if (order.orderTypeId == 44) {
+        total -= order.creditPayment ?? 0;
       }
     }
   }
@@ -582,6 +833,49 @@ double getCreditPaymentTotal(List<OrderModel> orders) {
 }
 
 double getOtherPayment(List<OrderModel> orders, OrderModel order) {
+  // Check if this is a paired transaction
+  var pairedOrders = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (pairedOrders.isNotEmpty) {
+    // This is a paired transaction
+    // Only show payment in the row that shows the net value
+    double netValue = payToCustomerOrShopValue(orders, order);
+    if (netValue == 0) {
+      // This is not the display row
+      return 0;
+    }
+
+    // This is the display row - show the payment from the appropriate order
+    if (netValue > 0) {
+      // Net is positive, show sell order's other payment
+      if (order.orderTypeId == 4) {
+        return order.otherPayment ?? 0;
+      } else {
+        // Get the sell order's payment
+        var sellOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 4,
+          orElse: () => order
+        );
+        return sellOrder.otherPayment ?? 0;
+      }
+    } else {
+      // Net is negative, show buy order's other payment
+      if (order.orderTypeId == 44) {
+        return order.otherPayment ?? 0;
+      } else {
+        // Get the buy order's payment
+        var buyOrder = orders.firstWhere(
+          (e) => e.pairId == order.pairId && e.orderTypeId == 44,
+          orElse: () => order
+        );
+        return buyOrder.otherPayment ?? 0;
+      }
+    }
+  }
+
+  // Not paired - use original logic
   if (payToCustomerOrShopValue(orders, order) > 0) {
     if (order.orderTypeId == 4) {
       return order.otherPayment ?? 0;
@@ -597,14 +891,52 @@ double getOtherPayment(List<OrderModel> orders, OrderModel order) {
 
 double getOtherPaymentTotal(List<OrderModel> orders) {
   double total = 0;
+  Set<int> processedPairs = {};
+
   for (int i = 0; i < orders.length; i++) {
-    if (payToCustomerOrShopValue(orders, orders[i]) > 0) {
-      if (orders[i].orderTypeId == 4) {
-        total += orders[i].otherPayment ?? 0;
+    var order = orders[i];
+
+    // Handle paired transactions - only process once per pair
+    if (order.pairId != null && order.pairId != 0) {
+      if (processedPairs.contains(order.pairId)) {
+        continue; // Skip if already processed this pair
       }
+      processedPairs.add(order.pairId!);
+
+      // Find all orders in this pair
+      var pairedOrders = orders.where((e) => e.pairId == order.pairId).toList();
+
+      // Calculate net value for the pair
+      double sellTotal = 0;
+      double buyTotal = 0;
+      double sellOther = 0;
+      double buyOther = 0;
+
+      for (var o in pairedOrders) {
+        if (o.orderTypeId == 4) {
+          sellTotal += o.priceIncludeTax ?? 0;
+          sellOther += o.otherPayment ?? 0;
+        } else if (o.orderTypeId == 44) {
+          buyTotal += o.priceIncludeTax ?? 0;
+          buyOther += o.otherPayment ?? 0;
+        }
+      }
+
+      // Net = sell - buy
+      if (sellTotal > buyTotal) {
+        // Shop receives money - add sell order's other payment
+        total += sellOther;
+      } else if (buyTotal > sellTotal) {
+        // Shop pays money - subtract buy order's other payment
+        total -= buyOther;
+      }
+      // If equal, no other exchange
     } else {
-      if (orders[i].orderTypeId == 44) {
-        total -= orders[i].otherPayment ?? 0;
+      // Non-paired orders
+      if (order.orderTypeId == 4) {
+        total += order.otherPayment ?? 0;
+      } else if (order.orderTypeId == 44) {
+        total -= order.otherPayment ?? 0;
       }
     }
   }
@@ -707,6 +1039,40 @@ double payToCustomerOrShopValueB(List<OrderModel> orders, OrderModel order) {
   }
 
   return order.priceIncludeTax ?? 0;
+}
+
+// Get discount/add value for paired transactions - only from the display order
+double getDiscountAddValueForPair(List<OrderModel> orders, OrderModel order) {
+  var orders0 = orders
+      .where((e) => e.pairId == order.pairId && e.orderId != order.orderId)
+      .toList();
+
+  if (orders0.isNotEmpty) {
+    orders0.add(order);
+
+    // Find which order has higher priceIncludeTax - only that row should display the value
+    OrderModel? higherOrder;
+    double maxPrice = 0;
+    for (var o in orders0) {
+      double price = o.priceIncludeTax ?? 0;
+      if (price > maxPrice) {
+        maxPrice = price;
+        higherOrder = o;
+      }
+    }
+
+    // If current order is not the higher one, return 0 (don't display in this row)
+    if (higherOrder?.orderId != order.orderId) {
+      return 0;
+    }
+
+    // For paired transactions, return only the discount/add value from the higher order
+    // The discount/addPrice is applied once to the transaction, not to each order separately
+    return addDisValue(higherOrder?.discount ?? 0, higherOrder?.addPrice ?? 0);
+  }
+
+  // For non-paired transactions, return the single order's discount/add value
+  return addDisValue(order.discount ?? 0, order.addPrice ?? 0);
 }
 
 String getReferenceNumber(List<OrderModel?> orders, OrderModel? order) {

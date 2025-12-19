@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
@@ -72,6 +73,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   Animation<Offset>? _slideAnimation;
 
   final TextEditingController idCardCtrl = TextEditingController();
+  final FocusNode idCardFocusNode = FocusNode();
+  final FocusNode taxNumberFocusNode = FocusNode();
   final TextEditingController branchCodeCtrl = TextEditingController();
   final TextEditingController firstNameCtrl = TextEditingController();
   final TextEditingController lastNameCtrl = TextEditingController();
@@ -126,6 +129,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   // Card reader state
   bool _isCardReaderConnected = false;
   String? _cardReaderStatus;
+
+  // OCR source tracking: 'manual', 'ocr_api', 'ocr_card_reader'
+  String? _idCardSource;
 
   List<TitleNameModel> titleNames = [];
   TitleNameModel? selectedTitleName;
@@ -231,6 +237,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     Global.tambonNotifier =
         ValueNotifier<TambonModel>(TambonModel(id: 0, nameTh: 'เลือกตำบล'));
 
+    // Add focus listeners for ID card and tax number validation on lost focus
+    idCardFocusNode.addListener(_onIdCardFocusChange);
+    taxNumberFocusNode.addListener(_onTaxNumberFocusChange);
+
     // Start animations and card reader
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -240,6 +250,111 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         _tryReadCard();
       }
     });
+  }
+
+  // Handler for ID card focus change - validate on lost focus
+  void _onIdCardFocusChange() {
+    if (!idCardFocusNode.hasFocus && idCardCtrl.text.isNotEmpty) {
+      _validateIdCard();
+    }
+  }
+
+  // Handler for tax number focus change - validate on lost focus
+  void _onTaxNumberFocusChange() {
+    if (!taxNumberFocusNode.hasFocus && taxNumberCtrl.text.isNotEmpty) {
+      _validateTaxNumberOnFocusLost();
+    }
+  }
+
+  // Validate ID card for duplicates
+  Future<void> _validateIdCard() async {
+    String idCard = idCardCtrl.text.replaceAll('-', '');
+    if (idCard.length != 13) return; // Only check complete ID cards
+
+    try {
+      var result = await ApiServices.post('/customer/check-id-card',
+          Global.requestObj({"idCard": idCard}));
+
+      if (result?.status == "success" && result?.data != null) {
+        // Duplicate found - show warning
+        if (mounted) {
+          var data = result!.data;
+          String firstName = data['firstName'] ?? '';
+          String lastName = data['lastName'] ?? '';
+          Alert.warning(
+            context,
+            'เลขบัตรประชาชนซ้ำ',
+            'พบข้อมูลลูกค้าที่มีเลขบัตรประชาชนนี้อยู่แล้ว:\n$firstName $lastName',
+            'ตกลง',
+            action: () {},
+          );
+        }
+      }
+    } catch (e) {
+      motivePrint("Error validating ID card: $e");
+    }
+  }
+
+  // Validate tax number for duplicates on focus lost
+  Future<void> _validateTaxNumberOnFocusLost() async {
+    String taxNumber = taxNumberCtrl.text.replaceAll('-', '');
+    if (taxNumber.isEmpty) return;
+
+    try {
+      var result = await ApiServices.post('/customer/check-tax-number',
+          Global.requestObj({"taxNumber": taxNumber}));
+
+      if (result?.status == "success" && result?.data != null) {
+        // Duplicate found - show warning
+        if (mounted) {
+          var data = result!.data;
+          String companyName = data['companyName'] ?? '';
+          String firstName = data['firstName'] ?? '';
+          String lastName = data['lastName'] ?? '';
+          String displayName = companyName.isNotEmpty ? companyName : '$firstName $lastName';
+          Alert.warning(
+            context,
+            'เลขประจำตัวผู้เสียภาษีซ้ำ',
+            'พบข้อมูลลูกค้าที่มีเลขประจำตัวผู้เสียภาษีนี้อยู่แล้ว:\n$displayName',
+            'ตกลง',
+            action: () {},
+          );
+        }
+      }
+    } catch (e) {
+      motivePrint("Error validating tax number: $e");
+    }
+  }
+
+  // Check for duplicate ID card after card reader scan
+  Future<void> _checkDuplicateIdCardFromCardReader(String? idNumber) async {
+    if (idNumber == null || idNumber.isEmpty) return;
+
+    String idCard = idNumber.replaceAll('-', '');
+    if (idCard.length != 13) return; // Only check complete ID cards
+
+    try {
+      var result = await ApiServices.post('/customer/check-id-card',
+          Global.requestObj({"idCard": idCard}));
+
+      if (result?.status == "success" && result?.data != null) {
+        // Duplicate found - show warning
+        if (mounted) {
+          var data = result!.data;
+          String firstName = data['firstName'] ?? '';
+          String lastName = data['lastName'] ?? '';
+          Alert.warning(
+            context,
+            'เลขบัตรประชาชนซ้ำ',
+            'พบข้อมูลลูกค้าที่มีเลขบัตรประชาชนนี้อยู่แล้ว:\n$firstName $lastName',
+            'ตกลง',
+            action: () {},
+          );
+        }
+      }
+    } catch (e) {
+      motivePrint("Error checking duplicate ID card from card reader: $e");
+    }
   }
 
   // Try to read card from card reader service
@@ -380,11 +495,18 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     motivePrint("----------------------------------------");
 
     try {
+      // Set OCR source to card reader
+      _idCardSource = 'ocr_card_reader';
+      motivePrint("CARD READER: Set _idCardSource = 'ocr_card_reader'");
+
       // ID Card Number
       motivePrint("CARD READER: Populating ID Card Number");
       String cidValue = data['cid'] ?? '';
       idCardCtrl.text = cidValue;
       motivePrint("CARD READER: ID Card = '$cidValue'");
+
+      // Auto-check for duplicate ID card after card reader
+      await _checkDuplicateIdCardFromCardReader(cidValue);
 
       // Name (split full name)
       motivePrint("CARD READER: Populating name fields");
@@ -433,17 +555,42 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
         motivePrint("CARD READER WARNING: Full name is empty");
       }
 
-      // Birth Date
+      // Birth Date (format: yyyy-MM-dd from parse_thai_date)
       motivePrint("CARD READER: Populating birth date");
       String birthValue = data['birth'] ?? '';
       birthDateCtrl.text = birthValue;
       motivePrint("CARD READER: Birth date = '$birthValue'");
 
+      // Issue Date (format: yyyy-MM-dd from parse_thai_date)
+      motivePrint("CARD READER: Populating issue date");
+      String issueDate = data['issue_date']?.toString() ?? '';
+      if (issueDate.isNotEmpty) {
+        issueDateCtrl.text = issueDate;
+        motivePrint("CARD READER: Issue date = '$issueDate'");
+      }
+
+      // Expire Date (format: yyyy-MM-dd from parse_thai_date)
+      motivePrint("CARD READER: Populating expire date");
+      String expireDate = data['expire_date']?.toString() ?? '';
+      if (expireDate.isNotEmpty) {
+        expiryDateCtrl.text = expireDate;
+        motivePrint("CARD READER: Expire date = '$expireDate'");
+      }
+
       // Address
       motivePrint("CARD READER: Populating address");
       String fullAddress = data['address']?.toString() ?? '';
-      Global.addressCtrl.text = fullAddress;
       motivePrint("CARD READER: Full address = '$fullAddress'");
+
+      // Parse address into separate fields (same as API OCR)
+      Map<String, String> parsedAddress = _parseThaiAddress(fullAddress);
+      Global.addressCtrl.text = parsedAddress["houseNumber"] ?? "";
+      mooCtrl.text = parsedAddress["moo"] ?? "";
+      soiCtrl.text = parsedAddress["soi"] ?? "";
+      roadCtrl.text = parsedAddress["road"] ?? "";
+      villageCtrl.text = parsedAddress["village"] ?? "";
+      addressCtrl.text = fullAddress.split("ต.")[0].trim();
+      motivePrint("CARD READER: Parsed address - House: ${parsedAddress["houseNumber"]}, Moo: ${parsedAddress["moo"]}, Soi: ${parsedAddress["soi"]}, Road: ${parsedAddress["road"]}, Village: ${parsedAddress["village"]}");
 
       // Set nationality to Thai (from card reader)
       motivePrint("CARD READER: Setting nationality to Thai");
@@ -567,10 +714,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           motivePrint(
               "CARD READER: Tambon notifier set to: ${Global.tambonModel?.nameTh ?? 'เลือกตำบล'}");
 
-          // Remove tambon/amphure prefix from address
-          String cleanedAddress = fullAddress.split('ตำบล').first.trim();
-          Global.addressCtrl.text = cleanedAddress;
-          motivePrint("CARD READER: Cleaned address = '$cleanedAddress'");
+          // Set postal code from tambon zipCode
+          if (Global.tambonModel?.zipCode != null) {
+            postalCodeCtrl.text = Global.tambonModel!.zipCode.toString();
+            motivePrint("CARD READER: Postal code from tambon = '${postalCodeCtrl.text}'");
+          }
         });
       } else {
         motivePrint(
@@ -608,6 +756,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   void dispose() {
     _fadeController?.dispose();
     _slideController?.dispose();
+    // Clean up focus nodes
+    idCardFocusNode.removeListener(_onIdCardFocusChange);
+    idCardFocusNode.dispose();
+    taxNumberFocusNode.removeListener(_onTaxNumberFocusChange);
+    taxNumberFocusNode.dispose();
     // Clean up file dropdown overlays
     _occupationFileOverlay?.remove();
     _riskFileOverlay?.remove();
@@ -907,6 +1060,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     );
   }
 
+  /// Safely parse date string, returns ISO format string for API
+  String? _tryParseDate(String dateStr) {
+    if (dateStr.isEmpty) return null;
+    try {
+      // Try standard ISO format first (yyyy-MM-dd or yyyy-MM-dd HH:mm:ss)
+      DateTime parsed = DateTime.parse(dateStr);
+      return parsed.toIso8601String();
+    } catch (e) {
+      // Try Thai display format (dd/MM/yyyy)
+      try {
+        DateFormat thaiFormat = DateFormat('dd/MM/yyyy');
+        DateTime parsed = thaiFormat.parse(dateStr);
+        return parsed.toIso8601String();
+      } catch (e2) {
+        motivePrint("WARNING: Invalid date format: '$dateStr' (tried ISO and dd/MM/yyyy)");
+        return null;
+      }
+    }
+  }
+
   /// Parse Thai address string into separate components
   /// Based on common Thai address keywords:
   /// - House number: เลขที่, บ้านเลขที่, or leading number
@@ -926,14 +1099,19 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
     // Extract house number (บ้านเลขที่)
     // Pattern: เลขที่ X, บ้านเลขที่ X, or leading number at the start
+    // Stop before หมู่ or ม. to avoid including moo number
     RegExp houseNumberPattern = RegExp(
-      r'(?:เลขที่|บ้านเลขที่)\s*([^\s]+)|^(\d+[/\-\d]*)',
+      r'(?:เลขที่|บ้านเลขที่)\s*([^\s]+)|^(\d+[/\-\d]*)(?=\s|หมู่|ม\.|$)',
       caseSensitive: false,
     );
     Match? houseMatch = houseNumberPattern.firstMatch(address);
     if (houseMatch != null) {
-      result["houseNumber"] =
-          (houseMatch.group(1) ?? houseMatch.group(2) ?? "").trim();
+      String houseNum = (houseMatch.group(1) ?? houseMatch.group(2) ?? "").trim();
+      // Remove any trailing หมู่ที่ or ม. patterns
+      houseNum = houseNum.replaceAll(RegExp(r'\s*หมู่ที่.*$'), '').trim();
+      houseNum = houseNum.replaceAll(RegExp(r'\s*หมู่.*$'), '').trim();
+      houseNum = houseNum.replaceAll(RegExp(r'\s*ม\..*$'), '').trim();
+      result["houseNumber"] = houseNum;
     }
 
     // Extract moo (หมู่)
@@ -992,6 +1170,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
     Widget? prefixIcon,
     int maxLines = 1,
     List<TextInputFormatter>? inputFormatters,
+    bool readOnly = false,
+    FocusNode? focusNode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1021,14 +1201,19 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
             keyboardType: inputType,
             maxLines: maxLines,
             inputFormatters: inputFormatters,
-            style: TextStyle(fontSize: 14.sp),
+            readOnly: readOnly,
+            focusNode: focusNode,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: readOnly ? Colors.grey[600] : null,
+            ),
             decoration: InputDecoration(
               hintText: hintText ?? labelText,
               prefixIcon: prefixIcon,
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: readOnly ? Colors.grey[100] : Colors.white,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -1305,6 +1490,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                         });
 
                         if (ocrResult != null) {
+                          // Set OCR source to API OCR
+                          _idCardSource = 'ocr_api';
+
                           idCardCtrl.text = ocrResult["id_number"] ?? "";
 
                           // Get title name from OCR
@@ -1377,6 +1565,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
 
                           // Populate remaining address (before ต.)
                           addressCtrl.text = fullAddress.split("ต.")[0].trim();
+
+                          // Populate card issue and expiry dates
+                          if (ocrResult["en_issue"] != null) {
+                            issueDateCtrl.text =
+                                Global.formatDateThai(ocrResult["en_issue"]);
+                          }
+                          if (ocrResult["en_expire"] != null) {
+                            expiryDateCtrl.text =
+                                Global.formatDateThai(ocrResult["en_expire"]);
+                          }
                         }
 
                         setState(() {});
@@ -1932,6 +2130,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                     prefixIcon:
                                         Icon(Icons.credit_card, size: 14.sp),
                                     inputFormatters: [ThaiIdCardFormatter()],
+                                    readOnly: _idCardSource != null,
+                                    focusNode: idCardFocusNode,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
@@ -2236,6 +2436,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           controller: taxNumberCtrl,
                                           prefixIcon:
                                               Icon(Icons.receipt, size: 14.sp),
+                                          focusNode: taxNumberFocusNode,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -2443,6 +2644,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           controller: taxNumberCtrl,
                                           prefixIcon:
                                               Icon(Icons.receipt, size: 14.sp),
+                                          focusNode: taxNumberFocusNode,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -2696,6 +2898,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
                                           controller: taxNumberCtrl,
                                           prefixIcon:
                                               Icon(Icons.receipt, size: 14.sp),
+                                          focusNode: taxNumberFocusNode,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -4275,15 +4478,37 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
   }
 
   Future<void> _saveDirectly() async {
-    // ROW 1: Auto-default branch code to '00000' for head office when empty
-    String finalBranchCode = branchCodeCtrl.text;
-    if (selectedType?.code == 'company' && companyOfficeType == 'head') {
-      if (finalBranchCode.isEmpty) {
-        finalBranchCode = '00000';
-      }
-    }
+    ProgressDialog? pr;
+    try {
+      motivePrint("========================================");
+      motivePrint("SAVE: Starting _saveDirectly()");
+      motivePrint("========================================");
 
-    var customerObject = Global.requestObj({
+      // ROW 1: Auto-default branch code to '00000' for head office when empty
+      String finalBranchCode = branchCodeCtrl.text;
+      if (selectedType?.code == 'company' && companyOfficeType == 'head') {
+        if (finalBranchCode.isEmpty) {
+          finalBranchCode = '00000';
+        }
+      }
+
+      motivePrint("SAVE: Building customer object...");
+      motivePrint("SAVE: idCardCtrl.text = '${idCardCtrl.text}'");
+      motivePrint("SAVE: firstNameCtrl.text = '${firstNameCtrl.text}'");
+      motivePrint("SAVE: lastNameCtrl.text = '${lastNameCtrl.text}'");
+      motivePrint("SAVE: birthDateCtrl.text = '${birthDateCtrl.text}'");
+      motivePrint("SAVE: issueDateCtrl.text = '${issueDateCtrl.text}'");
+      motivePrint("SAVE: expiryDateCtrl.text = '${expiryDateCtrl.text}'");
+      motivePrint("SAVE: _tryParseDate(birthDateCtrl.text) = '${_tryParseDate(birthDateCtrl.text)}'");
+      motivePrint("SAVE: _tryParseDate(issueDateCtrl.text) = '${_tryParseDate(issueDateCtrl.text)}'");
+      motivePrint("SAVE: _tryParseDate(expiryDateCtrl.text) = '${_tryParseDate(expiryDateCtrl.text)}'");
+      motivePrint("SAVE: postalCodeCtrl.text = '${postalCodeCtrl.text}'");
+      motivePrint("SAVE: Global.addressCtrl.text = '${Global.addressCtrl.text}'");
+      motivePrint("SAVE: Global.tambonModel?.id = ${Global.tambonModel?.id}");
+      motivePrint("SAVE: Global.amphureModel?.id = ${Global.amphureModel?.id}");
+      motivePrint("SAVE: Global.provinceModel?.id = ${Global.provinceModel?.id}");
+
+      var customerObject = Global.requestObj({
       "customerType": selectedType?.code,
       "companyName": companyNameCtrl.text,
 
@@ -4294,7 +4519,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           companyOfficeType, // 'head' or 'branch' maps to HeadquartersOrBranch
       "registrationDate": registrationDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(registrationDateCtrl.text).toString(),
+          : _tryParseDate(registrationDateCtrl.text),
       "businessType": selectedType?.code == "company"
           ? (selectedOccupation?.name ?? occupationCtrl.text)
           : null,
@@ -4308,8 +4533,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       // Contact info
       "email": emailAddressCtrl.text,
       "doB": birthDateCtrl.text.isEmpty
-          ? ""
-          : DateTime.parse(birthDateCtrl.text).toString(),
+          ? null
+          : _tryParseDate(birthDateCtrl.text),
       "phoneNumber": phoneCtrl.text,
       "username": generateRandomString(8),
       "password": generateRandomString(10),
@@ -4340,18 +4565,18 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
           : "",
       "idCardIssueDate": issueDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(issueDateCtrl.text).toString(),
+          : _tryParseDate(issueDateCtrl.text),
       "idCardExpiryDate": expiryDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(expiryDateCtrl.text).toString(),
+          : _tryParseDate(expiryDateCtrl.text),
 
       // Foreign national fields
       "entryDate": entryDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(entryDateCtrl.text).toString(),
+          : _tryParseDate(entryDateCtrl.text),
       "exitDate": exitDateCtrl.text.isEmpty
           ? null
-          : DateTime.parse(exitDateCtrl.text).toString(),
+          : _tryParseDate(exitDateCtrl.text),
       "passportId": nationality == 'Foreigner' ? passportNoCtrl.text : '',
       "workPermit": nationality == 'Foreigner' ? workPermitCtrl.text : '',
 
@@ -4382,9 +4607,12 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       // Other
       "photoUrl": '',
       "remark": remarkCtrl.text,
+
+      // OCR source tracking
+      "idCardSource": _idCardSource,
     });
 
-    final ProgressDialog pr = ProgressDialog(context,
+    pr = ProgressDialog(context,
         type: ProgressDialogType.normal, isDismissible: true, showLogs: true);
     await pr.show();
     pr.update(message: 'processing'.tr());
@@ -4438,6 +4666,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen>
       if (mounted) {
         Alert.warning(
             context, 'Warning'.tr(), result!.message ?? result.data, 'OK'.tr(),
+            action: () {});
+      }
+    }
+    } catch (e, stackTrace) {
+      motivePrint("========================================");
+      motivePrint("SAVE ERROR: Exception in _saveDirectly()");
+      motivePrint("SAVE ERROR: Type: ${e.runtimeType}");
+      motivePrint("SAVE ERROR: Message: $e");
+      motivePrint("SAVE ERROR: Stack trace:");
+      motivePrint("$stackTrace");
+      motivePrint("========================================");
+
+      // Hide progress dialog if it was shown
+      if (pr != null && pr.isShowing()) {
+        await pr.hide();
+      }
+
+      if (mounted) {
+        Alert.warning(
+            context, 'Error'.tr(), 'เกิดข้อผิดพลาด: $e', 'OK'.tr(),
             action: () {});
       }
     }

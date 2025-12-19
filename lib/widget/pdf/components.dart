@@ -51,7 +51,7 @@ Future<Widget> header(OrderModel order, String? title,
             padding: const EdgeInsets.only(right: 8.0),
             child: image == null
                 ? Container()
-                : Image(image, fit: BoxFit.fitWidth, width: 60, height: 60),
+                : Image(image, fit: BoxFit.fitWidth, width: 50, height: 50),
           ),
         ),
         Expanded(

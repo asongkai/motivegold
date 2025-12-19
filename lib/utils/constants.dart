@@ -118,14 +118,6 @@ class Constants {
   static const String PATTERN_EMAIL =
       "^([0-9a-zA-Z]([-.+\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9})\$";
 
-  //DEV
-  // static const String BACKEND_URL = "http://localhost:5265/api";
-  // static const String DOMAIN_URL = "http://localhost:5265";
-
-  //PRO
-  static const String GOLD_URL = "https://motive.kodpay.la/api";
-  static const String DOMAIN_GOLD = "https://motive.kodpay.la";
-
   static String BACKEND_URL = "${getBackendUrl()}/api";
   static String DOMAIN_URL = "${getBackendUrl()}";
 
@@ -135,7 +127,7 @@ class Constants {
 
   static getBackendUrl() {
     if (env == ENV.PRO) {
-      return "http://203.154.2.96:5000";
+      return "https://app.quickgoldthai.com"; // Production HTTPS
     } else if (env == ENV.UAT) {
       return "https://srv1104428.hstgr.cloud"; // HTTPS via nginx reverse proxy
     } else {

@@ -14,32 +14,10 @@ import 'package:sizer/sizer.dart';
 
 Future<Uint8List> makeSellVatReportPdf(List<OrderModel?> orders, int type,
     String date, DateTime fromDate, DateTime toDate) async {
-  List<OrderModel> list = [];
-  List<OrderModel> list3 = [];
-
-  int days = Global.daysBetween(fromDate, toDate);
-
-  for (int j = 0; j <= days; j++) {
-    var indexDay = fromDate.add(Duration(days: j));
-
-    // Find all orders for this specific day
-    var ordersForDay =
-        orders.where((order) => order!.orderDate == indexDay).toList();
-
-    if (ordersForDay.isNotEmpty) {
-      // Add all orders for this day
-      for (var order in ordersForDay) {
-        list.add(order!);
-        list3.add(order);
-      }
-    } else {
-      // No orders for this day, add one "no sales" record
-      list.add(OrderModel(
-          orderId: 'ไม่มียอดขาย',
-          orderDate: indexDay,
-          customer: orders.isNotEmpty ? orders.first!.customer : null));
-    }
-  }
+  // For types 2 and 3, the orders are already aggregated by genDailyList()
+  // so we use them directly
+  List<OrderModel> list = orders.whereType<OrderModel>().toList();
+  List<OrderModel> list3 = orders.whereType<OrderModel>().toList();
 
   var myTheme = ThemeData.withFont(
     base: Font.ttf(await rootBundle.load("assets/fonts/thai/THSarabunNew.ttf")),
